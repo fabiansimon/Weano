@@ -1,11 +1,17 @@
-import { View, Text } from 'react-native'
 import React from 'react'
-import Colors from './src/constants/Theme'
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import ROUTES from './src/constants/Routes';
+import IntroScreen from './src/screens/IntroScreen';
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <View style={{alignItems: 'center', justifyContent: 'center', flex: 1, backgroundColor: Colors.blacK}}>
-      <Text>App</Text>
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{headerShown: false}}>
+        <Stack.Screen name={ROUTES.introScreen} component={IntroScreen}/>
+      </Stack.Navigator>
+    </NavigationContainer>
   )
 }

@@ -19,6 +19,10 @@ target 'travelio_project' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
+  pod 'RNLocalize', :path => '../node_modules/react-native-localize'
+
+  pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+
   target 'travelio_projectTests' do
     inherit! :complete
     # Pods for testing
