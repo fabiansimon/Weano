@@ -9,7 +9,6 @@ import COLORS from '../constants/Theme';
 import i18n from '../utils/i18n';
 import Button from '../components/Button';
 import PageIndicator from '../components/PageIndicator';
-import TitleModal from '../components/TitleModal';
 import AuthModal from '../components/AuthModal';
 
 export default function IntroScreen() {
