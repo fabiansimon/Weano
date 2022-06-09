@@ -10,6 +10,7 @@ import i18n from '../utils/i18n';
 import Button from '../components/Button';
 import PageIndicator from '../components/PageIndicator';
 import TitleModal from '../components/TitleModal';
+import AuthModal from '../components/AuthModal';
 
 export default function IntroScreen() {
   const [pageIndex, setPageIndex] = useState(0);
@@ -60,14 +61,14 @@ export default function IntroScreen() {
 
   return (
     <View style={styles.container}>
-      <PagerView style={{ flex: 1 }} initialPage={0} ref={pageRef}>
+      <PagerView style={{ flex: 1 }} initialPage={0} ref={pageRef} scrollEnabled={false}>
         {introData.map((data, index) => renderItem(data, index))}
       </PagerView>
       <SafeAreaView style={styles.footer}>
         <Button text={i18n.t('Next')} onPress={handleNext} />
         <PageIndicator data={introData} pageIndex={pageIndex} style={{ alignSelf: 'center', marginTop: 22 }} />
       </SafeAreaView>
-      <TitleModal isVisible={authVisible} onRequestClose={() => setAuthVisible(false)} title={i18n.t('Log in or signup')} />
+      <AuthModal isVisible={authVisible} onRequestClose={() => setAuthVisible(false)} />
     </View>
   );
 }
