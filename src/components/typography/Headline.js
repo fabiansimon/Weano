@@ -3,7 +3,7 @@ import React from 'react';
 import COLORS from '../../constants/Theme';
 
 export default function Headline({
-  type, style, text, color,
+  type, style, text, color, onPress,
 }) {
   const fontSize = type === 4 ? 18 : type === 3 ? 20 : type === 4 ? 24 : 30;
   const lineHeight = type === 4 ? 22 : type === 3 ? 27 : type === 4 ? 33 : 41;
@@ -12,9 +12,17 @@ export default function Headline({
   const textColor = color || COLORS.shades[100];
 
   return (
-    <Text style={[{
-      fontSize, fontWeight, fontFamily, lineHeight, color: textColor, letterSpacing: -1,
-    }, style]}
+    <Text
+      onPress={onPress}
+      suppressHighlighting
+      style={[{
+        fontSize,
+        fontWeight,
+        fontFamily,
+        lineHeight,
+        color: textColor,
+        letterSpacing: -1,
+      }, style]}
     >
       {text}
     </Text>

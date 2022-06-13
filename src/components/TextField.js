@@ -4,11 +4,10 @@ import {
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
 import COLORS from '../constants/Theme';
-import i18n from '../utils/i18n';
 import Headline from './typography/Headline';
 
 export default function TextField({
-  value, onChangeText, style, prefix, onPrefixPress
+  value, onChangeText, style, prefix, onPrefixPress, onDelete, placeholder, keyboardType, focusable = true,
 }) {
   const [focused, setFocused] = useState(false);
 
@@ -16,18 +15,27 @@ export default function TextField({
     <View style={[styles.container, focused ? styles.activeContainer : styles.inactiveContainer, style]}>
       {prefix && (
       <TouchableOpacity onPress={onPrefixPress} style={styles.prefixContainer}>
-        <Headline type={4} text="🇦🇹 +43" color={COLORS.neutral[700]} />
+        <Headline type={4} text={`+ ${prefix}`} color={COLORS.neutral[700]} />
       </TouchableOpacity>
       )}
       <TextInput
-        autoFocus
-        onFocus={() => setFocused(true)}
+        keyboardType={keyboardType}
+        onFocus={() => focusable && setFocused(true)}
         style={styles.textInput}
-        value={value}
+        value={value || null}
         onChangeText={(val) => onChangeText(val)}
-        placeholder={i18n.t('+43 664 186 53 58')}
+        placeholder={prefix ? `+${prefix} ${placeholder}` : placeholder}
       />
-      {value && <Icon name="closecircle" size={20} color={COLORS.neutral[500]} style={styles.deleteIcon} />}
+      {value && (
+      <Icon
+        name="closecircle"
+        suppressHighlighting
+        onPress={onDelete}
+        size={20}
+        color={COLORS.neutral[500]}
+        style={styles.deleteIcon}
+      />
+      )}
     </View>
   );
 }

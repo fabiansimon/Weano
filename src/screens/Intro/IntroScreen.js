@@ -1,24 +1,25 @@
+/* eslint-disable import/no-named-as-default-member */
 /* eslint-disable global-require */
 import { View, StyleSheet, Image } from 'react-native';
 import React, { useRef, useState } from 'react';
 import PagerView from 'react-native-pager-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Headline from '../components/typography/Headline';
-import Body from '../components/typography/Body';
-import COLORS from '../constants/Theme';
-import i18n from '../utils/i18n';
-import Button from '../components/Button';
-import PageIndicator from '../components/PageIndicator';
-import AuthModal from '../components/AuthModal';
+import Headline from '../../components/typography/Headline';
+import Body from '../../components/typography/Body';
+import COLORS from '../../constants/Theme';
+import i18n from '../../utils/i18n';
+import Button from '../../components/Button';
+import PageIndicator from '../../components/PageIndicator';
+import AuthModal from '../../components/AuthModal';
 
 export default function IntroScreen() {
   const [pageIndex, setPageIndex] = useState(0);
   const [authVisible, setAuthVisible] = useState(false);
   const pageRef = useRef(null);
 
-  const intro1 = require('../../assets/images/intro_1.png');
-  const intro2 = require('../../assets/images/intro_2.png');
-  const intro3 = require('../../assets/images/intro_3.png');
+  const intro1 = require('../../../assets/images/intro_1.png');
+  const intro2 = require('../../../assets/images/intro_2.png');
+  const intro3 = require('../../../assets/images/intro_3.png');
 
   const handleNext = () => {
     if (pageIndex === introData.length - 1) {
@@ -50,22 +51,40 @@ export default function IntroScreen() {
 
   const renderItem = (data, index) => (
     <View key={index}>
-      <Image source={data.image} style={styles.imageContainer} resizeMode="stretch" />
+      <Image
+        source={data.image}
+        style={styles.imageContainer}
+        resizeMode="stretch"
+      />
       <View style={styles.innerContainer}>
         <Headline type={1} text={i18n.t(data.title)} />
-        <Body style={{ marginTop: 30 }} type={1} color={COLORS.neutral[700]} text={i18n.t(data.subtitle)} />
+        <Body
+          style={{ marginTop: 30 }}
+          type={1}
+          color={COLORS.neutral[700]}
+          text={i18n.t(data.subtitle)}
+        />
       </View>
     </View>
   );
 
   return (
     <View style={styles.container}>
-      <PagerView style={{ flex: 1 }} initialPage={0} ref={pageRef} scrollEnabled={false}>
+      <PagerView
+        style={{ flex: 1 }}
+        initialPage={0}
+        ref={pageRef}
+        scrollEnabled={false}
+      >
         {introData.map((data, index) => renderItem(data, index))}
       </PagerView>
       <SafeAreaView style={styles.footer}>
         <Button text={i18n.t('Next')} onPress={handleNext} />
-        <PageIndicator data={introData} pageIndex={pageIndex} style={{ alignSelf: 'center', marginTop: 22 }} />
+        <PageIndicator
+          data={introData}
+          pageIndex={pageIndex}
+          style={{ alignSelf: 'center', marginTop: 22 }}
+        />
       </SafeAreaView>
       <AuthModal isVisible={authVisible} onRequestClose={() => setAuthVisible(false)} />
     </View>
