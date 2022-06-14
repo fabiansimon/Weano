@@ -11,7 +11,7 @@ import Button from '../components/Button';
 
 export default function MainScreen() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [recapIndex, setRecapIndex] = useState(0);
+  const [recapIndex] = useState(0);
 
   const mockTrips = [
     {
@@ -19,18 +19,21 @@ export default function MainScreen() {
       start_date: 1656865380,
       end_date: 1658074980,
       latlon: [48.864716, 2.349014],
+      images: ['https://picsum.photos/315/150', 'https://picsum.photos/150', 'https://picsum.photos/150', 'https://picsum.photos/150', 'https://picsum.photos/150', 'https://picsum.photos/150'],
     },
     {
-      title: 'Maturareise VBS Gang 🐕',
+      title: 'Paris with mon Amie 🇫🇷',
       start_date: 1656865380,
       end_date: 1658074980,
       latlon: [48.864716, 2.349014],
+      images: ['https://picsum.photos/315/150', 'https://picsum.photos/150', 'https://picsum.photos/150', 'https://picsum.photos/150', 'https://picsum.photos/150', 'https://picsum.photos/150'],
     },
     {
-      title: 'Maturareise VBS Gang 🐕',
+      title: 'Solo thru the US 🤠',
       start_date: 1656865380,
       end_date: 1658074980,
       latlon: [48.864716, 2.349014],
+      images: ['https://picsum.photos/315/150', 'https://picsum.photos/150', 'https://picsum.photos/150', 'https://picsum.photos/150', 'https://picsum.photos/150', 'https://picsum.photos/150'],
     },
   ];
 
@@ -52,6 +55,7 @@ export default function MainScreen() {
         <ScrollView
           horizontal
           paddingHorizontal={25}
+          marginTop={25}
           showsHorizontalScrollIndicator={false}
         >
           {mockTrips.map((trip) => (
@@ -89,7 +93,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   carousel: {
-    height: '60%',
+    height: '63%',
     Horizontal: 25,
   },
   container: {
