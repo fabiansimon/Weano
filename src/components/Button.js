@@ -5,9 +5,17 @@ import COLORS from '../constants/Theme';
 import Headline from './typography/Headline';
 
 export default function Button({
-  style, text, onPress, isDisabled, icon, color,
+  style,
+  text,
+  backgroundColor,
+  onPress,
+  isDisabled,
+  icon,
+  color,
+  fullWidth = true,
 }) {
-  const flex = text ? 1 : 0;
+  const flex = fullWidth ? 1 : 0;
+  const bg = isDisabled ? COLORS.primary[50] : backgroundColor || COLORS.primary[700];
 
   const getIcon = () => (typeof icon.type === 'function' ? (
     React.cloneElement(icon, { fill: color })
@@ -16,7 +24,7 @@ export default function Button({
   ));
 
   return (
-    <TouchableOpacity style={[styles.container, style, { flex }]} onPress={onPress} disabled={isDisabled}>
+    <TouchableOpacity style={[styles.container, style, { flex, backgroundColor: bg }]} onPress={onPress} disabled={isDisabled}>
       <Headline type={4} text={text} color={COLORS.shades[0]} />
       {icon && getIcon()}
     </TouchableOpacity>
@@ -32,6 +40,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 100,
-    backgroundColor: COLORS.primary[700],
   },
 });

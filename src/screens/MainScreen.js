@@ -8,30 +8,37 @@ import TextField from '../components/TextField';
 import RecapCard from '../components/RecapCard';
 import PageIndicator from '../components/PageIndicator';
 import Button from '../components/Button';
+import Avatar from '../components/Avatar';
+import CreateModal from '../components/CreateModal';
+import { useNavigation } from '@react-navigation/native';
+import ROUTES from '../constants/Routes';
 
 export default function MainScreen() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [createVisible, setCreateVisible] = useState(false);
   const [recapIndex] = useState(0);
+
+  const navigation = useNavigation()
 
   const mockTrips = [
     {
       title: 'Maturareise VBS Gang 🐕',
-      start_date: 1656865380,
-      end_date: 1658074980,
+      startDate: 1656865380,
+      endDate: 1658074980,
       latlon: [48.864716, 2.349014],
       images: ['https://picsum.photos/315/150', 'https://picsum.photos/150', 'https://picsum.photos/150', 'https://picsum.photos/150', 'https://picsum.photos/150', 'https://picsum.photos/150'],
     },
     {
       title: 'Paris with mon Amie 🇫🇷',
-      start_date: 1656865380,
-      end_date: 1658074980,
+      startDate: 1656865380,
+      endDate: 1658074980,
       latlon: [48.864716, 2.349014],
       images: ['https://picsum.photos/315/150', 'https://picsum.photos/150', 'https://picsum.photos/150', 'https://picsum.photos/150', 'https://picsum.photos/150', 'https://picsum.photos/150'],
     },
     {
       title: 'Solo thru the US 🤠',
-      start_date: 1656865380,
-      end_date: 1658074980,
+      startDate: 1656865380,
+      endDate: 1658074980,
       latlon: [48.864716, 2.349014],
       images: ['https://picsum.photos/315/150', 'https://picsum.photos/150', 'https://picsum.photos/150', 'https://picsum.photos/150', 'https://picsum.photos/150', 'https://picsum.photos/150'],
     },
@@ -40,8 +47,13 @@ export default function MainScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ paddingHorizontal: 20 }}>
-        <Headline type={3} text={i18n.t('Hey Fabian')} />
-        <Headline type={4} text={i18n.t('ready for a new Adventure? 🌍')} />
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View>
+            <Headline type={3} text={i18n.t('Hey Fabian')} />
+            <Headline type={4} text={i18n.t('ready for a new Adventure? 🌍')} />
+          </View>
+          <Avatar uri="https://i.pravatar.cc/300" onPress={() => navigation.navigate(ROUTES.introScreen)} />
+        </View>
         <TextField
           style={{ marginTop: 20 }}
           focusable={false}
@@ -58,11 +70,14 @@ export default function MainScreen() {
           marginTop={25}
           showsHorizontalScrollIndicator={false}
         >
-          {mockTrips.map((trip) => (
-            <RecapCard
-              data={trip}
-              style={{ marginRight: 30 }}
-            />
+          {mockTrips.map((trip, index) => (
+            <>
+              <RecapCard
+                data={trip}
+                style={{ marginRight: 30 }}
+              />
+              {index === mockTrips.length - 1 && <View style={{ width: 25 }} />}
+            </>
           ))}
         </ScrollView>
       </View>
@@ -74,14 +89,21 @@ export default function MainScreen() {
       <View style={styles.buttonContainer}>
         <Button
           text={i18n.t('new adventure')}
+          onPress={() => setCreateVisible(true)}
           style={[styles.buttonShadow, { marginTop: 30 }]}
         />
         <Button
           style={[styles.globeButton, styles.buttonShadow]}
+          backgroundColor={COLORS.shades[0]}
           icon="globe"
+          fullWidth={false}
           color={COLORS.neutral[900]}
         />
       </View>
+      <CreateModal
+        isVisible={createVisible}
+        onRequestClose={() => setCreateVisible(false)}
+      />
     </SafeAreaView>
   );
 }
@@ -109,7 +131,6 @@ const styles = StyleSheet.create({
   globeButton: {
     marginLeft: 15,
     marginTop: 30,
-    backgroundColor: COLORS.shades[0],
     borderWidth: 1,
     borderColor: COLORS.neutral[100],
   },

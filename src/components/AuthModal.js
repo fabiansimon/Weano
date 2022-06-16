@@ -4,6 +4,7 @@ import {
 import React, { useEffect, useRef, useState } from 'react';
 import CountryPicker from 'react-native-country-picker-modal';
 import PagerView from 'react-native-pager-view';
+import { useNavigation } from '@react-navigation/native';
 import TitleModal from './TitleModal';
 import i18n from '../utils/i18n';
 import Headline from './typography/Headline';
@@ -13,6 +14,7 @@ import Body from './typography/Body';
 import Button from './Button';
 import KeyboardView from './KeyboardView';
 import CodeInput from './CodeInput';
+import ROUTES from '../constants/Routes';
 
 export default function AuthModal({ isVisible, onRequestClose }) {
   const [phoneNr, setPhoneNr] = useState('');
@@ -20,6 +22,8 @@ export default function AuthModal({ isVisible, onRequestClose }) {
   const [countryCode, setCountryCode] = useState('43');
   const pageRef = useRef(null);
   const [timer, setTimer] = useState(10);
+
+  const navigation = useNavigation();
 
   function useInterval() {
     setTimer(10);
@@ -106,13 +110,12 @@ export default function AuthModal({ isVisible, onRequestClose }) {
               <Body
                 type={2}
                 style={{ textDecorationLine: 'underline', alignSelf: 'center' }}
-                onPress={() => console.log('hefffllo')}
+                onPress={() => navigation.navigate(ROUTES.mainScreen)}
                 text={getTimerString()}
                 color={COLORS.neutral[500]}
               />
             </View>
           </PagerView>
-
           <Button text={i18n.t('Next')} onPress={() => handleChange(1)} />
         </View>
       </KeyboardView>
