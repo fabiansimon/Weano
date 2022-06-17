@@ -2,108 +2,131 @@ import {
   View, StyleSheet, Image, TouchableOpacity,
 } from 'react-native';
 import React from 'react';
-import moment from 'moment';
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import InsetShadow from 'react-native-inset-shadow';
 import COLORS from '../constants/Theme';
 import Headline from './typography/Headline';
-import Body from './typography/Body';
+import DateContainer from './DateContainer';
+import Avatar from './Avatar';
+import IconButton from './IconButton';
+import DaysContainer from './DaysContainer';
 
-export default function RecapCard({ data, style }) {
-  // format UNIX timestamp to readable date
-  const getDate = (timestamp, suffix) => {
-    const date = new Date(timestamp * 1000);
-    return moment(date).format(`MMM Do ${suffix ? 'YY' : ''}`);
-  };
+export default function RecapCard({ data, style, type = 'main' }) {
+  const getRVSP = () => '4 yes • 1 maybes • 2 no\'s';
 
-  return (
-    <TouchableOpacity style={[styles.container, style]}>
-      <Image style={{ flex: 3, backgroundColor: COLORS.primary[300] }} source={{ uri: data.images[0] }} />
-      <View style={styles.secondRow}>
-        <Image style={{ flex: 1 }} source={{ uri: data.images[1] }} />
-        <Image style={{ flex: 1 }} source={{ uri: data.images[2] }} />
+  const getMiniCard = () => (
+    <TouchableOpacity style={[styles.miniContainer, styles.boxShadow, style]}>
+      <View style={{
+        justifyContent: 'center', padding: 6, flex: 1, marginRight: 26,
+      }}
+      >
+        <Headline type={3} text={data.title} isDense numberOfLines={1} />
+        <Headline type={4} text={getRVSP()} color={COLORS.neutral[700]} isDense />
       </View>
-      <View style={styles.thirdRow}>
-        <Image style={{ flex: 1 }} source={{ uri: data.images[3] }} />
-        <Image style={{ flex: 1 }} source={{ uri: data.images[4] }} />
-        <Image style={{ flex: 1 }} source={{ uri: data.images[5] }} />
-      </View>
-      <View style={styles.titleContainer}>
-        <Headline
-          type={3}
-          text={data.title}
-          color={COLORS.shades[0]}
-          style={styles.textShadow}
+      <DaysContainer dates={data.dateRange} />
+    </TouchableOpacity>
+  );
+
+  const getMainCard = () => (
+    <TouchableOpacity style={[styles.container, styles.boxShadow, style]}>
+      <InsetShadow
+        containerStyle={{ height: 170, borderRadius: 10 }}
+        shadowOpacity={0.11}
+      >
+        <Image
+          source={{ uri: data.images[0] }}
+          style={styles.image}
         />
-        <View style={styles.peopleContainer}>
-          <Icon name="people-circle-sharp" color={COLORS.neutral[900]} size={18} />
-          <Body type={2} text="2" color={COLORS.neutral[900]} />
-        </View>
-      </View>
-      <View style={styles.descContainer}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Icon name="calendar" color={COLORS.shades[0]} size={18} />
-          <Body
-            type={1}
-            text={`${getDate(data.startDate)} - ${getDate(data.endDate, true)}`}
-            color={COLORS.shades[0]}
-            style={[styles.textShadow, { marginLeft: 6 }]}
+        <DateContainer
+          dates={data.dateRange}
+          style={{
+            position: 'absolute',
+            top: 12,
+            left: 12,
+          }}
+        />
+      </InsetShadow>
+      <View style={styles.detailsContainer}>
+        <Headline type={3} text={data.title} />
+        <View style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}
+        >
+          {data.invitees.map((invitee) => (
+            <Avatar
+              uri={invitee.uri}
+              size={36}
+              style={{ marginRight: -8 }}
+            />
+          ))}
+          <Headline
+            type={3}
+            text="+2 more"
+            color={COLORS.primary[700]}
+            style={{ marginLeft: 14 }}
           />
         </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Icon name="location" color={COLORS.shades[0]} size={20} />
-          <Body
-            type={1}
-            text="getLocation()"
-            color={COLORS.shades[0]}
-            style={[styles.textShadow, { marginLeft: 6 }]}
+        <View style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}
+        >
+          <Icon
+            name="location-on"
+            size={18}
+            color={COLORS.neutral[500]}
+          />
+          <Headline
+            type={4}
+            text="Paris, France"
+            color={COLORS.neutral[500]}
           />
         </View>
+        <IconButton
+          icon="heart"
+          isActive={false}
+          style={{ position: 'absolute', bottom: 4, right: 10 }}
+        />
       </View>
     </TouchableOpacity>
+  );
+
+  return (
+    type === 'mini' ? getMiniCard() : getMainCard()
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 10,
-    aspectRatio: 0.78,
-    overflow: 'hidden',
-  },
-  peopleContainer: {
-    flexDirection: 'row',
-    borderRadius: 100,
+    borderRadius: 20,
     backgroundColor: COLORS.shades[0],
-    alignItems: 'center',
-    paddingHorizontal: 4,
+    aspectRatio: 0.95,
+    height: 325,
+    padding: 10,
   },
-  secondRow: {
-    flex: 3,
+  miniContainer: {
     flexDirection: 'row',
+    borderRadius: 10,
+    backgroundColor: COLORS.shades[0],
+    aspectRatio: 3.7,
+    height: 85,
+    padding: 10,
   },
-  textShadow: {
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowRadius: 2,
+  boxShadow: {
+    shadowColor: COLORS.shades[100],
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
   },
-  thirdRow: {
-    flex: 2,
-    flexDirection: 'row',
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  detailsContainer: {
     paddingHorizontal: 10,
-    paddingTop: 10,
-    position: 'absolute',
-    top: 0,
-    width: '100%',
-  },
-  descContainer: {
-    flexDirection: 'row',
+    paddingVertical: 10,
     justifyContent: 'space-between',
-    paddingHorizontal: 10,
-    paddingBottom: 10,
-    position: 'absolute',
-    bottom: 0,
+    flex: 1,
+  },
+  image: {
+    borderRadius: 10,
     width: '100%',
+    height: 170,
   },
 });

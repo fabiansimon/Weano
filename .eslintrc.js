@@ -22,6 +22,7 @@ module.exports = {
     'no-use-before-define': ['error', { variables: false }],
     'no-nested-ternary': 'off',
     'react/prop-types': 0,
+    'react/jsx-props-no-spreading': 'off',
     'max-len': ['error', { code: 200 }],
   },
 };

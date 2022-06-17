@@ -22,8 +22,10 @@
     "react-native-confirmation-code-field": "^7.3.0",
     "react-native-country-picker-modal": "^2.0.0",
     "react-native-daterange-picker": "^1.5.1",
+    "react-native-inset-shadow": "^1.0.3",
     "react-native-localize": "^2.2.2",
     "react-native-pager-view": "^5.4.24",
+    "react-native-reanimated": "^2.8.0",
     "react-native-safe-area-context": "^4.2.2",
     "react-native-screens": "^3.13.1",
     "react-native-vector-icons": "^9.1.0"

@@ -5,11 +5,16 @@ import React from 'react';
 import COLORS from '../constants/Theme';
 import DefaultAvatar from '../../assets/images/default_avatar.png';
 
-export default function Avatar({ uri, onPress }) {
+export default function Avatar({
+  style, size, uri, onPress,
+}) {
+  const height = size || 55;
+  const width = size || 55;
+
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress}>
-      <Image source={DefaultAvatar} style={{ height: 55, width: 55, position: 'absolute' }} />
-      <Image source={{ uri }} style={{ height: 55, width: 55 }} />
+    <TouchableOpacity style={[styles.container, style, { height, width }]} onPress={onPress}>
+      <Image source={DefaultAvatar} style={{ height, width, position: 'absolute' }} />
+      <Image source={{ uri }} style={{ height, width }} />
     </TouchableOpacity>
   );
 }
@@ -18,8 +23,6 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     borderRadius: 100,
-    height: 55,
-    width: 55,
     overflow: 'hidden',
     borderWidth: 1,
     backgroundColor: COLORS.shades[0],

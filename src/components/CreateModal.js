@@ -59,8 +59,8 @@ export default function CreateModal({ isVisible, onRequestClose }) {
   };
 
   const datePlaceholder = () => {
-    const startDate = Utils.getDateFromTimestamp(dateRange.selectedStartDate);
-    const endDate = Utils.getDateFromTimestamp(dateRange.selectedEndDate, true);
+    const startDate = dateRange.selectedStartDate && Utils.getDateFromTimestamp(dateRange.selectedStartDate);
+    const endDate = dateRange.selectedEndDate && Utils.getDateFromTimestamp(dateRange.selectedEndDate, 'MMM Do YY');
 
     return `${startDate} - ${endDate}`;
   };
