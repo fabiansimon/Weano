@@ -1,7 +1,7 @@
 import {
   View, StyleSheet, Image, TouchableOpacity,
 } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import InsetShadow from 'react-native-inset-shadow';
 import COLORS from '../constants/Theme';
@@ -12,6 +12,7 @@ import IconButton from './IconButton';
 import DaysContainer from './DaysContainer';
 
 export default function RecapCard({ data, style, type = 'main' }) {
+  const [isLiked, setIsLiked] = useState(false);
   const getRVSP = () => '4 yes • 1 maybes • 2 no\'s';
 
   const getMiniCard = () => (
@@ -60,12 +61,7 @@ export default function RecapCard({ data, style, type = 'main' }) {
               style={{ marginRight: -8 }}
             />
           ))}
-          <Headline
-            type={3}
-            text="+2 more"
-            color={COLORS.primary[700]}
-            style={{ marginLeft: 14 }}
-          />
+          <Avatar text="+2" size={36} />
         </View>
         <View style={{
           flexDirection: 'row',
@@ -80,12 +76,13 @@ export default function RecapCard({ data, style, type = 'main' }) {
           <Headline
             type={4}
             text="Paris, France"
-            color={COLORS.neutral[500]}
+            color={COLORS.neutral[700]}
           />
         </View>
         <IconButton
+          onPress={() => setIsLiked(!isLiked)}
           icon="heart"
-          isActive={false}
+          isActive={isLiked}
           style={{ position: 'absolute', bottom: 4, right: 10 }}
         />
       </View>

@@ -1,33 +1,57 @@
 import {
   View, StyleSheet, Modal,
 } from 'react-native';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
 import PagerView from 'react-native-pager-view';
 import CalendarPicker from 'react-native-calendar-picker';
+import Contacts from 'react-native-contacts';
 import i18n from '../utils/i18n';
 import Headline from './typography/Headline';
 import COLORS from '../constants/Theme';
 import TextField from './TextField';
-import Body from './typography/Body';
 import Button from './Button';
 import KeyboardView from './KeyboardView';
 import Chip from './Chip';
 import PopUpModal from './PopUpModal';
 import Utils from '../utils';
+import PageIndicator from './PageIndicator';
+import TitleModal from './TitleModal';
+import ContactTile from './ContactTile';
 
 export default function CreateModal({ isVisible, onRequestClose }) {
   const [phoneNr, setPhoneNr] = useState('');
-  const [name, setSame] = useState(false);
+  const [title, setTitle] = useState(false);
   const [location, setLocation] = useState(false);
   const [dateRange, setDateRange] = useState({
     selectedStartDate: null,
     selectedEndDate: null,
   });
+  const [contactsVisible, setContactsVisible] = useState(false);
+  const [contacts, setContacts] = useState([]);
   const [calendarVisible, setCalendarVisible] = useState(false);
   const [popUpVisible, setPopUpVisible] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
   const pageRef = useRef(null);
+
+  useEffect(() => {
+    getContacts();
+  }, []);
+
+  const getContacts = () => {
+    Contacts.getAll().then((c) => {
+      // BEST APPROACH? QUESTIONABLE
+
+      // const currentContacts = [];
+      // c.forEach((item) => {
+      //   // eslint-disable-next-line no-param-reassign
+      //   item.selectedNumber = '';
+      //   currentContacts.push(item);
+      // });
+
+      setContacts(c);
+    });
+  };
 
   const currentInvitees = [
     {
@@ -65,102 +89,25 @@ export default function CreateModal({ isVisible, onRequestClose }) {
     return `${startDate} - ${endDate}`;
   };
 
-  const handleChange = () => {
-    pageRef.current?.setPage(pageIndex + 1);
-    setPageIndex(pageIndex + 1);
+  const handleChange = (isBack) => {
+    if (pageIndex === 0 && isBack) return;
+    if (pageIndex === createData.length - 1 && !isBack) {
+      onRequestClose();
+      setPageIndex(0);
+      return;
+    }
+
+    if (isBack) {
+      pageRef.current?.setPage(pageIndex - 1);
+      setPageIndex(pageIndex - 1);
+    } else {
+      pageRef.current?.setPage(pageIndex + 1);
+      setPageIndex(pageIndex + 1);
+    }
   };
 
-  const getTitleView = () => (
+  const getDateContent = () => (
     <View>
-      <Headline
-        type={4}
-        text={i18n.t('Let’s start this right 🌍')}
-        color={COLORS.neutral[700]}
-        style={{ marginTop: 6 }}
-      />
-      <Headline
-        type={4}
-        text={i18n.t('What do you want to name it')}
-        color={COLORS.neutral[700]}
-        style={{ marginTop: 45 }}
-      />
-      <TextField
-        keyboardType="phone-pad"
-        style={{ marginTop: 18, marginBottom: 10 }}
-        value={phoneNr || null}
-        onChangeText={(val) => setPhoneNr(val)}
-        placeholder={i18n.t('Epic Summer Trip 2021 ✈️')}
-        onDelete={() => setPhoneNr('')}
-      />
-      <Body
-        type={2}
-        text={i18n.t("don't worry, it can be edited later")}
-        color={COLORS.neutral[500]}
-      />
-    </View>
-  );
-
-  const getInviteView = () => (
-    <View>
-      <Headline
-        type={4}
-        text={i18n.t('Right tribe - right vibe 🎉')}
-        color={COLORS.neutral[700]}
-        style={{ marginTop: 6 }}
-      />
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <Headline
-          type={4}
-          text={i18n.t('Let’s invite some people')}
-          color={COLORS.neutral[700]}
-          style={{ marginTop: 45 }}
-        />
-        <Headline
-          type={4}
-          text={i18n.t('Add more')}
-          color={COLORS.primary[700]}
-          style={{ marginTop: 45, textDecorationLine: 'underline' }}
-        />
-      </View>
-      <View style={styles.wrapContainer}>
-        {currentInvitees.map((invitee) => (
-          <Chip
-            style={{ marginBottom: 10, marginRight: 10 }}
-            string={invitee.name}
-            onDelete={() => console.log(`delete: ${invitee.name}`)}
-          />
-        ))}
-      </View>
-    </View>
-  );
-
-  const getDateView = () => (
-    <View>
-      <Headline
-        type={4}
-        text={i18n.t('Already know the date? 🎉')}
-        color={COLORS.neutral[700]}
-        style={{ marginTop: 6 }}
-      />
-      <View style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 45,
-      }}
-      >
-        <Headline
-          type={4}
-          text={i18n.t('You can always come back later')}
-          color={COLORS.neutral[700]}
-        />
-        <Icon
-          name="infocirlce"
-          size={20}
-          color={COLORS.neutral[500]}
-          onPress={() => setPopUpVisible(true)}
-          suppressHighlighting
-        />
-      </View>
       <TextField
         onPress={() => setCalendarVisible(true)}
         focusable={false}
@@ -169,11 +116,6 @@ export default function CreateModal({ isVisible, onRequestClose }) {
         value={dateRange || null}
         icon="calendar"
         placeholder={datePlaceholder()}
-      />
-      <Body
-        type={2}
-        text={i18n.t("don't worry, it can be edited later")}
-        color={COLORS.neutral[500]}
       />
       <PopUpModal
         isVisible={calendarVisible}
@@ -213,33 +155,8 @@ export default function CreateModal({ isVisible, onRequestClose }) {
     </View>
   );
 
-  const getLocationView = () => (
+  const getLocationContent = () => (
     <View>
-      <Headline
-        type={4}
-        text={i18n.t('Already know  the destination? 🎉')}
-        color={COLORS.neutral[700]}
-        style={{ marginTop: 6 }}
-      />
-      <View style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 45,
-      }}
-      >
-        <Headline
-          type={4}
-          text={i18n.t('You can always change it later')}
-          color={COLORS.neutral[700]}
-        />
-        <Icon
-          name="infocirlce"
-          size={20}
-          color={COLORS.neutral[500]}
-          onPress={() => setPopUpVisible(true)}
-          suppressHighlighting
-        />
-      </View>
       <TextField
         style={{ marginTop: 18, marginBottom: 10 }}
         value={phoneNr || null}
@@ -256,6 +173,101 @@ export default function CreateModal({ isVisible, onRequestClose }) {
     </View>
   );
 
+  const getInviteContent = () => (
+    <View style={styles.wrapContainer}>
+      {currentInvitees.map((invitee) => (
+        <Chip
+          style={{ marginBottom: 10, marginRight: 10 }}
+          string={invitee.name}
+          onDelete={() => console.log(`delete: ${invitee.name}`)}
+        />
+      ))}
+    </View>
+  );
+
+  const getTitleContent = () => (
+    <TextField
+      keyboardType="phone-pad"
+      style={{ marginTop: 18, marginBottom: 10 }}
+      value={phoneNr || null}
+      onChangeText={(val) => setPhoneNr(val)}
+      placeholder={i18n.t('Epic Summer Trip 2021 ✈️')}
+      onDelete={() => setPhoneNr('')}
+    />
+  );
+
+  const createData = [
+    {
+      title: i18n.t('Let’s start this right 🌍'),
+      subtitle: i18n.t('What do you want to name it'),
+      content: getTitleContent(),
+      hint: i18n.t("don't worry, it can be edited later"),
+    },
+    {
+      title: i18n.t('Right tribe - right vibe 🎉'),
+      subtitle: i18n.t('Let’s invite some people'),
+      trailing: <Headline
+        type={4}
+        text={i18n.t('Add more')}
+        color={COLORS.primary[700]}
+        style={{ textDecorationLine: 'underline' }}
+        onPress={() => setContactsVisible(true)}
+      />,
+      content: getInviteContent(),
+    },
+    {
+      title: i18n.t('Already know the date? 🎉'),
+      subtitle: i18n.t('You can always come back later'),
+      trailing: <Icon
+        name="infocirlce"
+        size={20}
+        color={COLORS.neutral[500]}
+        onPress={() => setPopUpVisible(true)}
+        suppressHighlighting
+      />,
+      content: getDateContent(),
+      hint: i18n.t("don't worry, it can be edited later"),
+    },
+    {
+      title: i18n.t('Already know the destination? 🎉'),
+      subtitle: i18n.t('You can always change it later'),
+      trailing: <Icon
+        name="infocirlce"
+        size={20}
+        color={COLORS.neutral[500]}
+        onPress={() => setPopUpVisible(true)}
+        suppressHighlighting
+      />,
+      content: getLocationContent(),
+      hint: i18n.t("don't worry, it can be edited later"),
+    },
+  ];
+
+  const getCreateView = (item) => (
+    <View style={{ paddingHorizontal: 25 }}>
+      <Headline
+        type={4}
+        text={item.title}
+        color={COLORS.neutral[700]}
+        style={{ marginTop: 6 }}
+      />
+      <View style={{
+        flexDirection: 'row',
+        justifyContent: item.trailing ? 'space-between' : 'flex-start',
+        marginTop: 45,
+      }}
+      >
+        <Headline
+          type={4}
+          text={item.subtitle}
+          color={COLORS.neutral[700]}
+        />
+        {item.trailing}
+      </View>
+      {item.content}
+    </View>
+  );
+
   return (
     <Modal
       animationType="slide"
@@ -268,6 +280,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
           <Headline
             type={2}
             text={i18n.t('Start Adventure')}
+            style={{ paddingHorizontal: 25 }}
             color={COLORS.shades[100]}
           />
           <PagerView
@@ -275,27 +288,57 @@ export default function CreateModal({ isVisible, onRequestClose }) {
             ref={pageRef}
             scrollEnabled
           >
-            {getTitleView()}
-            {getInviteView()}
-            {getDateView()}
-            {getLocationView()}
+            {createData.map((item) => getCreateView(item))}
           </PagerView>
-          {/* <PageIndicator /> */}
-          <Button
-            text={i18n.t('Continue')}
-            onPress={() => handleChange()}
+          <PageIndicator
+            data={createData}
+            pageIndex={pageIndex}
+            style={{ alignSelf: 'center', marginBottom: 20 }}
           />
+          <View style={styles.buttonContainer}>
+            {pageIndex !== 0 && (
+            <Button
+              style={styles.backButton}
+              backgroundColor={COLORS.shades[0]}
+              icon={<Icon name="arrowleft" size={20} />}
+              fullWidth={false}
+              color={COLORS.neutral[900]}
+              onPress={() => handleChange(true)}
+            />
+            )}
+            <Button
+              text={i18n.t('Continue')}
+              onPress={() => handleChange()}
+            />
+          </View>
         </View>
       </KeyboardView>
+      <TitleModal
+        isVisible={contactsVisible}
+        onRequestClose={() => setContactsVisible(false)}
+        title={i18n.t('Add friends')}
+      >
+        {contacts.map((c) => <ContactTile contact={c} />)}
+      </TitleModal>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
+  backButton: {
+    marginRight: 10,
+    borderWidth: 1,
+    borderColor: COLORS.neutral[100],
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    marginHorizontal: 25,
+    marginBottom: 10,
+  },
   container: {
     justifyContent: 'space-between',
     flex: 1,
-    padding: 25,
+    paddingVertical: 25,
   },
   wrapContainer: {
     marginTop: 20,

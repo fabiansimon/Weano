@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@babel/preset-env": "^7.18.2",
+    "@react-native-firebase/app": "^14.11.0",
     "@react-navigation/native": "^6.0.10",
     "@react-navigation/native-stack": "^6.6.2",
     "i18next": "^21.8.9",
@@ -20,6 +21,7 @@
     "react-native": "0.68.2",
     "react-native-calendar-picker": "^7.1.2",
     "react-native-confirmation-code-field": "^7.3.0",
+    "react-native-contacts": "^7.0.4",
     "react-native-country-picker-modal": "^2.0.0",
     "react-native-daterange-picker": "^1.5.1",
     "react-native-inset-shadow": "^1.0.3",
