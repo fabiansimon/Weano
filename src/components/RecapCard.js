@@ -10,13 +10,19 @@ import DateContainer from './DateContainer';
 import Avatar from './Avatar';
 import IconButton from './IconButton';
 import DaysContainer from './DaysContainer';
+import DefaultImage from '../../assets/images/default_trip.png';
 
-export default function RecapCard({ data, style, type = 'main' }) {
+export default function RecapCard({
+  data, style, type = 'main', onPress,
+}) {
   const [isLiked, setIsLiked] = useState(false);
   const getRVSP = () => '4 yes • 1 maybes • 2 no\'s';
 
   const getMiniCard = () => (
-    <TouchableOpacity style={[styles.miniContainer, styles.boxShadow, style]}>
+    <TouchableOpacity
+      style={[styles.miniContainer, styles.boxShadow, style]}
+      onPress={onPress}
+    >
       <View style={{
         justifyContent: 'center', padding: 6, flex: 1, marginRight: 26,
       }}
@@ -29,13 +35,16 @@ export default function RecapCard({ data, style, type = 'main' }) {
   );
 
   const getMainCard = () => (
-    <TouchableOpacity style={[styles.container, styles.boxShadow, style]}>
+    <TouchableOpacity
+      style={[styles.container, styles.boxShadow, style]}
+      onPress={onPress}
+    >
       <InsetShadow
         containerStyle={{ height: 170, borderRadius: 10 }}
         shadowOpacity={0.11}
       >
         <Image
-          source={{ uri: data.images[0] }}
+          source={data.images ? { uri: data.images[0] } : DefaultImage}
           style={styles.image}
         />
         <DateContainer

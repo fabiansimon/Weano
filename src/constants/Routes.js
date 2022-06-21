@@ -1,7 +1,7 @@
 const ROUTES = {
   introScreen: 'IntroScreen',
   mainScreen: 'MainScreen',
-  mapScreen: 'MapScreen',
+  tripScreen: 'TripScreen',
 };
 
 export default ROUTES;

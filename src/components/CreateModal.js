@@ -18,6 +18,7 @@ import Utils from '../utils';
 import PageIndicator from './PageIndicator';
 import TitleModal from './TitleModal';
 import ContactTile from './ContactTile';
+import BackButton from './BackButton';
 
 export default function CreateModal({ isVisible, onRequestClose }) {
   const [phoneNr, setPhoneNr] = useState('');
@@ -297,14 +298,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
           />
           <View style={styles.buttonContainer}>
             {pageIndex !== 0 && (
-            <Button
-              style={styles.backButton}
-              backgroundColor={COLORS.shades[0]}
-              icon={<Icon name="arrowleft" size={20} />}
-              fullWidth={false}
-              color={COLORS.neutral[900]}
-              onPress={() => handleChange(true)}
-            />
+            <BackButton onPress={() => handleChange(true)} />
             )}
             <Button
               text={i18n.t('Continue')}
@@ -325,11 +319,6 @@ export default function CreateModal({ isVisible, onRequestClose }) {
 }
 
 const styles = StyleSheet.create({
-  backButton: {
-    marginRight: 10,
-    borderWidth: 1,
-    borderColor: COLORS.neutral[100],
-  },
   buttonContainer: {
     flexDirection: 'row',
     marginHorizontal: 25,

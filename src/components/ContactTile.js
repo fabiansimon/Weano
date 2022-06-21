@@ -41,9 +41,9 @@ export default function ContactTile({ contact }) {
           && <Icon name="check" size={22} />}
       </TouchableOpacity>
       {isExpanded && (
-      <View>
-        {contact.phoneNumbers.map((n) => getNumberTile(n))}
-      </View>
+        <View>
+          {contact.phoneNumbers.map((n) => getNumberTile(n))}
+        </View>
       )}
 
     </View>

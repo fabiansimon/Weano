@@ -7,6 +7,7 @@ import Headline from './typography/Headline';
 export default function Button({
   style,
   text,
+  textColor,
   backgroundColor,
   onPress,
   isDisabled,
@@ -25,8 +26,8 @@ export default function Button({
 
   return (
     <TouchableOpacity style={[styles.container, style, { flex, backgroundColor: bg }]} onPress={onPress} disabled={isDisabled}>
-      <Headline type={4} text={text} color={COLORS.shades[0]} />
       {icon && getIcon()}
+      {text && <Headline type={4} text={text} color={textColor || COLORS.shades[0]} style={{ marginLeft: icon ? 6 : 0 }} />}
     </TouchableOpacity>
   );
 }

@@ -72,7 +72,6 @@ export default function MainScreen() {
         endDate: 1658074980,
       },
       latlon: [48.864716, 2.349014],
-      images: ['https://picsum.photos/315/150', 'https://picsum.photos/150', 'https://picsum.photos/150', 'https://picsum.photos/150', 'https://picsum.photos/150', 'https://picsum.photos/150'],
       invitees: [
         {
           name: 'Fabian Simon',
@@ -119,7 +118,7 @@ export default function MainScreen() {
   ];
 
   return (
-    <View>
+    <View style={{ backgroundColor: COLORS.neutral[50] }}>
       <AnimatedHeader
         scrollY={scrollY}
       >
@@ -174,6 +173,7 @@ export default function MainScreen() {
               {mockTrips.map((trip, index) => (
                 <>
                   <RecapCard
+                    onPress={() => navigation.navigate(ROUTES.tripScreen)}
                     data={trip}
                     style={{ marginRight: 30 }}
                   />

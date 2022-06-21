@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 import COLORS from '../constants/Theme';
 
 function AnimatedHeader({ scrollY, style, children }) {
-  const HEADER_MAX_HEIGHT = 120; // max header height
+  const HEADER_MAX_HEIGHT = 250; // max header height
   const HEADER_MIN_HEIGHT = 60; // min header height
   const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
