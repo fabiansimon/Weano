@@ -5,7 +5,6 @@ import React, { useRef, useState } from 'react';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
-import EntypoIcon from 'react-native-vector-icons/Entypo';
 import COLORS from '../constants/Theme';
 import AnimatedHeader from '../components/AnimatedHeader';
 import Headline from '../components/typography/Headline';
@@ -16,29 +15,23 @@ import BackButton from '../components/BackButton';
 import InfoCircle from '../components/InfoCircle';
 import Body from '../components/typography/Body';
 import Divider from '../components/Divider';
-import TabIndicator from '../components/TabIndicator';
 import Utils from '../utils';
+import TripHeader from '../components/TripHeader';
+import ListItem from '../components/ListItem';
+import InviteeContainer from '../components/Trip/InviteeContainer';
+import TabBar from '../components/Trip/TabBar';
 
 export default function TripScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
+  const scrollRef = useRef();
   const [currentTab, setCurrentTab] = useState(0);
 
   const getDate = (timestamp) => Utils.getDateFromTimestamp(timestamp, 'MMM Do');
 
-  const pageTabs = [
-    {
-      name: 'Trip Overview',
-    },
-    {
-      name: 'Details',
-    },
-    {
-      name: 'Accomodations',
-    },
-    {
-      name: 'Etc',
-    },
-  ];
+  const handleTabPress = (index) => {
+    setCurrentTab(index);
+    scrollRef.current?.scrollTo({ y: contentItems[index].yPos, animated: true });
+  };
 
   const mockData = {
 
@@ -54,10 +47,12 @@ export default function TripScreen() {
       {
         name: 'Fabian Simon',
         uri: 'https://i.pravatar.cc/300',
+        isComing: true,
       },
       {
         name: 'Julia Stefan',
         uri: 'https://i.pravatar.cc/300',
+        isComing: false,
       },
       {
         name: 'Matthias Betonmisha',
@@ -67,7 +62,31 @@ export default function TripScreen() {
 
   };
 
-  const getBody = () => (
+  const contentItems = [
+    {
+      title: 'Invitees',
+      trailing: <Headline type={4} text={i18n.t('see all')} color={COLORS.neutral[500]} />,
+      content: <InviteeContainer data={mockData.invitees} />,
+      yPos: 200,
+    },
+    {
+      title: 'Itinerary',
+      content: <View style={{ height: 300 }} />,
+      yPos: 400,
+    },
+    {
+      title: 'Checklist',
+      content: <View style={{ height: 300 }} />,
+      yPos: 600,
+    },
+    {
+      title: 'Etc',
+      content: <View style={{ height: 300 }} />,
+      yPos: 800,
+    },
+  ];
+
+  const getTopContent = () => (
     <>
       <TouchableOpacity
         style={{ height: 240, backgroundColor: 'transparent' }}
@@ -107,51 +126,42 @@ export default function TripScreen() {
             style={{ marginTop: 16, color: COLORS.neutral[700] }}
           />
         </View>
-        <Divider vertical={18} />
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {pageTabs.map((item, index) => (
-            <TabIndicator
-              style={{ marginLeft: index === 0 ? 10 : 14 }}
-              key={item.name}
-              text={item.name}
-              onPress={() => setCurrentTab(index)}
-              isActive={currentTab === index}
-            />
-          ))}
-        </ScrollView>
+        <Divider top={18} />
+        <TabBar
+          style={{ marginBottom: 10 }}
+          items={contentItems}
+          currentTab={currentTab}
+          onPress={(index) => handleTabPress(index)}
+        />
       </View>
     </>
   );
 
+  const getMainContent = () => (
+    <View style={styles.mainContainer}>
+      {contentItems.map((item) => (
+        <ListItem title={item.title} trailing={item.trailing}>
+          {item.content}
+        </ListItem>
+      ))}
+    </View>
+  );
+
   return (
-    <View style={{ backgroundColor: COLORS.shades[0], flex: 1 }}>
+    <View style={{ backgroundColor: COLORS.shades[50], flex: 1 }}>
       <BackButton style={styles.backButton} />
       <AnimatedHeader
+        style={{ height: 170 }}
         scrollY={scrollY}
       >
-        <View style={styles.header}>
-          <View style={{ width: 55 }} />
-          <View>
-            <Headline type={4} text={mockData.title} style={{fontWeight: '600'}}/>
-            <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-              <EntypoIcon
-                name="location-pin"
-                size={16}
-                color={COLORS.neutral[500]}
-              />
-              <Body
-                type={2}
-                text={`${getDate(mockData.dateRange.startDate)} - ${getDate(mockData.dateRange.endDate)}`}
-                color={COLORS.neutral[500]}
-              />
-            </View>
-          </View>
-          <InfoCircle
-            title={mockData.invitees.length}
-            subtitle="👍"
-            disableShadow
-          />
-        </View>
+        <TripHeader
+          title={mockData.title}
+          subtitle={`${getDate(mockData.dateRange.startDate)} - ${getDate(mockData.dateRange.endDate)}`}
+          invitees={mockData.invitees}
+          items={contentItems}
+          onPress={(index) => handleTabPress(index)}
+          currentTab={currentTab}
+        />
       </AnimatedHeader>
       <View style={styles.imageContainer}>
         <Image
@@ -165,6 +175,7 @@ export default function TripScreen() {
         </View>
       </View>
       <Animated.ScrollView
+        ref={scrollRef}
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
         onScroll={Animated.event(
@@ -172,7 +183,9 @@ export default function TripScreen() {
           { useNativeDriver: true },
         )}
       >
-        {getBody()}
+        {getTopContent()}
+        <View style={{ backgroundColor: COLORS.neutral[50], height: 10 }} />
+        {getMainContent()}
       </Animated.ScrollView>
       <BackButton style={{
         position: 'absolute', top: 47, left: 20, zIndex: 10,
@@ -256,12 +269,16 @@ const styles = StyleSheet.create({
     height: 40,
     paddingHorizontal: 12,
   },
-  header: {
+  mainContainer: {
     flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-    paddingBottom: 14,
-    paddingHorizontal: 20,
+    paddingHorizontal: 25,
+    paddingVertical: 20,
+    backgroundColor: COLORS.shades[0],
+    shadowColor: COLORS.shades[100],
+    shadowOffset: {
+      height: -4,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
   },
 });
