@@ -25,8 +25,17 @@ export default function DateContainer({ style, dates }) {
 
   return (
     <View style={[styles.container, style]}>
-      <Headline type={3} text={getDayString()} color={COLORS.neutral[900]} />
-      <Headline type={3} text={getYearString()} style={{ fontSize: 14, fontWeight: '600', marginTop: -8 }} color={COLORS.neutral[900]} />
+      <Headline
+        type={3}
+        text={getDayString()}
+        color={COLORS.neutral[900]}
+      />
+      <Headline
+        type={3}
+        text={getYearString()}
+        style={{ fontSize: 14, fontWeight: '600', marginTop: -8 }}
+        color={COLORS.neutral[900]}
+      />
     </View>
   );
 }

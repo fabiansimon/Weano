@@ -21,6 +21,7 @@ import ListItem from '../components/ListItem';
 import InviteeContainer from '../components/Trip/InviteeContainer';
 import TabBar from '../components/Trip/TabBar';
 import ChecklistContainer from '../components/Trip/ChecklistContainer';
+import AccomodationCard from '../components/Trip/AccomodationCard';
 
 const mockData = {
   title: 'Maturareise VBS Gang 🐕',
@@ -120,6 +121,11 @@ export default function TripScreen() {
   };
 
   const contentItems = [
+    {
+      title: 'Accomodations',
+      content: <AccomodationCard />,
+      yPos: 600,
+    },
     {
       title: 'Checklist',
       content: <ChecklistContainer
@@ -222,6 +228,7 @@ export default function TripScreen() {
           <BackButton style={styles.backButton} />
           <AnimatedHeader
             style={{ height: 170 }}
+            maxHeight={380}
             scrollY={scrollY}
           >
             <TripHeader
