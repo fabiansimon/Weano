@@ -19,6 +19,7 @@
     "react": "17.0.2",
     "react-i18next": "^11.17.0",
     "react-native": "0.68.2",
+    "react-native-bouncy-checkbox": "^2.1.10",
     "react-native-calendar-picker": "^7.1.2",
     "react-native-confirmation-code-field": "^7.3.0",
     "react-native-contacts": "^7.0.4",

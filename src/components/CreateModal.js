@@ -1,5 +1,5 @@
 import {
-  View, StyleSheet, Modal,
+  View, StyleSheet, Modal, Dimensions,
 } from 'react-native';
 import React, { useRef, useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
@@ -22,12 +22,9 @@ import BackButton from './BackButton';
 
 export default function CreateModal({ isVisible, onRequestClose }) {
   const [phoneNr, setPhoneNr] = useState('');
-  const [title, setTitle] = useState(false);
-  const [location, setLocation] = useState(false);
-  const [dateRange, setDateRange] = useState({
-    selectedStartDate: null,
-    selectedEndDate: null,
-  });
+  // const [title, setTitle] = useState(false);
+  // const [location, setLocation] = useState(false);
+  const [dateRange, setDateRange] = useState();
   const [contactsVisible, setContactsVisible] = useState(false);
   const [contacts, setContacts] = useState([]);
   const [calendarVisible, setCalendarVisible] = useState(false);
@@ -73,19 +70,19 @@ export default function CreateModal({ isVisible, onRequestClose }) {
     if (type === 'END_DATE') {
       setDateRange((prev) => ({
         ...prev,
-        selectedEndDate: date,
+        selectedEndDate: Utils.convertDateToTimestamp(date),
       }));
     } else {
       setDateRange(() => ({
-        selectedStartDate: date,
+        selectedStartDate: Utils.convertDateToTimestamp(date),
         selectedEndDate: null,
       }));
     }
   };
 
-  const datePlaceholder = () => {
-    const startDate = dateRange.selectedStartDate && Utils.getDateFromTimestamp(dateRange.selectedStartDate);
-    const endDate = dateRange.selectedEndDate && Utils.getDateFromTimestamp(dateRange.selectedEndDate, 'MMM Do YY');
+  const getDateValue = () => {
+    const startDate = dateRange && Utils.getDateFromTimestamp(dateRange.selectedStartDate, 'MMM Do');
+    const endDate = dateRange && Utils.getDateFromTimestamp(dateRange.selectedEndDate, 'MMM Do YY');
 
     return `${startDate} - ${endDate}`;
   };
@@ -114,9 +111,9 @@ export default function CreateModal({ isVisible, onRequestClose }) {
         focusable={false}
         disabled
         style={{ marginTop: 18, marginBottom: 10 }}
-        value={dateRange || null}
+        value={dateRange && getDateValue()}
         icon="calendar"
-        placeholder={datePlaceholder()}
+        placeholder={i18n.t('Select a date')}
       />
       <PopUpModal
         isVisible={calendarVisible}
@@ -125,11 +122,11 @@ export default function CreateModal({ isVisible, onRequestClose }) {
         onRequestClose={() => setCalendarVisible(false)}
       >
         <View>
-          <View style={{ marginTop: 30 }}>
+          <View style={{ marginTop: 30, alignItems: 'center' }}>
             <CalendarPicker
               onDateChange={(date, type) => onDateChange(date, type)}
               dayLabelsWrapper={{ borderColor: 'transparent' }}
-              width={350}
+              width={Dimensions.get('window').width * 0.85}
               allowRangeSelection
               todayBackgroundColor={COLORS.neutral[300]}
               selectedDayColor={COLORS.secondary[700]}
@@ -139,10 +136,17 @@ export default function CreateModal({ isVisible, onRequestClose }) {
             />
             <Button
               text={i18n.t('Confirm')}
-              style={{ marginTop: 40 }}
+              style={{ marginTop: 40, width: '100%' }}
               fullWidth={false}
               onPress={() => setCalendarVisible(false)}
               isDisabled={false}
+            />
+            <Headline
+              type={4}
+              text={i18n.t('Reset')}
+              color={COLORS.neutral[500]}
+              onPress={() => setDateRange()}
+              style={{ textDecorationLine: 'underline', marginTop: 18, marginBottom: 4 }}
             />
           </View>
         </View>
@@ -178,6 +182,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
     <View style={styles.wrapContainer}>
       {currentInvitees.map((invitee) => (
         <Chip
+          key={invitee.name}
           style={{ marginBottom: 10, marginRight: 10 }}
           string={invitee.name}
           onDelete={() => console.log(`delete: ${invitee.name}`)}
@@ -188,7 +193,6 @@ export default function CreateModal({ isVisible, onRequestClose }) {
 
   const getTitleContent = () => (
     <TextField
-      keyboardType="phone-pad"
       style={{ marginTop: 18, marginBottom: 10 }}
       value={phoneNr || null}
       onChangeText={(val) => setPhoneNr(val)}
@@ -312,7 +316,12 @@ export default function CreateModal({ isVisible, onRequestClose }) {
         onRequestClose={() => setContactsVisible(false)}
         title={i18n.t('Add friends')}
       >
-        {contacts.map((c) => <ContactTile contact={c} />)}
+        {contacts.map((c) => (
+          <ContactTile
+            key={c}
+            contact={c}
+          />
+        ))}
       </TitleModal>
     </Modal>
   );

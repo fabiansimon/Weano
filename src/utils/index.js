@@ -11,4 +11,14 @@ export default class Utils {
     const date = new Date(timestamp * 1000);
     return moment(date).format(format);
   }
+
+  /**
+     * Convert Date to UNIX timestamp
+     * @param {String} date - Date
+     * @return {Integer} Timestamp
+     */
+  static convertDateToTimestamp(date) {
+    const formatedDate = moment(date).format();
+    return moment(formatedDate).format('X');
+  }
 }

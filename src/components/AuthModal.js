@@ -20,6 +20,7 @@ export default function AuthModal({ isVisible, onRequestClose }) {
   const [phoneNr, setPhoneNr] = useState('');
   const [pickerVisible, setPickerVisible] = useState(false);
   const [countryCode, setCountryCode] = useState('43');
+  const [pageIndex, setPageIndex] = useState(0);
   const pageRef = useRef(null);
   const [timer, setTimer] = useState(10);
 
@@ -57,21 +58,35 @@ export default function AuthModal({ isVisible, onRequestClose }) {
     return 'Resend code';
   };
 
-  const handleChange = (page) => {
-    pageRef.current?.setPage(page);
+  const handleChange = () => {
+    if (pageIndex === 1) {
+      navigation.navigate(ROUTES.mainScreen);
+      onRequestClose();
+    } else {
+      setPageIndex(1);
+      pageRef.current?.setPage(1);
+    }
   };
 
   return (
-    <TitleModal isVisible={isVisible} onRequestClose={onRequestClose} title={i18n.t('Log in or signup')}>
+    <TitleModal
+      isVisible={isVisible}
+      onRequestClose={onRequestClose}
+      title={i18n.t('Log in or signup')}
+    >
       <KeyboardView>
         <View style={styles.container}>
           <PagerView
             style={{ flex: 1 }}
             ref={pageRef}
-            scrollEnabled={false}
+            scrollEnabled
           >
-            <View>
-              <Headline type={4} text={i18n.t('Phone number')} color={COLORS.neutral[700]} />
+            <View style={{ padding: 25 }}>
+              <Headline
+                type={4}
+                text={i18n.t('Phone number')}
+                color={COLORS.neutral[700]}
+              />
               <TextField
                 keyboardType="phone-pad"
                 style={{ marginTop: 18, marginBottom: 10 }}
@@ -88,7 +103,7 @@ export default function AuthModal({ isVisible, onRequestClose }) {
                 color={COLORS.neutral[500]}
               />
             </View>
-            <View>
+            <View style={{ padding: 25 }}>
               <Headline
                 type={4}
                 text={i18n.t('We’ve sent you the code by SMS to')}
@@ -110,13 +125,16 @@ export default function AuthModal({ isVisible, onRequestClose }) {
               <Body
                 type={2}
                 style={{ textDecorationLine: 'underline', alignSelf: 'center' }}
-                onPress={() => navigation.navigate(ROUTES.mainScreen)}
                 text={getTimerString()}
                 color={COLORS.neutral[500]}
               />
             </View>
           </PagerView>
-          <Button text={i18n.t('Next')} onPress={() => handleChange(1)} />
+          <Button
+            text={i18n.t('Next')}
+            onPress={() => handleChange(1)}
+            style={{ margin: 25 }}
+          />
         </View>
       </KeyboardView>
       <CountryPicker
@@ -137,6 +155,5 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'space-between',
     flex: 1,
-    padding: 25,
   },
 });

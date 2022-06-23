@@ -1,5 +1,5 @@
 import {
-  View, StyleSheet, Image, Dimensions, TouchableOpacity, ScrollView,
+  View, StyleSheet, Image, Dimensions, TouchableOpacity,
 } from 'react-native';
 import React, { useRef, useState } from 'react';
 import Animated from 'react-native-reanimated';
@@ -20,11 +20,71 @@ import TripHeader from '../components/TripHeader';
 import ListItem from '../components/ListItem';
 import InviteeContainer from '../components/Trip/InviteeContainer';
 import TabBar from '../components/Trip/TabBar';
+import ChecklistContainer from '../components/Trip/ChecklistContainer';
+
+const mockData = {
+  title: 'Maturareise VBS Gang 🐕',
+  description: 'Fucking sending it for a few weeks straight. Guys trip baby. LET’S GO 🍻',
+  dateRange: {
+    startDate: 1656865380,
+    endDate: 1658074980,
+  },
+  latlon: [48.864716, 2.349014],
+  images: [],
+  invitees: [
+    {
+      name: 'Fabian Simon',
+      uri: 'https://i.pravatar.cc/300',
+      isComing: true,
+    },
+    {
+      name: 'Julia Stefan',
+      uri: 'https://i.pravatar.cc/300',
+      isComing: false,
+    },
+    {
+      name: 'Matthias Betonmisha',
+      uri: 'https://i.pravatar.cc/300',
+    },
+  ],
+  tasks: {
+    privateTasks: [
+      {
+        title: 'Bring towels',
+        isDone: false,
+        id: 0,
+      },
+      {
+        title: 'Get passport renewed',
+        isDone: true,
+        id: 1,
+      },
+    ],
+    mutualTasks: [
+      {
+        title: 'Bring speakers 🎧',
+        isDone: false,
+        assignee: 'Julia Chovo',
+      },
+      {
+        title: 'Check Clubscene 🎉',
+        isDone: true,
+        assignee: 'Clembo',
+      },
+      {
+        title: 'Pay for Airbnb',
+        isDone: true,
+        assignee: 'Jennelie',
+      },
+    ],
+  },
+};
 
 export default function TripScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
   const scrollRef = useRef();
   const [currentTab, setCurrentTab] = useState(0);
+  const [tripData, setTripData] = useState(mockData);
 
   const getDate = (timestamp) => Utils.getDateFromTimestamp(timestamp, 'MMM Do');
 
@@ -33,51 +93,55 @@ export default function TripScreen() {
     scrollRef.current?.scrollTo({ y: contentItems[index].yPos, animated: true });
   };
 
-  const mockData = {
+  const updateTasks = (val, index, type) => {
+    if (type === 'PRIVATE') {
+      const updatedTasks = tripData.tasks.privateTasks;
+      updatedTasks[index].isDone = val;
+      setTripData((prev) => ({
+        ...prev,
+        tasks: {
+          privateTasks: updatedTasks,
+          mutualTasks: prev.tasks.mutualTasks,
+        },
+      }));
+    }
 
-    title: 'Maturareise VBS Gang 🐕',
-    description: 'Fucking sending it for a few weeks straight. Guys trip baby. LET’S GO 🍻',
-    dateRange: {
-      startDate: 1656865380,
-      endDate: 1658074980,
-    },
-    latlon: [48.864716, 2.349014],
-    images: [],
-    invitees: [
-      {
-        name: 'Fabian Simon',
-        uri: 'https://i.pravatar.cc/300',
-        isComing: true,
-      },
-      {
-        name: 'Julia Stefan',
-        uri: 'https://i.pravatar.cc/300',
-        isComing: false,
-      },
-      {
-        name: 'Matthias Betonmisha',
-        uri: 'https://i.pravatar.cc/300',
-      },
-    ],
-
+    if (type === 'MUTUAL') {
+      const updatedTasks = tripData.tasks.mutualTasks;
+      updatedTasks[index].isDone = val;
+      setTripData((prev) => ({
+        ...prev,
+        tasks: {
+          privateTasks: prev.tasks.privateTasks,
+          mutualTasks: updatedTasks,
+        },
+      }));
+    }
   };
 
   const contentItems = [
     {
+      title: 'Checklist',
+      content: <ChecklistContainer
+        data={tripData.tasks}
+        onPress={(val, index, type) => updateTasks(val, index, type)}
+      />,
+      yPos: 600,
+    },
+    {
       title: 'Invitees',
-      trailing: <Headline type={4} text={i18n.t('see all')} color={COLORS.neutral[500]} />,
-      content: <InviteeContainer data={mockData.invitees} />,
+      trailing: <Headline
+        type={4}
+        text={i18n.t('see all')}
+        color={COLORS.neutral[500]}
+      />,
+      content: <InviteeContainer data={tripData.invitees} />,
       yPos: 200,
     },
     {
       title: 'Itinerary',
       content: <View style={{ height: 300 }} />,
       yPos: 400,
-    },
-    {
-      title: 'Checklist',
-      content: <View style={{ height: 300 }} />,
-      yPos: 600,
     },
     {
       title: 'Etc',
@@ -95,13 +159,13 @@ export default function TripScreen() {
       <View style={styles.bodyContainer}>
         <View style={{ paddingHorizontal: 25 }}>
           <InfoCircle
-            title={mockData.invitees.length}
+            title={tripData.invitees.length}
             subtitle="👍"
             style={{
               position: 'absolute', top: -30, right: 20, zIndex: 11,
             }}
           />
-          <Headline type={2} text={mockData.title} />
+          <Headline type={2} text={tripData.title} />
           <View style={{ flexDirection: 'row', marginTop: 12 }}>
             <Button
               text={i18n.t('Set location')}
@@ -122,7 +186,7 @@ export default function TripScreen() {
           </View>
           <Body
             type={1}
-            text={mockData.description}
+            text={tripData.description}
             style={{ marginTop: 16, color: COLORS.neutral[700] }}
           />
         </View>
@@ -140,7 +204,10 @@ export default function TripScreen() {
   const getMainContent = () => (
     <View style={styles.mainContainer}>
       {contentItems.map((item) => (
-        <ListItem title={item.title} trailing={item.trailing}>
+        <ListItem
+          title={item.title}
+          trailing={item.trailing}
+        >
           {item.content}
         </ListItem>
       ))}
@@ -148,64 +215,68 @@ export default function TripScreen() {
   );
 
   return (
-    <View style={{ backgroundColor: COLORS.shades[50], flex: 1 }}>
-      <BackButton style={styles.backButton} />
-      <AnimatedHeader
-        style={{ height: 170 }}
-        scrollY={scrollY}
-      >
-        <TripHeader
-          title={mockData.title}
-          subtitle={`${getDate(mockData.dateRange.startDate)} - ${getDate(mockData.dateRange.endDate)}`}
-          invitees={mockData.invitees}
-          items={contentItems}
-          onPress={(index) => handleTabPress(index)}
-          currentTab={currentTab}
-        />
-      </AnimatedHeader>
-      <View style={styles.imageContainer}>
-        <Image
-          style={styles.image}
-          source={DefaultImage}
-          blurRadius={10}
-        />
-        <View style={styles.addImage}>
-          <Headline type={3} text={i18n.t('Add Trip Image')} color={COLORS.shades[0]} />
-          <Icon name="image" size={32} color={COLORS.shades[0]} />
+    !tripData
+      ? <Headline text="Loading..." />
+      : (
+        <View style={{ backgroundColor: COLORS.shades[50], flex: 1 }}>
+          <BackButton style={styles.backButton} />
+          <AnimatedHeader
+            style={{ height: 170 }}
+            scrollY={scrollY}
+          >
+            <TripHeader
+              title={tripData.title}
+              subtitle={`${getDate(tripData.dateRange.startDate)} - ${getDate(tripData.dateRange.endDate)}`}
+              invitees={tripData.invitees}
+              items={contentItems}
+              onPress={(index) => handleTabPress(index)}
+              currentTab={currentTab}
+            />
+          </AnimatedHeader>
+          <View style={styles.imageContainer}>
+            <Image
+              style={styles.image}
+              source={DefaultImage}
+              blurRadius={10}
+            />
+            <View style={styles.addImage}>
+              <Headline type={3} text={i18n.t('Add Trip Image')} color={COLORS.shades[0]} />
+              <Icon name="image" size={32} color={COLORS.shades[0]} />
+            </View>
+          </View>
+          <Animated.ScrollView
+            ref={scrollRef}
+            showsVerticalScrollIndicator={false}
+            scrollEventThrottle={16}
+            onScroll={Animated.event(
+              [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+              { useNativeDriver: true },
+            )}
+          >
+            {getTopContent()}
+            <View style={{ backgroundColor: COLORS.neutral[50], height: 10 }} />
+            {getMainContent()}
+          </Animated.ScrollView>
+          <BackButton style={{
+            position: 'absolute', top: 47, left: 20, zIndex: 10,
+          }}
+          />
+          <View style={styles.buttonContainer}>
+            <Button
+              text={i18n.t('new adventure')}
+              onPress={() => console.log('hello')}
+              style={[styles.buttonShadow]}
+            />
+            <Button
+              style={[styles.globeButton, styles.buttonShadow]}
+              backgroundColor={COLORS.shades[0]}
+              icon="globe"
+              fullWidth={false}
+              color={COLORS.neutral[900]}
+            />
+          </View>
         </View>
-      </View>
-      <Animated.ScrollView
-        ref={scrollRef}
-        showsVerticalScrollIndicator={false}
-        scrollEventThrottle={16}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: true },
-        )}
-      >
-        {getTopContent()}
-        <View style={{ backgroundColor: COLORS.neutral[50], height: 10 }} />
-        {getMainContent()}
-      </Animated.ScrollView>
-      <BackButton style={{
-        position: 'absolute', top: 47, left: 20, zIndex: 10,
-      }}
-      />
-      <View style={styles.buttonContainer}>
-        <Button
-          text={i18n.t('new adventure')}
-          onPress={() => console.log('hello')}
-          style={[styles.buttonShadow]}
-        />
-        <Button
-          style={[styles.globeButton, styles.buttonShadow]}
-          backgroundColor={COLORS.shades[0]}
-          icon="globe"
-          fullWidth={false}
-          color={COLORS.neutral[900]}
-        />
-      </View>
-    </View>
+      )
   );
 }
 

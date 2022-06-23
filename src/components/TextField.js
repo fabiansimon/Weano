@@ -50,6 +50,7 @@ export default function TextField({
         value={value || null}
         onChangeText={(val) => onChangeText(val)}
         placeholder={prefix ? `+${prefix} ${placeholder}` : placeholder}
+        placeholderTextColor={COLORS.neutral[500]}
       />
       {icon && (
       <TouchableOpacity onPress={onPrefixPress} style={styles.trailingContainer}>

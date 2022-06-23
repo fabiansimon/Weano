@@ -121,6 +121,7 @@ export default function MainScreen() {
     <View style={{ backgroundColor: COLORS.neutral[50] }}>
       <AnimatedHeader
         scrollY={scrollY}
+        maxHeight={120}
       >
         <View style={styles.header}>
           <View>
@@ -151,7 +152,10 @@ export default function MainScreen() {
                 <Headline type={3} text={i18n.t('Hey Fabian')} />
                 <Headline type={4} text={i18n.t('ready for a new Adventure? 🌍')} />
               </View>
-              <Avatar uri="https://i.pravatar.cc/300" onPress={() => navigation.navigate(ROUTES.introScreen)} />
+              <Avatar
+                uri="https://i.pravatar.cc/300"
+                onPress={() => navigation.navigate(ROUTES.introScreen)}
+              />
             </View>
             <TextField
               style={{ marginTop: 20 }}
@@ -163,7 +167,11 @@ export default function MainScreen() {
             />
           </View>
           <View style={styles.carousel}>
-            <Headline type={3} text={i18n.t('Successful Trips ✈️')} style={{ marginLeft: 30, marginTop: 25 }} />
+            <Headline
+              type={3}
+              text={i18n.t('Successful Trips ✈️')}
+              style={{ marginLeft: 30, marginTop: 25 }}
+            />
             <ScrollView
               horizontal
               paddingHorizontal={25}
@@ -173,6 +181,7 @@ export default function MainScreen() {
               {mockTrips.map((trip, index) => (
                 <>
                   <RecapCard
+                    key={trip.latlon}
                     onPress={() => navigation.navigate(ROUTES.tripScreen)}
                     data={trip}
                     style={{ marginRight: 30 }}
@@ -183,7 +192,11 @@ export default function MainScreen() {
             </ScrollView>
           </View>
           <View style={[styles.carousel, { marginBottom: 110 }]}>
-            <Headline type={3} text={i18n.t('Upcoming Trips ⏳')} style={{ marginLeft: 30, marginTop: 35 }} />
+            <Headline
+              type={3}
+              text={i18n.t('Upcoming Trips ⏳')}
+              style={{ marginLeft: 30, marginTop: 35 }}
+            />
             <ScrollView
               horizontal
               paddingHorizontal={25}
@@ -193,6 +206,7 @@ export default function MainScreen() {
               {mockPlannedTrips.map((trip, index) => (
                 <>
                   <RecapCard
+                    key={trip.latlon}
                     data={trip}
                     style={{ marginRight: 30 }}
                     type="mini"
