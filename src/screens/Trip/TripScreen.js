@@ -5,23 +5,25 @@ import React, { useRef, useState } from 'react';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
-import COLORS from '../constants/Theme';
-import AnimatedHeader from '../components/AnimatedHeader';
-import Headline from '../components/typography/Headline';
-import i18n from '../utils/i18n';
-import Button from '../components/Button';
-import DefaultImage from '../../assets/images/default_trip.png';
-import BackButton from '../components/BackButton';
-import InfoCircle from '../components/InfoCircle';
-import Body from '../components/typography/Body';
-import Divider from '../components/Divider';
-import Utils from '../utils';
-import TripHeader from '../components/TripHeader';
-import ListItem from '../components/ListItem';
-import InviteeContainer from '../components/Trip/InviteeContainer';
-import TabBar from '../components/Trip/TabBar';
-import ChecklistContainer from '../components/Trip/ChecklistContainer';
-import AccomodationCard from '../components/Trip/AccomodationCard';
+import { useNavigation } from '@react-navigation/native';
+import COLORS from '../../constants/Theme';
+import AnimatedHeader from '../../components/AnimatedHeader';
+import Headline from '../../components/typography/Headline';
+import i18n from '../../utils/i18n';
+import Button from '../../components/Button';
+import DefaultImage from '../../../assets/images/default_trip.png';
+import BackButton from '../../components/BackButton';
+import InfoCircle from '../../components/InfoCircle';
+import Body from '../../components/typography/Body';
+import Divider from '../../components/Divider';
+import Utils from '../../utils';
+import TripHeader from '../../components/TripHeader';
+import ListItem from '../../components/ListItem';
+import InviteeContainer from '../../components/Trip/InviteeContainer';
+import TabBar from '../../components/Trip/TabBar';
+import ChecklistContainer from '../../components/Trip/ChecklistContainer';
+import AccomodationCarousel from '../../components/Trip/AccomodationCarousel';
+import ROUTES from '../../constants/Routes';
 
 const mockData = {
   title: 'Maturareise VBS Gang 🐕',
@@ -36,16 +38,54 @@ const mockData = {
     {
       name: 'Fabian Simon',
       uri: 'https://i.pravatar.cc/300',
-      isComing: true,
+      status: true,
     },
     {
       name: 'Julia Stefan',
       uri: 'https://i.pravatar.cc/300',
-      isComing: false,
+      status: false,
     },
     {
       name: 'Matthias Betonmisha',
-      uri: 'https://i.pravatar.cc/300',
+      status: 'https://i.pravatar.cc/300',
+    },
+  ],
+  accomodations: [
+    {
+      title: 'Villa El Salvador',
+      description: 'Beautiful Villa with direct access to the ocean. Parties are not allowed. Dogs must be like Rocky',
+      info: {
+        accomodates: 12,
+        price: 1222,
+      },
+      dateRange: {
+        startDate: 1656865380,
+        endDate: 1658074980,
+      },
+    },
+    {
+      title: 'Villa Da Salvador',
+      description: 'Crazy ting',
+      info: {
+        accomodates: 10,
+        price: 1999,
+      },
+      dateRange: {
+        startDate: 1656865380,
+        endDate: 1658074980,
+      },
+    },
+    {
+      title: 'Nauheimergasse',
+      description: 'Beautiful Villa with direct access to the ocean. Parties are not allowed. Dogs must be like Rocky',
+      info: {
+        accomodates: 12,
+        price: 1222,
+      },
+      dateRange: {
+        startDate: 1656865380,
+        endDate: 1658074980,
+      },
     },
   ],
   tasks: {
@@ -87,6 +127,8 @@ export default function TripScreen() {
   const [currentTab, setCurrentTab] = useState(0);
   const [tripData, setTripData] = useState(mockData);
 
+  const navigation = useNavigation();
+
   const getDate = (timestamp) => Utils.getDateFromTimestamp(timestamp, 'MMM Do');
 
   const handleTabPress = (index) => {
@@ -123,7 +165,14 @@ export default function TripScreen() {
   const contentItems = [
     {
       title: 'Accomodations',
-      content: <AccomodationCard />,
+      trailing: <Headline
+        onPress={() => navigation.navigate(ROUTES.accomodationsScreen, { data: mockData.accomodations })}
+        type={4}
+        text={i18n.t('see all')}
+        color={COLORS.neutral[500]}
+      />,
+      omitPadding: true,
+      content: <AccomodationCarousel data={mockData.accomodations} />,
       yPos: 600,
     },
     {
@@ -137,6 +186,7 @@ export default function TripScreen() {
     {
       title: 'Invitees',
       trailing: <Headline
+        onPress={() => navigation.navigate(ROUTES.inviteeScreen)}
         type={4}
         text={i18n.t('see all')}
         color={COLORS.neutral[500]}
@@ -211,6 +261,7 @@ export default function TripScreen() {
     <View style={styles.mainContainer}>
       {contentItems.map((item) => (
         <ListItem
+          omitPadding={item.omitPadding}
           title={item.title}
           trailing={item.trailing}
         >
@@ -349,7 +400,6 @@ const styles = StyleSheet.create({
   },
   mainContainer: {
     flex: 1,
-    paddingHorizontal: 25,
     paddingVertical: 20,
     backgroundColor: COLORS.shades[0],
     shadowColor: COLORS.shades[100],

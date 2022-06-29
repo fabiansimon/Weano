@@ -12,33 +12,21 @@ import InfoBox from '../InfoBox';
 import Utils from '../../utils';
 import Body from '../typography/Body';
 
-export default function AccomodationCard({ style, onPress }) {
+export default function AccomodationCard({ style, data, onPress }) {
   const [isLiked, setIsLiked] = useState(false);
-
-  const house = {
-    title: 'Villa El Salvador',
-    description: 'Beautiful Villa with direct access to the ocean. Parties are not allowed. Dogs must be like Rocky',
-    info: {
-      accomodates: 12,
-      price: 1222,
-    },
-    dateRange: {
-      startDate: 1656865380,
-      endDate: 1658074980,
-    },
-  };
 
   const colorTheme = isLiked ? COLORS.secondary[700] : COLORS.neutral[100];
 
-  const getDate = () => `${Utils.getDateFromTimestamp(house.dateRange.startDate, 'Do')} - ${Utils.getDateFromTimestamp(house.dateRange.endDate, 'Do MMM')}`;
+  const getDate = () => `${Utils.getDateFromTimestamp(data.dateRange.startDate, 'DD.MM')} - ${Utils.getDateFromTimestamp(data.dateRange.endDate, 'DD.MM')}`;
 
   return (
     <TouchableOpacity
-      style={[styles.container, styles.boxShadow, style, { borderColor: isLiked ? COLORS.secondary[500] : COLORS.neutral[100] }]}
+      activeOpacity={0.9}
+      style={[styles.container, styles.boxShadow, { borderColor: isLiked ? COLORS.secondary[500] : COLORS.neutral[100] }, style]}
       onPress={onPress}
     >
       <InsetShadow
-        containerStyle={{ height: 170, borderRadius: 10 }}
+        containerStyle={{ height: 160, borderRadius: 10 }}
         shadowOpacity={0.11}
       >
         <Image
@@ -65,16 +53,16 @@ export default function AccomodationCard({ style, onPress }) {
             color={colorTheme}
           />
         </TouchableOpacity>
-        <Headline type={3} text={house.title} />
+        <Headline type={3} text={data.title} />
         <Headline
           type={4}
-          text={house.description}
+          text={data.description}
           style={{ marginVertical: 8 }}
           color={COLORS.neutral[700]}
         />
-        <View style={{ flexDirection: 'row', marginTop: 12 }}>
+        <View style={{ flexDirection: 'row', marginTop: 4 }}>
           <InfoBox
-            text={`${house.info.accomodates} ${i18n.t('people')}`}
+            text={`${data.info.accomodates} ${i18n.t('people')}`}
             icon="bed"
           />
           <InfoBox
@@ -85,7 +73,7 @@ export default function AccomodationCard({ style, onPress }) {
         </View>
       </View>
       <View style={[styles.infoContainer, { position: 'absolute', top: 15, right: 15 }]}>
-        <Headline type={3} text={`$${house.info.price}`} />
+        <Headline type={3} text={`$${data.info.price}`} />
         <Body
           type={2}
           text={i18n.t('per night')}
@@ -98,6 +86,8 @@ export default function AccomodationCard({ style, onPress }) {
 const styles = StyleSheet.create({
   container: {
     borderRadius: 20,
+    marginHorizontal: 20,
+    height: 350,
     backgroundColor: COLORS.shades[0],
     borderWidth: 1,
     padding: 10,
@@ -122,7 +112,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   image: {
-    height: 170,
+    height: 160,
     borderRadius: 10,
     width: '100%',
   },

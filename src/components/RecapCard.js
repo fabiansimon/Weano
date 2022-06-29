@@ -11,12 +11,19 @@ import Avatar from './Avatar';
 import IconButton from './IconButton';
 import DaysContainer from './DaysContainer';
 import DefaultImage from '../../assets/images/default_trip.png';
+import Utils from '../utils';
 
 export default function RecapCard({
   data, style, type = 'main', onPress,
 }) {
   const [isLiked, setIsLiked] = useState(false);
   const getRVSP = () => '4 yes • 1 maybes • 2 no\'s';
+
+  const getLocation = () => {
+    console.log("Here: " + Utils.getLocationFromCoordinates([-95.4431142, 33.6875431]));
+    console.log("Here PARIS: " + Utils.getLocationFromCoordinates(data.latlon));
+    return 'Paris, France';
+  };
 
   const getMiniCard = () => (
     <TouchableOpacity
@@ -36,6 +43,7 @@ export default function RecapCard({
 
   const getMainCard = () => (
     <TouchableOpacity
+      activeOpacity={0.9}
       style={[styles.container, styles.boxShadow, style]}
       onPress={onPress}
     >
@@ -84,7 +92,7 @@ export default function RecapCard({
           />
           <Headline
             type={4}
-            text="Paris, France"
+            text={getLocation()}
             color={COLORS.neutral[700]}
           />
         </View>

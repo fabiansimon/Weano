@@ -25,7 +25,12 @@ export default function Button({
   ));
 
   return (
-    <TouchableOpacity style={[styles.container, style, { flex, backgroundColor: bg }]} onPress={onPress} disabled={isDisabled}>
+    <TouchableOpacity
+      activeOpacity={0.6}
+      style={[styles.container, style, { flex, backgroundColor: bg }]}
+      onPress={onPress}
+      disabled={isDisabled}
+    >
       {icon && getIcon()}
       {text && <Headline type={4} text={text} color={textColor || COLORS.shades[0]} style={{ marginLeft: icon ? 6 : 0 }} />}
     </TouchableOpacity>

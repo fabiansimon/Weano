@@ -5,13 +5,15 @@ import { useNavigation } from '@react-navigation/native';
 import Button from './Button';
 import COLORS from '../constants/Theme';
 
-export default function BackButton({ style }) {
+export default function BackButton({ style, isClear = false }) {
   const navigation = useNavigation();
+
+  const borderWidth = isClear ? 0 : 1;
 
   return (
     <Button
-      style={[styles.backButton, style]}
-      backgroundColor={COLORS.shades[0]}
+      style={[styles.backButton, style, { borderWidth }]}
+      backgroundColor={isClear ? 'transparent' : COLORS.shades[0]}
       icon={<Icon name="arrowleft" size={22} />}
       fullWidth={false}
       color={COLORS.neutral[900]}
@@ -23,7 +25,6 @@ export default function BackButton({ style }) {
 const styles = StyleSheet.create({
   backButton: {
     marginRight: 10,
-    borderWidth: 1,
     borderColor: COLORS.neutral[100],
   },
 });

@@ -227,6 +227,7 @@ export default function MainScreen() {
         <Button
           style={[styles.globeButton, styles.buttonShadow]}
           backgroundColor={COLORS.shades[0]}
+          onPress={() => navigation.navigate(ROUTES.mapScreen)}
           icon="globe"
           fullWidth={false}
           color={COLORS.neutral[900]}

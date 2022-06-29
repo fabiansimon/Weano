@@ -2,19 +2,21 @@ import { View, StyleSheet } from 'react-native';
 import React from 'react';
 import COLORS from '../constants/Theme';
 
-export default function Divider({ vertical, top, bottom }) {
+export default function Divider({
+  vertical, top, bottom, color,
+}) {
   const marginTop = top || vertical || 10;
   const marginBottom = bottom || vertical || 10;
+  const borderTopColor = color || COLORS.neutral[100];
 
   return (
-    <View style={[styles.divider, { marginTop, marginBottom }]} />
+    <View style={[styles.divider, { marginTop, marginBottom, borderTopColor }]} />
   );
 }
 
 const styles = StyleSheet.create({
   divider: {
     width: '100%',
-    borderTopColor: COLORS.neutral[100],
     borderTopWidth: 1,
   },
 });
