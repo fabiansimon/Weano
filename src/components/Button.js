@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Entypo';
 import COLORS from '../constants/Theme';
@@ -14,6 +14,7 @@ export default function Button({
   icon,
   color,
   fullWidth = true,
+  isLoading,
 }) {
   const flex = fullWidth ? 1 : 0;
   const bg = isDisabled ? COLORS.primary[50] : backgroundColor || COLORS.primary[700];
@@ -24,6 +25,10 @@ export default function Button({
     <Icon name={icon} color={color} size={20} />
   ));
 
+  const getLoadingIndicator = () => (
+    <ActivityIndicator color={COLORS.shades[0]} />
+  );
+
   return (
     <TouchableOpacity
       activeOpacity={0.6}
@@ -31,8 +36,9 @@ export default function Button({
       onPress={onPress}
       disabled={isDisabled}
     >
-      {icon && getIcon()}
-      {text && <Headline type={4} text={text} color={textColor || COLORS.shades[0]} style={{ marginLeft: icon ? 6 : 0 }} />}
+      {icon && !isLoading && getIcon()}
+      {text && !isLoading && <Headline type={4} text={text} color={textColor || COLORS.shades[0]} style={{ marginLeft: icon ? 6 : 0 }} />}
+      {isLoading && getLoadingIndicator()}
     </TouchableOpacity>
   );
 }

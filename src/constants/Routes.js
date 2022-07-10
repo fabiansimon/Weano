@@ -4,7 +4,8 @@ const ROUTES = {
   tripScreen: 'TripScreen',
   mapScreen: 'MapScreen',
   inviteeScreen: 'InviteeScreen',
-  accomodationsScreen: 'accomodationsScreen',
+  accomodationsScreen: 'AccomodationsScreen',
+  locationScreen: 'locationScreen',
 };
 
 export default ROUTES;

@@ -227,6 +227,7 @@ export default function TripScreen() {
               text={i18n.t('Set location')}
               fullWidth={false}
               icon="location-pin"
+              onPress={() => navigation.push(ROUTES.locationScreen)}
               backgroundColor={COLORS.shades[0]}
               textColor={COLORS.shades[100]}
               style={styles.infoButton}
