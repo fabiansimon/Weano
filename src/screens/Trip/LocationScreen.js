@@ -1,9 +1,17 @@
 import { View, StyleSheet } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
+import { ScrollView } from 'react-native-gesture-handler';
 import COLORS from '../../constants/Theme';
 import BasicHeader from '../../components/BasicHeader';
 import i18n from '../../utils/i18n';
 import PollView from '../../components/Polls/PollView';
+import Headline from '../../components/typography/Headline';
+import Body from '../../components/typography/Body';
+import LocationTile from '../../components/Trip/LocationTile';
+import TitleModal from '../../components/TitleModal';
+import Button from '../../components/Button';
+import KeyboardView from '../../components/KeyboardView';
+import TextField from '../../components/TextField';
 
 export default function LocationScreen() {
   const mockData = [
@@ -23,17 +31,88 @@ export default function LocationScreen() {
       votes: 0,
     },
   ];
+  const [isVisible, setIsVisible] = useState(false);
+  const [suggestion, setSuggestion] = useState('');
+  const [pollData, setPollData] = useState(mockData || null);
+
+  const handleAddSuggestion = () => {
+    const newSuggestion = {
+      title: suggestion,
+      subtitle: 'Fabian Simon',
+      votes: 0,
+    };
+
+    setIsVisible(false);
+    setPollData([...pollData, newSuggestion]);
+  };
 
   return (
     <View style={styles.container}>
       <BasicHeader title={i18n.t('Set location')} />
-      <View style={styles.innerContainer}>
-        <PollView
-          data={mockData}
-          title={i18n.t('Where do you want to go?')}
-          subtitle={i18n.t('The location can be choosed by the host')}
-        />
-      </View>
+      <ScrollView>
+        <View style={styles.innerContainer}>
+          <Headline
+            type={3}
+            text={i18n.t('Current location')}
+          />
+          <Body
+            type={1}
+            text={i18n.t('This can be set by the host')}
+            color={COLORS.neutral[500]}
+            style={{ marginBottom: 16 }}
+          />
+          <LocationTile
+            host="Fabian Simon"
+            location="🇫🇷 Paris, France"
+            style={{ marginBottom: 30 }}
+          />
+          <PollView
+            data={pollData}
+            title={i18n.t('Where do you want to go?')}
+            subtitle={i18n.t('The location can be choosed by the host')}
+          />
+          <Headline
+            onPress={() => setIsVisible(true)}
+            type={4}
+            text={i18n.t('Add suggestion')}
+            color={COLORS.neutral[500]}
+            style={{
+              alignSelf: 'center',
+              marginTop: pollData ? 18 : -10,
+              textDecorationLine: 'underline',
+            }}
+          />
+        </View>
+      </ScrollView>
+      <TitleModal
+        isVisible={isVisible}
+        onRequestClose={() => setIsVisible(false)}
+        title={i18n.t('Add suggestion')}
+      >
+        <KeyboardView>
+          <View style={{ flex: 1, justifyContent: 'space-between' }}>
+            <View style={{ padding: 25 }}>
+              <Headline
+                type={4}
+                text={i18n.t('What would you like to suggest?')}
+                color={COLORS.neutral[700]}
+              />
+              <TextField
+                style={{ marginTop: 18, marginBottom: 10 }}
+                value={suggestion || null}
+                onChangeText={(val) => setSuggestion(val)}
+                placeholder={i18n.t('Barcelona, Spain')}
+                onDelete={() => setSuggestion('')}
+              />
+            </View>
+            <Button
+              text={i18n.t('Add')}
+              onPress={handleAddSuggestion}
+              style={{ margin: 25, marginBottom: 30 }}
+            />
+          </View>
+        </KeyboardView>
+      </TitleModal>
     </View>
   );
 }
@@ -45,6 +124,7 @@ const styles = StyleSheet.create({
   },
   innerContainer: {
     paddingHorizontal: 25,
-    paddingVertical: 20,
+    paddingTop: 20,
+    paddingBottom: 36,
   },
 });

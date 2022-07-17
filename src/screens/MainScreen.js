@@ -252,11 +252,6 @@ const styles = StyleSheet.create({
     shadowOffset: {
       height: -10,
     },
-    buttonShadow: {
-      shadowColor: COLORS.shades[100],
-      shadowOpacity: 0.05,
-      shadowRadius: 10,
-    },
     position: 'absolute',
     backgroundColor: COLORS.shades[0],
     paddingHorizontal: 20,
@@ -265,6 +260,11 @@ const styles = StyleSheet.create({
     height: 110,
     width: '100%',
     bottom: 0,
+  },
+  buttonShadow: {
+    shadowColor: COLORS.shades[100],
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
   },
   carousel: {
     Horizontal: 25,

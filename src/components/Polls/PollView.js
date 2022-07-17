@@ -12,11 +12,13 @@ export default function PollView({
 }) {
   const [voteIndex, setVoteIndex] = useState(-1);
 
+  const header = data ? title : i18n.t('Be the first one to add one!');
+
   return (
     <View style={style}>
       <Headline
         type={3}
-        text={title}
+        text={header}
       />
       <Body
         type={1}
@@ -24,7 +26,7 @@ export default function PollView({
         color={COLORS.neutral[500]}
         style={{ marginBottom: 30 }}
       />
-      {data.map((item, index) => (
+      {data && data.map((item, index) => (
         <PollTile
           style={{ marginBottom: 12 }}
           data={item}
@@ -33,25 +35,15 @@ export default function PollView({
           isActive={voteIndex === index}
         />
       ))}
+      {data && (
       <Button
         text={i18n.t('Vote')}
         style={{ marginTop: 10 }}
         fullWidth={false}
         onPress={() => console.log('Add Vote')}
         isDisabled={voteIndex === -1}
-        // isLoading
       />
-      <Headline
-        onPress={() => console.log('Add Suggestion')}
-        type={4}
-        text={i18n.t('Add suggestion')}
-        color={COLORS.neutral[500]}
-        style={{
-          alignSelf: 'center',
-          marginTop: 18,
-          textDecorationLine: 'underline',
-        }}
-      />
+      )}
     </View>
   );
 }
