@@ -134,6 +134,7 @@ export default function MainScreen() {
             backgroundColor={COLORS.shades[0]}
             icon={<Icon name="search1" size={20} />}
             fullWidth={false}
+            onPress={() => setSearchVisible(true)}
             color={COLORS.neutral[900]}
           />
         </View>

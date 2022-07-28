@@ -8,9 +8,11 @@ import i18n from '../../utils/i18n';
 import Button from '../Button';
 import ContinentChip from './ContinentChip';
 import CONTINENTS_DATA from '../../constants/Continents';
+import SearchModal from '../Search/SearchModal';
 
 export default function CountriesVisited() {
   const [selectedContinent, setSelectedContinent] = useState('worldwide');
+  const [searchVisible, setSearchVisible] = useState(false);
 
   const continentData = CONTINENTS_DATA;
 
@@ -36,6 +38,7 @@ export default function CountriesVisited() {
           <Button
             style={[styles.searchButton, styles.buttonShadow]}
             backgroundColor={COLORS.shades[0]}
+            onPress={() => setSearchVisible(true)}
             icon={<Icon name="search1" size={20} />}
             fullWidth={false}
             color={COLORS.neutral[900]}
@@ -58,6 +61,7 @@ export default function CountriesVisited() {
           onChangeText={(val) => setSearchTerm(val)}
         /> */}
       </View>
+      <SearchModal isVisible={searchVisible} onRequestClose={() => setSearchVisible(false)} />
     </View>
   );
 }
