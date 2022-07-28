@@ -14,10 +14,11 @@ import Avatar from '../components/Avatar';
 import CreateModal from '../components/CreateModal';
 import ROUTES from '../constants/Routes';
 import AnimatedHeader from '../components/AnimatedHeader';
+import SearchModal from '../components/Search/SearchModal';
 
 export default function MainScreen() {
-  const [searchTerm, setSearchTerm] = useState('');
   const [createVisible, setCreateVisible] = useState(false);
+  const [searchVisible, setSearchVisible] = useState(false);
   const scrollY = useRef(new Animated.Value(0)).current;
 
   const navigation = useNavigation();
@@ -160,10 +161,9 @@ export default function MainScreen() {
             <TextField
               style={{ marginTop: 20 }}
               focusable={false}
+              disabled
+              onPress={() => setSearchVisible(true)}
               placeholder={i18n.t('Barcelona 2021 🇪🇸')}
-              value={searchTerm || null}
-              onChangeText={(val) => setSearchTerm(val)}
-              onDelete={() => setSearchTerm('')}
             />
           </View>
           <View style={styles.carousel}>
@@ -237,6 +237,7 @@ export default function MainScreen() {
         isVisible={createVisible}
         onRequestClose={() => setCreateVisible(false)}
       />
+      <SearchModal isVisible={searchVisible} onRequestClose={() => setSearchVisible} />
     </View>
   );
 }

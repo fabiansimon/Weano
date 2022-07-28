@@ -6,13 +6,13 @@ import Headline from './typography/Headline';
 import COLORS from '../constants/Theme';
 
 export default function BasicHeader({
-  style, title, trailing, children,
+  style, title, trailing, children, onPressBack,
 }) {
   return (
     <View style={[styles.container, style, { paddingBottom: children ? 8 : 0 }]}>
       <SafeAreaView />
       <View style={styles.heading}>
-        <BackButton isClear />
+        <BackButton isClear onPress={onPressBack} />
         <Headline type={3} text={title} />
         {trailing || <View width={55} />}
       </View>

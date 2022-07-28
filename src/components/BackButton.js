@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import Button from './Button';
 import COLORS from '../constants/Theme';
 
-export default function BackButton({ style, isClear = false }) {
+export default function BackButton({ style, isClear = false, onPress }) {
   const navigation = useNavigation();
 
   const borderWidth = isClear ? 0 : 1;
@@ -17,7 +17,7 @@ export default function BackButton({ style, isClear = false }) {
       icon={<Icon name="arrowleft" size={22} />}
       fullWidth={false}
       color={COLORS.neutral[900]}
-      onPress={() => navigation.goBack()}
+      onPress={onPress ? onPress() : () => navigation.goBack()}
     />
   );
 }

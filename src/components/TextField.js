@@ -32,6 +32,7 @@ export default function TextField({
 
   return (
     <TouchableOpacity
+      activeOpacity={0.9}
       style={[styles.container, focused ? styles.activeContainer : styles.inactiveContainer, style]}
       onPress={onPress}
       disabled={!onPress}
