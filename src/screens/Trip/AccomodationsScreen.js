@@ -31,12 +31,13 @@ export default function AccomodationsScreen({ route }) {
 
   return (
     <View style={styles.container}>
-      <BasicHeader title={i18n.t('Accomodations')}>
+      <BasicHeader title={i18n.t('Accomodations 🏠')}>
         <ScrollView horizontal style={styles.filterCarousel}>
           {options.map((option) => <FilterOption data={option} style={{ marginRight: 8 }} />)}
         </ScrollView>
       </BasicHeader>
       <FlatList
+        showsVerticalScrollIndicator={false}
         style={{ paddingTop: 20, paddingBottom: 50 }}
         contentContainerStyle={{ paddingBottom: 60 }}
         data={data}

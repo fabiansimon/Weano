@@ -44,7 +44,11 @@ export default function CountriesVisited() {
             color={COLORS.neutral[900]}
           />
         </View>
-        <ScrollView horizontal style={{ paddingHorizontal: 20, marginTop: 20 }}>
+        <ScrollView
+          horizontal
+          style={{ paddingHorizontal: 20, marginTop: 20 }}
+          showsHorizontalScrollIndicator={false}
+        >
           {continentData.map((continent, index) => (
             <ContinentChip
               onTap={() => setSelectedContinent(continent.name.toLowerCase())}

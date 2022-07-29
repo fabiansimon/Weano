@@ -15,6 +15,7 @@ import CreateModal from '../components/CreateModal';
 import ROUTES from '../constants/Routes';
 import AnimatedHeader from '../components/AnimatedHeader';
 import SearchModal from '../components/Search/SearchModal';
+import RewindTile from '../components/Trip/RewindTile';
 
 export default function MainScreen() {
   const [createVisible, setCreateVisible] = useState(false);
@@ -167,6 +168,7 @@ export default function MainScreen() {
               placeholder={i18n.t('Barcelona 2021 🇪🇸')}
             />
           </View>
+          <RewindTile style={{ marginHorizontal: 20, marginTop: 20 }} />
           <View style={styles.carousel}>
             <Headline
               type={3}

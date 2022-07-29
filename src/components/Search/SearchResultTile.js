@@ -50,7 +50,7 @@ export default function SearchResultTile({ data }) {
         />
         <TagContainer
           text={isFuture ? i18n.t('upcoming') : i18n.t('successful')}
-          color={isFuture ? COLORS.primary[300] : COLORS.success[500]}
+          color={isFuture ? COLORS.primary[700] : COLORS.secondary[700]}
         />
       </View>
     </TouchableOpacity>

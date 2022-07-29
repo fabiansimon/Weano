@@ -6,7 +6,6 @@ import BasicHeader from '../../components/BasicHeader';
 import i18n from '../../utils/i18n';
 import PollView from '../../components/Polls/PollView';
 import Headline from '../../components/typography/Headline';
-import Body from '../../components/typography/Body';
 import LocationTile from '../../components/Trip/LocationTile';
 import TitleModal from '../../components/TitleModal';
 import Button from '../../components/Button';
@@ -16,17 +15,17 @@ import TextField from '../../components/TextField';
 export default function LocationScreen() {
   const mockData = [
     {
-      title: '🇫🇷 Paris, France',
+      title: 'Paris, France',
       subtitle: 'Fabian Simon',
       votes: 6,
     },
     {
-      title: '🇭🇷 Pula, Croatia',
+      title: 'Pula, Croatia',
       subtitle: 'Julia',
       votes: 2,
     },
     {
-      title: '🇦🇹 Vienna, Austria',
+      title: 'Vienna, Austria',
       subtitle: 'Matthias',
       votes: 0,
     },
@@ -48,40 +47,31 @@ export default function LocationScreen() {
 
   return (
     <View style={styles.container}>
-      <BasicHeader title={i18n.t('Set location')} />
+      <BasicHeader title={i18n.t('Set destination 📍')} />
       <ScrollView>
         <View style={styles.innerContainer}>
-          <Headline
-            type={3}
-            text={i18n.t('Current location')}
-          />
-          <Body
-            type={1}
-            text={i18n.t('This can be set by the host')}
-            color={COLORS.neutral[500]}
-            style={{ marginBottom: 16 }}
-          />
           <LocationTile
-            host="Fabian Simon"
-            location="🇫🇷 Paris, France"
+            location="Paris, France"
             style={{ marginBottom: 30 }}
           />
-          <PollView
-            data={pollData}
-            title={i18n.t('Where do you want to go?')}
-            subtitle={i18n.t('The location can be choosed by the host')}
-          />
-          <Headline
-            onPress={() => setIsVisible(true)}
-            type={4}
-            text={i18n.t('Add suggestion')}
-            color={COLORS.neutral[500]}
-            style={{
-              alignSelf: 'center',
-              marginTop: pollData ? 18 : -10,
-              textDecorationLine: 'underline',
-            }}
-          />
+          <View style={styles.pollContainer}>
+            <PollView
+              data={pollData}
+              title={i18n.t('Where do you want to go?')}
+              subtitle={i18n.t('The location can be choosed by the host')}
+            />
+            <Headline
+              onPress={() => setIsVisible(true)}
+              type={4}
+              text={i18n.t('Add suggestion')}
+              color={COLORS.neutral[500]}
+              style={{
+                alignSelf: 'center',
+                marginTop: pollData ? 18 : -10,
+                textDecorationLine: 'underline',
+              }}
+            />
+          </View>
         </View>
       </ScrollView>
       <TitleModal
@@ -120,11 +110,19 @@ export default function LocationScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.shades[0],
+    backgroundColor: COLORS.neutral[50],
   },
   innerContainer: {
-    paddingHorizontal: 25,
+    paddingHorizontal: 15,
     paddingTop: 20,
     paddingBottom: 36,
+  },
+  pollContainer: {
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    borderRadius: 14,
+    borderColor: COLORS.neutral[100],
+    borderWidth: 1,
+    backgroundColor: COLORS.shades[0],
   },
 });

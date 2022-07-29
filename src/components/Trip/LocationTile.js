@@ -4,26 +4,42 @@ import COLORS from '../../constants/Theme';
 import Headline from '../typography/Headline';
 import Body from '../typography/Body';
 import RoleChip from '../RoleChip';
-import Divider from '../Divider';
+import i18n from '../../utils/i18n';
 
-export default function LocationTile({ style, location, host }) {
+export default function LocationTile({ style, location }) {
   return (
     <TouchableOpacity activeOpacity={0.6} style={[styles.tile, style]}>
-      <Headline type={2} text={location} />
-      <Divider />
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Body type={2} text={host} color={COLORS.neutral[500]} />
-        <RoleChip isHost style={{ marginLeft: 6 }} />
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
+        <Headline
+          type={3}
+          text={i18n.t('Current destination')}
+          color={COLORS.shades[0]}
+        />
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Body
+            type={2}
+            text={i18n.t('set by')}
+            color={COLORS.shades[0]}
+          />
+          <RoleChip isHost style={{ marginLeft: 6 }} />
+        </View>
       </View>
+      <Headline
+        type={1}
+        text={location}
+        color={COLORS.shades[0]}
+        style={{ alignSelf: 'flex-start' }}
+      />
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   tile: {
-    paddingTop: 6,
-    paddingBottom: 10,
-    backgroundColor: COLORS.shades[0],
+    paddingTop: 14,
+    paddingBottom: 12,
+    paddingHorizontal: 15,
+    backgroundColor: COLORS.primary[700],
     justifyContent: 'space-between',
     borderRadius: 14,
     borderColor: COLORS.neutral[100],

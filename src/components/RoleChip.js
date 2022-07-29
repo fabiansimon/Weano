@@ -23,6 +23,8 @@ const styles = StyleSheet.create({
   container: {
     alignSelf: 'flex-start',
     justifyContent: 'center',
+    borderColor: COLORS.shades[0],
+    borderWidth: 1,
     borderRadius: 100,
     paddingHorizontal: 8,
     paddingVertical: 2,
