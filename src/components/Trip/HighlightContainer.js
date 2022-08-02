@@ -6,13 +6,13 @@ import Body from '../typography/Body';
 import RoleChip from '../RoleChip';
 import i18n from '../../utils/i18n';
 
-export default function LocationTile({ style, location }) {
+export default function HighlightContainer({ style, description, text }) {
   return (
     <TouchableOpacity activeOpacity={0.6} style={[styles.tile, style]}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
         <Headline
           type={3}
-          text={i18n.t('Current destination')}
+          text={description}
           color={COLORS.shades[0]}
         />
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -26,7 +26,7 @@ export default function LocationTile({ style, location }) {
       </View>
       <Headline
         type={1}
-        text={location}
+        text={text}
         color={COLORS.shades[0]}
         style={{ alignSelf: 'flex-start' }}
       />

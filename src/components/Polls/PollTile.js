@@ -54,7 +54,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.neutral[100],
     width: '100%',
-
   },
   infoHeader: {
     marginBottom: 10,
@@ -76,8 +75,5 @@ const styles = StyleSheet.create({
     borderColor: COLORS.neutral[100],
     alignItems: 'center',
     borderWidth: 1,
-    shadowColor: COLORS.shades[100],
-    shadowRadius: 10,
-    shadowOpacity: 0.05,
   },
 });

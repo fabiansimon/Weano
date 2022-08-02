@@ -236,6 +236,7 @@ export default function TripScreen() {
               text={i18n.t('Find date')}
               fullWidth={false}
               icon={<AntIcon name="calendar" size={22} />}
+              onPress={() => navigation.push(ROUTES.dateScreen)}
               backgroundColor={COLORS.shades[0]}
               textColor={COLORS.shades[100]}
               style={[styles.infoButton, { marginLeft: 10 }]}

@@ -1,12 +1,12 @@
 import {
-  Modal, StyleSheet, View,
+  StyleSheet,
 } from 'react-native';
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/Entypo';
-import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import COLORS from '../constants/Theme';
 import Headline from './typography/Headline';
+import FilterModal from './FilterModal';
 
 export default function FilterOption({ style, data }) {
   const [isVisible, setIsVisible] = useState(false);
@@ -29,34 +29,11 @@ export default function FilterOption({ style, data }) {
           color={COLORS.neutral[500]}
         />
       </TouchableOpacity>
-      <Modal
-        animationType="slide"
-        visible={isVisible}
-        transparent
-        collapsable
-        onBackdropPress={() => setIsVisible(false)}
+      <FilterModal
+        isVisible={isVisible}
         onRequestClose={() => setIsVisible(false)}
-      >
-        <TouchableOpacity
-          activeOpacity={1}
-          onPress={() => setIsVisible(false)}
-          style={{ backgroundColor: 'transparent', height: '100%' }}
-        >
-          <View style={styles.modalContainer}>
-            <View style={styles.modalHeader}>
-              <Headline type={2} text={data.title} />
-            </View>
-            <View style={{ marginBottom: 50 }}>
-              {data.options.map((option) => (
-                <TouchableOpacity style={styles.tile}>
-                  <Headline type={4} text={option} />
-                  <MaterialIcon name="check" size={20} />
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-        </TouchableOpacity>
-      </Modal>
+        data={data}
+      />
     </>
   );
 }
@@ -73,30 +50,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderColor: COLORS.neutral[100],
     backgroundColor: COLORS.shades[0],
-  },
-  modalContainer: {
-    marginTop: 'auto',
-    backgroundColor: 'white',
-    borderTopEndRadius: 20,
-    borderTopStartRadius: 20,
-    shadowOffset: {
-      height: -10,
-    },
-    shadowRadius: 10,
-    shadowOpacity: 0.15,
-    shadowColor: COLORS.shades[100],
-  },
-  modalHeader: {
-    borderBottomColor: COLORS.neutral[100],
-    borderBottomWidth: 1,
-    alignItems: 'center',
-    paddingVertical: 4,
-  },
-  tile: {
-    height: 60,
-    paddingHorizontal: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
   },
 });

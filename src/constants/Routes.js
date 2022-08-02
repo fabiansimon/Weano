@@ -6,6 +6,7 @@ const ROUTES = {
   inviteeScreen: 'InviteeScreen',
   accomodationsScreen: 'AccomodationsScreen',
   locationScreen: 'locationScreen',
+  dateScreen: 'dateScreen',
 };
 
 export default ROUTES;

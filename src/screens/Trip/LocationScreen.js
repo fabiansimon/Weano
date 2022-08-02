@@ -6,11 +6,11 @@ import BasicHeader from '../../components/BasicHeader';
 import i18n from '../../utils/i18n';
 import PollView from '../../components/Polls/PollView';
 import Headline from '../../components/typography/Headline';
-import LocationTile from '../../components/Trip/LocationTile';
 import TitleModal from '../../components/TitleModal';
 import Button from '../../components/Button';
 import KeyboardView from '../../components/KeyboardView';
 import TextField from '../../components/TextField';
+import HighlightContainer from '../../components/Trip/HighlightContainer';
 
 export default function LocationScreen() {
   const mockData = [
@@ -50,8 +50,9 @@ export default function LocationScreen() {
       <BasicHeader title={i18n.t('Set destination 📍')} />
       <ScrollView>
         <View style={styles.innerContainer}>
-          <LocationTile
-            location="Paris, France"
+          <HighlightContainer
+            description={i18n.t('Current location')}
+            text="Paris, France"
             style={{ marginBottom: 30 }}
           />
           <View style={styles.pollContainer}>

@@ -9,6 +9,7 @@ import MapScreen from './src/screens/MapScreen';
 import InviteeScreen from './src/screens/Trip/InviteeScreen';
 import AccomodationsScreen from './src/screens/Trip/AccomodationsScreen';
 import LocationScreen from './src/screens/Trip/LocationScreen';
+import DateScreen from './src/screens/Trip/DateScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -23,6 +24,7 @@ export default function App() {
         <Stack.Screen name={ROUTES.inviteeScreen} component={InviteeScreen} />
         <Stack.Screen name={ROUTES.accomodationsScreen} component={AccomodationsScreen} />
         <Stack.Screen name={ROUTES.locationScreen} component={LocationScreen} />
+        <Stack.Screen name={ROUTES.dateScreen} component={DateScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
