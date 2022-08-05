@@ -1,5 +1,6 @@
-import { StyleSheet, View } from 'react-native';
-import React, { useState } from 'react';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import React, { useState, useRef } from 'react';
+import PagerView from 'react-native-pager-view';
 import TitleModal from '../TitleModal';
 import KeyboardView from '../KeyboardView';
 import Headline from '../typography/Headline';
@@ -10,6 +11,14 @@ import AvailabilityTile from './AvailabilityTile';
 
 export default function AvailabilityModal({ isVisible, onRequestClose, data }) {
   const [isAvailable, setIsAvailable] = useState(false);
+  const pageRef = useRef(null);
+
+  const handleChange = (available) => {
+    if (isAvailable !== available) {
+      pageRef.current?.setPage(isAvailable ? 1 : 0);
+      setIsAvailable(available);
+    }
+  };
 
   return (
     <TitleModal
@@ -17,37 +26,57 @@ export default function AvailabilityModal({ isVisible, onRequestClose, data }) {
       onRequestClose={onRequestClose}
       title={i18n.t('Add (un)availability ⏰')}
     >
-      <KeyboardView>
-        <View style={styles.container}>
-          <View style={styles.tabContainer}>
-            <View style={styles.hoverTabContainer} />
-            <View style={styles.innerTabContainer}>
-              <Headline
-                onPress={() => setIsAvailable(true)}
-                type={4}
-                text={i18n.t('available')}
-                color={isAvailable ? COLORS.shades[100] : COLORS.neutral[500]}
-              />
-              <Headline
-                onPress={() => setIsAvailable(false)}
-                type={4}
-                color={!isAvailable ? COLORS.shades[100] : COLORS.neutral[500]}
-                text={i18n.t('unavailable')}
-              />
-            </View>
-          </View>
-          {data.map((date, index) => (
-            <AvailabilityTile
-              style={{ marginTop: index === 0 ? 30 : 15 }}
-              dateRange={date.dateRange}
+      <View style={styles.container}>
+        <View style={styles.tabContainer}>
+          <TouchableOpacity
+            onPress={() => handleChange(true)}
+            style={[styles.innerTab, isAvailable && styles.activeTab]}
+          >
+            <Headline
+              type={4}
+              color={isAvailable ? COLORS.shades[100] : COLORS.neutral[500]}
+              text={i18n.t('available')}
             />
-          )) }
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => handleChange(false)}
+            style={[styles.innerTab, !isAvailable && styles.activeTab]}
+          >
+            <Headline
+              type={4}
+              color={!isAvailable ? COLORS.shades[100] : COLORS.neutral[500]}
+              text={i18n.t('unavailable')}
+            />
+          </TouchableOpacity>
         </View>
-        <Button
-          text={i18n.t('Add availibility')}
-          style={{ marginBottom: 30, marginHorizontal: 20 }}
-        />
-      </KeyboardView>
+        <PagerView
+          style={{ flex: 1 }}
+          ref={pageRef}
+          scrollEnabled={false}
+        >
+          <View style={{ paddingHorizontal: 15 }}>
+            {data.available.map((date, index) => (
+              <AvailabilityTile
+                style={{ marginTop: index === 0 ? 30 : 15 }}
+                dateRange={date.dateRange}
+              />
+            )) }
+          </View>
+          <View style={{ paddingHorizontal: 15 }}>
+            {data.unavailable.map((date, index) => (
+              <AvailabilityTile
+                isAvailable={false}
+                style={{ marginTop: index === 0 ? 30 : 15 }}
+                dateRange={date.dateRange}
+              />
+            )) }
+          </View>
+        </PagerView>
+      </View>
+      <Button
+        text={i18n.t('Add availibility')}
+        style={{ marginBottom: 30, marginHorizontal: 15 }}
+      />
     </TitleModal>
   );
 }
@@ -55,30 +84,26 @@ export default function AvailabilityModal({ isVisible, onRequestClose, data }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // justifyContent: 'space-between',
-    paddingHorizontal: 20,
+    backgroundColor: COLORS.neutral[50],
   },
-  hoverTabContainer: {
-    height: '90%',
-    right: 0,
-    position: 'absolute',
-    marginHorizontal: 3,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '50%',
+  activeTab: {
     backgroundColor: COLORS.shades[0],
   },
-  innerTabContainer: {
+  innerTab: {
+    borderRadius: 12,
+    height: '90%',
+    marginHorizontal: 2,
     flex: 1,
-    justifyContent: 'space-around',
-    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   tabContainer: {
+    marginHorizontal: 15,
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 20,
     height: 45,
+    justifyContent: 'space-between',
     borderRadius: 14,
     backgroundColor: COLORS.neutral[100],
   },

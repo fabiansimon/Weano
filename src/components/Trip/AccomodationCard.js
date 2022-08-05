@@ -86,7 +86,6 @@ export default function AccomodationCard({ style, data, onPress }) {
 const styles = StyleSheet.create({
   container: {
     borderRadius: 20,
-    marginHorizontal: 20,
     height: 350,
     backgroundColor: COLORS.shades[0],
     borderWidth: 1,

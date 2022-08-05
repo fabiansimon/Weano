@@ -38,7 +38,7 @@ export default function AccomodationsScreen({ route }) {
       </BasicHeader>
       <FlatList
         showsVerticalScrollIndicator={false}
-        style={{ paddingTop: 20, paddingBottom: 50 }}
+        style={{ paddingTop: 20, paddingBottom: 50, marginHorizontal: 15 }}
         contentContainerStyle={{ paddingBottom: 60 }}
         data={data}
         renderItem={(item) => getCard(item)}

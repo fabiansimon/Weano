@@ -250,7 +250,9 @@ const styles = StyleSheet.create({
     borderTopEndRadius: 20,
     borderTopStartRadius: 20,
     paddingTop: 18,
-    shadowColor: COLORS.shades[100],
+    borderWidth: 1,
+    borderColor: COLORS.neutral[100],
+    shadowColor: COLORS.neutral[300],
     shadowRadius: 10,
     shadowOpacity: 0.05,
     shadowOffset: {

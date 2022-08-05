@@ -9,7 +9,10 @@ export default function AccomodationCarousel({ data }) {
       <PagerView style={{ flex: 1 }}>
         {data.map((accom) => (
           <View>
-            <AccomodationCard data={accom} />
+            <AccomodationCard
+              data={accom}
+              style={{ marginHorizontal: 15 }}
+            />
           </View>
         ))}
       </PagerView>

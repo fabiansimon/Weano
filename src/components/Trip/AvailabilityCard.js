@@ -7,7 +7,7 @@ import Subtitle from '../typography/Subtitle';
 import i18n from '../../utils/i18n';
 import Utils from '../../utils';
 
-export default function AvailabilityTile({ style, dateRange }) {
+export default function AvailabilityCard({ style, dateRange }) {
   return (
     <TouchableOpacity
       activeOpacity={0.7}

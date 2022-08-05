@@ -11,9 +11,11 @@ import DateRangeContainer from '../../components/Trip/DateRangeContainer';
 import AvailabilityModal from '../../components/Trip/AvailabilityModal';
 import AvailabilityCard from '../../components/Trip/AvailabilityCard';
 import FilterModal from '../../components/FilterModal';
+import CalendarOverviewModal from '../../components/Trip/CalendarOverviewModal';
 
 export default function DateScreen() {
   const [isVisible, setIsVisible] = useState(false);
+  const [overviewVisible, setOverviewVisible] = useState(false);
   const [voteIndex, setVoteIndex] = useState(-1);
   const [days, setDays] = useState('7 Days');
   const [daysVisible, setDaysVisible] = useState(false);
@@ -53,27 +55,43 @@ export default function DateScreen() {
       votes: 3,
     },
   ];
-  const availabilityData = [
-    {
-      dateRange: {
-        startDate: 1656865380,
-        endDate: 1658074980,
-      },
-    },
-    {
-      dateRange: {
-        startDate: 1656865380,
-        endDate: 1658074980,
-      },
-    },
-    {
-      dateRange: {
-        startDate: 1656865380,
-        endDate: 1658074980,
-      },
-    },
 
-  ];
+  const availabilityData = {
+    available: [
+      {
+        dateRange: {
+          startDate: 1656865380,
+          endDate: 1658074980,
+        },
+      },
+      {
+        dateRange: {
+          startDate: 1656865380,
+          endDate: 1658074980,
+        },
+      },
+      {
+        dateRange: {
+          startDate: 1656865380,
+          endDate: 1658074980,
+        },
+      },
+    ],
+    unavailable: [
+      {
+        dateRange: {
+          startDate: 1656865380,
+          endDate: 1658074980,
+        },
+      },
+      {
+        dateRange: {
+          startDate: 1656865380,
+          endDate: 1658074980,
+        },
+      },
+    ],
+  };
 
   return (
     <View style={styles.container}>
@@ -81,6 +99,7 @@ export default function DateScreen() {
       <ScrollView>
         <View style={styles.innerContainer}>
           <HighlightContainer
+            onPress={() => setOverviewVisible(true)}
             description={i18n.t('Current dates')}
             text="21.04 to 28.04"
             style={{ marginBottom: 20 }}
@@ -123,7 +142,7 @@ export default function DateScreen() {
               />
             </View>
             <ScrollView horizontal style={styles.dateCarousel}>
-              {availabilityData.map((date, index) => (
+              {availabilityData.available.map((date, index) => (
                 <AvailabilityCard
                   style={{ marginRight: availabilityData.length - 1 !== index ? 10 : 40 }}
                   dateRange={date.dateRange}
@@ -146,11 +165,15 @@ export default function DateScreen() {
         data={availabilityData}
         onRequestClose={() => setIsVisible(false)}
       />
+      <CalendarOverviewModal
+        isVisible={overviewVisible}
+        onRequestClose={() => setOverviewVisible(false)}
+      />
       <FilterModal
         isVisible={daysVisible}
         onRequestClose={() => setDaysVisible(false)}
         data={daysOptions}
-        onPress={(days) => setDays(days)}
+        onPress={(d) => setDays(d)}
       />
     </View>
   );

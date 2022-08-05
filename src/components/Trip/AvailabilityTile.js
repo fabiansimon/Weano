@@ -43,6 +43,7 @@ export default function AvailabilityTile({ style, dateRange, isAvailable = true 
         />
         <Icon
           name="trash"
+          suppressHighlighting
           onPress={() => showAlert()}
           size={28}
           color={COLORS.neutral[300]}

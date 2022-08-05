@@ -81,8 +81,8 @@ export default function LocationScreen() {
         title={i18n.t('Add suggestion')}
       >
         <KeyboardView>
-          <View style={{ flex: 1, justifyContent: 'space-between' }}>
-            <View style={{ padding: 25 }}>
+          <View style={{ flex: 1, justifyContent: 'space-between'}}>
+            <View style={{ paddingHorizontal: 15, paddingVertical: 25 }}>
               <Headline
                 type={4}
                 text={i18n.t('What would you like to suggest?')}
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.neutral[50],
   },
   innerContainer: {
-    paddingHorizontal: 15,
+    paddingHorizontal: 10,
     paddingTop: 20,
     paddingBottom: 36,
   },

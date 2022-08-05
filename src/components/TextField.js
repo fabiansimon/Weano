@@ -81,11 +81,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     shadowColor: COLORS.shades[100],
     borderWidth: 1,
-    shadowOpacity: 0.05,
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
   },
   inactiveContainer: {
     borderColor: COLORS.neutral[100],

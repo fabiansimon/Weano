@@ -6,9 +6,15 @@ import Body from '../typography/Body';
 import RoleChip from '../RoleChip';
 import i18n from '../../utils/i18n';
 
-export default function HighlightContainer({ style, description, text }) {
+export default function HighlightContainer({
+  style, description, text, onPress,
+}) {
   return (
-    <TouchableOpacity activeOpacity={0.6} style={[styles.tile, style]}>
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.6}
+      style={[styles.tile, style]}
+    >
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
         <Headline
           type={3}

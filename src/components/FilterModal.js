@@ -29,10 +29,13 @@ export default function FilterModal({
           </View>
           <View style={{ marginBottom: 50 }}>
             {data.options.map((option) => (
-              <TouchableOpacity style={styles.tile} onPress={() => {
-                onPress(option); 
-                onRequestClose();
-              }}>
+              <TouchableOpacity
+                style={styles.tile}
+                onPress={() => {
+                  onPress(option);
+                  onRequestClose();
+                }}
+              >
                 <Headline type={4} text={option} />
                 <MaterialIcon name="check" size={20} />
               </TouchableOpacity>
