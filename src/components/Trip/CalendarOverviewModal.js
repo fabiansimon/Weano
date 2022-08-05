@@ -1,21 +1,15 @@
-import { StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import React, { useState, useRef } from 'react';
+import moment from 'moment';
 import TitleModal from '../TitleModal';
 import i18n from '../../utils/i18n';
 import COLORS from '../../constants/Theme';
 import CalendarAvailabilityContainer from '../../../CalendarAvailabilityContainer';
+import Utils from '../../utils';
+import Headline from '../typography/Headline';
+import CalendarDateTile from './CalendarDateTile';
 
 export default function CalendarOverviewModal({ isVisible, onRequestClose, data }) {
-  const [isAvailable, setIsAvailable] = useState(false);
-  const pageRef = useRef(null);
-
-  const handleChange = (available) => {
-    if (isAvailable !== available) {
-      pageRef.current?.setPage(isAvailable ? 1 : 0);
-      setIsAvailable(available);
-    }
-  };
-
   return (
     <TitleModal
       isVisible={isVisible}
