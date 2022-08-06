@@ -6,7 +6,7 @@ import Headline from '../typography/Headline';
 import COLORS from '../../constants/Theme';
 import TagContainer from '../TagContainer';
 import i18n from '../../utils/i18n';
-import Utils from '../../utils';
+import Body from '../typography/Body';
 
 export default function SearchResultTile({ data }) {
   const checkIsFuture = () => {
@@ -26,31 +26,25 @@ export default function SearchResultTile({ data }) {
         <Headline
           type={4}
           text={data.title}
-          style={{ marginBottom: 5 }}
         />
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Icon
             name="location-on"
-            size={18}
-            color={COLORS.neutral[500]}
+            size={12}
+            color={COLORS.neutral[300]}
           />
-          <Headline
-            type={4}
+          <Body
+            type={1}
             text="Paris, France"
-            color={COLORS.neutral[500]}
+            color={COLORS.neutral[300]}
           />
         </View>
       </View>
-      <View style={{ alignItems: 'flex-end' }}>
-        <Headline
-          type={4}
-          text={Utils.getDateFromTimestamp(data.dateRange.startDate, 'MMMM yyyy')}
-          color={COLORS.neutral[500]}
-          style={{ marginBottom: 5 }}
-        />
+      <View style={{ justifyContent: 'center' }}>
         <TagContainer
           text={isFuture ? i18n.t('upcoming') : i18n.t('successful')}
-          color={isFuture ? COLORS.primary[700] : COLORS.secondary[700]}
+          backgroundColor={isFuture ? COLORS.error[100] : COLORS.success[300]}
+          textColor={isFuture ? COLORS.error[700] : COLORS.success[900]}
         />
       </View>
     </TouchableOpacity>

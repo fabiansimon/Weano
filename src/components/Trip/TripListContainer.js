@@ -13,6 +13,7 @@ export default function TripListContainer({ style, children }) {
 const styles = StyleSheet.create({
   container: {
     borderRadius: 14,
+    backgroundColor: COLORS.shades[0],
     borderColor: COLORS.neutral[100],
     borderWidth: 1,
     paddingVertical: 15,

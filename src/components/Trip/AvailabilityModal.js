@@ -24,7 +24,7 @@ export default function AvailabilityModal({ isVisible, onRequestClose, data }) {
     <TitleModal
       isVisible={isVisible}
       onRequestClose={onRequestClose}
-      title={i18n.t('Add (un)availability ⏰')}
+      title={i18n.t('Add (un)availability')}
     >
       <View style={styles.container}>
         <View style={styles.tabContainer}>

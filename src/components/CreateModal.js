@@ -1,5 +1,5 @@
 import {
-  View, StyleSheet, Modal, Dimensions,
+  View, StyleSheet, Modal, Dimensions, ScrollView,
 } from 'react-native';
 import React, { useRef, useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
@@ -22,8 +22,6 @@ import BackButton from './BackButton';
 
 export default function CreateModal({ isVisible, onRequestClose }) {
   const [phoneNr, setPhoneNr] = useState('');
-  // const [title, setTitle] = useState(false);
-  // const [location, setLocation] = useState(false);
   const [dateRange, setDateRange] = useState();
   const [contactsVisible, setContactsVisible] = useState(false);
   const [contacts, setContacts] = useState([]);
@@ -108,6 +106,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
     <View>
       <TextField
         onPress={() => setCalendarVisible(true)}
+        onPrefixPress={() => setCalendarVisible(true)}
         focusable={false}
         disabled
         style={{ marginTop: 18, marginBottom: 10 }}
@@ -145,7 +144,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
               type={4}
               text={i18n.t('Reset')}
               color={COLORS.neutral[500]}
-              onPress={() => setDateRange()}
+              onPress={() => setDateRange(null)}
               style={{ textDecorationLine: 'underline', marginTop: 18, marginBottom: 4 }}
             />
           </View>
@@ -249,7 +248,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
   ];
 
   const getCreateView = (item) => (
-    <View style={{ paddingHorizontal: 25 }}>
+    <View style={{ paddingHorizontal: 20 }}>
       <Headline
         type={4}
         text={item.title}
@@ -285,7 +284,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
           <Headline
             type={2}
             text={i18n.t('Start Adventure')}
-            style={{ paddingHorizontal: 25 }}
+            style={{ paddingHorizontal: 20 }}
             color={COLORS.shades[100]}
           />
           <PagerView
@@ -316,12 +315,18 @@ export default function CreateModal({ isVisible, onRequestClose }) {
         onRequestClose={() => setContactsVisible(false)}
         title={i18n.t('Add friends')}
       >
-        {contacts.map((c) => (
-          <ContactTile
-            key={c}
-            contact={c}
-          />
-        ))}
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 50 }}
+        >
+          {contacts.map((c, index) => (
+            <ContactTile
+              key={c}
+              index={index}
+              contact={c}
+            />
+          ))}
+        </ScrollView>
       </TitleModal>
     </Modal>
   );

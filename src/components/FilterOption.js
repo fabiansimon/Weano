@@ -32,6 +32,7 @@ export default function FilterOption({ style, data }) {
       <FilterModal
         isVisible={isVisible}
         onRequestClose={() => setIsVisible(false)}
+        onPress={(f) => console.log(f)}
         data={data}
       />
     </>

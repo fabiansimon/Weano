@@ -153,7 +153,11 @@ export default function MainScreen() {
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <View>
                 <Headline type={3} text={i18n.t('Hey Fabian')} />
-                <Headline type={4} text={i18n.t('ready for a new Adventure? 🌍')} />
+                <Headline
+                  type={4}
+                  text={i18n.t('ready for a new Adventure? 🌍')}
+                  color={COLORS.neutral[500]}
+                />
               </View>
               <Avatar
                 uri="https://i.pravatar.cc/300"

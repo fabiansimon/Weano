@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     flexDirection: 'row',
     height: 65,
-    borderBottomColor: COLORS.neutral[300],
+    borderBottomColor: COLORS.neutral[100],
     borderBottomWidth: 1,
     alignItems: 'center',
     justifyContent: 'space-between',

@@ -1,5 +1,5 @@
 import {
-  View, Modal, StyleSheet, TouchableOpacity,
+  Modal, StyleSheet, TouchableOpacity,
 } from 'react-native';
 import React from 'react';
 import COLORS from '../constants/Theme';
@@ -18,12 +18,19 @@ export default function PopUpModal({
       transparent
       onRequestClose={onRequestClose}
     >
-      <TouchableOpacity style={styles.container} onPress={onRequestClose}>
-        <View style={styles.content}>
+      <TouchableOpacity
+        style={styles.container}
+        activeOpacity={0.7}
+        onPress={onRequestClose}
+      >
+        <TouchableOpacity
+          activeOpacity={1}
+          style={styles.content}
+        >
           <Headline type={2} text={title} />
           <Body text={subtitle} color={COLORS.neutral[900]} />
           {children}
-        </View>
+        </TouchableOpacity>
       </TouchableOpacity>
     </Modal>
   );

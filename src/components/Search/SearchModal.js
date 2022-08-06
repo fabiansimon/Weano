@@ -51,7 +51,7 @@ export default function SearchModal({ isVisible, onRequestClose }) {
       useNativeDriver
     >
       <BasicHeader
-        title={i18n.t('Search 🔍')}
+        title={i18n.t('Search')}
         onPressBack={onRequestClose}
         style={{ marginTop: 80 }}
       >

@@ -47,7 +47,7 @@ export default function LocationScreen() {
 
   return (
     <View style={styles.container}>
-      <BasicHeader title={i18n.t('Set destination 📍')} />
+      <BasicHeader title={i18n.t('Set destination')} />
       <ScrollView>
         <View style={styles.innerContainer}>
           <HighlightContainer
@@ -59,7 +59,7 @@ export default function LocationScreen() {
             <PollView
               data={pollData}
               title={i18n.t('Where do you want to go?')}
-              subtitle={i18n.t('The location can be choosed by the host')}
+              subtitle={i18n.t('The location can be choosen by the host')}
             />
             <Headline
               onPress={() => setIsVisible(true)}
@@ -81,7 +81,7 @@ export default function LocationScreen() {
         title={i18n.t('Add suggestion')}
       >
         <KeyboardView>
-          <View style={{ flex: 1, justifyContent: 'space-between'}}>
+          <View style={{ flex: 1, justifyContent: 'space-between' }}>
             <View style={{ paddingHorizontal: 15, paddingVertical: 25 }}>
               <Headline
                 type={4}

@@ -13,15 +13,42 @@ export default function AccomodationsScreen({ route }) {
   const options = [
     {
       title: 'Price',
-      options: ['Low-to-High', 'High-to-Low'],
+      options: [
+        {
+          name: 'Low-to-High',
+          value: 'lowToHigh',
+        },
+        {
+          name: 'High-to-Low',
+          value: 'HighToLow',
+        },
+      ],
     },
     {
-      title: 'Platform',
-      options: ['Low-to-High', 'High-to-Low'],
+      title: 'Price',
+      options: [
+        {
+          name: 'Low-to-High',
+          value: 'lowToHigh',
+        },
+        {
+          name: 'High-to-Low',
+          value: 'HighToLow',
+        },
+      ],
     },
     {
-      title: 'Popularity',
-      options: ['Low-to-High', 'High-to-Low'],
+      title: 'Price',
+      options: [
+        {
+          name: 'Low-to-High',
+          value: 'lowToHigh',
+        },
+        {
+          name: 'High-to-Low',
+          value: 'HighToLow',
+        },
+      ],
     },
   ];
 
@@ -33,7 +60,12 @@ export default function AccomodationsScreen({ route }) {
     <View style={styles.container}>
       <BasicHeader title={i18n.t('Accomodations 🏠')}>
         <ScrollView horizontal style={styles.filterCarousel}>
-          {options.map((option) => <FilterOption data={option} style={{ marginRight: 8 }} />)}
+          {options.map((option) => (
+            <FilterOption
+              data={option}
+              style={{ marginRight: 8 }}
+            />
+          ))}
         </ScrollView>
       </BasicHeader>
       <FlatList

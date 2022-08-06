@@ -27,7 +27,7 @@ export default function PollTile({
           <Subtitle
             type={2}
             text={data.subtitle}
-            color={activeColor || COLORS.neutral[500]}
+            color={activeColor || COLORS.neutral[300]}
           />
         </View>
         <Headline
@@ -39,7 +39,7 @@ export default function PollTile({
       <View style={styles.barOutline}>
         <View style={[styles.progressBar, {
           width: `${getPercentage(data.votes)}%`,
-          backgroundColor: activeColor || COLORS.neutral[300],
+          backgroundColor: activeColor || COLORS.neutral[100],
         }]}
         />
       </View>
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     backgroundColor: 'red',
-    height: 12,
+    height: 10,
     borderRadius: 100,
   },
   tile: {

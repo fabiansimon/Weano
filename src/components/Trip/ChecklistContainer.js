@@ -4,11 +4,11 @@ import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import Icon from 'react-native-vector-icons/Ionicons';
 import TripListContainer from './TripListContainer';
 import Headline from '../typography/Headline';
-import Subtitle from '../typography/Subtitle';
 import i18n from '../../utils/i18n';
 import Divider from '../Divider';
 import COLORS from '../../constants/Theme';
 import Switch from '../Switch';
+import Body from '../typography/Body';
 
 export default function ChecklistContainer({ data, onPress }) {
   const [isPrivate, setIsPrivate] = useState(false);
@@ -26,11 +26,11 @@ export default function ChecklistContainer({ data, onPress }) {
             <View>
               {item.assignee && (
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Icon color={item.isDone ? COLORS.success[700] : COLORS.neutral[500]} name="person" />
-                <Subtitle
-                  type={1}
+                <Icon color={item.isDone ? COLORS.success[700] : COLORS.neutral[300]} name="person" />
+                <Body
+                  type={2}
                   text={item.assignee}
-                  color={item.isDone ? COLORS.success[700] : COLORS.neutral[500]}
+                  color={item.isDone ? COLORS.success[700] : COLORS.neutral[300]}
                   style={{ marginLeft: 4 }}
                 />
               </View>

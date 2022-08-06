@@ -17,12 +17,29 @@ export default function DateScreen() {
   const [isVisible, setIsVisible] = useState(false);
   const [overviewVisible, setOverviewVisible] = useState(false);
   const [voteIndex, setVoteIndex] = useState(-1);
-  const [days, setDays] = useState('7 Days');
+  const [days, setDays] = useState(7);
   const [daysVisible, setDaysVisible] = useState(false);
 
   const daysOptions = {
     title: 'Set days amount',
-    options: ['7 Days', '14 Days', '21 Days', 'Custom amount'],
+    options: [
+      {
+        name: i18n.t('7 Days'),
+        value: 7,
+      },
+      {
+        name: i18n.t('14 Days'),
+        value: 14,
+      },
+      {
+        name: i18n.t('21 Days'),
+        value: 21,
+      },
+      {
+        name: i18n.t('28 Days'),
+        value: 28,
+      },
+    ],
   };
 
   const dateData = [
@@ -95,7 +112,7 @@ export default function DateScreen() {
 
   return (
     <View style={styles.container}>
-      <BasicHeader title={i18n.t('Find date 🗓')} />
+      <BasicHeader title={i18n.t('Find date')} />
       <ScrollView>
         <View style={styles.innerContainer}>
           <HighlightContainer
@@ -111,7 +128,7 @@ export default function DateScreen() {
                 text={i18n.t('Suggested dates for')}
               />
               <TrailContainer
-                text={days}
+                text={`${days} ${i18n.t('days')}`}
                 icon="chevron-down"
                 onPress={() => setDaysVisible(true)}
               />
@@ -173,7 +190,7 @@ export default function DateScreen() {
         isVisible={daysVisible}
         onRequestClose={() => setDaysVisible(false)}
         data={daysOptions}
-        onPress={(d) => setDays(d)}
+        onPress={(d) => setDays(d.value)}
       />
     </View>
   );

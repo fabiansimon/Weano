@@ -1,7 +1,7 @@
 import {
-  Modal, StyleSheet, View, TouchableOpacity,
+  Modal, StyleSheet, View, TouchableOpacity, ScrollView, Animated,
 } from 'react-native';
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Headline from './typography/Headline';
 import COLORS from '../constants/Theme';
@@ -9,25 +9,52 @@ import COLORS from '../constants/Theme';
 export default function FilterModal({
   isVisible, onRequestClose, data, onPress,
 }) {
+  const [showModal, setShowModal] = useState(isVisible);
+  const animatedBottom = useRef(new Animated.Value(900)).current;
+  const duration = 300;
+
+  useEffect(() => {
+    toggleModal();
+  }, [isVisible]);
+
+  const toggleModal = () => {
+    if (isVisible) {
+      setShowModal(true);
+      Animated.spring(animatedBottom, {
+        toValue: 100,
+        duration,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      setTimeout(() => setShowModal(false), duration);
+      Animated.spring(animatedBottom, {
+        toValue: 900,
+        duration,
+        useNativeDriver: true,
+      }).start();
+    }
+  };
+
   return (
     <Modal
-      animationType="slide"
-      visible={isVisible}
-      transparent
+      animationType="fade"
+      visible={showModal}
+      useNativeDriver
       collapsable
-      onBackdropPress={onRequestClose}
+      transparent
+      statusBarTranslucent
       onRequestClose={onRequestClose}
     >
       <TouchableOpacity
         activeOpacity={1}
         onPress={onRequestClose}
-        style={{ backgroundColor: 'transparent', height: '100%' }}
+        style={{ backgroundColor: 'rgba(0,0,0,0.6)', flex: 1 }}
       >
-        <View style={styles.modalContainer}>
+        <Animated.View style={[styles.modalContainer, { transform: [{ translateY: animatedBottom }] }]}>
           <View style={styles.modalHeader}>
             <Headline type={2} text={data.title} />
           </View>
-          <View style={{ marginBottom: 50 }}>
+          <ScrollView contentContainerStyle={{ paddingBottom: 0 }}>
             {data.options.map((option) => (
               <TouchableOpacity
                 style={styles.tile}
@@ -36,12 +63,13 @@ export default function FilterModal({
                   onRequestClose();
                 }}
               >
-                <Headline type={4} text={option} />
+                <Headline type={4} text={option.name} />
                 <MaterialIcon name="check" size={20} />
               </TouchableOpacity>
             ))}
-          </View>
-        </View>
+            <View style={{ height: 150 }} />
+          </ScrollView>
+        </Animated.View>
       </TouchableOpacity>
     </Modal>
   );
@@ -49,6 +77,7 @@ export default function FilterModal({
 
 const styles = StyleSheet.create({
   modalContainer: {
+    maxHeight: '90%',
     marginTop: 'auto',
     backgroundColor: 'white',
     borderTopEndRadius: 20,
@@ -67,7 +96,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   tile: {
-    height: 60,
+    height: 55,
     paddingHorizontal: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',

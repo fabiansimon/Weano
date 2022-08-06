@@ -2,14 +2,15 @@ import { View } from 'react-native';
 import React from 'react';
 import Headline from '../typography/Headline';
 import COLORS from '../../constants/Theme';
+import Body from '../typography/Body';
 
 export default function CalendarDateTile({ style, date }) {
   return (
     <View style={[style, { alignItems: 'center' }]}>
-      <Headline
-        type={4}
+      <Body
+        type={2}
         text={date.dayString}
-        color={COLORS.neutral[500]}
+        color={COLORS.neutral[300]}
       />
       <Headline
         type={3}

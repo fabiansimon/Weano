@@ -1,6 +1,8 @@
 import { View } from 'react-native';
 import React from 'react';
 import Headline from './typography/Headline';
+import Divider from './Divider';
+import COLORS from '../constants/Theme';
 
 export default function ListItem({
   style, title, trailing, children, omitPadding,
@@ -20,7 +22,7 @@ export default function ListItem({
         </View>
         {children}
       </View>
-      {/* <Divider /> */}
+      {/* <Divider color={COLORS.shades[0]} /> */}
       {/* <View style={{ backgroundColor: COLORS.neutral[50], height: 20 }} /> */}
     </>
   );

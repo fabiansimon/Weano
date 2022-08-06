@@ -1,5 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import moment from 'moment';
+import i18n from './i18n';
 
 export default class Utils {
   /**
@@ -21,6 +22,68 @@ export default class Utils {
   static convertDateToTimestamp(date) {
     const formatedDate = moment(date).format();
     return moment(formatedDate).format('X');
+  }
+
+  /**
+     * Convert DayInt to a Day String
+     * @param {Integer} day - day in Int (0-6)
+     * @return {String} Day in String; e.q. 'Monday'
+     */
+  static getDayFromInt(day) {
+    switch (day) {
+      case 0:
+        return i18n.t('Sun');
+      case 1:
+        return i18n.t('Mon');
+      case 2:
+        return i18n.t('Tue');
+      case 3:
+        return i18n.t('Wed');
+      case 4:
+        return i18n.t('Thu');
+      case 5:
+        return i18n.t('Fri');
+      case 6:
+        return i18n.t('Sat');
+      default:
+        return -1;
+    }
+  }
+
+  /**
+     * Convert MonthInt to a Month String
+     * @param {Integer} month - month in Int (0-12)
+     * @return {String} Month in String; e.q. 'January'
+     */
+  static getMonthFromInt(month) {
+    switch (month) {
+      case 0:
+        return i18n.t('January');
+      case 1:
+        return i18n.t('February');
+      case 2:
+        return i18n.t('March');
+      case 3:
+        return i18n.t('April');
+      case 4:
+        return i18n.t('May');
+      case 5:
+        return i18n.t('June');
+      case 6:
+        return i18n.t('July');
+      case 7:
+        return i18n.t('August');
+      case 8:
+        return i18n.t('September');
+      case 9:
+        return i18n.t('Oktober');
+      case 10:
+        return i18n.t('November');
+      case 11:
+        return i18n.t('Dezember');
+      default:
+        return -1;
+    }
   }
 
   /**

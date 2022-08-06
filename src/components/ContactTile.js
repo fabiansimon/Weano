@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Body from './typography/Body';
 import COLORS from '../constants/Theme';
 
-export default function ContactTile({ contact }) {
+export default function ContactTile({ contact, index }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
 
@@ -24,7 +24,7 @@ export default function ContactTile({ contact }) {
 
   return (
     <View>
-      <TouchableOpacity style={styles.container} onPress={handleTap}>
+      <TouchableOpacity style={[styles.container, { borderTopWidth: index !== 0 && 1 }]} onPress={handleTap}>
         <Body
           type={3}
           text={`${contact.givenName} ${contact.familyName}`}
@@ -58,7 +58,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     borderTopColor: COLORS.neutral[100],
-    borderTopWidth: 1,
   },
   numberContainer: {
     paddingHorizontal: 30,

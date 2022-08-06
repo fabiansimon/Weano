@@ -6,6 +6,7 @@ import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
+import { ScrollView } from 'react-native-gesture-handler';
 import COLORS from '../../constants/Theme';
 import AnimatedHeader from '../../components/AnimatedHeader';
 import Headline from '../../components/typography/Headline';
@@ -24,6 +25,7 @@ import TabBar from '../../components/Trip/TabBar';
 import ChecklistContainer from '../../components/Trip/ChecklistContainer';
 import AccomodationCarousel from '../../components/Trip/AccomodationCarousel';
 import ROUTES from '../../constants/Routes';
+import StatusContainer from '../../components/Trip/StatusContainer';
 
 const mockData = {
   title: 'Maturareise VBS Gang 🐕',
@@ -47,7 +49,8 @@ const mockData = {
     },
     {
       name: 'Matthias Betonmisha',
-      status: 'https://i.pravatar.cc/300',
+      uri: 'https://i.pravatar.cc/300',
+      status: false,
     },
   ],
   accomodations: [
@@ -97,7 +100,7 @@ const mockData = {
       },
       {
         title: 'Get passport renewed',
-        isDone: true,
+        isDone: false,
         id: 1,
       },
     ],
@@ -109,17 +112,32 @@ const mockData = {
       },
       {
         title: 'Check Clubscene 🎉',
-        isDone: true,
+        isDone: false,
         assignee: 'Clembo',
       },
       {
         title: 'Pay for Airbnb',
-        isDone: true,
+        isDone: false,
         assignee: 'Jennelie',
       },
     ],
   },
 };
+
+const statusData = [
+  {
+    name: i18n.t('Location'),
+    isDone: true,
+  },
+  {
+    name: i18n.t('Date'),
+    isDone: false,
+  },
+  {
+    name: i18n.t('Tasks'),
+    isDone: true,
+  },
+];
 
 export default function TripScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -213,7 +231,7 @@ export default function TripScreen() {
         onPress={() => console.log('Add Image')}
       />
       <View style={styles.bodyContainer}>
-        <View style={{ paddingHorizontal: 25 }}>
+        <View style={{ paddingHorizontal: 20 }}>
           <InfoCircle
             title={tripData.invitees.length}
             subtitle="👍"
@@ -245,9 +263,30 @@ export default function TripScreen() {
           <Body
             type={1}
             text={tripData.description}
-            style={{ marginTop: 16, color: COLORS.neutral[700] }}
+            style={{ marginTop: 16, color: COLORS.neutral[300] }}
           />
         </View>
+        <Divider vertical={20} />
+        <View style={styles.statusContainer}>
+          <Headline
+            type={3}
+            text={i18n.t('Status')}
+          />
+          <Headline
+            type={4}
+            text={i18n.t('21d : 32h : 56m')}
+            style={{ fontWeight: '600', fontSize: 16 }}
+            color={COLORS.primary[700]}
+          />
+        </View>
+        <ScrollView horizontal style={{ paddingHorizontal: 20, paddingTop: 14, paddingBottom: 6 }}>
+          {statusData.map((item) => (
+            <StatusContainer
+              style={{ marginRight: 10 }}
+              data={item}
+            />
+          ))}
+        </ScrollView>
         <Divider top={18} />
         <TabBar
           style={{ marginBottom: 10 }}
@@ -255,6 +294,7 @@ export default function TripScreen() {
           currentTab={currentTab}
           onPress={(index) => handleTabPress(index)}
         />
+        <Divider omitPadding />
       </View>
     </>
   );
@@ -314,27 +354,13 @@ export default function TripScreen() {
             )}
           >
             {getTopContent()}
-            <View style={{ backgroundColor: COLORS.neutral[50], height: 10 }} />
+            <View style={{ backgroundColor: COLORS.neutral[50], height: 0 }} />
             {getMainContent()}
           </Animated.ScrollView>
           <BackButton style={{
             position: 'absolute', top: 47, left: 20, zIndex: 10,
           }}
           />
-          <View style={styles.buttonContainer}>
-            <Button
-              text={i18n.t('new adventure')}
-              onPress={() => console.log('hello')}
-              style={[styles.buttonShadow]}
-            />
-            <Button
-              style={[styles.globeButton, styles.buttonShadow]}
-              backgroundColor={COLORS.shades[0]}
-              icon="globe"
-              fullWidth={false}
-              color={COLORS.neutral[900]}
-            />
-          </View>
         </View>
       )
   );
@@ -356,10 +382,14 @@ const styles = StyleSheet.create({
     index: 10,
   },
   bodyContainer: {
+    zIndex: 100,
     paddingTop: 16,
     backgroundColor: COLORS.shades[0],
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
+    shadowColor: COLORS.neutral[700],
+    shadowRadius: 10,
+    shadowOpacity: 0.02,
   },
   buttonContainer: {
     borderTopEndRadius: 20,
@@ -395,20 +425,26 @@ const styles = StyleSheet.create({
     top: 0,
   },
   infoButton: {
-    borderColor: COLORS.shades[100],
-    borderWidth: 2,
+    borderColor: COLORS.neutral[300],
+    borderWidth: 1,
     height: 40,
     paddingHorizontal: 12,
   },
   mainContainer: {
     flex: 1,
     paddingVertical: 20,
-    backgroundColor: COLORS.shades[0],
+    backgroundColor: COLORS.neutral[50],
     shadowColor: COLORS.shades[100],
     shadowOffset: {
       height: -4,
     },
     shadowOpacity: 0.05,
     shadowRadius: 10,
+  },
+  statusContainer: {
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 });

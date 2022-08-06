@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import React from 'react';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 import Headline from './typography/Headline';
@@ -21,12 +21,12 @@ export default function TripHeader({
             <EntypoIcon
               name="location-pin"
               size={16}
-              color={COLORS.neutral[500]}
+              color={COLORS.neutral[300]}
             />
             <Body
               type={2}
               text={subtitle}
-              color={COLORS.neutral[500]}
+              color={COLORS.neutral[300]}
             />
           </View>
         </View>

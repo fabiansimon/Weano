@@ -3,10 +3,10 @@ import React from 'react';
 import COLORS from '../constants/Theme';
 
 export default function Divider({
-  vertical, top, bottom, color, style,
+  vertical, top, bottom, color, style, omitPadding = false,
 }) {
-  const marginTop = top || vertical || 10;
-  const marginBottom = bottom || vertical || 10;
+  const marginTop = omitPadding ? 0 : top || vertical || 10;
+  const marginBottom = omitPadding ? 0 : bottom || vertical || 10;
   const borderTopColor = color || COLORS.neutral[100];
 
   return (

@@ -51,7 +51,7 @@ export default function TextField({
         value={value || null}
         onChangeText={(val) => onChangeText(val)}
         placeholder={prefix ? `+${prefix} ${placeholder}` : placeholder}
-        placeholderTextColor={COLORS.neutral[500]}
+        placeholderTextColor={COLORS.neutral[300]}
       />
       {icon && (
       <TouchableOpacity onPress={onPrefixPress} style={styles.trailingContainer}>
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 55,
+    height: 50,
     backgroundColor: COLORS.shades[0],
     borderRadius: 10,
     shadowColor: COLORS.shades[100],

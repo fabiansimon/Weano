@@ -18,7 +18,7 @@ export default function RewindTile({ style }) {
       <Body
         type={1}
         text={`${1} ${i18n.t('year ago')} `}
-        style={{ fontWeight: '600' }}
+        style={{ fontWeight: '500' }}
         color={COLORS.shades[0]}
       />
       <Body
@@ -29,7 +29,7 @@ export default function RewindTile({ style }) {
       <Body
         type={1}
         text={` ${location}`}
-        style={{ fontWeight: '600' }}
+        style={{ fontWeight: '500' }}
         color={COLORS.shades[0]}
       />
     </View>

@@ -1,20 +1,16 @@
-import { ScrollView, StyleSheet, View } from 'react-native';
-import React, { useState, useRef } from 'react';
-import moment from 'moment';
+import { StyleSheet, View } from 'react-native';
+import React from 'react';
 import TitleModal from '../TitleModal';
 import i18n from '../../utils/i18n';
 import COLORS from '../../constants/Theme';
-import CalendarAvailabilityContainer from '../../../CalendarAvailabilityContainer';
-import Utils from '../../utils';
-import Headline from '../typography/Headline';
-import CalendarDateTile from './CalendarDateTile';
+import CalendarAvailabilityContainer from './CalendarAvailabilityContainer';
 
-export default function CalendarOverviewModal({ isVisible, onRequestClose, data }) {
+export default function CalendarOverviewModal({ isVisible, onRequestClose }) {
   return (
     <TitleModal
       isVisible={isVisible}
       onRequestClose={onRequestClose}
-      title={i18n.t('Calendar Overview 📅')}
+      title={i18n.t('Calendar Overview')}
     >
       <View style={styles.container}>
         <CalendarAvailabilityContainer style={{ marginTop: 20 }} />

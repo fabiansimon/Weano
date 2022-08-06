@@ -37,6 +37,7 @@ export default function AccomodationCard({ style, data, onPress }) {
       <View style={styles.detailsContainer}>
         <TouchableOpacity
           onPress={() => setIsLiked(!isLiked)}
+          activeOpacity={0.9}
           style={[styles.infoContainer, {
             flexDirection: 'row', position: 'absolute', top: -25, right: 5,
           }]}

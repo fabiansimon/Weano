@@ -11,7 +11,7 @@ export default function ContinentChip({
   const color = isActive ? COLORS.shades[0] : COLORS.shades[100];
   const iconBg = isActive ? COLORS.primary[50] : COLORS.neutral[100];
   const backgroundColor = isActive ? COLORS.primary[700] : COLORS.shades[0];
-  const borderColor = isActive ? 'transparent' : COLORS.neutral[300];
+  const borderColor = isActive ? 'transparent' : COLORS.neutral[100];
 
   return (
     <TouchableOpacity

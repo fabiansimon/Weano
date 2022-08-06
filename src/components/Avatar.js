@@ -14,10 +14,29 @@ export default function Avatar({
   const bg = backgroundColor || text ? COLORS.secondary[700] : COLORS.shades[0];
 
   return (
-    <TouchableOpacity style={[styles.container, style, { height, width, backgroundColor: bg }]} onPress={onPress}>
-      {!text && <Image source={DefaultAvatar} style={{ height, width, position: 'absolute' }} />}
-      {!text && <Image source={{ uri }} style={{ height, width }} />}
-      {text && <Headline type={4} text={text} color={COLORS.shades[0]} />}
+    <TouchableOpacity
+      style={[styles.container, style, { height, width, backgroundColor: bg }]}
+      onPress={onPress}
+    >
+      {!text && (
+      <Image
+        source={DefaultAvatar}
+        style={{ height, width, position: 'absolute' }}
+      />
+      )}
+      {!text && (
+      <Image
+        source={{ uri }}
+        style={{ height, width }}
+      />
+      )}
+      {text && (
+      <Headline
+        type={4}
+        text={text}
+        color={COLORS.shades[0]}
+      />
+      )}
     </TouchableOpacity>
   );
 }
