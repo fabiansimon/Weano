@@ -8,23 +8,34 @@ import COLORS from '../constants/Theme';
 export default function BackButton({ style, isClear = false, onPress }) {
   const navigation = useNavigation();
 
-  const borderWidth = isClear ? 0 : 1;
-
   return (
-    <Button
-      style={[styles.backButton, style, { borderWidth }]}
-      backgroundColor={isClear ? 'transparent' : COLORS.shades[0]}
-      icon={<Icon name="arrowleft" size={22} />}
-      fullWidth={false}
-      color={COLORS.neutral[900]}
-      onPress={onPress ? onPress() : () => navigation.goBack()}
-    />
+    isClear ? (
+      <Icon
+        suppressHighlighting
+        name="arrowleft"
+        size={26}
+        style={{ zIndex: 9999 }}
+        onPress={() => (onPress ? onPress() : navigation.goBack())}
+      />
+    )
+      : (
+        <Button
+          style={[styles.backButton, style]}
+          backgroundColor={COLORS.shades[0]}
+          icon={<Icon name="arrowleft" size={22} />}
+          fullWidth={false}
+          color={COLORS.neutral[900]}
+          onPress={() => (onPress ? onPress() : navigation.goBack())}
+        />
+      )
   );
 }
 
 const styles = StyleSheet.create({
   backButton: {
+    zIndex: 9999,
     marginRight: 10,
+    borderWidth: 1,
     borderColor: COLORS.neutral[100],
   },
 });

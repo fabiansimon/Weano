@@ -1,0 +1,77 @@
+import { Dimensions, StyleSheet, View } from 'react-native';
+import React from 'react';
+import Animated from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import AnimatedHeader from './AnimatedHeader';
+import BackButton from './BackButton';
+import Headline from './typography/Headline';
+import BasicHeader from './BasicHeader';
+
+export default function HybridHeader({
+  style, title, subtitle, onPressBack, info, children, scrollY, content,
+}) {
+  return (
+    <>
+      <SafeAreaView style={styles.backButton}>
+        <BackButton isClear onPress={onPressBack} />
+      </SafeAreaView>
+      <AnimatedHeader
+        maxHeight={100}
+        style={[style, { justifyContent: 'flex-end', opacity: 1 }]}
+        scrollY={scrollY}
+      >
+        <View style={styles.animatedHeader}>
+          <View style={styles.title}>
+            <Headline
+              style={{ textAlign: 'center' }}
+              type={2}
+              text={title}
+            />
+          </View>
+        </View>
+      </AnimatedHeader>
+      <Animated.ScrollView
+        ref={scrollY}
+        showsVerticalScrollIndicator={false}
+        scrollEventThrottle={16}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: true },
+        )}
+      >
+        <BasicHeader
+          style={{ paddingTop: 800, marginTop: -750 }}
+          scrollY={scrollY}
+          title={title}
+          subtitle={subtitle}
+          info={info}
+        >
+          {content}
+        </BasicHeader>
+        {children}
+      </Animated.ScrollView>
+    </>
+  );
+}
+
+const styles = StyleSheet.create({
+  animatedHeader: {
+    paddingBottom: 10,
+    flexDirection: 'row',
+    paddingHorizontal: 20,
+    justifyContent: 'space-between',
+  },
+  backButton: {
+    position: 'absolute',
+    zIndex: 9999,
+    left: 20,
+    top: 20,
+  },
+  title: {
+    zIndex: 10,
+    bottom: 10,
+    position: 'absolute',
+    justifyContent: 'center',
+    width: Dimensions.get('window').width,
+  },
+});

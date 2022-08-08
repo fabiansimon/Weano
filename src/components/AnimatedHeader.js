@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
       height: 10,
     },
     shadowRadius: 10,
-    shadowOpacity: 0.02,
+    shadowOpacity: 0.08,
   },
 });
 

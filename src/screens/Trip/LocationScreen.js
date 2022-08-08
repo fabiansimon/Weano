@@ -1,8 +1,7 @@
 import { View, StyleSheet } from 'react-native';
-import React, { useState } from 'react';
-import { ScrollView } from 'react-native-gesture-handler';
+import React, { useState, useRef } from 'react';
+import Animated from 'react-native-reanimated';
 import COLORS from '../../constants/Theme';
-import BasicHeader from '../../components/BasicHeader';
 import i18n from '../../utils/i18n';
 import PollView from '../../components/Polls/PollView';
 import Headline from '../../components/typography/Headline';
@@ -11,8 +10,11 @@ import Button from '../../components/Button';
 import KeyboardView from '../../components/KeyboardView';
 import TextField from '../../components/TextField';
 import HighlightContainer from '../../components/Trip/HighlightContainer';
+import HybridHeader from '../../components/HybridHeader';
+import INFORMATION from '../../constants/Information';
 
 export default function LocationScreen() {
+  const scrollY = useRef(new Animated.Value(0)).current;
   const mockData = [
     {
       title: 'Paris, France',
@@ -47,8 +49,11 @@ export default function LocationScreen() {
 
   return (
     <View style={styles.container}>
-      <BasicHeader title={i18n.t('Set destination')} />
-      <ScrollView>
+      <HybridHeader
+        title={i18n.t('Find location')}
+        scrollY={scrollY}
+        info={INFORMATION.dateScreen}
+      >
         <View style={styles.innerContainer}>
           <HighlightContainer
             description={i18n.t('Current location')}
@@ -74,7 +79,7 @@ export default function LocationScreen() {
             />
           </View>
         </View>
-      </ScrollView>
+      </HybridHeader>
       <TitleModal
         isVisible={isVisible}
         onRequestClose={() => setIsVisible(false)}

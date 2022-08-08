@@ -1,8 +1,8 @@
 import { View, StyleSheet } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
+import Animated from 'react-native-reanimated';
 import COLORS from '../../constants/Theme';
-import BasicHeader from '../../components/BasicHeader';
 import i18n from '../../utils/i18n';
 import Headline from '../../components/typography/Headline';
 import HighlightContainer from '../../components/Trip/HighlightContainer';
@@ -12,8 +12,11 @@ import AvailabilityModal from '../../components/Trip/AvailabilityModal';
 import AvailabilityCard from '../../components/Trip/AvailabilityCard';
 import FilterModal from '../../components/FilterModal';
 import CalendarOverviewModal from '../../components/Trip/CalendarOverviewModal';
+import HybridHeader from '../../components/HybridHeader';
+import INFORMATION from '../../constants/Information';
 
 export default function DateScreen() {
+  const scrollY = useRef(new Animated.Value(0)).current;
   const [isVisible, setIsVisible] = useState(false);
   const [overviewVisible, setOverviewVisible] = useState(false);
   const [voteIndex, setVoteIndex] = useState(-1);
@@ -112,8 +115,11 @@ export default function DateScreen() {
 
   return (
     <View style={styles.container}>
-      <BasicHeader title={i18n.t('Find date')} />
-      <ScrollView>
+      <HybridHeader
+        title={i18n.t('Find date')}
+        scrollY={scrollY}
+        info={INFORMATION.dateScreen}
+      >
         <View style={styles.innerContainer}>
           <HighlightContainer
             onPress={() => setOverviewVisible(true)}
@@ -168,15 +174,7 @@ export default function DateScreen() {
             </ScrollView>
           </View>
         </View>
-      </ScrollView>
-      {/* <Picker
-        ref={pickerRef}
-        selectedValue={selectedLanguage}
-        onValueChange={(itemValue) => setSelectedLanguage(itemValue)}
-      >
-        <Picker.Item label="Java" value="java" />
-        <Picker.Item label="JavaScript" value="js" />
-      </Picker> */}
+      </HybridHeader>
       <AvailabilityModal
         isVisible={isVisible}
         data={availabilityData}
@@ -199,7 +197,7 @@ export default function DateScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.neutral[50],
+    backgroundColor: COLORS.shades[50],
   },
   dateCarousel: {
     paddingHorizontal: 20,

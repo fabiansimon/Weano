@@ -318,7 +318,6 @@ export default function TripScreen() {
       ? <Headline text="Loading..." />
       : (
         <View style={{ backgroundColor: COLORS.shades[50], flex: 1 }}>
-          <BackButton style={styles.backButton} />
           <AnimatedHeader
             style={{ height: 170 }}
             maxHeight={380}
