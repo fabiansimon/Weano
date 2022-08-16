@@ -244,7 +244,10 @@ export default function MainScreen() {
         isVisible={createVisible}
         onRequestClose={() => setCreateVisible(false)}
       />
-      <SearchModal isVisible={searchVisible} onRequestClose={() => setSearchVisible} />
+      <SearchModal
+        isVisible={searchVisible}
+        onRequestClose={() => setSearchVisible(false)}
+      />
     </View>
   );
 }

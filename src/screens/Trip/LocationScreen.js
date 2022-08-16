@@ -5,13 +5,10 @@ import COLORS from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import PollView from '../../components/Polls/PollView';
 import Headline from '../../components/typography/Headline';
-import TitleModal from '../../components/TitleModal';
-import Button from '../../components/Button';
-import KeyboardView from '../../components/KeyboardView';
-import TextField from '../../components/TextField';
 import HighlightContainer from '../../components/Trip/HighlightContainer';
 import HybridHeader from '../../components/HybridHeader';
 import INFORMATION from '../../constants/Information';
+import AddSuggestionModal from '../../components/Trip/AddSuggestionModal';
 
 export default function LocationScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -33,19 +30,7 @@ export default function LocationScreen() {
     },
   ];
   const [isVisible, setIsVisible] = useState(false);
-  const [suggestion, setSuggestion] = useState('');
   const [pollData, setPollData] = useState(mockData || null);
-
-  const handleAddSuggestion = () => {
-    const newSuggestion = {
-      title: suggestion,
-      subtitle: 'Fabian Simon',
-      votes: 0,
-    };
-
-    setIsVisible(false);
-    setPollData([...pollData, newSuggestion]);
-  };
 
   return (
     <View style={styles.container}>
@@ -58,57 +43,33 @@ export default function LocationScreen() {
           <HighlightContainer
             description={i18n.t('Current location')}
             text="Paris, France"
-            style={{ marginBottom: 30 }}
+            style={{ marginBottom: 15 }}
           />
           <View style={styles.pollContainer}>
             <PollView
               data={pollData}
-              title={i18n.t('Where do you want to go?')}
-              subtitle={i18n.t('The location can be choosen by the host')}
+              title={i18n.t('Destination options')}
+              subtitle={i18n.t('You can simply add a new one')}
             />
             <Headline
               onPress={() => setIsVisible(true)}
               type={4}
               text={i18n.t('Add suggestion')}
-              color={COLORS.neutral[500]}
+              color={COLORS.neutral[300]}
               style={{
                 alignSelf: 'center',
                 marginTop: pollData ? 18 : -10,
-                textDecorationLine: 'underline',
               }}
             />
           </View>
         </View>
       </HybridHeader>
-      <TitleModal
+      <AddSuggestionModal
         isVisible={isVisible}
         onRequestClose={() => setIsVisible(false)}
-        title={i18n.t('Add suggestion')}
-      >
-        <KeyboardView>
-          <View style={{ flex: 1, justifyContent: 'space-between' }}>
-            <View style={{ paddingHorizontal: 15, paddingVertical: 25 }}>
-              <Headline
-                type={4}
-                text={i18n.t('What would you like to suggest?')}
-                color={COLORS.neutral[700]}
-              />
-              <TextField
-                style={{ marginTop: 18, marginBottom: 10 }}
-                value={suggestion || null}
-                onChangeText={(val) => setSuggestion(val)}
-                placeholder={i18n.t('Barcelona, Spain')}
-                onDelete={() => setSuggestion('')}
-              />
-            </View>
-            <Button
-              text={i18n.t('Add')}
-              onPress={handleAddSuggestion}
-              style={{ margin: 25, marginBottom: 30 }}
-            />
-          </View>
-        </KeyboardView>
-      </TitleModal>
+        data={pollData}
+        setPollData={setPollData}
+      />
     </View>
   );
 }
@@ -120,12 +81,12 @@ const styles = StyleSheet.create({
   },
   innerContainer: {
     paddingHorizontal: 10,
-    paddingTop: 20,
+    paddingTop: 15,
     paddingBottom: 36,
   },
   pollContainer: {
     paddingVertical: 20,
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
     borderRadius: 14,
     borderColor: COLORS.neutral[100],
     borderWidth: 1,

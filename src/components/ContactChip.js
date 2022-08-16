@@ -4,13 +4,28 @@ import Icon from 'react-native-vector-icons/AntDesign';
 import COLORS from '../constants/Theme';
 import Headline from './typography/Headline';
 
-export default function Chip({
+export default function ContactChip({
   string, onDelete, onPress, style,
 }) {
   return (
-    <TouchableOpacity style={[styles.container, style]} onPress={onPress} disabled={!onPress}>
-      <Headline type={3} text={string} color={COLORS.primary[500]} />
-      <Icon name="closecircle" color={COLORS.primary[500]} size={22} style={{ marginLeft: 12 }} onPress={onDelete} suppressHighlighting />
+    <TouchableOpacity
+      style={[styles.container, style]}
+      onPress={onPress}
+      disabled={!onPress}
+    >
+      <Headline
+        type={3}
+        text={string}
+        color={COLORS.primary[500]}
+      />
+      <Icon
+        name="closecircle"
+        color={COLORS.primary[500]}
+        size={22}
+        style={{ marginLeft: 12 }}
+        onPress={onDelete}
+        suppressHighlighting
+      />
     </TouchableOpacity>
   );
 }

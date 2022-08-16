@@ -1,7 +1,6 @@
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 import Headline from '../typography/Headline';
-import Subtitle from '../typography/Subtitle';
 import COLORS from '../../constants/Theme';
 
 export default function PollTile({
@@ -13,34 +12,26 @@ export default function PollTile({
   return (
     <TouchableOpacity
       style={[styles.tile, style, { borderColor: activeColor || COLORS.neutral[100] }]}
-      activeOpacity={0.6}
+      activeOpacity={0.8}
       onPress={onPress}
     >
-      <View style={styles.infoHeader}>
-        <View>
-          <Headline
-            type={3}
-            text={data.title}
-            color={activeColor || COLORS.shades[100]}
-            style={{ marginTop: -4 }}
-          />
-          <Subtitle
-            type={2}
-            text={data.subtitle}
-            color={activeColor || COLORS.neutral[300]}
-          />
-        </View>
+      <View style={[styles.progressBar,
+        {
+          width: `${getPercentage(data.votes)}%`,
+
+          backgroundColor: activeColor || COLORS.neutral[100],
+        }]}
+      />
+      <View style={styles.container}>
+        <Headline
+          type={4}
+          text={data.title}
+          color={isActive ? COLORS.shades[0] : COLORS.shades[100]}
+        />
         <Headline
           type={4}
           text={`${getPercentage(data.votes)}%`}
           color={activeColor || COLORS.shades[100]}
-        />
-      </View>
-      <View style={styles.barOutline}>
-        <View style={[styles.progressBar, {
-          width: `${getPercentage(data.votes)}%`,
-          backgroundColor: activeColor || COLORS.neutral[100],
-        }]}
         />
       </View>
     </TouchableOpacity>
@@ -48,31 +39,29 @@ export default function PollTile({
 }
 
 const styles = StyleSheet.create({
-  barOutline: {
-    height: 12,
-    borderRadius: 100,
-    borderWidth: 1,
-    borderColor: COLORS.neutral[100],
-    width: '100%',
-  },
-  infoHeader: {
-    marginBottom: 10,
-    width: '100%',
+  container: {
+    paddingHorizontal: 10,
+    alignItems: 'center',
     flexDirection: 'row',
-    alignItems: 'flex-start',
     justifyContent: 'space-between',
+    width: '100%',
+    height: '100%',
   },
   progressBar: {
-    backgroundColor: 'red',
-    height: 10,
-    borderRadius: 100,
+    zIndex: 0,
+    height: '100%',
+    left: 0,
+    top: 0,
+    position: 'absolute',
+    borderRadius: 12,
   },
   tile: {
+    zIndex: 2,
     backgroundColor: COLORS.shades[0],
-    padding: 10,
     justifyContent: 'space-between',
     borderRadius: 14,
     borderColor: COLORS.neutral[100],
+    height: 55,
     alignItems: 'center',
     borderWidth: 1,
   },

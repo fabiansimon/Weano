@@ -128,14 +128,17 @@ const statusData = [
   {
     name: i18n.t('Location'),
     isDone: true,
+    route: ROUTES.locationScreen,
   },
   {
     name: i18n.t('Date'),
     isDone: false,
+    route: ROUTES.dateScreen,
   },
   {
     name: i18n.t('Tasks'),
     isDone: true,
+    route: ROUTES.dateScreen,
   },
 ];
 
@@ -284,6 +287,7 @@ export default function TripScreen() {
             <StatusContainer
               style={{ marginRight: 10 }}
               data={item}
+              onPress={() => navigation.navigate(item.route)}
             />
           ))}
         </ScrollView>

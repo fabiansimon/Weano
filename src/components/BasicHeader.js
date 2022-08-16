@@ -27,7 +27,7 @@ export default function BasicHeader({
               suppressHighlighting
               name="info-with-circle"
               size={20}
-              color={COLORS.neutral[300]}
+              color={COLORS.neutral[100]}
             />
           )}
         </View>

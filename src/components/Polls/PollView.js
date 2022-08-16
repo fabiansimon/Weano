@@ -23,7 +23,7 @@ export default function PollView({
       <Body
         type={1}
         text={subtitle}
-        color={COLORS.neutral[500]}
+        color={COLORS.neutral[300]}
         style={{ marginBottom: 30 }}
       />
       {data && data.map((item, index) => (

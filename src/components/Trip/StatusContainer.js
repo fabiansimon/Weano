@@ -1,5 +1,5 @@
 import {
-  Image, StyleSheet, View,
+  Image, StyleSheet, TouchableOpacity,
 } from 'react-native';
 import React from 'react';
 import COLORS from '../../constants/Theme';
@@ -7,9 +7,13 @@ import StatusDoneIcon from '../../../assets/icons/status_check.png';
 import StatusNotDoneIcon from '../../../assets/icons/status_check_false.png';
 import Headline from '../typography/Headline';
 
-export default function StatusContainer({ style, data }) {
+export default function StatusContainer({ style, data, onPress }) {
   return (
-    <View style={[styles.container, style]}>
+    <TouchableOpacity
+      activeOpacity={0.7}
+      onPress={onPress}
+      style={[styles.container, style]}
+    >
       <Image
         source={data.isDone ? StatusDoneIcon : StatusNotDoneIcon}
         style={{
@@ -22,7 +26,7 @@ export default function StatusContainer({ style, data }) {
         style={{ fontWeight: '500', fontSize: 16 }}
         text={data.name}
       />
-    </View>
+    </TouchableOpacity>
   );
 }
 

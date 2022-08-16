@@ -12,7 +12,7 @@ import COLORS from '../constants/Theme';
 import TextField from './TextField';
 import Button from './Button';
 import KeyboardView from './KeyboardView';
-import Chip from './Chip';
+import ContactChip from './ContactChip';
 import PopUpModal from './PopUpModal';
 import Utils from '../utils';
 import PageIndicator from './PageIndicator';
@@ -180,7 +180,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
   const getInviteContent = () => (
     <View style={styles.wrapContainer}>
       {currentInvitees.map((invitee) => (
-        <Chip
+        <ContactChip
           key={invitee.name}
           style={{ marginBottom: 10, marginRight: 10 }}
           string={invitee.name}

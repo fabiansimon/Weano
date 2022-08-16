@@ -25,6 +25,17 @@ export default class Utils {
   }
 
   /**
+     * Convert Date to UNIX timestamp
+     * @param {Integer} date - Date
+     * @return {boolean} isFuture
+     */
+  static checkIsFuture(startDate) {
+    const today = Date.now();
+    if (today > startDate * 1000) return false;
+    return true;
+  }
+
+  /**
      * Convert DayInt to a Day String
      * @param {Integer} day - day in Int (0-6)
      * @return {String} Day in String; e.q. 'Monday'

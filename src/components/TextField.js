@@ -38,8 +38,15 @@ export default function TextField({
       disabled={!onPress}
     >
       {prefix && (
-      <TouchableOpacity onPress={onPrefixPress} style={styles.prefixContainer}>
-        <Headline type={4} text={`+ ${prefix}`} color={COLORS.neutral[700]} />
+      <TouchableOpacity
+        onPress={onPrefixPress}
+        style={styles.prefixContainer}
+      >
+        <Headline
+          type={4}
+          text={`+ ${prefix}`}
+          color={COLORS.neutral[700]}
+        />
       </TouchableOpacity>
       )}
       <TextInput
@@ -54,7 +61,10 @@ export default function TextField({
         placeholderTextColor={COLORS.neutral[300]}
       />
       {icon && (
-      <TouchableOpacity onPress={onPrefixPress} style={styles.trailingContainer}>
+      <TouchableOpacity
+        onPress={onPrefixPress}
+        style={styles.trailingContainer}
+      >
         {getIcon()}
       </TouchableOpacity>
       )}
