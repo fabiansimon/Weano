@@ -16,7 +16,6 @@ export default function Divider({
 
 const styles = StyleSheet.create({
   divider: {
-    width: '100%',
     borderTopWidth: 1,
   },
 });

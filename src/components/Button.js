@@ -1,7 +1,7 @@
 import { ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Entypo';
-import COLORS from '../constants/Theme';
+import COLORS, { RADIUS } from '../constants/Theme';
 import Headline from './typography/Headline';
 
 export default function Button({
@@ -51,6 +51,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 100,
+    borderRadius: RADIUS.xl,
   },
 });

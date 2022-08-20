@@ -4,9 +4,10 @@ import TitleModal from '../TitleModal';
 import i18n from '../../utils/i18n';
 import KeyboardView from '../KeyboardView';
 import Headline from '../typography/Headline';
-import COLORS from '../../constants/Theme';
+import COLORS, { PADDING } from '../../constants/Theme';
 import TextField from '../TextField';
-import Divider from '../Divider';
+import Chip from '../Chip';
+import Button from '../Button';
 
 export default function AddSuggestionModal({
   isVisible, onRequestClose, data, setPollData,
@@ -14,6 +15,8 @@ export default function AddSuggestionModal({
   const [suggestion, setSuggestion] = useState('');
 
   const handleSuggestion = () => {
+    if (suggestion.trim() === '') return;
+
     const newSuggestion = {
       title: suggestion,
       subtitle: 'Fabian Simon',
@@ -31,38 +34,36 @@ export default function AddSuggestionModal({
     >
       <KeyboardView>
         <View style={{ flex: 1 }}>
-          <View style={{ paddingHorizontal: 20, paddingTop: 25, paddingBottom: 15 }}>
+          <View style={{ paddingHorizontal: PADDING.l, paddingTop: 25, paddingBottom: 15 }}>
             <Headline
-              type={4}
+              type={3}
               text={i18n.t('Add a destiny')}
               color={COLORS.neutral[700]}
             />
             <TextField
               style={{
-                marginTop: 18, marginBottom: 0, backgroundColor: COLORS.neutral[50], borderWidth: 0,
+                marginTop: 18, backgroundColor: COLORS.neutral[50],
               }}
               value={suggestion || null}
               onChangeText={(val) => setSuggestion(val)}
               placeholder={i18n.t('Barcelona, Spain')}
               onDelete={() => setSuggestion('')}
             />
+            <View style={styles.wrapContainer}>
+              {data.map((sugg) => (
+                <Chip
+                  style={{ marginBottom: 10, marginRight: 10 }}
+                  text={sugg.title}
+                  onDelete={() => console.log('delete')}
+                />
+              ))}
+            </View>
           </View>
-          <Divider color={COLORS.neutral[50]} />
-          {/* <View style={styles.wrapContainer}>
-            {data.map((invitee) => (
-              <Chip
-                key={invitee.name}
-                style={{ marginBottom: 10, marginRight: 10 }}
-                string={invitee.name}
-                onDelete={() => console.log(`delete: ${invitee.name}`)}
-              />
-            ))}
-          </View> */}
-          {/* <Button
+          <Button
             text={i18n.t('Add')}
             onPress={handleSuggestion}
-            style={{ margin: 25, marginBottom: 30 }}
-          /> */}
+            style={{ marginTop: 'auto', marginHorizontal: PADDING.m, marginBottom: 30 }}
+          />
         </View>
       </KeyboardView>
     </TitleModal>
@@ -71,7 +72,7 @@ export default function AddSuggestionModal({
 
 const styles = StyleSheet.create({
   wrapContainer: {
-    marginTop: 20,
+    marginTop: 30,
     flexDirection: 'row',
     flexWrap: 'wrap',
   },

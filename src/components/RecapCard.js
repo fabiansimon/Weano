@@ -4,14 +4,13 @@ import {
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import InsetShadow from 'react-native-inset-shadow';
-import COLORS from '../constants/Theme';
+import COLORS, { PADDING } from '../constants/Theme';
 import Headline from './typography/Headline';
 import DateContainer from './DateContainer';
 import Avatar from './Avatar';
 import IconButton from './IconButton';
 import DaysContainer from './DaysContainer';
 import DefaultImage from '../../assets/images/default_trip.png';
-import Utils from '../utils';
 
 export default function RecapCard({
   data, style, type = 'main', onPress,
@@ -19,14 +18,11 @@ export default function RecapCard({
   const [isLiked, setIsLiked] = useState(false);
   const getRVSP = () => '4 yes • 1 maybes • 2 no\'s';
 
-  const getLocation = () => {
-    console.log("Here: " + Utils.getLocationFromCoordinates([-95.4431142, 33.6875431]));
-    console.log("Here PARIS: " + Utils.getLocationFromCoordinates(data.latlon));
-    return 'Paris, France';
-  };
+  const getLocation = () => 'Paris, France';
 
   const getMiniCard = () => (
     <TouchableOpacity
+      activeOpacity={0.9}
       style={[styles.miniContainer, styles.boxShadow, style]}
       onPress={onPress}
     >
@@ -117,7 +113,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.shades[0],
     aspectRatio: 0.95,
     height: 325,
-    padding: 10,
+    padding: PADDING.s,
   },
   miniContainer: {
     flexDirection: 'row',
@@ -125,7 +121,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.shades[0],
     aspectRatio: 3.7,
     height: 85,
-    padding: 10,
+    padding: PADDING.s,
   },
   boxShadow: {
     shadowColor: COLORS.shades[100],
@@ -133,8 +129,8 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
   },
   detailsContainer: {
-    paddingHorizontal: 10,
-    paddingVertical: 10,
+    paddingHorizontal: PADDING.s,
+    paddingVertical: PADDING.s,
     justifyContent: 'space-between',
     flex: 1,
   },

@@ -1,17 +1,20 @@
 import { View, StyleSheet } from 'react-native';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
+import BottomSheet from '@gorhom/bottom-sheet';
 import Animated from 'react-native-reanimated';
-import COLORS from '../../constants/Theme';
+import COLORS, { PADDING } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import PollView from '../../components/Polls/PollView';
 import Headline from '../../components/typography/Headline';
-import HighlightContainer from '../../components/Trip/HighlightContainer';
 import HybridHeader from '../../components/HybridHeader';
 import INFORMATION from '../../constants/Information';
 import AddSuggestionModal from '../../components/Trip/AddSuggestionModal';
+import BoardingPassModal from '../../components/Trip/BoardingPassModal';
 
 export default function LocationScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
+  const snapPoints = useMemo(() => ['20%', '85%'], []);
+  const sheetRef = useRef(null);
   const mockData = [
     {
       title: 'Paris, France',
@@ -40,11 +43,6 @@ export default function LocationScreen() {
         info={INFORMATION.dateScreen}
       >
         <View style={styles.innerContainer}>
-          <HighlightContainer
-            description={i18n.t('Current location')}
-            text="Paris, France"
-            style={{ marginBottom: 15 }}
-          />
           <View style={styles.pollContainer}>
             <PollView
               data={pollData}
@@ -70,6 +68,19 @@ export default function LocationScreen() {
         data={pollData}
         setPollData={setPollData}
       />
+      <BottomSheet
+        handleIndicatorStyle={{ opacity: 0 }}
+        backgroundStyle={{
+          backgroundColor: 'transparent',
+          borderRadius: 20,
+        }}
+        // backdropComponent={BoardingPassBackDrop}
+        ref={sheetRef}
+        index={0}
+        snapPoints={snapPoints}
+      >
+        <BoardingPassModal type="destination" />
+      </BottomSheet>
     </View>
   );
 }
@@ -80,13 +91,13 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.neutral[50],
   },
   innerContainer: {
-    paddingHorizontal: 10,
+    paddingHorizontal: PADDING.s,
     paddingTop: 15,
     paddingBottom: 36,
   },
   pollContainer: {
     paddingVertical: 20,
-    paddingHorizontal: 15,
+    paddingHorizontal: PADDING.s,
     borderRadius: 14,
     borderColor: COLORS.neutral[100],
     borderWidth: 1,

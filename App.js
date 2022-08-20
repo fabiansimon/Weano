@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { LogBox } from 'react-native';
 import ROUTES from './src/constants/Routes';
 import IntroScreen from './src/screens/Intro/IntroScreen';
 import MainScreen from './src/screens/MainScreen';
@@ -14,6 +15,11 @@ import DateScreen from './src/screens/Trip/DateScreen';
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  useEffect(() => {
+    LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
+    LogBox.ignoreAllLogs();// Ignore all log notifications
+  });
+
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>

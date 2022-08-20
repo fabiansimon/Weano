@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Entypo';
 import Headline from './typography/Headline';
-import COLORS from '../constants/Theme';
+import COLORS, { PADDING } from '../constants/Theme';
 import PopUpModal from './PopUpModal';
 import i18n from '../utils/i18n';
 
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   heading: {
-    paddingHorizontal: 20,
+    paddingHorizontal: PADDING.l,
     marginTop: -30,
     alignItems: 'flex-start',
     justifyContent: 'space-between',

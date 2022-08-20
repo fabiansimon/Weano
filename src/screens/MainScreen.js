@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/AntDesign';
-import COLORS from '../constants/Theme';
+import COLORS, { PADDING } from '../constants/Theme';
 import Headline from '../components/typography/Headline';
 import i18n from '../utils/i18n';
 import TextField from '../components/TextField';
@@ -149,7 +149,7 @@ export default function MainScreen() {
         )}
       >
         <SafeAreaView style={styles.container}>
-          <View style={{ paddingHorizontal: 20 }}>
+          <View style={{ paddingHorizontal: PADDING.l }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <View>
                 <Headline type={3} text={i18n.t('Hey Fabian')} />
@@ -172,16 +172,16 @@ export default function MainScreen() {
               placeholder={i18n.t('Barcelona 2021 🇪🇸')}
             />
           </View>
-          <RewindTile style={{ marginHorizontal: 20, marginTop: 20 }} />
-          <View style={styles.carousel}>
+          <RewindTile style={{ marginHorizontal: PADDING.l, marginTop: 20 }} />
+          <View>
             <Headline
               type={3}
               text={i18n.t('Successful Trips ✈️')}
-              style={{ marginLeft: 30, marginTop: 25 }}
+              style={{ marginLeft: PADDING.xl, marginTop: 25 }}
             />
             <ScrollView
               horizontal
-              paddingHorizontal={25}
+              paddingHorizontal={PADDING.l}
               paddingTop={20}
               showsHorizontalScrollIndicator={false}
             >
@@ -202,11 +202,11 @@ export default function MainScreen() {
             <Headline
               type={3}
               text={i18n.t('Upcoming Trips ⏳')}
-              style={{ marginLeft: 30, marginTop: 35 }}
+              style={{ marginLeft: PADDING.l, marginTop: 35 }}
             />
             <ScrollView
               horizontal
-              paddingHorizontal={25}
+              paddingHorizontal={PADDING.l}
               paddingTop={20}
               showsHorizontalScrollIndicator={false}
             >
@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
     },
     position: 'absolute',
     backgroundColor: COLORS.shades[0],
-    paddingHorizontal: 20,
+    paddingHorizontal: PADDING.l,
     justifyContent: 'flex-start',
     flexDirection: 'row',
     height: 110,
@@ -278,9 +278,6 @@ const styles = StyleSheet.create({
     shadowColor: COLORS.shades[100],
     shadowOpacity: 0.05,
     shadowRadius: 10,
-  },
-  carousel: {
-    Horizontal: 25,
   },
   container: {
     marginTop: 30,

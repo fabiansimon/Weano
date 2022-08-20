@@ -1,11 +1,11 @@
-// eslint-disable-next-line no-undef
-const COLORS = {
+// eslint-disable-next-line no-undef, import/prefer-default-export
+export default COLORS = {
   shades: {
     0: '#FFF',
     100: '#050505',
   },
   neutral: {
-    50: '#F7F7F7',
+    50: '#FAFAFA',
     100: '#EBEBEB',
     300: '#A4A4A4',
     500: '#505050',
@@ -49,4 +49,16 @@ const COLORS = {
   },
 };
 
-export default COLORS;
+export const PADDING = {
+  s: 10,
+  m: 15,
+  l: 20,
+  xl: 25,
+};
+
+export const RADIUS = {
+  s: 10,
+  m: 14,
+  l: 18,
+  xl: 100,
+};

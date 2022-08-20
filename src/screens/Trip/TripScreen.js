@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
 import { ScrollView } from 'react-native-gesture-handler';
-import COLORS from '../../constants/Theme';
+import COLORS, { PADDING } from '../../constants/Theme';
 import AnimatedHeader from '../../components/AnimatedHeader';
 import Headline from '../../components/typography/Headline';
 import i18n from '../../utils/i18n';
@@ -234,7 +234,7 @@ export default function TripScreen() {
         onPress={() => console.log('Add Image')}
       />
       <View style={styles.bodyContainer}>
-        <View style={{ paddingHorizontal: 20 }}>
+        <View style={{ paddingHorizontal: PADDING.l }}>
           <InfoCircle
             title={tripData.invitees.length}
             subtitle="👍"
@@ -260,7 +260,7 @@ export default function TripScreen() {
               onPress={() => navigation.push(ROUTES.dateScreen)}
               backgroundColor={COLORS.shades[0]}
               textColor={COLORS.shades[100]}
-              style={[styles.infoButton, { marginLeft: 10 }]}
+              style={[styles.infoButton, { marginLeft: PADDING.s }]}
             />
           </View>
           <Body
@@ -282,7 +282,7 @@ export default function TripScreen() {
             color={COLORS.primary[700]}
           />
         </View>
-        <ScrollView horizontal style={{ paddingHorizontal: 20, paddingTop: 14, paddingBottom: 6 }}>
+        <ScrollView horizontal style={{ paddingHorizontal: PADDING.l, paddingTop: 14, paddingBottom: 6 }}>
           {statusData.map((item) => (
             <StatusContainer
               style={{ marginRight: 10 }}
@@ -343,8 +343,16 @@ export default function TripScreen() {
               blurRadius={10}
             />
             <View style={styles.addImage}>
-              <Headline type={3} text={i18n.t('Add Trip Image')} color={COLORS.shades[0]} />
-              <Icon name="image" size={32} color={COLORS.shades[0]} />
+              <Headline
+                type={3}
+                text={i18n.t('Add Trip Image')}
+                color={COLORS.shades[0]}
+              />
+              <Icon
+                name="image"
+                size={32}
+                color={COLORS.shades[0]}
+              />
             </View>
           </View>
           <Animated.ScrollView
@@ -413,11 +421,6 @@ const styles = StyleSheet.create({
     width: '100%',
     bottom: 0,
   },
-  globeButton: {
-    marginLeft: 15,
-    borderWidth: 1,
-    borderColor: COLORS.neutral[100],
-  },
   image: {
     resizeMode: 'stretch',
     height: 290,
@@ -446,7 +449,7 @@ const styles = StyleSheet.create({
   },
   statusContainer: {
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: PADDING.l,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },

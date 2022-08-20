@@ -1,11 +1,11 @@
 import { View, StyleSheet } from 'react-native';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
-import COLORS from '../../constants/Theme';
+import BottomSheet from '@gorhom/bottom-sheet';
+import COLORS, { PADDING } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Headline from '../../components/typography/Headline';
-import HighlightContainer from '../../components/Trip/HighlightContainer';
 import TrailContainer from '../../components/Trip/TrailContainer';
 import DateRangeContainer from '../../components/Trip/DateRangeContainer';
 import AvailabilityModal from '../../components/Trip/AvailabilityModal';
@@ -14,14 +14,18 @@ import FilterModal from '../../components/FilterModal';
 import CalendarOverviewModal from '../../components/Trip/CalendarOverviewModal';
 import HybridHeader from '../../components/HybridHeader';
 import INFORMATION from '../../constants/Information';
+import Divider from '../../components/Divider';
+import BoardingPassModal from '../../components/Trip/BoardingPassModal';
+// import BoardingPassBackDrop from '../../components/Trip/BoardingPassBackDrop';
 
 export default function DateScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
   const [isVisible, setIsVisible] = useState(false);
   const [overviewVisible, setOverviewVisible] = useState(false);
-  const [voteIndex, setVoteIndex] = useState(-1);
   const [days, setDays] = useState(7);
   const [daysVisible, setDaysVisible] = useState(false);
+  const snapPoints = useMemo(() => ['20%', '85%'], []);
+  const sheetRef = useRef(null);
 
   const daysOptions = {
     title: 'Set days amount',
@@ -121,12 +125,6 @@ export default function DateScreen() {
         info={INFORMATION.dateScreen}
       >
         <View style={styles.innerContainer}>
-          <HighlightContainer
-            onPress={() => setOverviewVisible(true)}
-            description={i18n.t('Current dates')}
-            text="21.04 to 28.04"
-            style={{ marginBottom: 20 }}
-          />
           <View style={styles.tileContainer}>
             <View style={styles.suggestedHeader}>
               <Headline
@@ -144,8 +142,6 @@ export default function DateScreen() {
                 <DateRangeContainer
                   style={{ marginRight: dateData.length - 1 !== index ? 10 : 40 }}
                   dateRange={date.dateRange}
-                  onPress={() => setVoteIndex(index === voteIndex ? -1 : index)}
-                  isActive={index === voteIndex}
                   title={date.votes}
                   subtitle={i18n.t('votes')}
                 />
@@ -164,6 +160,28 @@ export default function DateScreen() {
                 icon="plus"
               />
             </View>
+            <Headline
+              type={4}
+              style={{ marginLeft: PADDING.m, marginBottom: -10, marginTop: 14 }}
+              text={i18n.t('Available')}
+            />
+            <ScrollView horizontal style={styles.dateCarousel}>
+              {availabilityData.available.map((date, index) => (
+                <AvailabilityCard
+                  style={{ marginRight: availabilityData.length - 1 !== index ? 10 : 40 }}
+                  dateRange={date.dateRange}
+                />
+              ))}
+            </ScrollView>
+            <Divider
+              top={1}
+              style={{ marginHorizontal: PADDING.m }}
+            />
+            <Headline
+              type={4}
+              style={{ marginLeft: PADDING.m, marginBottom: -10, marginTop: 10 }}
+              text={i18n.t('Unavailable')}
+            />
             <ScrollView horizontal style={styles.dateCarousel}>
               {availabilityData.available.map((date, index) => (
                 <AvailabilityCard
@@ -190,6 +208,19 @@ export default function DateScreen() {
         data={daysOptions}
         onPress={(d) => setDays(d.value)}
       />
+      <BottomSheet
+        handleIndicatorStyle={{ opacity: 0 }}
+        backgroundStyle={{
+          backgroundColor: 'transparent',
+          borderRadius: 20,
+        }}
+        // backdropComponent={BoardingPassBackDrop}
+        ref={sheetRef}
+        index={0}
+        snapPoints={snapPoints}
+      >
+        <BoardingPassModal type="date" />
+      </BottomSheet>
     </View>
   );
 }
@@ -198,14 +229,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.shades[50],
+    paddingBottom: 100,
   },
   dateCarousel: {
-    paddingHorizontal: 20,
+    paddingHorizontal: PADDING.m,
     paddingTop: 20,
     paddingBottom: 25,
   },
   innerContainer: {
-    paddingHorizontal: 15,
+    paddingHorizontal: PADDING.s,
     paddingTop: 20,
     paddingBottom: 36,
   },
@@ -222,6 +254,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: PADDING.m,
   },
 });

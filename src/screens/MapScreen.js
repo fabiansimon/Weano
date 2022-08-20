@@ -11,10 +11,6 @@ export default function MapScreen() {
   const snapPoints = useMemo(() => ['20%', '90%'], []);
   const sheetRef = useRef(null);
 
-  //   const sheetChanges = useCallback((index) => {
-
-  //   }, []);
-
   return (
     <View style={styles.container}>
       <MapboxGL.MapView style={styles.map} />

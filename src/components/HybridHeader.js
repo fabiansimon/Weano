@@ -6,6 +6,7 @@ import AnimatedHeader from './AnimatedHeader';
 import BackButton from './BackButton';
 import Headline from './typography/Headline';
 import BasicHeader from './BasicHeader';
+import { PADDING } from '../constants/Theme';
 
 export default function HybridHeader({
   style, title, subtitle, onPressBack, info, children, scrollY, content,
@@ -58,7 +59,7 @@ const styles = StyleSheet.create({
   animatedHeader: {
     paddingBottom: 10,
     flexDirection: 'row',
-    paddingHorizontal: 20,
+    paddingHorizontal: PADDING.m,
     justifyContent: 'space-between',
   },
   backButton: {
