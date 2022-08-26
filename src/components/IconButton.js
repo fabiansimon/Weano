@@ -1,16 +1,19 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import COLORS from '../constants/Theme';
+import Icon from 'react-native-vector-icons/Ionicons';
+import COLORS, { RADIUS } from '../constants/Theme';
 
 export default function IconButton({
-  style, icon, isActive, onPress,
+  style, icon, isActive = true, onPress,
 }) {
-  const color = isActive ? COLORS.secondary[900] : COLORS.neutral[300];
+  const color = isActive ? COLORS.secondary[700] : COLORS.neutral[100];
 
   return (
-    <TouchableOpacity style={[styles.container, style, { borderColor: color }]} onPress={onPress}>
-      <Icon name={icon} color={color} size={22} />
+    <TouchableOpacity
+      style={[styles.container, style]}
+      onPress={onPress}
+    >
+      <Icon name={icon} color={color} size={24} />
     </TouchableOpacity>
   );
 }
@@ -20,12 +23,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: 45,
+    borderColor: COLORS.neutral[100],
     height: 45,
-    borderRadius: 10,
+    borderRadius: RADIUS.m,
     borderWidth: 1,
-    shadowColor: COLORS.shades[100],
-    shadowRadius: 10,
     backgroundColor: COLORS.shades[0],
-    shadowOpacity: 0.03,
   },
 });

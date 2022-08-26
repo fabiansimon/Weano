@@ -214,7 +214,6 @@ export default function DateScreen() {
           backgroundColor: 'transparent',
           borderRadius: 20,
         }}
-        // backdropComponent={BoardingPassBackDrop}
         ref={sheetRef}
         index={0}
         snapPoints={snapPoints}

@@ -27,6 +27,7 @@ export default function MainScreen() {
   const mockTrips = [
     {
       title: 'Maturareise VBS Gang 🐕',
+      description: 'Fucking sending it for a few weeks straight. Guys trip baby. LET’S GO 🍻',
       dateRange: {
         startDate: 1656865380,
         endDate: 1658074980,
@@ -128,9 +129,14 @@ export default function MainScreen() {
         <View style={styles.header}>
           <View>
             <Headline type={3} text={i18n.t('Hey Fabian')} />
-            <Headline type={4} text={i18n.t('Are you looking for something? 👀')} />
+            <Headline
+              type={4}
+              text={i18n.t('Are you looking for something? 👀')}
+              color={COLORS.neutral[300]}
+            />
           </View>
           <Button
+            isSecondary
             style={[styles.searchButton, styles.buttonShadow]}
             backgroundColor={COLORS.shades[0]}
             icon={<Icon name="search1" size={20} />}
@@ -156,7 +162,7 @@ export default function MainScreen() {
                 <Headline
                   type={4}
                   text={i18n.t('ready for a new Adventure? 🌍')}
-                  color={COLORS.neutral[500]}
+                  color={COLORS.neutral[300]}
                 />
               </View>
               <Avatar
@@ -191,7 +197,7 @@ export default function MainScreen() {
                     key={trip.latlon}
                     onPress={() => navigation.navigate(ROUTES.tripScreen)}
                     data={trip}
-                    style={{ marginRight: 30 }}
+                    style={{ marginRight: 20 }}
                   />
                   {index === mockTrips.length - 1 && <View style={{ width: 25 }} />}
                 </>
@@ -215,7 +221,7 @@ export default function MainScreen() {
                   <RecapCard
                     key={trip.latlon}
                     data={trip}
-                    style={{ marginRight: 30 }}
+                    style={{ marginRight: 20 }}
                     type="mini"
                   />
                   {index === mockTrips.length - 1 && <View style={{ width: 25 }} />}
@@ -236,6 +242,7 @@ export default function MainScreen() {
           backgroundColor={COLORS.shades[0]}
           onPress={() => navigation.navigate(ROUTES.mapScreen)}
           icon="globe"
+          isSecondary
           fullWidth={false}
           color={COLORS.neutral[900]}
         />

@@ -20,6 +20,7 @@ export default function BackButton({ style, isClear = false, onPress }) {
     )
       : (
         <Button
+          isSecondary
           style={[styles.backButton, style]}
           backgroundColor={COLORS.shades[0]}
           icon={<Icon name="arrowleft" size={22} />}

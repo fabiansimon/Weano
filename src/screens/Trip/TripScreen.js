@@ -245,6 +245,7 @@ export default function TripScreen() {
           <Headline type={2} text={tripData.title} />
           <View style={{ flexDirection: 'row', marginTop: 12 }}>
             <Button
+              isSecondary
               text={i18n.t('Set location')}
               fullWidth={false}
               icon="location-pin"
@@ -254,6 +255,7 @@ export default function TripScreen() {
               style={styles.infoButton}
             />
             <Button
+              isSecondary
               text={i18n.t('Find date')}
               fullWidth={false}
               icon={<AntIcon name="calendar" size={22} />}
