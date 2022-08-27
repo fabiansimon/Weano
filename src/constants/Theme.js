@@ -59,6 +59,6 @@ export const PADDING = {
 export const RADIUS = {
   s: 10,
   m: 14,
-  l: 18,
+  l: 20,
   xl: 100,
 };

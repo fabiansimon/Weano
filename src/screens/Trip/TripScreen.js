@@ -14,7 +14,6 @@ import i18n from '../../utils/i18n';
 import Button from '../../components/Button';
 import DefaultImage from '../../../assets/images/default_trip.png';
 import BackButton from '../../components/BackButton';
-import InfoCircle from '../../components/InfoCircle';
 import Body from '../../components/typography/Body';
 import Divider from '../../components/Divider';
 import Utils from '../../utils';
@@ -235,13 +234,6 @@ export default function TripScreen() {
       />
       <View style={styles.bodyContainer}>
         <View style={{ paddingHorizontal: PADDING.l }}>
-          <InfoCircle
-            title={tripData.invitees.length}
-            subtitle="👍"
-            style={{
-              position: 'absolute', top: -30, right: 20, zIndex: 11,
-            }}
-          />
           <Headline type={2} text={tripData.title} />
           <View style={{ flexDirection: 'row', marginTop: 12 }}>
             <Button

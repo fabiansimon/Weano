@@ -1,20 +1,21 @@
 import { View, StyleSheet } from 'react-native';
 import React from 'react';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
+import Ionicon from 'react-native-vector-icons/Ionicons';
 import Headline from './typography/Headline';
-import InfoCircle from './InfoCircle';
 import COLORS from '../constants/Theme';
 import Body from './typography/Body';
 import TabBar from './Trip/TabBar';
 import Divider from './Divider';
+import Button from './Button';
 
 export default function TripHeader({
-  style, title, subtitle, invitees, items, currentTab, onPress,
+  style, title, subtitle, items, currentTab, onPress,
 }) {
   return (
     <View style={[styles.container, style]}>
       <View style={styles.header}>
-        <View style={{ width: 55 }} />
+        <View style={{ width: 50 }} />
         <View>
           <Headline type={4} text={title} style={{ fontWeight: '600' }} />
           <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
@@ -30,10 +31,13 @@ export default function TripHeader({
             />
           </View>
         </View>
-        <InfoCircle
-          title={invitees.length}
-          subtitle="👍"
-          disableShadow
+        <Button
+          isSecondary
+          style={styles.moreButton}
+          icon={<Ionicon name="ios-chatbubbles-outline" size={22} />}
+          fullWidth={false}
+          color={COLORS.neutral[900]}
+          // onPress={() => (onPress ? onPress() : navigation.goBack())}
         />
       </View>
       <View>
@@ -50,6 +54,9 @@ export default function TripHeader({
 }
 
 const styles = StyleSheet.create({
+  moreButton: {
+    marginTop: 7,
+  },
   container: {
     marginTop: 40,
   },

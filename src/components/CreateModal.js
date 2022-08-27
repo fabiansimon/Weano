@@ -2,7 +2,7 @@ import {
   View, StyleSheet, Modal, Dimensions, ScrollView,
 } from 'react-native';
 import React, { useRef, useState, useEffect } from 'react';
-import Icon from 'react-native-vector-icons/AntDesign';
+import Icon from 'react-native-vector-icons/Entypo';
 import PagerView from 'react-native-pager-view';
 import CalendarPicker from 'react-native-calendar-picker';
 import Contacts from 'react-native-contacts';
@@ -223,7 +223,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
       title: i18n.t('Already know the date? 🎉'),
       subtitle: i18n.t('You can always come back later'),
       trailing: <Icon
-        name="infocirlce"
+        name="info-with-circle"
         size={20}
         color={COLORS.neutral[500]}
         onPress={() => setPopUpVisible(true)}
@@ -236,7 +236,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
       title: i18n.t('Already know the destination? 🎉'),
       subtitle: i18n.t('You can always change it later'),
       trailing: <Icon
-        name="infocirlce"
+        name="info-with-circle"
         size={20}
         color={COLORS.neutral[500]}
         onPress={() => setPopUpVisible(true)}

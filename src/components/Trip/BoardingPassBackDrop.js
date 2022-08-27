@@ -4,6 +4,7 @@ import Animated, {
   interpolate,
   useAnimatedStyle,
 } from 'react-native-reanimated';
+import COLORS from '../../constants/Theme';
 
 function BoardingPassBackDrop({ animatedIndex, style }) {
   // animated variables
@@ -21,7 +22,7 @@ function BoardingPassBackDrop({ animatedIndex, style }) {
     () => [
       style,
       {
-        backgroundColor: '#a8b5eb',
+        backgroundColor: COLORS.shades[100],
       },
       containerAnimatedStyle,
     ],

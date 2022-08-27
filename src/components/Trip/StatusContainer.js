@@ -2,7 +2,7 @@ import {
   Image, StyleSheet, TouchableOpacity,
 } from 'react-native';
 import React from 'react';
-import COLORS from '../../constants/Theme';
+import COLORS, { RADIUS } from '../../constants/Theme';
 import StatusDoneIcon from '../../../assets/icons/status_check.png';
 import StatusNotDoneIcon from '../../../assets/icons/status_check_false.png';
 import Headline from '../typography/Headline';
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   container: {
     height: 85,
     width: 90,
-    borderRadius: 14,
+    borderRadius: RADIUS.l,
     borderColor: COLORS.neutral[100],
     borderWidth: 1,
     justifyContent: 'center',

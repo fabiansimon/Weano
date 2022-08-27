@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
-import COLORS from '../constants/Theme';
+import COLORS, { RADIUS } from '../constants/Theme';
 import Headline from './typography/Headline';
 
 export default function TextField({
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 50,
     backgroundColor: COLORS.shades[0],
-    borderRadius: 10,
+    borderRadius: RADIUS.m,
     shadowColor: COLORS.shades[100],
     borderWidth: 1,
   },

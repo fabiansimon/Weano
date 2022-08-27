@@ -1,9 +1,12 @@
-import { View, StyleSheet } from 'react-native';
-import React, { useState, useRef, useMemo } from 'react';
+import { View, StyleSheet, StatusBar } from 'react-native';
+import React, {
+  useState, useRef, useMemo, useCallback,
+} from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
-import BottomSheet from '@gorhom/bottom-sheet';
-import COLORS, { PADDING } from '../../constants/Theme';
+import BottomSheet, { TouchableOpacity } from '@gorhom/bottom-sheet';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Headline from '../../components/typography/Headline';
 import TrailContainer from '../../components/Trip/TrailContainer';
@@ -16,6 +19,7 @@ import HybridHeader from '../../components/HybridHeader';
 import INFORMATION from '../../constants/Information';
 import Divider from '../../components/Divider';
 import BoardingPassModal from '../../components/Trip/BoardingPassModal';
+import HighlightContainer from '../../components/Trip/HighlightContainer';
 // import BoardingPassBackDrop from '../../components/Trip/BoardingPassBackDrop';
 
 export default function DateScreen() {
@@ -24,8 +28,7 @@ export default function DateScreen() {
   const [overviewVisible, setOverviewVisible] = useState(false);
   const [days, setDays] = useState(7);
   const [daysVisible, setDaysVisible] = useState(false);
-  const snapPoints = useMemo(() => ['20%', '85%'], []);
-  const sheetRef = useRef(null);
+  const [isBoardingPassVisible, setBoardingPassVisible] = useState(false);
 
   const daysOptions = {
     title: 'Set days amount',
@@ -119,6 +122,7 @@ export default function DateScreen() {
 
   return (
     <View style={styles.container}>
+      <StatusBar barStyle="dark-content" />
       <HybridHeader
         title={i18n.t('Find date')}
         scrollY={scrollY}
@@ -208,7 +212,19 @@ export default function DateScreen() {
         data={daysOptions}
         onPress={(d) => setDays(d.value)}
       />
-      <BottomSheet
+      <TouchableOpacity
+        onPress={() => setBoardingPassVisible(true)}
+        activeOpacity={1}
+        style={styles.bottomContainer}
+      >
+        <SafeAreaView edges={['bottom']}>
+          <HighlightContainer
+            description={i18n.t('Destination')}
+            text="Paris, France"
+          />
+        </SafeAreaView>
+      </TouchableOpacity>
+      {/* <BottomSheet
         handleIndicatorStyle={{ opacity: 0 }}
         backgroundStyle={{
           backgroundColor: 'transparent',
@@ -216,10 +232,17 @@ export default function DateScreen() {
         }}
         ref={sheetRef}
         index={0}
+        // backdropComponent={BoardingPassBackDrop}
+        onChange={sheetChanges}
         snapPoints={snapPoints}
       >
         <BoardingPassModal type="date" />
-      </BottomSheet>
+      </BottomSheet> */}
+      <BoardingPassModal
+        isVisible={isBoardingPassVisible}
+        onRequestClose={() => setBoardingPassVisible(false)}
+        type="date"
+      />
     </View>
   );
 }
@@ -227,8 +250,18 @@ export default function DateScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.shades[50],
+    backgroundColor: COLORS.neutral[50],
     paddingBottom: 100,
+  },
+  bottomContainer: {
+    borderTopRightRadius: RADIUS.l,
+    borderTopLeftRadius: RADIUS.l,
+    paddingTop: 6,
+    width: '100%',
+    paddingHorizontal: PADDING.m,
+    position: 'absolute',
+    bottom: 0,
+    backgroundColor: COLORS.primary[700],
   },
   dateCarousel: {
     paddingHorizontal: PADDING.m,

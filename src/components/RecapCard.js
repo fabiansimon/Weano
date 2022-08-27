@@ -61,22 +61,22 @@ export default function RecapCard({
     </TouchableOpacity>
   );
 
-  const getInviteeList = () => (
-    <View style={styles.inviteeContainer}>
-      {data.invitees.map((invitee) => (
-        <Avatar
-          uri={invitee.uri}
-          size={36}
-          style={{ marginRight: -8 }}
-        />
-      ))}
-      <Body
-        type={1}
-        text={i18n.t('+2')}
-        style={{ marginLeft: 10 }}
-      />
-    </View>
-  );
+  // const getInviteeList = () => (
+  //   <View style={styles.inviteeContainer}>
+  //     {data.invitees.map((invitee) => (
+  //       <Avatar
+  //         uri={invitee.uri}
+  //         size={36}
+  //         style={{ marginRight: -8 }}
+  //       />
+  //     ))}
+  //     <Body
+  //       type={1}
+  //       text={i18n.t('+2')}
+  //       style={{ marginLeft: 10 }}
+  //     />
+  //   </View>
+  // );
 
   const getMainCard = () => (
     <TouchableOpacity

@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Foundation';
-import COLORS from '../../constants/Theme';
+import COLORS, { RADIUS } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Body from '../typography/Body';
 
@@ -39,7 +39,7 @@ export default function RewindTile({ style }) {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 14,
-    borderRadius: 10,
+    borderRadius: RADIUS.m,
     backgroundColor: COLORS.primary[700],
     height: 52,
     flexDirection: 'row',

@@ -12,62 +12,43 @@ export default function HighlightContainer({
   style, description, text, onPress, onButtonPress, buttonText, buttonIcon,
 }) {
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      activeOpacity={0.9}
+    <View
       style={[styles.tile, style]}
     >
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
+      <View>
         <Headline
-          type={3}
+          type={4}
           text={description}
           color={COLORS.shades[0]}
         />
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Body
-            type={2}
-            text={i18n.t('set by')}
-            color={COLORS.shades[0]}
-          />
-          <RoleChip isHost style={{ marginLeft: 6 }} />
-        </View>
-      </View>
-      {text ? (
         <Headline
-          type={1}
+          type={2}
           text={text}
           color={COLORS.shades[0]}
           style={{ alignSelf: 'flex-start' }}
         />
-      ) : (
-        <Button
-          onPress={onButtonPress}
-          text={buttonText}
-          fullWidth={false}
-          icon={(
-            <AntIcon
-              name={buttonIcon}
-              size={22}
-              color={COLORS.shades[0]}
-            />
-            )}
-          textColor={COLORS.shades[0]}
-          style={styles.addButton}
+      </View>
+      <View style={{ flexDirection: 'row' }}>
+        <Body
+          type={2}
+          text={i18n.t('set by')}
+          color={COLORS.shades[0]}
         />
-      )}
-    </TouchableOpacity>
+        <RoleChip isHost style={{ marginLeft: 6 }} />
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   tile: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
     paddingTop: 14,
     paddingBottom: 12,
-    paddingHorizontal: 15,
-    backgroundColor: COLORS.primary[700],
-    justifyContent: 'space-between',
     borderRadius: 14,
-    alignItems: 'center',
+    height: 86,
   },
   addButton: {
     borderColor: COLORS.shades[0],
