@@ -1,6 +1,5 @@
 import { View, StyleSheet } from 'react-native';
-import React, { useState, useRef, useMemo } from 'react';
-import BottomSheet from '@gorhom/bottom-sheet';
+import React, { useState, useRef } from 'react';
 import Animated from 'react-native-reanimated';
 import COLORS, { PADDING } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
@@ -13,8 +12,6 @@ import BoardingPassModal from '../../components/Trip/BoardingPassModal';
 
 export default function LocationScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
-  const snapPoints = useMemo(() => ['20%', '85%'], []);
-  const sheetRef = useRef(null);
   const mockData = [
     {
       title: 'Paris, France',
@@ -68,19 +65,11 @@ export default function LocationScreen() {
         data={pollData}
         setPollData={setPollData}
       />
-      <BottomSheet
-        handleIndicatorStyle={{ opacity: 0 }}
-        backgroundStyle={{
-          backgroundColor: 'transparent',
-          borderRadius: 20,
-        }}
-        // backdropComponent={BoardingPassBackDrop}
-        ref={sheetRef}
-        index={0}
-        snapPoints={snapPoints}
-      >
-        <BoardingPassModal type="destination" />
-      </BottomSheet>
+      <BoardingPassModal
+        type="destination"
+        onRequestClose={() => setIsVisible(false)}
+        isVisible={isVisible}
+      />
     </View>
   );
 }

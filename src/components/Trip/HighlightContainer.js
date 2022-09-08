@@ -1,15 +1,13 @@
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import React from 'react';
-import AntIcon from 'react-native-vector-icons/AntDesign';
 import COLORS from '../../constants/Theme';
 import Headline from '../typography/Headline';
 import Body from '../typography/Body';
 import RoleChip from '../RoleChip';
 import i18n from '../../utils/i18n';
-import Button from '../Button';
 
 export default function HighlightContainer({
-  style, description, text, onPress, onButtonPress, buttonText, buttonIcon,
+  style, description, text,
 }) {
   return (
     <View

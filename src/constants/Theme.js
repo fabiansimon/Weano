@@ -15,7 +15,7 @@ export default COLORS = {
   primary: {
     50: '#9AA8FF',
     300: '#7083FD',
-    500: '#5A71FF',
+    500: '#435DFE',
     700: '#304DFF',
     900: '#0014B2',
   },

@@ -12,9 +12,7 @@ import Headline from '../typography/Headline';
 import Body from '../typography/Body';
 import Button from '../Button';
 
-export default function BoardingPassModal({
-  type, isVisible, onRequestClose,
-}) {
+export default function BoardingPassModal({ type, isVisible, onRequestClose }) {
   const [showModal, setShowModal] = useState(isVisible);
   const animatedBottom = useRef(new Animated.Value(900)).current;
   const duration = 300;
@@ -24,8 +22,6 @@ export default function BoardingPassModal({
   }, [isVisible]);
 
   const toggleModal = () => {
-    console.log('hello');
-
     if (isVisible) {
       setShowModal(true);
       Animated.spring(animatedBottom, {
@@ -43,10 +39,7 @@ export default function BoardingPassModal({
     }
   };
   const getDestinationContainer = () => (
-    <HighlightContainer
-      description={i18n.t('Date')}
-      text="21.04 to 28.04"
-    />
+    <HighlightContainer description={i18n.t('Date')} text="21.04 to 28.04" />
   );
 
   const getDateContainer = () => (
@@ -71,9 +64,16 @@ export default function BoardingPassModal({
         style={{ backgroundColor: 'rgba(0,0,0,0.9)', flex: 1 }}
       >
         <View style={{ height: '24%' }} />
-        <Animated.View style={[styles.modalContainer, { transform: [{ translateY: 0 }] }]}>
+        <Animated.View
+          style={[styles.modalContainer, { transform: [{ translateY: 0 }] }]}
+        >
           <View style={styles.boardingPass}>
-            <View style={{ paddingVertical: PADDING.m, paddingHorizontal: PADDING.m }}>
+            <View
+              style={{
+                paddingVertical: PADDING.m,
+                paddingHorizontal: PADDING.m,
+              }}
+            >
               <Headline
                 type={2}
                 color={COLORS.shades[0]}
@@ -92,7 +92,13 @@ export default function BoardingPassModal({
               dashLength={4}
               dashThickness={1}
             />
-            <View style={{ paddingHorizontal: PADDING.m, paddingTop: PADDING.s, paddingBottom: PADDING.l }}>
+            <View
+              style={{
+                paddingHorizontal: PADDING.m,
+                paddingTop: PADDING.s,
+                paddingBottom: PADDING.l,
+              }}
+            >
               {type === 'date' ? getDateContainer() : getDestinationContainer()}
               {type === 'date' ? getDestinationContainer() : getDateContainer()}
             </View>
@@ -107,8 +113,18 @@ export default function BoardingPassModal({
               resizeMode="contain"
               source={BoardingPassCode}
             />
-            <View style={[styles.invertBubble, { position: 'absolute', left: -20, bottom: 83 }]} />
-            <View style={[styles.invertBubble, { position: 'absolute', right: -20, bottom: 83 }]} />
+            <View
+              style={[
+                styles.invertBubble,
+                { position: 'absolute', left: -20, bottom: 83 },
+              ]}
+            />
+            <View
+              style={[
+                styles.invertBubble,
+                { position: 'absolute', right: -20, bottom: 83 },
+              ]}
+            />
           </View>
           <Button
             style={{ marginTop: 20, marginHorizontal: PADDING.l }}

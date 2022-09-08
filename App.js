@@ -11,6 +11,7 @@ import InviteeScreen from './src/screens/Trip/InviteeScreen';
 import AccomodationsScreen from './src/screens/Trip/AccomodationsScreen';
 import LocationScreen from './src/screens/Trip/LocationScreen';
 import DateScreen from './src/screens/Trip/DateScreen';
+import ChatScreen from './src/screens/Trip/ChatScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -23,6 +24,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name={ROUTES.chatScreen} component={ChatScreen} />
         <Stack.Screen name={ROUTES.mainScreen} component={MainScreen} />
         <Stack.Screen name={ROUTES.mapScreen} component={MapScreen} />
         <Stack.Screen name={ROUTES.tripScreen} component={TripScreen} />

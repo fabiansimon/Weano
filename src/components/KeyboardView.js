@@ -12,7 +12,7 @@ export default function KeyboardView({ children }) {
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : null}
         style={{ flex: 1 }}
-        keyboardVerticalOffset={Platform.select({ ios: 50, android: 500 })}
+        keyboardVerticalOffset={Platform.select({ ios: 0, android: 500 })}
       >
         {children}
       </KeyboardAvoidingView>

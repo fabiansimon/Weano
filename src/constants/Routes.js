@@ -7,6 +7,7 @@ const ROUTES = {
   accomodationsScreen: 'AccomodationsScreen',
   locationScreen: 'locationScreen',
   dateScreen: 'dateScreen',
+  chatScreen: 'chatScreen',
 };
 
 export default ROUTES;
