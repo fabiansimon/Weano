@@ -129,7 +129,7 @@ export default function DateScreen() {
       >
         <View style={styles.innerContainer}>
           <CalendarAvailabilityContainer style={{ marginBottom: 20 }} />
-          <View style={styles.tileContainer}>
+          {/* <View style={styles.tileContainer}>
             <View style={styles.suggestedHeader}>
               <Headline type={3} text={i18n.t('Suggested dates for')} />
               <TrailContainer
@@ -148,7 +148,7 @@ export default function DateScreen() {
                 />
               ))}
             </ScrollView>
-          </View>
+          </View> */}
           <View style={styles.tileContainer}>
             <View style={styles.suggestedHeader}>
               <Headline type={3} text={i18n.t('Your (un)availabilities')} />
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
   innerContainer: {
     paddingHorizontal: PADDING.s,
     paddingTop: 20,
-    paddingBottom: 36,
+    paddingBottom: 120,
   },
   tileContainer: {
     paddingTop: 10,

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { LogBox } from 'react-native';
+import { LogBox, StatusBar } from 'react-native';
 import ROUTES from './src/constants/Routes';
 import IntroScreen from './src/screens/Intro/IntroScreen';
 import MainScreen from './src/screens/MainScreen';
@@ -23,8 +23,8 @@ export default function App() {
 
   return (
     <NavigationContainer>
+      <StatusBar barStyle="dark-content" />
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name={ROUTES.chatScreen} component={ChatScreen} />
         <Stack.Screen name={ROUTES.mainScreen} component={MainScreen} />
         <Stack.Screen name={ROUTES.mapScreen} component={MapScreen} />
         <Stack.Screen name={ROUTES.tripScreen} component={TripScreen} />
@@ -33,6 +33,7 @@ export default function App() {
         <Stack.Screen name={ROUTES.accomodationsScreen} component={AccomodationsScreen} />
         <Stack.Screen name={ROUTES.locationScreen} component={LocationScreen} />
         <Stack.Screen name={ROUTES.dateScreen} component={DateScreen} />
+        <Stack.Screen name={ROUTES.chatScreen} component={ChatScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

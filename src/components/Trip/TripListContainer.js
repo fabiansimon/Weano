@@ -2,9 +2,9 @@ import { View, StyleSheet } from 'react-native';
 import React from 'react';
 import COLORS from '../../constants/Theme';
 
-export default function TripListContainer({ style, children }) {
+export default function TripListContainer({ style, children, onLayout }) {
   return (
-    <View style={[styles.container, style]}>
+    <View onLayout={onLayout} style={[styles.container, style]}>
       {children}
     </View>
   );

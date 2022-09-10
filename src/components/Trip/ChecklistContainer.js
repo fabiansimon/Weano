@@ -10,14 +10,16 @@ import COLORS from '../../constants/Theme';
 import Switch from '../Switch';
 import Body from '../typography/Body';
 
-export default function ChecklistContainer({ data, onPress }) {
+export default function ChecklistContainer({ data, onPress, onLayout }) {
   const [isPrivate, setIsPrivate] = useState(false);
 
   const getChecklistItem = (item, index, type) => (
-    <View style={{
-      marginVertical: 10,
-      marginHorizontal: 25,
-    }}
+    <View
+      onLayout={onLayout}
+      style={{
+        marginVertical: 10,
+        marginHorizontal: 25,
+      }}
     >
       <BouncyCheckbox
         size={22}

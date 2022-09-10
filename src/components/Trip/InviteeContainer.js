@@ -6,9 +6,9 @@ import i18n from '../../utils/i18n';
 import Divider from '../Divider';
 import TripListContainer from './TripListContainer';
 
-export default function InviteeContainer() {
+export default function InviteeContainer({ onLayout }) {
   return (
-    <TripListContainer>
+    <TripListContainer onLayout={onLayout}>
       <View style={styles.headerRow}>
         <Headline type={4} text={`👍 ${i18n.t('Yes')}`} color={COLORS.neutral[700]} />
         <Headline type={4} text={`💭 ${i18n.t('Maybe')}`} color={COLORS.neutral[700]} />

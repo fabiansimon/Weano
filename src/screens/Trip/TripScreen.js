@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
 import { ScrollView } from 'react-native-gesture-handler';
-import COLORS, { PADDING } from '../../constants/Theme';
+import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import AnimatedHeader from '../../components/AnimatedHeader';
 import Headline from '../../components/typography/Headline';
 import i18n from '../../utils/i18n';
@@ -146,6 +146,11 @@ export default function TripScreen() {
   const scrollRef = useRef();
   const [currentTab, setCurrentTab] = useState(0);
   const [tripData, setTripData] = useState(mockData);
+  const [layoutData, setLayoutData] = useState({
+    accomodationY: 0,
+    checklistY: 0,
+    inviteesY: 0,
+  });
 
   const navigation = useNavigation();
 
@@ -184,7 +189,7 @@ export default function TripScreen() {
 
   const contentItems = [
     {
-      title: 'Accomodations',
+      title: i18n.t('Accomodations'),
       trailing: <Headline
         onPress={() => navigation.navigate(ROUTES.accomodationsScreen, { data: mockData.accomodations })}
         type={4}
@@ -192,37 +197,40 @@ export default function TripScreen() {
         color={COLORS.neutral[500]}
       />,
       omitPadding: true,
-      content: <AccomodationCarousel data={mockData.accomodations} />,
-      yPos: 600,
+      content: <AccomodationCarousel
+        data={mockData.accomodations}
+        onLayout={(e) => {
+          console.log(`Accomodations: ${e.nativeEvent.layout.y}`);
+        }}
+      />,
+      yPos: layoutData.accomodationY + 440,
     },
     {
-      title: 'Checklist',
+      title: i18n.t('Checklist'),
       content: <ChecklistContainer
         data={tripData.tasks}
         onPress={(val, index, type) => updateTasks(val, index, type)}
+        onLayout={(e) => {
+          console.log(`Checklist: ${e.nativeEvent.layout.y}`);
+        }}
       />,
-      yPos: 600,
+      yPos: layoutData.checklistY,
     },
     {
-      title: 'Invitees',
+      title: i18n.t('Invitees'),
       trailing: <Headline
         onPress={() => navigation.navigate(ROUTES.inviteeScreen)}
         type={4}
         text={i18n.t('see all')}
         color={COLORS.neutral[500]}
       />,
-      content: <InviteeContainer data={tripData.invitees} />,
-      yPos: 200,
-    },
-    {
-      title: 'Itinerary',
-      content: <View style={{ height: 300 }} />,
-      yPos: 400,
-    },
-    {
-      title: 'Etc',
-      content: <View style={{ height: 300 }} />,
-      yPos: 800,
+      content: <InviteeContainer
+        data={tripData.invitees}
+        onLayout={(e) => {
+          console.log(`Invitees: ${e.nativeEvent.layout.y}`);
+        }}
+      />,
+      yPos: layoutData.inviteesY,
     },
   ];
 
@@ -316,6 +324,7 @@ export default function TripScreen() {
       ? <Headline text="Loading..." />
       : (
         <View style={{ backgroundColor: COLORS.shades[50], flex: 1 }}>
+
           <AnimatedHeader
             style={{ height: 170 }}
             maxHeight={380}
@@ -366,8 +375,20 @@ export default function TripScreen() {
             position: 'absolute', top: 47, left: 20, zIndex: 10,
           }}
           />
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={styles.fab}
+            onPress={() => navigation.push(ROUTES.chatScreen)}
+          >
+            <Icon
+              name="chatbox-ellipses"
+              color={COLORS.shades[0]}
+              size={22}
+            />
+          </TouchableOpacity>
         </View>
       )
+
   );
 }
 
@@ -414,6 +435,21 @@ const styles = StyleSheet.create({
     height: 110,
     width: '100%',
     bottom: 0,
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 50,
+    right: PADDING.xl,
+    height: 55,
+    width: 55,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.primary[700],
+    shadowColor: COLORS.neutral[500],
+    shadowOpacity: 0.2,
+    shadowRadius: 20,
+    shadowOffset: {},
   },
   image: {
     resizeMode: 'stretch',

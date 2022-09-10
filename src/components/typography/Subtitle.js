@@ -12,9 +12,10 @@ export default function Subtitle({
   const textColor = color || COLORS.shades[100];
 
   return (
-    <Text style={[{
-      fontSize, fontWeight, fontFamily, lineHeight, color: textColor, letterSpacing: -1,
-    }, style]}
+    <Text
+      style={[{
+        fontSize, fontWeight, fontFamily, lineHeight, color: textColor, letterSpacing: -1,
+      }, style]}
     >
       {text}
     </Text>
