@@ -7,8 +7,12 @@ import {
   TouchableOpacity,
   ScrollView,
   StatusBar,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, {
+  useState, useEffect, createRef, useRef,
+} from 'react';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import MatIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontIcon from 'react-native-vector-icons/FontAwesome';
@@ -25,17 +29,25 @@ import KeyboardView from '../../components/KeyboardView';
 import Divider from '../../components/Divider';
 import AttachmentContainer from '../../components/Trip/Chat/AttachmentContainer';
 import ATTACHMENTS from '../../constants/Attachments';
+import ChatMessageContainer from '../../components/Trip/Chat/ChatMessageContainer';
 
 export default function ChatScreen() {
   const [message, setMessage] = useState('');
   const [footerExpanded, setFooterExpanded] = useState(false);
   const animatedValues = useSharedValue({ height: 0, opacity: 0 });
+  const [chatData, setChatData] = useState([]);
+  const chatRef = useRef();
   const duration = 250;
+
+  const widgetTypes = {
+    TYPE_CHECKLIST: 'TYPE_CHECKLIST',
+  };
 
   const attachmentData = [
     {
       string: i18n.t("To-Do's"),
       icon: <MatIcon name="clipboard-check-outline" />,
+      onPress: () => sendMessage('WIDGET', widgetTypes.TYPE_CHECKLIST),
       type: ATTACHMENTS.checkList,
     },
     {
@@ -55,6 +67,89 @@ export default function ChatScreen() {
     },
 
   ];
+
+  const mockData = [
+    {
+      timestamp: 1660213218,
+      senderData: {
+        id: 'fabian',
+        imageUri: 'https://i.pravatar.cc/300',
+      },
+      messages: [
+        {
+          type: 'STRING',
+          content: 'Heyo test',
+        },
+        {
+          type: 'STRING',
+          content: 'Julia siehst das heast 🪑',
+        },
+      ],
+    },
+    {
+      timestamp: 1660215218,
+      senderData: {
+        id: 'julia',
+        imageUri: 'https://i.pravatar.cc/300',
+      },
+      messages: [
+        {
+          type: 'STRING',
+          content: 'Fix du hengst 🍣',
+        },
+
+      ],
+    },
+    {
+      timestamp: 1660215218,
+      senderData: {
+        id: 'alex',
+        imageUri: 'https://i.pravatar.cc/300',
+      },
+      messages: [
+        {
+          type: 'WIDGET',
+          content: 'TYPE_CHECKLIST',
+        },
+      ],
+    },
+  ];
+
+  useEffect(() => {
+    setChatData(mockData);
+  }, []);
+
+  const scrollDown = () => {
+    setTimeout(() => {
+      chatRef.current?.scrollTo({
+        y: 1000,
+        animated: true,
+      });
+    }, 100);
+  };
+
+  const sendMessage = (type, content) => {
+    if (type === 'STRING' && message.trim().length === 0) return;
+
+    const newMessage = {
+      timestamp: Date.now(),
+      senderData: {
+        id: 'fabian',
+        imageUri: 'https://i.pravatar.cc/300',
+      },
+      messages: [
+        {
+          type,
+          content,
+        },
+      ],
+    };
+
+    setChatData((prev) => prev.concat(newMessage));
+    setMessage('');
+    toggleExpand();
+    scrollDown();
+  };
 
   const animationStyle = useAnimatedStyle(() => ({
     height: !footerExpanded
@@ -100,11 +195,17 @@ export default function ChatScreen() {
   );
 
   const getChatContainer = () => (
-    <TouchableOpacity
-      activeOpacity={1}
+    <View
       style={styles.chatContainer}
-      onPress={() => toggleExpand(false)}
-    />
+    >
+      <ScrollView
+        ref={chatRef}
+        contentContainerStyle={{ flexGrow: 1, paddingVertical: 20, paddingHorizontal: PADDING.s }}
+        showsVerticalScrollIndicator={false}
+      >
+        {chatData.map((item) => <ChatMessageContainer data={item} />)}
+      </ScrollView>
+    </View>
   );
 
   const getFooter = () => (
@@ -132,7 +233,7 @@ export default function ChatScreen() {
             {attachmentData.map((attachment) => (
               <AttachmentContainer
                 style={{ marginRight: 8 }}
-                onPress={() => console.log('tap')}
+                onPress={attachment.onPress}
                 data={attachment}
               />
             ))}
@@ -166,16 +267,20 @@ export default function ChatScreen() {
               value={message || null}
               onChangeText={(val) => setMessage(val)}
               placeholder={i18n.t('Type a message...')}
-              placeholderTextColor={COLORS.neutral[100]}
+              placeholderTextColor={COLORS.shades[0]}
+              onFocus={scrollDown}
             />
             {message.length > 0 && (
-            <TouchableOpacity style={[styles.roundButton, { marginRight: -4 }]}>
-              <AntIcon
-                name="arrowright"
-                size={20}
-                color={COLORS.shades[0]}
-              />
-            </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => sendMessage('STRING', message)}
+                style={[styles.roundButton, { marginRight: -4 }]}
+              >
+                <AntIcon
+                  name="arrowright"
+                  size={20}
+                  color={COLORS.shades[0]}
+                />
+              </TouchableOpacity>
             )}
           </View>
         </View>
@@ -184,7 +289,7 @@ export default function ChatScreen() {
   );
 
   return (
-    <KeyboardView>
+    <KeyboardView ignoreTouch>
       <StatusBar barStyle="dark-content" />
       <View style={styles.container}>
         <SafeAreaView style={{ backgroundColor: COLORS.shades[0] }}>
@@ -253,8 +358,8 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 100,
     backgroundColor: COLORS.neutral[50],
-    borderBottomRightRadius: RADIUS.m,
-    borderBottomLeftRadius: RADIUS.m,
+    borderBottomRightRadius: RADIUS.s,
+    borderBottomLeftRadius: RADIUS.s,
   },
   roundButton: {
     alignItems: 'center',

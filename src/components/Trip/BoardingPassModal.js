@@ -32,7 +32,7 @@ export default function BoardingPassModal({ type, isVisible, onRequestClose }) {
     } else {
       setTimeout(() => setShowModal(false), duration);
       Animated.spring(animatedBottom, {
-        toValue: 900,
+        toValue: 900, 
         duration,
         useNativeDriver: true,
       }).start();

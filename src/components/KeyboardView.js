@@ -3,7 +3,19 @@ import {
 } from 'react-native';
 import React from 'react';
 
-export default function KeyboardView({ children }) {
+export default function KeyboardView({ children, ignoreTouch = false }) {
+  if (ignoreTouch) {
+    return (
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : null}
+        style={{ flex: 1 }}
+        keyboardVerticalOffset={Platform.select({ ios: 0, android: 500 })}
+      >
+        {children}
+      </KeyboardAvoidingView>
+    );
+  }
+
   return (
     <TouchableWithoutFeedback
       style={{ flex: 1 }}

@@ -1,6 +1,6 @@
 import { View, StyleSheet } from 'react-native';
 import React from 'react';
-import COLORS from '../../constants/Theme';
+import COLORS, { RADIUS } from '../../constants/Theme';
 
 export default function TripListContainer({ style, children, onLayout }) {
   return (
@@ -12,7 +12,7 @@ export default function TripListContainer({ style, children, onLayout }) {
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 14,
+    borderRadius: RADIUS.m,
     backgroundColor: COLORS.shades[0],
     borderColor: COLORS.neutral[100],
     borderWidth: 1,
