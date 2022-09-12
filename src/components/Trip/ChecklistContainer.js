@@ -75,10 +75,8 @@ export default function ChecklistContainer({
         {!sender && <Switch bool={isPrivate} onPress={() => setIsPrivate(!isPrivate)} />}
       </View>
       <Divider top={12} />
-      {isPrivate ? data.privateTasks
-      && data.privateTasks.map((item, index) => getChecklistItem(item, index, 'PRIVATE'))
-        : data.mutualTasks
-        && data.mutualTasks.map((item, index) => getChecklistItem(item, index, 'MUTUAL'))}
+      {isPrivate ? data.privateTasks && data.privateTasks.map((item, index) => getChecklistItem(item, index, 'PRIVATE'))
+        : data.mutualTasks && data.mutualTasks.map((item, index) => getChecklistItem(item, index, 'MUTUAL'))}
     </TripListContainer>
   );
 }

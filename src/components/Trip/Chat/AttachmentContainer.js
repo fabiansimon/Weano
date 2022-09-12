@@ -1,8 +1,8 @@
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import React from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import COLORS, { RADIUS } from '../../../constants/Theme';
-import Subtitle from '../../typography/Subtitle';
+import Body from '../../typography/Body';
 
 export default function AttachmentContainer({ style, data, onPress }) {
   const icon = React.cloneElement(data.icon, {
@@ -16,30 +16,25 @@ export default function AttachmentContainer({ style, data, onPress }) {
       activeOpacity={0.8}
       style={[style, styles.container]}
     >
-      <View style={styles.iconBubble}>
-        {icon}
-      </View>
-      <View style={{ width: 60 }}>
-        <Subtitle
-          style={{ marginTop: 6, textAlign: 'center' }}
-          type={1}
-          text={data.string}
-          color={COLORS.shades[0]}
-        />
-      </View>
+      {icon}
+      <Body
+        style={{ marginLeft: 8, lineHeight: 0 }}
+        type={1}
+        text={data.string}
+        color={COLORS.shades[0]}
+      />
+
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-  },
-  iconBubble: {
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    flexDirection: 'row',
     borderRadius: RADIUS.xl,
     backgroundColor: COLORS.primary[700],
-    height: 45,
-    width: 45,
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -7,11 +7,9 @@ import {
   TouchableOpacity,
   ScrollView,
   StatusBar,
-  KeyboardAvoidingView,
-  Platform,
 } from 'react-native';
 import React, {
-  useState, useEffect, createRef, useRef,
+  useState, useEffect, useRef,
 } from 'react';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import MatIcon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -26,7 +24,6 @@ import Headline from '../../components/typography/Headline';
 import Body from '../../components/typography/Body';
 import i18n from '../../utils/i18n';
 import KeyboardView from '../../components/KeyboardView';
-import Divider from '../../components/Divider';
 import AttachmentContainer from '../../components/Trip/Chat/AttachmentContainer';
 import ATTACHMENTS from '../../constants/Attachments';
 import ChatMessageContainer from '../../components/Trip/Chat/ChatMessageContainer';
@@ -174,7 +171,7 @@ export default function ChatScreen() {
     }
 
     setFooterExpanded(!footerExpanded);
-    animatedValues.value = { height: !footerExpanded ? 130 : 0, opacity: !footerExpanded ? 1 : 0 };
+    animatedValues.value = { height: !footerExpanded ? 70 : 0, opacity: !footerExpanded ? 1 : 0 };
   };
 
   const getHeader = () => (
@@ -209,81 +206,81 @@ export default function ChatScreen() {
   );
 
   const getFooter = () => (
-    <SafeAreaView>
-      <View style={styles.footerContainer}>
-        <Animated.View style={animationStyle}>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={toggleExpand}
-            style={[styles.roundButton, styles.swipeDownButton]}
-          >
-            <Icon
-              name="chevron-down"
-              color={COLORS.shades[0]}
-              style={{ marginTop: -2 }}
-              size={35}
-            />
-          </TouchableOpacity>
-          <ScrollView
-            horizontal
-            alwaysBounceHorizontal
-            scrollEnabled
-            style={{ marginTop: 16 }}
-          >
-            {attachmentData.map((attachment) => (
-              <AttachmentContainer
-                style={{ marginRight: 8 }}
-                onPress={attachment.onPress}
-                data={attachment}
-              />
-            ))}
-          </ScrollView>
-          <Divider
-            style={{ marginHorizontal: -20, marginBottom: 16 }}
-            bottom={12}
-            color={COLORS.primary[700]}
+    <SafeAreaView style={styles.footerContainer}>
+      <Animated.View style={[styles.attachmentContainer, animationStyle, {
+        borderTopColor: COLORS.neutral[100],
+        borderTopWidth: footerExpanded ? 1 : 0,
+      }]}
+      >
+        {/* <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={toggleExpand}
+          style={[styles.roundButton, styles.swipeDownButton]}
+        >
+          <Icon
+            name="chevron-down"
+            color={COLORS.shades[0]}
+            style={{ marginTop: -2 }}
+            size={35}
           />
-        </Animated.View>
-        <View style={styles.inputRow}>
+        </TouchableOpacity> */}
+        <ScrollView
+          horizontal
+          scrollEnabled
+          paddingHorizontal={PADDING.xl}
+          style={{ paddingTop: 14 }}
+        >
+          {attachmentData.map((attachment) => (
+            <AttachmentContainer
+              style={{ marginRight: 8 }}
+              onPress={attachment.onPress}
+              data={attachment}
+            />
+          ))}
+        </ScrollView>
+      </Animated.View>
+      <View style={styles.inputRow}>
+        <TouchableOpacity
+          onPress={toggleExpand}
+          style={{
+            height: 40,
+            width: 40,
+            borderRadius: RADIUS.xl,
+            backgroundColor: COLORS.neutral[100],
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Icon
+            name="paperclip"
+            size={32}
+            style={{ opacity: 0.3 }}
+            color={COLORS.neutral[700]}
+          />
+        </TouchableOpacity>
+        <View style={[styles.textField, { marginRight: message.length > 0 ? 8 : 0 }]}>
+          <TextInput
+            style={styles.textInput}
+            selectionColor={COLORS.primary[700]}
+            value={message || null}
+            onChangeText={(val) => setMessage(val)}
+            placeholder={i18n.t('Type a message...')}
+            placeholderTextColor={COLORS.neutral[300]}
+            onFocus={scrollDown}
+          />
+        </View>
+        {message.length > 0 && (
           <TouchableOpacity
-            onPress={toggleExpand}
-            style={{
-              marginBottom: 12,
-              alignItems: 'center',
-              paddingRight: 10,
-            }}
+            onPress={() => sendMessage('STRING', message)}
+            style={[styles.roundButton, { marginRight: -4 }]}
           >
-            <Icon
-              name="paperclip"
-              size={32}
-              style={{ opacity: 0.3 }}
+            <AntIcon
+              name="arrowright"
+              size={20}
               color={COLORS.shades[0]}
             />
           </TouchableOpacity>
-          <View style={styles.textField}>
-            <TextInput
-              style={styles.textInput}
-              selectionColor={COLORS.shades[0]}
-              value={message || null}
-              onChangeText={(val) => setMessage(val)}
-              placeholder={i18n.t('Type a message...')}
-              placeholderTextColor={COLORS.shades[0]}
-              onFocus={scrollDown}
-            />
-            {message.length > 0 && (
-              <TouchableOpacity
-                onPress={() => sendMessage('STRING', message)}
-                style={[styles.roundButton, { marginRight: -4 }]}
-              >
-                <AntIcon
-                  name="arrowright"
-                  size={20}
-                  color={COLORS.shades[0]}
-                />
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -303,15 +300,26 @@ export default function ChatScreen() {
 }
 
 const styles = StyleSheet.create({
+  attachmentContainer: {
+    marginHorizontal: -PADDING.m,
+  },
   container: {
     flex: 1,
-    backgroundColor: COLORS.primary[500],
+    backgroundColor: COLORS.shades[0],
   },
   footerContainer: {
-    paddingTop: 10,
+    shadowColor: COLORS.neutral[500],
+    shadowRadius: 10,
+    shadowOpacity: 0.07,
+    backgroundColor: COLORS.shades[0],
     paddingHorizontal: PADDING.m,
   },
   inputRow: {
+    borderTopColor: COLORS.neutral[100],
+    borderTopWidth: 0.5,
+    paddingTop: PADDING.s,
+    paddingHorizontal: PADDING.s,
+    marginBottom: 12,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -325,17 +333,19 @@ const styles = StyleSheet.create({
     flex: 1,
     height: '100%',
     fontFamily: 'WorkSans-Regular',
-    color: COLORS.shades[0],
+    color: COLORS.shades[100],
   },
   textField: {
-    marginBottom: 12,
     flexDirection: 'row',
     alignItems: 'center',
+    borderWidth: 0.5,
+    borderColor: COLORS.neutral[100],
     borderRadius: RADIUS.l,
-    backgroundColor: COLORS.primary[300],
-    height: 50,
+    backgroundColor: COLORS.neutral[50],
+    height: 40,
     flex: 1,
     paddingHorizontal: 15,
+    marginLeft: 8,
   },
   swipeDownButton: {
     position: 'absolute',
