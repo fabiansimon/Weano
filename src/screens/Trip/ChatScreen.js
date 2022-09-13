@@ -14,7 +14,7 @@ import React, {
 import Icon from 'react-native-vector-icons/EvilIcons';
 import MatIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontIcon from 'react-native-vector-icons/FontAwesome';
-import AntIcon from 'react-native-vector-icons/AntDesign';
+import IonIcon from 'react-native-vector-icons/Ionicons';
 import Animated, {
   useAnimatedStyle, useSharedValue, withSpring, withTiming,
 } from 'react-native-reanimated';
@@ -70,7 +70,10 @@ export default function ChatScreen() {
       timestamp: 1660213218,
       senderData: {
         id: 'fabian',
+        name: 'Fabian',
         imageUri: 'https://i.pravatar.cc/300',
+        phoneNr: '+436641865358',
+        stamps: [],
       },
       messages: [
         {
@@ -87,7 +90,10 @@ export default function ChatScreen() {
       timestamp: 1660215218,
       senderData: {
         id: 'julia',
+        name: 'Julia',
         imageUri: 'https://i.pravatar.cc/300',
+        phoneNr: '+436641865358',
+        stamps: [],
       },
       messages: [
         {
@@ -101,7 +107,10 @@ export default function ChatScreen() {
       timestamp: 1660215218,
       senderData: {
         id: 'alex',
+        name: 'Alex',
         imageUri: 'https://i.pravatar.cc/300',
+        phoneNr: '+436641865358',
+        stamps: [],
       },
       messages: [
         {
@@ -132,6 +141,7 @@ export default function ChatScreen() {
       timestamp: Date.now(),
       senderData: {
         id: 'fabian',
+        name: 'Fabian',
         imageUri: 'https://i.pravatar.cc/300',
       },
       messages: [
@@ -212,27 +222,15 @@ export default function ChatScreen() {
         borderTopWidth: footerExpanded ? 1 : 0,
       }]}
       >
-        {/* <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={toggleExpand}
-          style={[styles.roundButton, styles.swipeDownButton]}
-        >
-          <Icon
-            name="chevron-down"
-            color={COLORS.shades[0]}
-            style={{ marginTop: -2 }}
-            size={35}
-          />
-        </TouchableOpacity> */}
         <ScrollView
           horizontal
           scrollEnabled
           paddingHorizontal={PADDING.xl}
           style={{ paddingTop: 14 }}
         >
-          {attachmentData.map((attachment) => (
+          {attachmentData.map((attachment, index) => (
             <AttachmentContainer
-              style={{ marginRight: 8 }}
+              style={{ marginRight: index === attachmentData.length - 1 ? 50 : 8 }}
               onPress={attachment.onPress}
               data={attachment}
             />
@@ -251,14 +249,23 @@ export default function ChatScreen() {
             justifyContent: 'center',
           }}
         >
-          <Icon
-            name="paperclip"
-            size={32}
-            style={{ opacity: 0.3 }}
-            color={COLORS.neutral[700]}
-          />
+          {footerExpanded ? (
+            <Icon
+              name="chevron-down"
+              size={40}
+              style={{ opacity: 0.3, marginTop: -2 }}
+              color={COLORS.neutral[700]}
+            />
+          ) : (
+            <Icon
+              name="paperclip"
+              size={32}
+              style={{ opacity: 0.3 }}
+              color={COLORS.neutral[700]}
+            />
+          )}
         </TouchableOpacity>
-        <View style={[styles.textField, { marginRight: message.length > 0 ? 8 : 0 }]}>
+        <View style={styles.textField}>
           <TextInput
             style={styles.textInput}
             selectionColor={COLORS.primary[700]}
@@ -269,18 +276,16 @@ export default function ChatScreen() {
             onFocus={scrollDown}
           />
         </View>
-        {message.length > 0 && (
-          <TouchableOpacity
-            onPress={() => sendMessage('STRING', message)}
-            style={[styles.roundButton, { marginRight: -4 }]}
-          >
-            <AntIcon
-              name="arrowright"
-              size={20}
-              color={COLORS.shades[0]}
-            />
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity
+          onPress={() => sendMessage('STRING', message)}
+          style={styles.roundButton}
+        >
+          <IonIcon
+            name="ios-paper-plane"
+            size={22}
+            color={COLORS.neutral[300]}
+          />
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -372,10 +377,14 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: RADIUS.s,
   },
   roundButton: {
+    transform: [
+      { rotate: '45deg' },
+    ],
     alignItems: 'center',
-    backgroundColor: COLORS.primary[700],
+    backgroundColor: 'transparent',
     borderRadius: RADIUS.xl,
     height: 35,
+    marginRight: 6,
     justifyContent: 'center',
     width: 35,
   },

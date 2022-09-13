@@ -1,5 +1,5 @@
 import { StyleSheet, View } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import ChatBubble from './ChatBubble';
 import Avatar from '../../Avatar';
@@ -7,8 +7,10 @@ import { PADDING } from '../../../constants/Theme';
 import ChecklistContainer from '../ChecklistContainer';
 import ChatWidgetContainer from './ChatWidgetContainer';
 import ROUTES from '../../../constants/Routes';
+import ContactDetailModal from '../../ContactDetailModal';
 
 export default function ChatMessageContainer({ data }) {
+  const [contactData, setContactData] = useState(null);
   const navigation = useNavigation();
   const ownId = 'fabian';
 
@@ -54,40 +56,52 @@ export default function ChatMessageContainer({ data }) {
   };
 
   return (
-    <View style={[styles.container, { justifyContent: isSender ? 'flex-end' : 'flex-start' }]}>
-      {!isSender && (
-      <Avatar
-        uri={data.senderData.imageUri}
-        size={40}
-      />
-      )}
-      <View style={{
-        marginHorizontal: PADDING.s,
-        flex: 1,
-        alignItems: isSender ? 'flex-end' : 'flex-start',
-      }}
-      >
-        {data.messages.map((message, index) => {
-          if (message.type === 'WIDGET') {
-            return getWidget(message.content);
-          }
-          return (
-            <ChatBubble
-              index={index}
-              length={data.messages.length}
-              string={message.content}
-              isSender={isSender}
-            />
-          );
-        })}
+    <>
+      <View style={[styles.container, { justifyContent: isSender ? 'flex-end' : 'flex-start' }]}>
+        {!isSender && (
+        <Avatar
+          uri={data.senderData.imageUri}
+          size={40}
+          onPress={() => setContactData(data.senderData)}
+        />
+        )}
+        <View style={{
+          marginHorizontal: PADDING.s,
+          flex: 1,
+          alignItems: isSender ? 'flex-end' : 'flex-start',
+        }}
+        >
+          {data.messages.map((message, index) => {
+            if (message.type === 'WIDGET') {
+              return getWidget(message.content);
+            }
+            return (
+              <ChatBubble
+                index={index}
+                length={data.messages.length}
+                message={message}
+                data={data}
+                isSender={isSender}
+              />
+            );
+          })}
+        </View>
+        {isSender && (
+        <Avatar
+          uri={data.senderData.imageUri}
+          size={40}
+          onPress={() => setContactData(data.senderData)}
+        />
+        )}
       </View>
-      {isSender && (
-      <Avatar
-        uri={data.senderData.imageUri}
-        size={40}
+      <ContactDetailModal
+        isVisible={contactData !== null}
+        onRequestClose={() => setContactData(null)}
+        data={contactData}
       />
-      )}
-    </View>
+
+    </>
+
   );
 }
 

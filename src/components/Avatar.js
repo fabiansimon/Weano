@@ -7,15 +7,18 @@ import DefaultAvatar from '../../assets/images/default_avatar.png';
 import Headline from './typography/Headline';
 
 export default function Avatar({
-  style, size, uri, onPress, backgroundColor, text,
+  style, size, uri, onPress, backgroundColor, text, borderWidth,
 }) {
   const height = size || 55;
   const width = size || 55;
   const bg = backgroundColor || text ? COLORS.secondary[700] : COLORS.shades[0];
+  const bW = borderWidth || 1;
 
   return (
     <TouchableOpacity
-      style={[styles.container, style, { height, width, backgroundColor: bg }]}
+      style={[styles.container, style, {
+        height, width, backgroundColor: bg, borderWidth: bW,
+      }]}
       onPress={onPress}
     >
       {!text && (

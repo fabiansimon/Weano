@@ -1,5 +1,5 @@
 import {
-  ActivityIndicator, StyleSheet, TouchableOpacity, View,
+  ActivityIndicator, StyleSheet, TouchableOpacity,
 } from 'react-native';
 import React, { useRef } from 'react';
 import Icon from 'react-native-vector-icons/Entypo';
@@ -63,7 +63,7 @@ export default function Button({
         backgroundColor: isSecondary ? COLORS.shades[0] : bg,
         borderColor,
         borderWidth,
-        transform: [{ scale }],
+        // transform: [{ scale }],
       }]}
     >
       <TouchableOpacity

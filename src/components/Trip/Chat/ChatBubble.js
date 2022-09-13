@@ -2,9 +2,11 @@ import { Dimensions, StyleSheet, View } from 'react-native';
 import React from 'react';
 import COLORS, { PADDING, RADIUS } from '../../../constants/Theme';
 import Body from '../../typography/Body';
+import Subtitle from '../../typography/Subtitle';
+import Utils from '../../../utils';
 
 export default function ChatBubble({
-  style, isSender = false, string, index, length,
+  style, isSender = false, message, data, index, length,
 }) {
   const backgroundColor = isSender ? COLORS.neutral[100] : COLORS.primary[700];
   const fontColor = isSender ? COLORS.neutral[900] : COLORS.shades[0];
@@ -79,18 +81,26 @@ export default function ChatBubble({
   };
 
   return (
-    <View style={[style, styles.container, {
-      backgroundColor,
-      borderTopRightRadius: getBorderRadius().borderTopRightRadius,
-      borderTopLeftRadius: getBorderRadius().borderTopLeftRadius,
-      borderBottomLeftRadius: getBorderRadius().borderBottomLeftRadius,
-      borderBottomRightRadius: getBorderRadius().borderBottomRightRadius,
-    }]}
-    >
-      <Body
-        type={4}
-        color={fontColor}
-        text={string}
+    <View style={{ marginBottom: 8 }}>
+      <View style={[style, styles.container, {
+        backgroundColor,
+        borderTopRightRadius: getBorderRadius().borderTopRightRadius,
+        borderTopLeftRadius: getBorderRadius().borderTopLeftRadius,
+        borderBottomLeftRadius: getBorderRadius().borderBottomLeftRadius,
+        borderBottomRightRadius: getBorderRadius().borderBottomRightRadius,
+      }]}
+      >
+        <Body
+          type={4}
+          color={fontColor}
+          text={message.content}
+        />
+      </View>
+      <Subtitle
+        type={2}
+        style={{ marginTop: 2, alignSelf: isSender ? 'flex-end' : 'flex-start' }}
+        color={COLORS.neutral[300]}
+        text={`${data.senderData.name} • ${Utils.getTimeFromTimeStamp(data.timestamp)}`}
       />
     </View>
   );
@@ -99,8 +109,6 @@ export default function ChatBubble({
 const styles = StyleSheet.create({
   container: {
     padding: PADDING.s,
-    marginBottom: 2,
-    flex: 0,
     maxWidth: Dimensions.get('window').width * 0.6,
   },
 });

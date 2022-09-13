@@ -15,6 +15,16 @@ export default class Utils {
   }
 
   /**
+     * Format UNIX Timestamp to MMM Do (YY) date
+     * @param {Number} timestamp - UNIX Timestamp
+     * @return {String} Nicely formatted HH:SS
+     */
+  static getTimeFromTimeStamp(timestamp) {
+    const date = new Date(timestamp * 1000);
+    return `${moment(date).hours()}:${moment(date).minutes()}`;
+  }
+
+  /**
      * Convert Date to UNIX timestamp
      * @param {String} date - Date
      * @return {Integer} Timestamp
