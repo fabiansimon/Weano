@@ -41,7 +41,7 @@ export default function ChatMessageContainer({ data }) {
       case 'TYPE_CHECKLIST':
         return (
           <ChatWidgetContainer
-            onPress={() => navigation.push(ROUTES.inviteeScreen)}
+            onPress={() => navigation.push(ROUTES.checklistScreen)}
             content={(
               <ChecklistContainer
                 sender="Fabian"

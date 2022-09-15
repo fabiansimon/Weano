@@ -12,7 +12,7 @@ export default function HybridHeader({
   style, title, subtitle, onPressBack, info, children, scrollY, content,
 }) {
   return (
-    <>
+    <View style={{ flex: 1 }}>
       <SafeAreaView style={styles.backButton}>
         <BackButton isClear onPress={onPressBack} />
       </SafeAreaView>
@@ -51,7 +51,7 @@ export default function HybridHeader({
         </BasicHeader>
         {children}
       </Animated.ScrollView>
-    </>
+    </View>
   );
 }
 

@@ -12,6 +12,7 @@ import AccomodationsScreen from './src/screens/Trip/AccomodationsScreen';
 import LocationScreen from './src/screens/Trip/LocationScreen';
 import DateScreen from './src/screens/Trip/DateScreen';
 import ChatScreen from './src/screens/Trip/ChatScreen';
+import ChecklistScreen from './src/screens/Trip/ChecklistScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -34,6 +35,7 @@ export default function App() {
         <Stack.Screen name={ROUTES.locationScreen} component={LocationScreen} />
         <Stack.Screen name={ROUTES.dateScreen} component={DateScreen} />
         <Stack.Screen name={ROUTES.chatScreen} component={ChatScreen} />
+        <Stack.Screen name={ROUTES.checklistScreen} component={ChecklistScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

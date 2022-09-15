@@ -29,8 +29,8 @@ export default COLORS = {
   success: {
     100: '#E3FFF2',
     300: '#ABF5D1',
-    500: '#88E3B7',
-    700: '#2DC87D',
+    500: '#5BE3A1',
+    700: '#49D893',
     900: '#229960',
   },
   warning: {
@@ -44,7 +44,7 @@ export default COLORS = {
     100: '#FFEBEB',
     300: '#FFCCCC',
     500: '#FF8080',
-    700: '#DE1A19',
+    700: '#FD6D6D',
     900: '#991211',
   },
 };

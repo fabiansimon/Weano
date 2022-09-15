@@ -5,7 +5,7 @@ import TitleModal from '../TitleModal';
 import KeyboardView from '../KeyboardView';
 import Headline from '../typography/Headline';
 import i18n from '../../utils/i18n';
-import COLORS from '../../constants/Theme';
+import COLORS, { RADIUS } from '../../constants/Theme';
 import Button from '../Button';
 import AvailabilityTile from './AvailabilityTile';
 
@@ -30,22 +30,24 @@ export default function AvailabilityModal({ isVisible, onRequestClose, data }) {
         <View style={styles.tabContainer}>
           <TouchableOpacity
             onPress={() => handleChange(true)}
-            style={[styles.innerTab, isAvailable && styles.activeTab]}
+            activeOpacity={0.8}
+            style={[styles.innerTab, isAvailable && styles.activeTab, { borderTopLeftRadius: isAvailable && 6, borderBottomLeftRadius: isAvailable && 6 }]}
           >
             <Headline
               type={4}
-              color={isAvailable ? COLORS.shades[100] : COLORS.neutral[500]}
-              text={i18n.t('available')}
+              color={isAvailable ? COLORS.shades[0] : COLORS.primary[700]}
+              text={i18n.t('Available')}
             />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => handleChange(false)}
-            style={[styles.innerTab, !isAvailable && styles.activeTab]}
+            activeOpacity={0.8}
+            style={[styles.innerTab, !isAvailable && styles.activeTab, { borderTopRightRadius: !isAvailable && 6, borderBottomRightRadius: !isAvailable && 6 }]}
           >
             <Headline
               type={4}
-              color={!isAvailable ? COLORS.shades[100] : COLORS.neutral[500]}
-              text={i18n.t('unavailable')}
+              color={!isAvailable ? COLORS.shades[0] : COLORS.primary[700]}
+              text={i18n.t('Unavailable')}
             />
           </TouchableOpacity>
         </View>
@@ -87,12 +89,10 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.neutral[50],
   },
   activeTab: {
-    backgroundColor: COLORS.shades[0],
+    backgroundColor: COLORS.primary[500],
   },
   innerTab: {
-    borderRadius: 12,
-    height: '90%',
-    marginHorizontal: 2,
+    height: '100%',
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
@@ -102,9 +102,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 20,
-    height: 45,
+    height: 40,
     justifyContent: 'space-between',
-    borderRadius: 14,
-    backgroundColor: COLORS.neutral[100],
+    borderRadius: RADIUS.s,
+    backgroundColor: COLORS.shades[0],
+    borderColor: COLORS.primary[500],
+    borderWidth: 1,
   },
 });

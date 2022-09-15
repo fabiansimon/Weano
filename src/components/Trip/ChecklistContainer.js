@@ -1,14 +1,11 @@
 import { View } from 'react-native';
 import React, { useState } from 'react';
-import BouncyCheckbox from 'react-native-bouncy-checkbox';
-import Icon from 'react-native-vector-icons/Ionicons';
 import TripListContainer from './TripListContainer';
 import Headline from '../typography/Headline';
 import i18n from '../../utils/i18n';
 import Divider from '../Divider';
-import COLORS from '../../constants/Theme';
 import Switch from '../Switch';
-import Body from '../typography/Body';
+import CheckboxTile from './CheckboxTile';
 
 export default function ChecklistContainer({
   data, onPress, onLayout, sender,
@@ -23,39 +20,7 @@ export default function ChecklistContainer({
         marginHorizontal: 25,
       }}
     >
-      <BouncyCheckbox
-        size={22}
-        textComponent={(
-          <View style={{ marginLeft: 8 }}>
-            <View>
-              {item.assignee && (
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Icon color={item.isDone ? COLORS.success[700] : COLORS.neutral[300]} name="person" />
-                <Body
-                  type={2}
-                  text={item.assignee}
-                  color={item.isDone ? COLORS.success[700] : COLORS.neutral[300]}
-                  style={{ marginLeft: 4 }}
-                />
-              </View>
-              )}
-            </View>
-            <Headline
-              type={4}
-              text={item.title}
-              style={{ textDecorationLine: item.isDone ? 'line-through' : 'none' }}
-              color={item.isDone ? COLORS.success[700] : COLORS.shades[100]}
-            />
-          </View>
-        )}
-        fillColor={COLORS.success[700]}
-        accessibilityElementsHidden
-        iconStyle={{
-          borderRadius: 6,
-          borderColor: COLORS.neutral[700],
-        }}
-        onPress={(isChecked) => onPress(isChecked, index, type)}
-      />
+      <CheckboxTile item={item} onPress={(isChecked) => onPress(isChecked, index, type)} />
     </View>
   );
 
