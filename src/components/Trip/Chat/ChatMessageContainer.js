@@ -8,6 +8,8 @@ import ChecklistContainer from '../ChecklistContainer';
 import ChatWidgetContainer from './ChatWidgetContainer';
 import ROUTES from '../../../constants/Routes';
 import ContactDetailModal from '../../ContactDetailModal';
+import ChatExpenseBubble from './ChatExpenseBubble';
+import WIDGETS from '../../../constants/ChatWidgets';
 
 export default function ChatMessageContainer({ data }) {
   const [contactData, setContactData] = useState(null);
@@ -36,16 +38,28 @@ export default function ChatMessageContainer({ data }) {
     ],
   };
 
-  const getWidget = (type) => {
-    switch (type) {
-      case 'TYPE_CHECKLIST':
+  const getWidget = (message, sender) => {
+    switch (message.content) {
+      case WIDGETS.TYPE_CHECKLIST:
         return (
           <ChatWidgetContainer
             onPress={() => navigation.push(ROUTES.checklistScreen)}
             content={(
               <ChecklistContainer
-                sender="Fabian"
+                sender={sender}
                 data={taskData}
+              />
+            )}
+          />
+        );
+      case WIDGETS.TYPE_EXPENSE:
+        return (
+          <ChatWidgetContainer
+            onPress={() => navigation.push(ROUTES.checklistScreen)}
+            content={(
+              <ChatExpenseBubble
+                data={message.data}
+                sender={sender}
               />
             )}
           />
@@ -73,7 +87,7 @@ export default function ChatMessageContainer({ data }) {
         >
           {data.messages.map((message, index) => {
             if (message.type === 'WIDGET') {
-              return getWidget(message.content);
+              return getWidget(message, data.senderData.name);
             }
             return (
               <ChatBubble

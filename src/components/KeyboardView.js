@@ -3,13 +3,13 @@ import {
 } from 'react-native';
 import React from 'react';
 
-export default function KeyboardView({ children, ignoreTouch = false }) {
+export default function KeyboardView({ children, ignoreTouch = false, paddingBottom = 0 }) {
   if (ignoreTouch) {
     return (
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : null}
         style={{ flex: 1 }}
-        keyboardVerticalOffset={Platform.select({ ios: 0, android: 500 })}
+        keyboardVerticalOffset={Platform.select({ ios: paddingBottom, android: 500 })}
       >
         {children}
       </KeyboardAvoidingView>
@@ -24,7 +24,7 @@ export default function KeyboardView({ children, ignoreTouch = false }) {
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : null}
         style={{ flex: 1 }}
-        keyboardVerticalOffset={Platform.select({ ios: 0, android: 500 })}
+        keyboardVerticalOffset={Platform.select({ ios: paddingBottom, android: 500 })}
       >
         {children}
       </KeyboardAvoidingView>

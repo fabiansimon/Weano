@@ -1,0 +1,6 @@
+const WIDGETS = {
+  TYPE_CHECKLIST: 'TYPE_CHECKLIST',
+  TYPE_EXPENSE: 'TYPE_EXPENSE',
+};
+
+export default WIDGETS;

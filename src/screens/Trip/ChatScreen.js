@@ -27,29 +27,30 @@ import KeyboardView from '../../components/KeyboardView';
 import AttachmentContainer from '../../components/Trip/Chat/AttachmentContainer';
 import ATTACHMENTS from '../../constants/Attachments';
 import ChatMessageContainer from '../../components/Trip/Chat/ChatMessageContainer';
+import AddExpenseModal from '../../components/Trip/AddExpenseModal';
+import WIDGETS from '../../constants/ChatWidgets';
 
 export default function ChatScreen() {
   const [message, setMessage] = useState('');
   const [footerExpanded, setFooterExpanded] = useState(false);
-  const animatedValues = useSharedValue({ height: 0, opacity: 0 });
+  const [expenseVisible, setExpenseVisible] = useState(false);
+  const [pollVisible, setPollVisible] = useState(false);
   const [chatData, setChatData] = useState([]);
   const chatRef = useRef();
+  const animatedValues = useSharedValue({ height: 0, opacity: 0 });
   const duration = 250;
-
-  const widgetTypes = {
-    TYPE_CHECKLIST: 'TYPE_CHECKLIST',
-  };
 
   const attachmentData = [
     {
       string: i18n.t("To-Do's"),
       icon: <MatIcon name="clipboard-check-outline" />,
-      onPress: () => sendMessage('WIDGET', widgetTypes.TYPE_CHECKLIST),
+      onPress: () => sendMessage('WIDGET', WIDGETS.TYPE_CHECKLIST),
       type: ATTACHMENTS.checkList,
     },
     {
       string: i18n.t('Expense'),
       icon: <FontIcon name="dollar" />,
+      onPress: () => setExpenseVisible(true),
       type: ATTACHMENTS.expense,
     },
     {
@@ -115,7 +116,27 @@ export default function ChatScreen() {
       messages: [
         {
           type: 'WIDGET',
-          content: 'TYPE_CHECKLIST',
+          content: WIDGETS.TYPE_CHECKLIST,
+        },
+      ],
+    },
+    {
+      timestamp: 1660215218,
+      senderData: {
+        id: 'didi',
+        name: 'Didi',
+        imageUri: 'https://i.pravatar.cc/300',
+        phoneNr: '+436641865358',
+        stamps: [],
+      },
+      messages: [
+        {
+          type: 'WIDGET',
+          content: WIDGETS.TYPE_EXPENSE,
+          data: {
+            amount: 140,
+            description: 'For the Airbnb 🏡',
+          },
         },
       ],
     },
@@ -134,7 +155,7 @@ export default function ChatScreen() {
     }, 100);
   };
 
-  const sendMessage = (type, content) => {
+  const sendMessage = (type, content, data) => {
     if (type === 'STRING' && message.trim().length === 0) return;
 
     const newMessage = {
@@ -148,6 +169,7 @@ export default function ChatScreen() {
         {
           type,
           content,
+          data,
         },
       ],
     };
@@ -291,16 +313,23 @@ export default function ChatScreen() {
   );
 
   return (
-    <KeyboardView ignoreTouch>
-      <StatusBar barStyle="dark-content" />
-      <View style={styles.container}>
-        <SafeAreaView style={{ backgroundColor: COLORS.shades[0] }}>
-          {getHeader()}
-        </SafeAreaView>
-        {getChatContainer()}
-        {getFooter()}
-      </View>
-    </KeyboardView>
+    <>
+      <KeyboardView ignoreTouch>
+        <StatusBar barStyle="dark-content" />
+        <View style={styles.container}>
+          <SafeAreaView style={{ backgroundColor: COLORS.shades[0] }}>
+            {getHeader()}
+          </SafeAreaView>
+          {getChatContainer()}
+          {getFooter()}
+        </View>
+      </KeyboardView>
+      <AddExpenseModal
+        onPress={(data) => sendMessage('WIDGET', WIDGETS.TYPE_EXPENSE, data)}
+        isVisible={expenseVisible}
+        onRequestClose={() => setExpenseVisible(false)}
+      />
+    </>
   );
 }
 
