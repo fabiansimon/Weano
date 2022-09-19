@@ -3,10 +3,12 @@ import React from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import COLORS from '../../../constants/Theme';
 
-export default function ChatWidgetContainer({ style, content, onPress }) {
+export default function ChatWidgetContainer({
+  style, content, onPress, disabled,
+}) {
   return (
     <TouchableOpacity
-      onPress={onPress}
+      onPress={() => !disabled && onPress()}
       activeOpacity={0.9}
       style={[styles.container, style]}
     >

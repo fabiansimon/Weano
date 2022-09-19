@@ -40,11 +40,13 @@ export default function AddPollModal({ isVisible, onRequestClose, onPress }) {
   }, []);
 
   const addRow = () => {
-    setInputFields((prev) => [...prev, {
-      title: i18n.t(i18n.t('Choice')),
-      placeholder: i18n.t('Type your choice here'),
-      value: '',
-    }]);
+    setInputFields((prev) => [...prev,
+      {
+        title: i18n.t(i18n.t('Choice')),
+        placeholder: i18n.t('Type your choice here'),
+        value: '',
+      },
+    ]);
   };
 
   const deleteRow = (i) => {
@@ -67,6 +69,7 @@ export default function AddPollModal({ isVisible, onRequestClose, onPress }) {
             newArr[index].value = val;
             return newArr;
           })}
+          showTrailingIcon={false}
           placeholder={field.placeholder}
           style={{
             backgroundColor: COLORS.neutral[50],
@@ -104,6 +107,7 @@ export default function AddPollModal({ isVisible, onRequestClose, onPress }) {
             style={{ paddingTop: 16 }}
           >
             {inputFields.map((field, index) => getInputRow(field, index))}
+            {inputFields.length < 5 && (
             <TouchableOpacity
               onPress={addRow}
               style={styles.addButton}
@@ -119,14 +123,16 @@ export default function AddPollModal({ isVisible, onRequestClose, onPress }) {
                 size={20}
               />
             </TouchableOpacity>
-            <View style={{ marginBottom: 100 }} />
+            )}
+            <View style={{ marginBottom: 200 }} />
           </ScrollView>
           <Button
             fullWidth
             style={styles.button}
             text={i18n.t('Send Poll')}
             onPress={() => {
-              console.log(inputFields);
+              onPress(inputFields);
+              setInputFields(inputData);
               onRequestClose();
             }}
           />

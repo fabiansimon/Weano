@@ -1,7 +1,7 @@
 import {
   View, StyleSheet, ScrollView, Dimensions,
 } from 'react-native';
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import Animated from 'react-native-reanimated';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -16,6 +16,7 @@ import Button from '../../components/Button';
 
 export default function ChecklistScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
+  const [tasks, setTasks] = useState(null);
   const mockTasks = {
     privateTasks: [
       {
@@ -48,6 +49,17 @@ export default function ChecklistScreen() {
     ],
   };
 
+  useEffect(() => {
+    setTasks(mockTasks);
+  }, []);
+
+  const taskCount = (isDone) => {
+    if (tasks) {
+      return tasks.privateTasks.filter((task) => task.isDone === isDone).length + tasks.mutualTasks.filter((task) => task.isDone === isDone).length;
+    }
+    return 0;
+  };
+
   const headerChips = (
     <View style={{ flexDirection: 'row', paddingHorizontal: PADDING.m, marginTop: 20 }}>
       <TouchableOpacity
@@ -62,7 +74,7 @@ export default function ChecklistScreen() {
         <View style={[styles.innerCircle, { backgroundColor: COLORS.success[700] }]}>
           <Headline
             type={4}
-            text={i18n.t('1')}
+            text={taskCount(true)}
             color={COLORS.shades[0]}
           />
         </View>
@@ -79,7 +91,7 @@ export default function ChecklistScreen() {
         <View style={[styles.innerCircle, { backgroundColor: COLORS.error[700] }]}>
           <Headline
             type={4}
-            text={i18n.t('2')}
+            text={taskCount(false)}
             color={COLORS.shades[0]}
           />
         </View>

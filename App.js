@@ -26,7 +26,6 @@ export default function App() {
     <NavigationContainer>
       <StatusBar barStyle="dark-content" />
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name={ROUTES.chatScreen} component={ChatScreen} />
         <Stack.Screen name={ROUTES.mainScreen} component={MainScreen} />
         <Stack.Screen name={ROUTES.mapScreen} component={MapScreen} />
         <Stack.Screen name={ROUTES.tripScreen} component={TripScreen} />
@@ -36,6 +35,7 @@ export default function App() {
         <Stack.Screen name={ROUTES.locationScreen} component={LocationScreen} />
         <Stack.Screen name={ROUTES.dateScreen} component={DateScreen} />
         <Stack.Screen name={ROUTES.checklistScreen} component={ChecklistScreen} />
+        <Stack.Screen name={ROUTES.chatScreen} component={ChatScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -155,23 +155,23 @@ export default function ChatScreen() {
         {
           type: 'WIDGET',
           content: WIDGETS.TYPE_POLL,
-          data:
-            {
-              title: 'Paris, Lyon or Marseille? 🇫🇷',
-              options: [
-                {
-                  string: 'Paris',
-                  votes: 5,
-                },
-                {
-                  string: 'Lyon',
-                  votes: 2,
-                },
-                {
-                  string: 'Marseille',
-                  votes: 1,
-                }],
-            },
+          data: {
+            title: 'Paris, Lyon or Marseille? 🇫🇷',
+            options: [
+              {
+                string: 'Paris',
+                votes: 5,
+              },
+              {
+                string: 'Lyon',
+                votes: 2,
+              },
+              {
+                string: 'Marseille',
+                votes: 1,
+              },
+            ],
+          },
         },
       ],
     },
@@ -213,6 +213,21 @@ export default function ChatScreen() {
     setMessage('');
     toggleExpand();
     scrollDown();
+  };
+
+  const extractPollData = (data) => {
+    const options = [];
+    for (let i = 1; i < data.length; i += 1) {
+      options.push({
+        string: data[i].value,
+        votes: 0,
+      });
+    }
+
+    return {
+      title: data[0].value,
+      options,
+    };
   };
 
   const animationStyle = useAnimatedStyle(() => ({
@@ -369,7 +384,7 @@ export default function ChatScreen() {
       />
       {/* Add Poll Modal */}
       <AddPollModal
-        onPress={(data) => sendMessage('WIDGET', WIDGETS.TYPE_POLL, data)}
+        onPress={(data) => sendMessage('WIDGET', WIDGETS.TYPE_POLL, extractPollData(data))}
         isVisible={pollVisible}
         onRequestClose={() => setPollVisible(false)}
       />

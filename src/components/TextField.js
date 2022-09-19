@@ -17,6 +17,7 @@ export default function TextField({
   placeholder,
   keyboardType,
   focusable = true,
+  showTrailingIcon = true,
   icon,
   onPress,
   iconColor,
@@ -68,12 +69,12 @@ export default function TextField({
         {getIcon()}
       </TouchableOpacity>
       )}
-      {value && !disabled && (
+      {value && !disabled && showTrailingIcon && (
       <Icon
         name="closecircle"
         suppressHighlighting
         onPress={onDelete}
-        size={20}
+        size={18}
         color={COLORS.neutral[500]}
         style={styles.deleteIcon}
       />

@@ -67,14 +67,10 @@ export default function ChatMessageContainer({ data }) {
         );
       case WIDGETS.TYPE_POLL:
         return (
-          <ChatWidgetContainer
+          <ChatPollBubble
             onPress={() => navigation.push(ROUTES.checklistScreen)}
-            content={(
-              <ChatPollBubble
-                data={message.data}
-                sender={sender}
-              />
-            )}
+            data={message.data}
+            sender={sender}
           />
         );
       default:

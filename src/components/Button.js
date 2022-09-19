@@ -10,6 +10,7 @@ export default function Button({
   textColor,
   backgroundColor,
   onPress,
+  isSecondary = false,
   isDisabled,
   icon,
   color,
@@ -18,6 +19,8 @@ export default function Button({
 }) {
   const flex = fullWidth ? 1 : 0;
   const bg = isDisabled ? COLORS.primary[50] : backgroundColor || COLORS.primary[700];
+  const borderColor = isSecondary && COLORS.neutral[100];
+  const borderWidth = isSecondary && 1;
 
   const getIcon = () => (typeof icon.type === 'function' ? (
     React.cloneElement(icon, { fill: color })
@@ -31,13 +34,22 @@ export default function Button({
 
   return (
     <TouchableOpacity
-      activeOpacity={0.6}
-      style={[styles.container, style, { flex, backgroundColor: bg }]}
+      activeOpacity={0.9}
+      style={[styles.container, style, {
+        flex, backgroundColor: isSecondary ? COLORS.shades[0] : bg, borderColor, borderWidth,
+      }]}
       onPress={onPress}
       disabled={isDisabled}
     >
       {icon && !isLoading && getIcon()}
-      {text && !isLoading && <Headline type={4} text={text} color={textColor || COLORS.shades[0]} style={{ marginLeft: icon ? 6 : 0 }} />}
+      {text && !isLoading && (
+      <Headline
+        type={4}
+        text={text}
+        color={textColor || isSecondary ? COLORS.shades[100] : COLORS.shades[0]}
+        style={{ marginLeft: icon ? 6 : 0 }}
+      />
+      )}
       {isLoading && getLoadingIndicator()}
     </TouchableOpacity>
   );
@@ -48,6 +60,7 @@ const styles = StyleSheet.create({
     height: 50,
     maxHeight: 50,
     minWidth: 50,
+    borderWidth: 0.5,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',

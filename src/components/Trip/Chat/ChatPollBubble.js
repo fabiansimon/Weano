@@ -1,34 +1,63 @@
 import {
-  Dimensions, StyleSheet, Text, View,
+  Dimensions, StyleSheet, TouchableOpacity, View,
 } from 'react-native';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import MaskedView from '@react-native-masked-view/masked-view';
 import COLORS, { PADDING, RADIUS } from '../../../constants/Theme';
 import Body from '../../typography/Body';
 import Divider from '../../Divider';
 import Headline from '../../typography/Headline';
-import i18n from '../../../utils/i18n';
 
-export default function ChatPollBubble({ style, data, sender }) {
+export default function ChatPollBubble({
+  style, data, sender, onPress,
+}) {
+  const [optionsData, setOptionsData] = useState([]);
+  const [votedIndex, setVotedIndex] = useState(-1);
+
+  useEffect(() => {
+    setOptionsData(data.options);
+  }, []);
+
   const getPercentage = (votes) => {
     let countedVotes = 0;
-
-    // eslint-disable-next-line no-plusplus
-    for (let i = 0; i < data.options.length; i++) {
+    for (let i = 0; i < data.options.length; i += 1) {
       countedVotes += data.options[i].votes;
     }
-
-    return (votes / countedVotes) * 100;
+    return countedVotes === 0 ? 0 : ((votes / countedVotes) * 100).toFixed(1);
   };
 
-  const getListItem = (option, isActive) => {
+  const handleVote = (index) => {
+    setOptionsData((prev) => {
+      const newArr = prev;
+      if (votedIndex === index) {
+        newArr[index].votes -= 1;
+        setVotedIndex(-1);
+        return newArr;
+      }
+
+      if (votedIndex !== -1) {
+        newArr[votedIndex].votes -= 1;
+      }
+      newArr[index].votes += 1;
+      setVotedIndex(index);
+      return newArr;
+    });
+  };
+
+  const getListItem = (option, index) => {
     const percentage = getPercentage(option.votes);
     const width = `${percentage}%`;
+
+    const isActive = votedIndex === index;
 
     const color = isActive ? COLORS.shades[0] : COLORS.neutral[500];
 
     return (
-      <View style={{ marginTop: 14 }}>
+      <TouchableOpacity
+        activeOpacity={0.9}
+        onPress={() => handleVote(index)}
+        style={{ marginTop: 14 }}
+      >
         <View style={styles.optionTileContainer}>
           <View style={[isActive ? styles.activeContainerOverlay : styles.inactiveContainerOverlay, { width }]} />
           <MaskedView
@@ -57,12 +86,16 @@ export default function ChatPollBubble({ style, data, sender }) {
             <View style={{ backgroundColor: COLORS.neutral[300], flex: 1, height: 45 }} />
           </MaskedView>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
   return (
-    <View style={[styles.container, style]}>
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.9}
+      style={[styles.container, style]}
+    >
       <Body
         type={2}
         text={`${sender} added an poll 📊`}
@@ -76,9 +109,9 @@ export default function ChatPollBubble({ style, data, sender }) {
         text={data.title}
       />
       <View style={{ marginTop: 4, marginBottom: 12 }}>
-        {data.options.map((option, index) => getListItem(option, index === 2))}
+        {optionsData && optionsData.map((option, index) => getListItem(option, index))}
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -102,19 +135,16 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.m,
     borderWidth: 1,
     borderColor: COLORS.neutral[100],
-    // paddingHorizontal: 14,
   },
   inactiveContainerOverlay: {
     height: 45,
-    borderTopLeftRadius: RADIUS.m,
-    borderBottomLeftRadius: RADIUS.m,
+    borderRadius: RADIUS.m,
     backgroundColor: COLORS.neutral[100],
     position: 'absolute',
   },
   activeContainerOverlay: {
     height: 45,
-    borderTopLeftRadius: RADIUS.m,
-    borderBottomLeftRadius: RADIUS.m,
+    borderRadius: RADIUS.m,
     backgroundColor: COLORS.primary[700],
     position: 'absolute',
   },
