@@ -10,6 +10,7 @@ import ROUTES from '../../../constants/Routes';
 import ContactDetailModal from '../../ContactDetailModal';
 import ChatExpenseBubble from './ChatExpenseBubble';
 import WIDGETS from '../../../constants/ChatWidgets';
+import ChatPollBubble from './ChatPollBubble';
 
 export default function ChatMessageContainer({ data }) {
   const [contactData, setContactData] = useState(null);
@@ -69,7 +70,7 @@ export default function ChatMessageContainer({ data }) {
           <ChatWidgetContainer
             onPress={() => navigation.push(ROUTES.checklistScreen)}
             content={(
-              <ChatExpenseBubble
+              <ChatPollBubble
                 data={message.data}
                 sender={sender}
               />

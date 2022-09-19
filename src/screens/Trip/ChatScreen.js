@@ -142,6 +142,39 @@ export default function ChatScreen() {
         },
       ],
     },
+    {
+      timestamp: 1660215218,
+      senderData: {
+        id: 'pauli',
+        name: 'Pauli',
+        imageUri: 'https://i.pravatar.cc/300',
+        phoneNr: '+436641865358',
+        stamps: [],
+      },
+      messages: [
+        {
+          type: 'WIDGET',
+          content: WIDGETS.TYPE_POLL,
+          data:
+            {
+              title: 'Paris, Lyon or Marseille? 🇫🇷',
+              options: [
+                {
+                  string: 'Paris',
+                  votes: 5,
+                },
+                {
+                  string: 'Lyon',
+                  votes: 2,
+                },
+                {
+                  string: 'Marseille',
+                  votes: 1,
+                }],
+            },
+        },
+      ],
+    },
   ];
 
   useEffect(() => {

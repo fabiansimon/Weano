@@ -10,7 +10,7 @@ export default function ChatExpenseBubble({ style, data, sender }) {
     <View style={[styles.container, style]}>
       <Body
         type={2}
-        text={`${sender} added an expense`}
+        text={`${sender} added an expense 💸`}
         color={COLORS.neutral[300]}
         style={{ marginVertical: 8 }}
       />

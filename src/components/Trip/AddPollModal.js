@@ -64,7 +64,7 @@ export default function AddPollModal({ isVisible, onRequestClose, onPress }) {
           value={field.value || null}
           onChangeText={(val) => setInputFields((prev) => {
             const newArr = prev;
-            newArr[index].val = val;
+            newArr[index].value = val;
             return newArr;
           })}
           placeholder={field.placeholder}
@@ -126,7 +126,7 @@ export default function AddPollModal({ isVisible, onRequestClose, onPress }) {
             style={styles.button}
             text={i18n.t('Send Poll')}
             onPress={() => {
-              onPress(inputFields);
+              console.log(inputFields);
               onRequestClose();
             }}
           />
