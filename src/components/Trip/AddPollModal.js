@@ -24,12 +24,12 @@ export default function AddPollModal({ isVisible, onRequestClose, onPress }) {
       value: '',
     },
     {
-      title: i18n.t('Choice 1'),
+      title: i18n.t('Choice'),
       placeholder: i18n.t('Type your choice here'),
       value: '',
     },
     {
-      title: i18n.t('Choice 2'),
+      title: i18n.t('Choice'),
       placeholder: i18n.t('Type your choice here'),
       value: '',
     },
@@ -41,17 +41,14 @@ export default function AddPollModal({ isVisible, onRequestClose, onPress }) {
 
   const addRow = () => {
     setInputFields((prev) => [...prev, {
-      title: i18n.t(`${i18n.t('Choice')} ${prev.length}`),
+      title: i18n.t(i18n.t('Choice')),
       placeholder: i18n.t('Type your choice here'),
       value: '',
     }]);
   };
 
-  const deleteRow = (index) => {
-    setInputFields((prev) => {
-      const newArr = prev;
-      newArr.splice(index, 1);
-    });
+  const deleteRow = (i) => {
+    setInputFields((prev) => prev.filter((_, index) => index !== i));
   };
 
   const getInputRow = (field, index) => (
@@ -129,9 +126,8 @@ export default function AddPollModal({ isVisible, onRequestClose, onPress }) {
             style={styles.button}
             text={i18n.t('Send Poll')}
             onPress={() => {
-            //   onPress({ amount, description });
-            //   onRequestClose();
-              console.log(inputFields);
+              onPress(inputFields);
+              onRequestClose();
             }}
           />
         </View>

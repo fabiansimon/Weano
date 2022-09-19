@@ -336,7 +336,7 @@ export default function ChatScreen() {
       />
       {/* Add Poll Modal */}
       <AddPollModal
-        onPress={(data) => sendMessage('WIDGET', WIDGETS.TYPE_EXPENSE, data)}
+        onPress={(data) => sendMessage('WIDGET', WIDGETS.TYPE_POLL, data)}
         isVisible={pollVisible}
         onRequestClose={() => setPollVisible(false)}
       />
