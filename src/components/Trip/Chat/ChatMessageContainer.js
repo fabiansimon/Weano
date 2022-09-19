@@ -64,6 +64,18 @@ export default function ChatMessageContainer({ data }) {
             )}
           />
         );
+      case WIDGETS.TYPE_POLL:
+        return (
+          <ChatWidgetContainer
+            onPress={() => navigation.push(ROUTES.checklistScreen)}
+            content={(
+              <ChatExpenseBubble
+                data={message.data}
+                sender={sender}
+              />
+            )}
+          />
+        );
       default:
         return <View />;
     }
@@ -113,7 +125,6 @@ export default function ChatMessageContainer({ data }) {
         onRequestClose={() => setContactData(null)}
         data={contactData}
       />
-
     </>
 
   );

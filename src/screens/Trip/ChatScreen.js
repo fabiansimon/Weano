@@ -29,6 +29,7 @@ import ATTACHMENTS from '../../constants/Attachments';
 import ChatMessageContainer from '../../components/Trip/Chat/ChatMessageContainer';
 import AddExpenseModal from '../../components/Trip/AddExpenseModal';
 import WIDGETS from '../../constants/ChatWidgets';
+import AddPollModal from '../../components/Trip/AddPollModal';
 
 export default function ChatScreen() {
   const [message, setMessage] = useState('');
@@ -56,6 +57,7 @@ export default function ChatScreen() {
     {
       string: i18n.t('Poll'),
       icon: <MatIcon name="poll" />,
+      onPress: () => setPollVisible(true),
       type: ATTACHMENTS.poll,
     },
     {
@@ -247,6 +249,7 @@ export default function ChatScreen() {
         <ScrollView
           horizontal
           scrollEnabled
+          showsHorizontalScrollIndicator={false}
           paddingHorizontal={PADDING.xl}
           style={{ paddingTop: 14 }}
         >
@@ -324,10 +327,18 @@ export default function ChatScreen() {
           {getFooter()}
         </View>
       </KeyboardView>
+
+      {/* Add Expense Modal */}
       <AddExpenseModal
         onPress={(data) => sendMessage('WIDGET', WIDGETS.TYPE_EXPENSE, data)}
         isVisible={expenseVisible}
         onRequestClose={() => setExpenseVisible(false)}
+      />
+      {/* Add Poll Modal */}
+      <AddPollModal
+        onPress={(data) => sendMessage('WIDGET', WIDGETS.TYPE_EXPENSE, data)}
+        isVisible={pollVisible}
+        onRequestClose={() => setPollVisible(false)}
       />
     </>
   );

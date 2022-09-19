@@ -9,7 +9,6 @@ import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Headline from '../../components/typography/Headline';
 import TrailContainer from '../../components/Trip/TrailContainer';
-import DateRangeContainer from '../../components/Trip/DateRangeContainer';
 import AvailabilityModal from '../../components/Trip/AvailabilityModal';
 import AvailabilityCard from '../../components/Trip/AvailabilityCard';
 import FilterModal from '../../components/FilterModal';
