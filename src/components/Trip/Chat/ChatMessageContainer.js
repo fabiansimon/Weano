@@ -56,7 +56,7 @@ export default function ChatMessageContainer({ data }) {
       case WIDGETS.TYPE_EXPENSE:
         return (
           <ChatWidgetContainer
-            onPress={() => navigation.push(ROUTES.checklistScreen)}
+            onPress={() => navigation.push(ROUTES.expenseScreen)}
             content={(
               <ChatExpenseBubble
                 data={message.data}

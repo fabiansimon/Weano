@@ -13,6 +13,8 @@ import LocationScreen from './src/screens/Trip/LocationScreen';
 import DateScreen from './src/screens/Trip/DateScreen';
 import ChatScreen from './src/screens/Trip/ChatScreen';
 import ChecklistScreen from './src/screens/Trip/ChecklistScreen';
+import ExpenseScreen from './src/screens/Trip/ExpenseScreen';
+import IndividualExpenseScreen from './src/screens/Trip/IndividualExpenseScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -36,6 +38,8 @@ export default function App() {
         <Stack.Screen name={ROUTES.dateScreen} component={DateScreen} />
         <Stack.Screen name={ROUTES.checklistScreen} component={ChecklistScreen} />
         <Stack.Screen name={ROUTES.chatScreen} component={ChatScreen} />
+        <Stack.Screen name={ROUTES.individualExpenseScreen} component={IndividualExpenseScreen} />
+        <Stack.Screen name={ROUTES.expenseScreen} component={ExpenseScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

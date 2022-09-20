@@ -9,6 +9,8 @@ const ROUTES = {
   locationScreen: 'locationScreen',
   dateScreen: 'dateScreen',
   chatScreen: 'chatScreen',
+  expenseScreen: 'expenseScreen',
+  individualExpenseScreen: 'individualExpenseScreen',
 };
 
 export default ROUTES;

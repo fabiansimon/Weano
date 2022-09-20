@@ -13,7 +13,6 @@ import COLORS from '../../constants/Theme';
 import TextField from '../TextField';
 import SearchResultTile from './SearchResultTile';
 import Subtitle from '../typography/Subtitle';
-import KeyboardView from '../KeyboardView';
 
 export default function SearchModal({ isVisible, onRequestClose }) {
   const [searchTerm, setSearchTerm] = useState();

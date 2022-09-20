@@ -7,7 +7,7 @@ import DefaultAvatar from '../../assets/images/default_avatar.png';
 import Headline from './typography/Headline';
 
 export default function Avatar({
-  style, size, uri, onPress, backgroundColor, text, borderWidth,
+  style, size, uri, onPress, backgroundColor, text, borderWidth, disabled,
 }) {
   const height = size || 55;
   const width = size || 55;
@@ -16,6 +16,7 @@ export default function Avatar({
 
   return (
     <TouchableOpacity
+      disabled={disabled}
       style={[styles.container, style, {
         height, width, backgroundColor: bg, borderWidth: bW,
       }]}
