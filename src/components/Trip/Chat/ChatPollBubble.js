@@ -7,12 +7,13 @@ import COLORS, { PADDING, RADIUS } from '../../../constants/Theme';
 import Body from '../../typography/Body';
 import Divider from '../../Divider';
 import Headline from '../../typography/Headline';
+import PollTile from '../../Polls/PollTile';
 
 export default function ChatPollBubble({
   style, data, sender, onPress,
 }) {
   const [optionsData, setOptionsData] = useState([]);
-  const [votedIndex, setVotedIndex] = useState(-1);
+  const [voteIndex, setVoteIndex] = useState(-1);
 
   useEffect(() => {
     setOptionsData(data.options);
@@ -29,65 +30,19 @@ export default function ChatPollBubble({
   const handleVote = (index) => {
     setOptionsData((prev) => {
       const newArr = prev;
-      if (votedIndex === index) {
+      if (voteIndex === index) {
         newArr[index].votes -= 1;
-        setVotedIndex(-1);
+        setVoteIndex(-1);
         return newArr;
       }
 
-      if (votedIndex !== -1) {
-        newArr[votedIndex].votes -= 1;
+      if (voteIndex !== -1) {
+        newArr[voteIndex].votes -= 1;
       }
       newArr[index].votes += 1;
-      setVotedIndex(index);
+      setVoteIndex(index);
       return newArr;
     });
-  };
-
-  const getListItem = (option, index) => {
-    const percentage = getPercentage(option.votes);
-    const width = `${percentage}%`;
-
-    const isActive = votedIndex === index;
-
-    const color = isActive ? COLORS.shades[0] : COLORS.neutral[500];
-
-    return (
-      <TouchableOpacity
-        activeOpacity={0.9}
-        onPress={() => handleVote(index)}
-        style={{ marginTop: 14 }}
-      >
-        <View style={styles.optionTileContainer}>
-          <View style={[isActive ? styles.activeContainerOverlay : styles.inactiveContainerOverlay, { width }]} />
-          <MaskedView
-            style={styles.optionTile}
-            maskElement={(
-              <View
-                style={{
-                  backgroundColor: 'transparent',
-                  flex: 1,
-                  flexDirection: 'row',
-                  paddingHorizontal: 14,
-                  alignItems: 'center',
-                }}
-              >
-                <View style={{
-                  flexDirection: 'row', justifyContent: 'space-between', flex: 1,
-                }}
-                >
-                  <Headline type={4} color={COLORS.neutral[500]} text={option.string} />
-                  <Headline type={4} color={COLORS.neutral[500]} text={`${percentage}%`} />
-                </View>
-              </View>
-              )}
-          >
-            <View style={{ backgroundColor: color, width, height: 45 }} />
-            <View style={{ backgroundColor: COLORS.neutral[300], flex: 1, height: 45 }} />
-          </MaskedView>
-        </View>
-      </TouchableOpacity>
-    );
   };
 
   return (
@@ -109,7 +64,16 @@ export default function ChatPollBubble({
         text={data.title}
       />
       <View style={{ marginTop: 4, marginBottom: 12 }}>
-        {optionsData && optionsData.map((option, index) => getListItem(option, index))}
+        {optionsData && optionsData.map((option, index) => (
+          <PollTile
+            style={{ marginTop: 16 }}
+            data={option}
+            index={index}
+            onPress={() => handleVote(index)}
+            isActive={voteIndex === index}
+            percentage={`${getPercentage(option.votes)}%`}
+          />
+        ))}
       </View>
     </TouchableOpacity>
   );

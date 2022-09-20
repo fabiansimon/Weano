@@ -25,6 +25,7 @@ export default function AddSuggestionModal({
 
     onRequestClose();
     setPollData([...data, newSuggestion]);
+    setSuggestion('');
   };
   return (
     <TitleModal

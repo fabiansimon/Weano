@@ -1,38 +1,47 @@
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import React from 'react';
+import MaskedView from '@react-native-masked-view/masked-view';
 import Headline from '../typography/Headline';
-import COLORS from '../../constants/Theme';
+import COLORS, { RADIUS } from '../../constants/Theme';
 
 export default function PollTile({
-  style, data, onPress, isActive,
+  style, data, onPress, isActive, percentage, height = 55,
 }) {
-  const getPercentage = (votes) => (votes / 10) * 100;
-  const activeColor = isActive && COLORS.primary[700];
+  const color = isActive ? COLORS.shades[0] : COLORS.neutral[500];
 
   return (
     <TouchableOpacity
-      style={[styles.tile, style, { borderColor: activeColor || COLORS.neutral[100] }]}
-      activeOpacity={0.8}
+      activeOpacity={0.9}
       onPress={onPress}
+      style={style}
     >
-      <View style={[styles.progressBar,
-        {
-          width: `${getPercentage(data.votes)}%`,
-
-          backgroundColor: activeColor || COLORS.neutral[100],
-        }]}
-      />
-      <View style={styles.container}>
-        <Headline
-          type={4}
-          text={data.title}
-          color={isActive ? COLORS.shades[0] : COLORS.shades[100]}
-        />
-        <Headline
-          type={4}
-          text={`${getPercentage(data.votes)}%`}
-          color={activeColor || COLORS.shades[100]}
-        />
+      <View style={[styles.optionTileContainer, { height }]}>
+        <View style={[isActive ? styles.activeContainerOverlay : styles.inactiveContainerOverlay, { width: percentage, height }]} />
+        <MaskedView
+          style={styles.optionTile}
+          maskElement={(
+            <View
+              style={{
+                backgroundColor: 'transparent',
+                flex: 1,
+                flexDirection: 'row',
+                paddingHorizontal: 14,
+                alignItems: 'center',
+              }}
+            >
+              <View style={{
+                flexDirection: 'row', justifyContent: 'space-between', flex: 1,
+              }}
+              >
+                <Headline type={4} color={COLORS.neutral[500]} text={data.string} />
+                <Headline type={4} color={COLORS.neutral[500]} text={percentage} />
+              </View>
+            </View>
+              )}
+        >
+          <View style={{ backgroundColor: color, width: percentage, height: 45 }} />
+          <View style={{ backgroundColor: COLORS.neutral[300], flex: 1, height: 45 }} />
+        </MaskedView>
       </View>
     </TouchableOpacity>
   );
@@ -47,22 +56,23 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  progressBar: {
-    zIndex: 0,
-    height: '100%',
-    left: 0,
-    top: 0,
-    position: 'absolute',
-    borderRadius: 12,
+  optionTile: {
+    flex: 1,
+    flexDirection: 'row',
   },
-  tile: {
-    zIndex: 2,
-    backgroundColor: COLORS.shades[0],
-    justifyContent: 'space-between',
-    borderRadius: 14,
-    borderColor: COLORS.neutral[100],
-    height: 55,
-    alignItems: 'center',
+  optionTileContainer: {
+    borderRadius: RADIUS.m,
     borderWidth: 1,
+    borderColor: COLORS.neutral[100],
+  },
+  inactiveContainerOverlay: {
+    borderRadius: RADIUS.m,
+    backgroundColor: COLORS.neutral[100],
+    position: 'absolute',
+  },
+  activeContainerOverlay: {
+    borderRadius: RADIUS.m,
+    backgroundColor: COLORS.primary[700],
+    position: 'absolute',
   },
 });

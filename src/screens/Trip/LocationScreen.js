@@ -14,17 +14,17 @@ export default function LocationScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
   const mockData = [
     {
-      title: 'Paris, France',
+      string: 'Paris, France',
       subtitle: 'Fabian Simon',
       votes: 6,
     },
     {
-      title: 'Pula, Croatia',
+      string: 'Pula, Croatia',
       subtitle: 'Julia',
       votes: 2,
     },
     {
-      title: 'Vienna, Austria',
+      string: 'Vienna, Austria',
       subtitle: 'Matthias',
       votes: 0,
     },

@@ -1,16 +1,45 @@
 import { View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PollTile from './PollTile';
 import Headline from '../typography/Headline';
 import Body from '../typography/Body';
 import COLORS from '../../constants/Theme';
 import i18n from '../../utils/i18n';
-import Button from '../Button';
 
 export default function PollView({
   style, data, title, subtitle,
 }) {
   const [voteIndex, setVoteIndex] = useState(-1);
+  const [optionsData, setOptionsData] = useState([]);
+
+  useEffect(() => {
+    setOptionsData(data);
+  }, [data]);
+
+  const handleVote = (index) => {
+    setOptionsData((prev) => {
+      const newArr = prev;
+      if (voteIndex === index) {
+        newArr[index].votes -= 1;
+        setVoteIndex(-1);
+        return newArr;
+      }
+      if (voteIndex !== -1) {
+        newArr[voteIndex].votes -= 1;
+      }
+      newArr[index].votes += 1;
+      setVoteIndex(index);
+      return newArr;
+    });
+  };
+
+  const getPercentage = (votes) => {
+    let countedVotes = 0;
+    for (let i = 0; i < data.length; i += 1) {
+      countedVotes += data[i].votes;
+    }
+    return countedVotes === 0 ? 0 : ((votes / countedVotes) * 100).toFixed(1);
+  };
 
   const header = data ? title : i18n.t('Be the first one to add one!');
 
@@ -24,26 +53,18 @@ export default function PollView({
         type={1}
         text={subtitle}
         color={COLORS.neutral[300]}
-        style={{ marginBottom: 30 }}
+        style={{ marginBottom: 16 }}
       />
-      {data && data.map((item, index) => (
+      {optionsData && optionsData.map((item, index) => (
         <PollTile
-          style={{ marginBottom: 12 }}
+          style={{ marginBottom: 16 }}
           data={item}
           index={index}
-          onPress={() => setVoteIndex(index === voteIndex ? -1 : index)}
+          onPress={() => handleVote(index)}
           isActive={voteIndex === index}
+          percentage={`${getPercentage(item.votes)}%`}
         />
       ))}
-      {data && (
-      <Button
-        text={i18n.t('Vote')}
-        style={{ marginTop: 10 }}
-        fullWidth={false}
-        onPress={() => console.log('Add Vote')}
-        isDisabled={voteIndex === -1}
-      />
-      )}
     </View>
   );
 }
