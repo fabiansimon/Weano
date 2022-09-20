@@ -207,6 +207,12 @@ export default function TripScreen() {
     },
     {
       title: i18n.t('Checklist'),
+      trailing: <Headline
+        onPress={() => navigation.navigate(ROUTES.checklistScreen)}
+        type={4}
+        text={i18n.t('see all')}
+        color={COLORS.neutral[500]}
+      />,
       content: <ChecklistContainer
         data={tripData.tasks}
         onPress={(val, index, type) => updateTasks(val, index, type)}

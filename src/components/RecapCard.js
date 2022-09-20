@@ -92,6 +92,7 @@ export default function RecapCard({
         />
         <View style={styles.buttonContainer}>
           <IconButton
+            style={{ backgroundColor: isLiked ? Utils.addAlpha(COLORS.secondary[50], 0.1) : 'transparent' }}
             onPress={() => setIsLiked(!isLiked)}
             icon={isLiked ? 'ios-heart-sharp' : 'ios-heart-outline'}
             isActive={isLiked}

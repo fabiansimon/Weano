@@ -108,6 +108,17 @@ export default class Utils {
   }
 
   /**
+     * Convert MonthInt to a Month String
+     * @param {String} hex - Hex code
+     * @param {Double} opacity - opacity from 0-1
+     * @return {String} Color with opacity
+     */
+  static addAlpha(color, opacity) {
+    const op = Math.round(Math.min(Math.max(opacity || 1, 0), 1) * 255);
+    return color + op.toString(16).toUpperCase();
+  }
+
+  /**
      * Convert LatLon to Location
      * @param {Array} latlon - Latitude & Longitude
      * @return {String} Location as String
