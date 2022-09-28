@@ -126,6 +126,7 @@ export default function ExpenseScreen() {
       description: 'Beer 🍺',
       timestamp: 1660998973,
     },
+
   ];
 
   const getListHeader = () => (

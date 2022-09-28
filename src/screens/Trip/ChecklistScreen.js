@@ -13,10 +13,12 @@ import INFORMATION from '../../constants/Information';
 import Headline from '../../components/typography/Headline';
 import CheckboxTile from '../../components/Trip/CheckboxTile';
 import Button from '../../components/Button';
+import AddTaskModal from '../../components/Trip/AddTaskModal';
 
 export default function ChecklistScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
   const [tasks, setTasks] = useState(null);
+  const [isVisible, setIsVisible] = useState(false);
   const mockTasks = {
     privateTasks: [
       {
@@ -151,9 +153,15 @@ export default function ChecklistScreen() {
         <Button
           style={{ marginHorizontal: PADDING.l }}
           text={i18n.t('Add Task')}
+          onPress={() => setIsVisible(true)}
           fullWidth
         />
       </SafeAreaView>
+      <AddTaskModal
+        isVisible={isVisible}
+        onRequestClose={() => setIsVisible(false)}
+        onPress={() => setIsVisible(false)}
+      />
     </View>
   );
 }

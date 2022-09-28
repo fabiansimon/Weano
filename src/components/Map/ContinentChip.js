@@ -20,9 +20,16 @@ export default function ContinentChip({
       activeOpacity={0.6}
     >
       <View style={[styles.iconContainer, { backgroundColor: iconBg }]}>
-        <Subtitle type={4} text={data.icon} />
+        <Subtitle
+          type={4}
+          text={data.icon}
+        />
       </View>
-      <Headline type={4} text={data.name} color={color} />
+      <Headline
+        type={4}
+        text={data.name}
+        color={color}
+      />
     </TouchableOpacity>
   );
 }
