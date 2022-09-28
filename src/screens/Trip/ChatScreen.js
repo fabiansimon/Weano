@@ -274,9 +274,7 @@ export default function ChatScreen() {
   );
 
   const getChatContainer = () => (
-    <View
-      style={styles.chatContainer}
-    >
+    <View style={styles.chatContainer}>
       <ScrollView
         ref={chatRef}
         contentContainerStyle={{ flexGrow: 1, paddingVertical: 20, paddingHorizontal: PADDING.s }}
