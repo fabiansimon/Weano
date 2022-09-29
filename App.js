@@ -15,6 +15,7 @@ import ChatScreen from './src/screens/Trip/ChatScreen';
 import ChecklistScreen from './src/screens/Trip/ChecklistScreen';
 import ExpenseScreen from './src/screens/Trip/ExpenseScreen';
 import IndividualExpenseScreen from './src/screens/Trip/IndividualExpenseScreen';
+import MemoriesScreen from './src/screens/MemoriesScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -28,6 +29,7 @@ export default function App() {
     <NavigationContainer>
       <StatusBar barStyle="dark-content" />
       <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name={ROUTES.memoriesScreen} component={MemoriesScreen} />
         <Stack.Screen name={ROUTES.mainScreen} component={MainScreen} />
         <Stack.Screen name={ROUTES.mapScreen} component={MapScreen} />
         <Stack.Screen name={ROUTES.tripScreen} component={TripScreen} />

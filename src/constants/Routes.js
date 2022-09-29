@@ -11,6 +11,7 @@ const ROUTES = {
   chatScreen: 'chatScreen',
   expenseScreen: 'expenseScreen',
   individualExpenseScreen: 'individualExpenseScreen',
+  memoriesScreen: 'memoriesScreen',
 };
 
 export default ROUTES;
