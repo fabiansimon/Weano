@@ -20,6 +20,7 @@ export default function AddTaskModal({
   const [assigneIndex, setAssigneIndex] = useState(0);
   const [assigneeData, setAssigneeData] = useState([]);
   const animatedBottom = useRef(new Animated.Value(900)).current;
+  const animatedY = useRef(new Animated.Value(0)).current;
   const duration = 300;
 
   const mockPersonalData = {
@@ -52,6 +53,28 @@ export default function AddTaskModal({
     setAssigneIndex(0);
     toggleModal();
   }, [isVisible]);
+
+  useEffect(() => {
+    toggleExpand();
+  }, [isPrivate]);
+
+  const toggleExpand = () => {
+    console.log('Hello');
+    if (!isPrivate) {
+      Animated.spring(animatedY, {
+        toValue: 1,
+        duration,
+        useNativeDriver: false,
+
+      }).start();
+    } else {
+      Animated.spring(animatedY, {
+        toValue: 0,
+        duration,
+        useNativeDriver: false,
+      }).start();
+    }
+  };
 
   const toggleModal = () => {
     if (isVisible) {
@@ -139,7 +162,7 @@ export default function AddTaskModal({
   );
 
   const getAssigneeRow = () => (
-    <View style={styles.assigneeRow}>
+    <Animated.View style={[styles.assigneeRow, { transform: [{ scaleY: animatedY }] }]}>
       <Subtitle
         text={i18n.t('Assignee')}
         color={COLORS.neutral[300]}
@@ -170,7 +193,7 @@ export default function AddTaskModal({
           );
         })}
       </ScrollView>
-    </View>
+    </Animated.View>
   );
 
   return (
