@@ -6,7 +6,9 @@ import Headline from '../typography/Headline';
 import COLORS from '../../constants/Theme';
 import Body from '../typography/Body';
 
-export default function CheckboxTile({ style, item, onPress }) {
+export default function CheckboxTile({
+  style, item, disableLabel, onPress,
+}) {
   return (
     <BouncyCheckbox
       size={22}
@@ -14,7 +16,7 @@ export default function CheckboxTile({ style, item, onPress }) {
       textComponent={(
         <View style={{ marginLeft: 8 }}>
           <View>
-            {item.assignee && (
+            {!disableLabel && (
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Icon color={item.isDone ? COLORS.success[700] : COLORS.neutral[300]} name="person" />
               <Body

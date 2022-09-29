@@ -3,15 +3,13 @@ import {
 } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {
-  useAnimatedStyle, useSharedValue, withSpring, withTiming,
-} from 'react-native-reanimated';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import KeyboardView from '../KeyboardView';
 import Divider from '../Divider';
 import i18n from '../../utils/i18n';
 import Body from '../typography/Body';
 import Avatar from '../Avatar';
+import Subtitle from '../typography/Subtitle';
 
 export default function AddTaskModal({
   isVisible, onRequestClose, onPress,
@@ -19,11 +17,9 @@ export default function AddTaskModal({
   const [isPrivate, setIsPrivate] = useState(true);
   const [task, setTask] = useState('');
   const [showModal, setShowModal] = useState(isVisible);
-  const [expanded, setExpanded] = useState(isVisible);
   const [assigneIndex, setAssigneIndex] = useState(0);
   const [assigneeData, setAssigneeData] = useState([]);
   const animatedBottom = useRef(new Animated.Value(900)).current;
-  const animatedValues = useSharedValue({ height: 0, opacity: 0 });
   const duration = 300;
 
   const mockPersonalData = {
@@ -52,37 +48,10 @@ export default function AddTaskModal({
 
   useEffect(() => {
     setAssigneeData([mockPersonalData, ...mockInvitees]);
-  }, []);
-
-  useEffect(() => {
+    setIsPrivate(true);
+    setAssigneIndex(0);
     toggleModal();
   }, [isVisible]);
-
-  const toggleExpand = (val) => {
-    if (!val) {
-      setExpanded(false);
-      animatedValues.value = { height: 0, opacity: 0 };
-      return;
-    }
-
-    setExpanded(!expanded);
-    animatedValues.value = { height: !expanded ? 100 : 0, opacity: !expanded ? 1 : 0 };
-  };
-
-  const animationStyle = useAnimatedStyle(() => ({
-    height: !expanded
-      ? withTiming(animatedValues.value.height, {
-        duration,
-      })
-      : withSpring(animatedValues.value.height, {
-        duration,
-        mass: 0.3,
-      }),
-
-    opacity: withSpring(animatedValues.value.opacity, {
-      duration,
-    }),
-  }));
 
   const toggleModal = () => {
     if (isVisible) {
@@ -102,11 +71,28 @@ export default function AddTaskModal({
     }
   };
 
+  const handlePress = () => {
+    if (task.trim().length <= 0) {
+      console.log('No text');
+      return;
+    }
+
+    const taskData = {
+      assignee: assigneeData[assigneIndex],
+      task,
+      type: isPrivate ? 'PRIVATE' : 'MUTUAL',
+    };
+
+    onPress(taskData);
+  };
+
   const getMiddleRow = () => (
     <View style={styles.buttonRow}>
       <View style={{ flexDirection: 'row' }}>
         <TouchableOpacity
-          onPress={() => setIsPrivate(true)}
+          onPress={() => {
+            setIsPrivate(true);
+          }}
           activeOpacity={0.5}
           style={isPrivate ? styles.activeButton : styles.inactiveButton}
         >
@@ -125,7 +111,6 @@ export default function AddTaskModal({
         <TouchableOpacity
           onPress={() => {
             setIsPrivate(false);
-            toggleExpand(false);
           }}
           activeOpacity={0.5}
           style={[!isPrivate ? styles.activeButton : styles.inactiveButton, { marginLeft: 6 }]}
@@ -144,7 +129,7 @@ export default function AddTaskModal({
         </TouchableOpacity>
       </View>
       <Icon
-        onPress={() => onPress()}
+        onPress={handlePress}
         name="arrow-up-circle"
         suppressHighlighting
         size={30}
@@ -154,24 +139,34 @@ export default function AddTaskModal({
   );
 
   const getAssigneeRow = () => (
-    <View style={[styles.assigneeRow, animationStyle]}>
-      <ScrollView horizontal>
+    <View style={styles.assigneeRow}>
+      <Subtitle
+        text={i18n.t('Assignee')}
+        color={COLORS.neutral[300]}
+        style={{ marginLeft: PADDING.xl, marginBottom: 12 }}
+      />
+      <ScrollView horizontal style={{ paddingLeft: PADDING.m }}>
         {assigneeData.map((invitee, index) => {
           const isActive = assigneIndex === index;
           return (
-            <View style={{ alignItems: 'center', width: 70 }}>
+            <TouchableOpacity
+              onPress={() => setAssigneIndex(index)}
+              activeOpacity={0.9}
+              style={{ alignItems: 'center', width: 70 }}
+            >
               <Avatar
+                disabled
                 uri={invitee.uri}
                 style={{ marginBottom: 6, borderColor: isActive ? COLORS.primary[700] : COLORS.neutral[300] }}
-                borderWidth={isActive ? 3 : 0}
+                borderWidth={isActive ? 2 : 0}
               />
               <Body
                 type={2}
-                text={invitee.firstName}
+                text={index === 0 ? i18n.t('You') : invitee.firstName}
                 style={{ fontWeight: isActive ? '500' : '400' }}
                 color={isActive ? COLORS.primary[700] : COLORS.neutral[300]}
               />
-            </View>
+            </TouchableOpacity>
           );
         })}
       </ScrollView>
@@ -205,7 +200,7 @@ export default function AddTaskModal({
               />
               <Divider style={{ marginTop: PADDING.m }} />
               {getMiddleRow()}
-              {getAssigneeRow()}
+              {!isPrivate && getAssigneeRow()}
             </View>
           </Animated.View>
         </KeyboardView>
@@ -234,11 +229,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   assigneeRow: {
-    marginHorizontal: PADDING.l,
-    marginVertical: PADDING.l,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    marginTop: PADDING.l,
   },
   activeButton: {
     height: 40,

@@ -17,8 +17,9 @@ import AddTaskModal from '../../components/Trip/AddTaskModal';
 
 export default function ChecklistScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
-  const [tasks, setTasks] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [mutualTasks, setMutualTasks] = useState([]);
+  const [privateTasks, setPrivateTasks] = useState([]);
   const mockTasks = {
     privateTasks: [
       {
@@ -52,14 +53,28 @@ export default function ChecklistScreen() {
   };
 
   useEffect(() => {
-    setTasks(mockTasks);
+    setMutualTasks(mockTasks.mutualTasks);
+    setPrivateTasks(mockTasks.privateTasks);
   }, []);
 
-  const taskCount = (isDone) => {
-    if (tasks) {
-      return tasks.privateTasks.filter((task) => task.isDone === isDone).length + tasks.mutualTasks.filter((task) => task.isDone === isDone).length;
+  const taskCount = (isDone) => privateTasks.filter((task) => task.isDone === isDone).length + mutualTasks.filter((task) => task.isDone === isDone).length;
+
+  const handleInput = (data) => {
+    setIsVisible(false);
+    const isPrivate = data.type === 'PRIVATE';
+
+    const task = {
+      title: data.task,
+      isDone: false,
+      assignee: isPrivate ? `${data.assignee.firstName} ${data.assignee.lastName}` : null,
+    };
+
+    if (isPrivate) {
+      setPrivateTasks([...privateTasks, task]);
     }
-    return 0;
+    if (!isPrivate) {
+      setMutualTasks([...mutualTasks, task]);
+    }
   };
 
   const headerChips = (
@@ -123,7 +138,7 @@ export default function ChecklistScreen() {
               text={i18n.t('Mutual list')}
             />
             <Divider top={12} style={{ flex: 1 }} />
-            { mockTasks.mutualTasks && mockTasks.mutualTasks.map((item) => (
+            { mutualTasks && mutualTasks.map((item) => (
               <CheckboxTile
                 style={{ marginVertical: 10, marginRight: 30 }}
                 item={item}
@@ -138,10 +153,11 @@ export default function ChecklistScreen() {
               style={{ marginLeft: 16 }}
             />
             <Divider top={12} />
-            { mockTasks.privateTasks && mockTasks.privateTasks.map((item) => (
+            { privateTasks && privateTasks.map((item) => (
               <CheckboxTile
                 style={{ marginVertical: 10, marginLeft: 16 }}
                 item={item}
+                disableLabel
                 onPress={(isChecked) => console.log(isChecked)}
               />
             ))}
@@ -160,7 +176,7 @@ export default function ChecklistScreen() {
       <AddTaskModal
         isVisible={isVisible}
         onRequestClose={() => setIsVisible(false)}
-        onPress={() => setIsVisible(false)}
+        onPress={(data) => handleInput(data)}
       />
     </View>
   );

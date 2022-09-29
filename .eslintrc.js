@@ -24,5 +24,6 @@ module.exports = {
     'react/prop-types': 0,
     'react/jsx-props-no-spreading': 'off',
     'max-len': ['error', { code: 200 }],
+    'consistent-return': 'off',
   },
 };
