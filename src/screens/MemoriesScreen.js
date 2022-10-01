@@ -4,7 +4,7 @@ import {
 import Icon from 'react-native-vector-icons/AntDesign';
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import Headline from '../components/typography/Headline';
 import i18n from '../utils/i18n';

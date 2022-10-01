@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/Entypo';
 import PagerView from 'react-native-pager-view';
 import CalendarPicker from 'react-native-calendar-picker';
 import Contacts from 'react-native-contacts';
+import { useMutation } from '@apollo/client';
 import i18n from '../utils/i18n';
 import Headline from './typography/Headline';
 import COLORS from '../constants/Theme';
@@ -19,9 +20,14 @@ import PageIndicator from './PageIndicator';
 import TitleModal from './TitleModal';
 import ContactTile from './ContactTile';
 import BackButton from './BackButton';
+import ADD_TRIP from '../mutations/addTrip';
 
 export default function CreateModal({ isVisible, onRequestClose }) {
-  const [phoneNr, setPhoneNr] = useState('');
+  const [addTrip, { data, loading, error }] = useMutation(ADD_TRIP);
+
+  const [location, setLocation] = useState('');
+  // const [invitees, setInvitees] = useState([]);
+  const [tripName, setTripName] = useState([]);
   const [dateRange, setDateRange] = useState();
   const [contactsVisible, setContactsVisible] = useState(false);
   const [contacts, setContacts] = useState([]);
@@ -88,8 +94,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
   const handleChange = (isBack) => {
     if (pageIndex === 0 && isBack) return;
     if (pageIndex === createData.length - 1 && !isBack) {
-      onRequestClose();
-      setPageIndex(0);
+      handleData();
       return;
     }
 
@@ -100,6 +105,35 @@ export default function CreateModal({ isVisible, onRequestClose }) {
       pageRef.current?.setPage(pageIndex + 1);
       setPageIndex(pageIndex + 1);
     }
+  };
+
+  const handleData = async () => {
+    const trip = {
+      title: tripName,
+      location: location.length > 0 ? location : null,
+      endDate: parseInt(dateRange.selectedStartDate, 10) || null,
+      startDate: parseInt(dateRange.selectedEndDate, 10) || null,
+      invitees: ['Fabian', 'Julia'],
+    };
+
+    await addTrip({
+      variables: {
+        trip: {
+          title: trip.title,
+          location: trip.location,
+          invitees: trip.invitees,
+          startDate: trip.startDate,
+          endDate: trip.endDate,
+        },
+      },
+    }).catch((e) => console.log(`ERROR: ${e.message}`));
+
+    setDateRange();
+    setTripName('');
+    setDateRange();
+    setLocation('');
+    onRequestClose();
+    setPageIndex(0);
   };
 
   const getDateContent = () => (
@@ -144,7 +178,10 @@ export default function CreateModal({ isVisible, onRequestClose }) {
               type={4}
               text={i18n.t('Reset')}
               color={COLORS.neutral[500]}
-              onPress={() => setDateRange(null)}
+              onPress={() => {
+                setDateRange(null);
+                setCalendarVisible(false);
+              }}
               style={{ textDecorationLine: 'underline', marginTop: 18, marginBottom: 4 }}
             />
           </View>
@@ -163,10 +200,10 @@ export default function CreateModal({ isVisible, onRequestClose }) {
     <View>
       <TextField
         style={{ marginTop: 18, marginBottom: 10 }}
-        value={phoneNr || null}
-        onChangeText={(val) => setPhoneNr(val)}
+        value={location || null}
+        onChangeText={(val) => setLocation(val)}
         placeholder={i18n.t('Paris, France 🇫🇷')}
-        onDelete={() => setPhoneNr('')}
+        onDelete={() => setLocation('')}
       />
       <PopUpModal
         isVisible={popUpVisible}
@@ -193,10 +230,10 @@ export default function CreateModal({ isVisible, onRequestClose }) {
   const getTitleContent = () => (
     <TextField
       style={{ marginTop: 18, marginBottom: 10 }}
-      value={phoneNr || null}
-      onChangeText={(val) => setPhoneNr(val)}
+      value={tripName || null}
+      onChangeText={(val) => setTripName(val)}
       placeholder={i18n.t('Epic Summer Trip 2021 ✈️')}
-      onDelete={() => setPhoneNr('')}
+      onDelete={() => setTripName('')}
     />
   );
 
@@ -304,6 +341,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
             <BackButton onPress={() => handleChange(true)} />
             )}
             <Button
+              isLoading={loading}
               text={i18n.t('Continue')}
               onPress={() => handleChange()}
             />

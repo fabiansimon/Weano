@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/AntDesign';
+import { useQuery } from '@apollo/client';
 import COLORS, { PADDING } from '../constants/Theme';
 import Headline from '../components/typography/Headline';
 import i18n from '../utils/i18n';
@@ -16,8 +17,10 @@ import ROUTES from '../constants/Routes';
 import AnimatedHeader from '../components/AnimatedHeader';
 import SearchModal from '../components/Search/SearchModal';
 import RewindTile from '../components/Trip/RewindTile';
+import GET_TRIPS_FROM_USER from '../queries/getTripsFromUser';
 
 export default function MainScreen() {
+  const { loading, error, data } = useQuery(GET_TRIPS_FROM_USER);
   const [createVisible, setCreateVisible] = useState(false);
   const [searchVisible, setSearchVisible] = useState(false);
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -120,8 +123,12 @@ export default function MainScreen() {
     },
   ];
 
+  console.log(data);
+
   return (
     <View style={{ backgroundColor: COLORS.neutral[50] }}>
+      {loading && <View style={{ flex: 1, backgroundColor: 'blue' }} />}
+      {error && <View style={{ flex: 1, backgroundColor: 'red' }} />}
       <AnimatedHeader
         scrollY={scrollY}
         maxHeight={120}

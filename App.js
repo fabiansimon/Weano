@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react';
+import { AppRegistry, LogBox, StatusBar } from 'react-native';
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { LogBox, StatusBar } from 'react-native';
 import ROUTES from './src/constants/Routes';
 import IntroScreen from './src/screens/Intro/IntroScreen';
 import MainScreen from './src/screens/MainScreen';
@@ -25,24 +27,31 @@ export default function App() {
     LogBox.ignoreAllLogs();// Ignore all log notifications
   });
 
+  const client = new ApolloClient({
+    uri: 'http://localhost:4000/graphql',
+    cache: new InMemoryCache(),
+  });
   return (
-    <NavigationContainer>
-      <StatusBar barStyle="dark-content" />
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name={ROUTES.memoriesScreen} component={MemoriesScreen} />
-        <Stack.Screen name={ROUTES.mainScreen} component={MainScreen} />
-        <Stack.Screen name={ROUTES.mapScreen} component={MapScreen} />
-        <Stack.Screen name={ROUTES.tripScreen} component={TripScreen} />
-        <Stack.Screen name={ROUTES.introScreen} component={IntroScreen} />
-        <Stack.Screen name={ROUTES.inviteeScreen} component={InviteeScreen} />
-        <Stack.Screen name={ROUTES.accomodationsScreen} component={AccomodationsScreen} />
-        <Stack.Screen name={ROUTES.locationScreen} component={LocationScreen} />
-        <Stack.Screen name={ROUTES.dateScreen} component={DateScreen} />
-        <Stack.Screen name={ROUTES.chatScreen} component={ChatScreen} />
-        <Stack.Screen name={ROUTES.individualExpenseScreen} component={IndividualExpenseScreen} />
-        <Stack.Screen name={ROUTES.expenseScreen} component={ExpenseScreen} />
-        <Stack.Screen name={ROUTES.checklistScreen} component={ChecklistScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <ApolloProvider client={client}>
+      <NavigationContainer>
+        <StatusBar barStyle="dark-content" />
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name={ROUTES.mainScreen} component={MainScreen} />
+          <Stack.Screen name={ROUTES.mapScreen} component={MapScreen} />
+          <Stack.Screen name={ROUTES.tripScreen} component={TripScreen} />
+          <Stack.Screen name={ROUTES.introScreen} component={IntroScreen} />
+          <Stack.Screen name={ROUTES.inviteeScreen} component={InviteeScreen} />
+          <Stack.Screen name={ROUTES.accomodationsScreen} component={AccomodationsScreen} />
+          <Stack.Screen name={ROUTES.locationScreen} component={LocationScreen} />
+          <Stack.Screen name={ROUTES.dateScreen} component={DateScreen} />
+          <Stack.Screen name={ROUTES.chatScreen} component={ChatScreen} />
+          <Stack.Screen name={ROUTES.individualExpenseScreen} component={IndividualExpenseScreen} />
+          <Stack.Screen name={ROUTES.expenseScreen} component={ExpenseScreen} />
+          <Stack.Screen name={ROUTES.checklistScreen} component={ChecklistScreen} />
+          <Stack.Screen name={ROUTES.memoriesScreen} component={MemoriesScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </ApolloProvider>
   );
 }
+AppRegistry.registerComponent('MyApplication', () => App);
