@@ -1,10 +1,14 @@
+/* eslint-disable no-return-assign */
+/* eslint-disable react/no-unstable-nested-components */
 import {
   FlatList, Share, StyleSheet, View,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
-import React from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import React, { useEffect } from 'react';
+import { PinchGestureHandler, TouchableOpacity } from 'react-native-gesture-handler';
+import Animated, {
+  useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withSpring, withTiming,
+} from 'react-native-reanimated';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import Headline from '../components/typography/Headline';
 import i18n from '../utils/i18n';
@@ -12,6 +16,37 @@ import Subtitle from '../components/typography/Subtitle';
 import ImageContainer from '../components/Trip/ImageContainer';
 
 export default function MemoriesScreen() {
+  const scale = useSharedValue(1);
+  const headerOpacity = useSharedValue(1);
+
+  const images = [];
+  const imagesLength = 9;
+  const numColumns = Math.sqrt(imagesLength);
+
+  useEffect(() => {
+    for (let i = 0; i < imagesLength; i += 1) {
+      images.push('https://picsum.photos/160/290');
+    }
+  }, []);
+
+  const pinchHandler = useAnimatedGestureHandler({
+    onActive: (event) => {
+      scale.value = event.scale;
+      headerOpacity.value = withSpring(0);
+    },
+    onEnd: () => {
+      scale.value = withTiming(1);
+      headerOpacity.value = withSpring(1);
+    },
+  });
+
+  const gAnimated = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+  const hAnimated = useAnimatedStyle(() => ({
+    opacity: headerOpacity.value,
+  }));
+
   const onShare = async () => {
     try {
       const result = await Share.share({
@@ -33,7 +68,7 @@ export default function MemoriesScreen() {
   };
 
   const getHeader = () => (
-    <View style={styles.header}>
+    <Animated.View style={[styles.header, hAnimated]}>
       <TouchableOpacity style={styles.roundButton}>
         <Icon
           name="arrowleft"
@@ -73,35 +108,38 @@ export default function MemoriesScreen() {
           size={18}
         />
       </TouchableOpacity>
-    </View>
+    </Animated.View>
   );
 
-  const getImageTile = (uri) => <ImageContainer uri={uri} />;
-
-  const getImageGrid = () => {
-    const images = [];
-    const imagesLength = 30;
-
-    for (let i = 0; i < imagesLength; i += 1) {
-      images.push('https://picsum.photos/160/290');
-    }
-
+  const getImageTile = (uri, index) => {
+    const isLeft = index === 0 || index % numColumns === 0;
     return (
-      <FlatList
-        style={styles.FlatlistStyles}
-        data={images}
-        numColumns={4}
-        renderItem={({ item }) => getImageTile(item)}
+      <ImageContainer
+        style={[{ marginLeft: isLeft ? 0 : 40, marginTop: 40 }]}
+        uri={uri}
       />
     );
   };
 
+  const AnimatedFlatlist = Animated.createAnimatedComponent(FlatList);
+
   return (
     <View style={styles.container}>
-      <SafeAreaView>
-        {getHeader()}
-        {getImageGrid()}
-      </SafeAreaView>
+      <PinchGestureHandler onGestureEvent={pinchHandler}>
+        <AnimatedFlatlist
+          style={gAnimated}
+          // onScroll={(e) => console.log(e.nativeEvent.contentSize)}
+          onScrollBeginDrag={() => headerOpacity.value = withSpring(0)}
+          onScrollEndDrag={() => headerOpacity.value = withSpring(1)}
+          data={images}
+          numColumns={numColumns}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ padding: 60 }}
+          showsHorizontalScrollIndicator={false}
+          renderItem={({ item, index }) => getImageTile(item, index)}
+        />
+      </PinchGestureHandler>
+      {getHeader()}
     </View>
   );
 }
