@@ -185,7 +185,10 @@ export default function MainScreen() {
               placeholder={i18n.t('Barcelona 2021 🇪🇸')}
             />
           </View>
-          <RewindTile style={{ marginHorizontal: PADDING.l, marginTop: 20 }} />
+          <RewindTile
+            onPress={() => navigation.navigate(ROUTES.memoriesScreen)}
+            style={{ marginHorizontal: PADDING.l, marginTop: 20 }}
+          />
           <View>
             <Headline
               type={3}

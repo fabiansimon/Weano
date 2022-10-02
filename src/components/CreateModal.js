@@ -21,8 +21,15 @@ import TitleModal from './TitleModal';
 import ContactTile from './ContactTile';
 import BackButton from './BackButton';
 import ADD_TRIP from '../mutations/addTrip';
+import CalendarModal from './CalendarModal';
 
 export default function CreateModal({ isVisible, onRequestClose }) {
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(() => {
+    const date = new Date();
+    date.setDate(date.getDate() + 5);
+    return date;
+  });
   const [addTrip, { data, loading, error }] = useMutation(ADD_TRIP);
 
   const [location, setLocation] = useState('');
@@ -148,7 +155,20 @@ export default function CreateModal({ isVisible, onRequestClose }) {
         icon="calendar"
         placeholder={i18n.t('Select a date')}
       />
-      <PopUpModal
+      <CalendarModal
+        isVisible={calendarVisible}
+        onRequestClose={() => setCalendarVisible(false)}
+        minimumDate={new Date()}
+        initialStartDate={startDate}
+        initialEndDate={endDate}
+        onApplyClick={(startData, endData) => {
+          if (startData != null && endData != null) {
+            setStartDate(startData);
+            setEndDate(endData);
+          }
+        }}
+      />
+      {/* <PopUpModal
         isVisible={calendarVisible}
         title={i18n.t('Select dates')}
         subtitle={i18n.t('Nothing is set in stone. No worries')}
@@ -186,7 +206,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
             />
           </View>
         </View>
-      </PopUpModal>
+      </PopUpModal> */}
       <PopUpModal
         isVisible={popUpVisible}
         title={i18n.t('No rush!')}

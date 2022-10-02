@@ -26,5 +26,8 @@ module.exports = {
     'max-len': ['error', { code: 200 }],
     'consistent-return': 'off',
     'class-methods-use-this': 'off',
+    'react/no-unstable-nested-components': 'off',
+    'react/function-component-definition': 'off',
+    'no-return-assign': 'off',
   },
 };

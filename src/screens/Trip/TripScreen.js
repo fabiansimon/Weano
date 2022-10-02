@@ -146,11 +146,6 @@ export default function TripScreen() {
   const scrollRef = useRef();
   const [currentTab, setCurrentTab] = useState(0);
   const [tripData, setTripData] = useState(mockData);
-  const [layoutData, setLayoutData] = useState({
-    accomodationY: 0,
-    checklistY: 0,
-    inviteesY: 0,
-  });
 
   const navigation = useNavigation();
 
@@ -203,7 +198,7 @@ export default function TripScreen() {
           console.log(`Accomodations: ${e.nativeEvent.layout.y}`);
         }}
       />,
-      yPos: layoutData.accomodationY + 440,
+      yPos: 0,
     },
     {
       title: i18n.t('Checklist'),
@@ -220,7 +215,7 @@ export default function TripScreen() {
           console.log(`Checklist: ${e.nativeEvent.layout.y}`);
         }}
       />,
-      yPos: layoutData.checklistY,
+      yPos: 0,
     },
     {
       title: i18n.t('Invitees'),
@@ -236,7 +231,7 @@ export default function TripScreen() {
           console.log(`Invitees: ${e.nativeEvent.layout.y}`);
         }}
       />,
-      yPos: layoutData.inviteesY,
+      yPos: 0,
     },
   ];
 

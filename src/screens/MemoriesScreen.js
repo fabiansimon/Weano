@@ -1,33 +1,477 @@
-/* eslint-disable no-return-assign */
-/* eslint-disable react/no-unstable-nested-components */
 import {
-  FlatList, Share, StyleSheet, View,
+  FlatList, Share, StyleSheet, View, TouchableOpacity, StatusBar, Image,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
-import React, { useEffect } from 'react';
-import { PinchGestureHandler, TouchableOpacity } from 'react-native-gesture-handler';
+import EntIcon from 'react-native-vector-icons/Entypo';
+import React, { useRef, useState } from 'react';
+import { PinchGestureHandler } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withSpring, withTiming,
 } from 'react-native-reanimated';
+import { useNavigation } from '@react-navigation/native';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import Headline from '../components/typography/Headline';
 import i18n from '../utils/i18n';
 import Subtitle from '../components/typography/Subtitle';
 import ImageContainer from '../components/Trip/ImageContainer';
+import LoadingGif from '../../assets/images/loading.gif';
+import Body from '../components/typography/Body';
 
 export default function MemoriesScreen() {
+  const [isLoading, setIsLoading] = useState(true);
   const scale = useSharedValue(1);
   const headerOpacity = useSharedValue(1);
+  const gridRef = useRef();
+  const navigation = useNavigation();
 
-  const images = [];
-  const imagesLength = 9;
-  const numColumns = Math.sqrt(imagesLength);
+  let loadingIndex = 0;
+  const maxAngle = 8;
+  const images = [
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+    {
+      uri: 'https://picsum.photos/320/580',
+      isLoading: true,
+    },
+  ];
+  const numColumns = Math.round(Math.sqrt(images.length));
 
-  useEffect(() => {
-    for (let i = 0; i < imagesLength; i += 1) {
-      images.push('https://picsum.photos/160/290');
-    }
-  }, []);
+  const checkLoadingStatus = () => {
+    setTimeout(() => {
+      if (loadingIndex >= images.length) {
+        setIsLoading(false);
+        return;
+      }
+      checkLoadingStatus();
+    }, 2000);
+  };
+  checkLoadingStatus();
 
   const pinchHandler = useAnimatedGestureHandler({
     onActive: (event) => {
@@ -67,56 +511,90 @@ export default function MemoriesScreen() {
     }
   };
 
-  const getHeader = () => (
-    <Animated.View style={[styles.header, hAnimated]}>
-      <TouchableOpacity style={styles.roundButton}>
-        <Icon
-          name="arrowleft"
-          color={COLORS.neutral[300]}
-          size={22}
-        />
-      </TouchableOpacity>
-      <View style={{ flexDirection: 'row' }}>
-        <Headline
-          type={1}
-          style={{ fontWeight: '500', marginTop: -2 }}
-          color={COLORS.shades[0]}
-          text="23"
-        />
-        <View style={{ marginLeft: 12 }}>
+  const getRandomAngle = () => `${(Math.random() * maxAngle) - (maxAngle / 2)}deg`;
+  const Header = () => {
+    const shadow = {
+      shadowOpacity: 1,
+      shadowColor: COLORS.shades[100],
+      shadowRadius: 10,
+    };
+    return (
+      <Animated.View style={[styles.header, hAnimated]}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          activeOpacity={0.9}
+          style={styles.roundButton}
+        >
+          <Icon
+            name="arrowleft"
+            color={COLORS.neutral[300]}
+            size={22}
+          />
+        </TouchableOpacity>
+        {!isLoading && (
+        <View style={{ flexDirection: 'row' }}>
           <Headline
-            type={4}
+            type={1}
+            style={[{ fontWeight: '500', marginTop: -2 }, shadow]}
             color={COLORS.shades[0]}
-            text={i18n.t('Moments captured')}
+            text={images.length}
           />
-          <Subtitle
-            type={2}
-            color={COLORS.shades[0]}
-            style={{ opacity: 0.5 }}
-            text="3 POV’s • 36 Photos • 7 Videos"
-          />
+          <View style={{ marginLeft: 12 }}>
+            <Headline
+              type={4}
+              style={shadow}
+              color={COLORS.shades[0]}
+              text={i18n.t('Moments captured')}
+            />
+            <Subtitle
+              type={2}
+              color={COLORS.shades[0]}
+              style={[{ opacity: 0.5 }, shadow]}
+              text="3 POV’s • 36 Photos • 7 Videos"
+            />
+          </View>
         </View>
-      </View>
-      <TouchableOpacity
-        onPress={onShare}
-        style={styles.roundButton}
-      >
-        <Icon
-          style={{ marginLeft: -2 }}
-          name="sharealt"
-          color={COLORS.neutral[300]}
-          size={18}
-        />
-      </TouchableOpacity>
-    </Animated.View>
+        )}
+        {!isLoading && (
+        <TouchableOpacity
+          activeOpacity={0.9}
+          onPress={onShare}
+          style={styles.roundButton}
+        >
+          <Icon
+            style={{ marginLeft: -2 }}
+            name="sharealt"
+            color={COLORS.neutral[300]}
+            size={18}
+          />
+        </TouchableOpacity>
+        )}
+      </Animated.View>
+    );
+  };
+
+  const PlayButton = () => (
+    <TouchableOpacity
+      activeOpacity={0.5}
+      style={styles.fab}
+    >
+      <EntIcon
+        name="controller-play"
+        size={30}
+        style={{ marginRight: -3 }}
+        color={COLORS.shades[100]}
+      />
+    </TouchableOpacity>
   );
 
-  const getImageTile = (uri, index) => {
+  const getImageTile = (image, index) => {
     const isLeft = index === 0 || index % numColumns === 0;
+
     return (
       <ImageContainer
-        style={[{ marginLeft: isLeft ? 0 : 40, marginTop: 40 }]}
-        uri={uri}
+        onLoadEnd={() => loadingIndex += 1}
+        style={[{ marginLeft: isLeft ? 0 : 40, marginTop: 40, transform: [{ rotate: getRandomAngle() }] }]}
+        uri={image.uri}
       />
     );
   };
@@ -125,10 +603,11 @@ export default function MemoriesScreen() {
 
   return (
     <View style={styles.container}>
+      <StatusBar barStyle="light-content" />
       <PinchGestureHandler onGestureEvent={pinchHandler}>
         <AnimatedFlatlist
+          ref={gridRef}
           style={gAnimated}
-          // onScroll={(e) => console.log(e.nativeEvent.contentSize)}
           onScrollBeginDrag={() => headerOpacity.value = withSpring(0)}
           onScrollEndDrag={() => headerOpacity.value = withSpring(1)}
           data={images}
@@ -139,7 +618,30 @@ export default function MemoriesScreen() {
           renderItem={({ item, index }) => getImageTile(item, index)}
         />
       </PinchGestureHandler>
-      {getHeader()}
+      <PlayButton />
+      {isLoading && (
+        <View style={styles.loading}>
+          <View style={{ justifyContent: 'center', alignItems: 'center', top: '40%' }}>
+            <Image
+              source={LoadingGif}
+              resizeMode="center"
+              style={styles.gif}
+            />
+            <Headline
+              type={4}
+              color={COLORS.shades[0]}
+              text={i18n.t('Fetching your memories')}
+            />
+            <Body
+              style={{ marginTop: 4 }}
+              type={2}
+              color={COLORS.neutral[500]}
+              text={i18n.t('Just give us a second...')}
+            />
+          </View>
+        </View>
+      )}
+      <Header />
     </View>
   );
 }
@@ -147,7 +649,21 @@ export default function MemoriesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.neutral[700],
+    backgroundColor: COLORS.shades[100],
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 40,
+    right: 20,
+    borderRadius: RADIUS.xl,
+    height: 50,
+    width: 50,
+    shadowOffset: {},
+    shadowOpacity: 0.05,
+    shadowColor: COLORS.shades[100],
+    backgroundColor: COLORS.shades[0],
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -157,8 +673,6 @@ const styles = StyleSheet.create({
     width: '98%',
     alignSelf: 'center',
     height: 55,
-    borderRadius: RADIUS.xl,
-    backgroundColor: COLORS.neutral[900],
     marginHorizontal: PADDING.s,
     flexDirection: 'row',
     alignItems: 'center',
@@ -172,5 +686,15 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     backgroundColor: COLORS.shades[100],
+  },
+  loading: {
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    backgroundColor: COLORS.shades[100],
+  },
+  gif: {
+    width: '100%',
+    height: 100,
   },
 });

@@ -1,14 +1,18 @@
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Foundation';
 import COLORS, { RADIUS } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Body from '../typography/Body';
 
-export default function RewindTile({ style }) {
+export default function RewindTile({ style, onPress }) {
   const location = 'Pula, Croatia';
   return (
-    <View style={[styles.container, style]}>
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.9}
+      style={[styles.container, style]}
+    >
       <Icon
         name="rewind"
         size={26}
@@ -32,7 +36,7 @@ export default function RewindTile({ style }) {
         style={{ fontWeight: '500' }}
         color={COLORS.shades[0]}
       />
-    </View>
+    </TouchableOpacity>
   );
 }
 

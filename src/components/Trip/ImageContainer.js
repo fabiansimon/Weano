@@ -4,13 +4,14 @@ import {
 import React from 'react';
 import { RADIUS } from '../../constants/Theme';
 
-export default function ImageContainer({ style, uri }) {
+export default function ImageContainer({ style, uri, onLoadEnd }) {
   return (
     <TouchableOpacity
       activeOpacity={0.5}
       style={[styles.container, style]}
     >
       <Image
+        onLoadEnd={onLoadEnd}
         source={{ uri }}
         resizeMode="cover"
         style={styles.image}
