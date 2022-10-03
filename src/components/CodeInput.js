@@ -5,10 +5,8 @@ import {
 } from 'react-native-confirmation-code-field';
 import COLORS from '../constants/Theme';
 
-export default function CodeInput({ cellCount }) {
+export default function CodeInput({ cellCount, value, setValue }) {
   const CELL_COUNT = cellCount || 4;
-
-  const [value, setValue] = useState('');
   const ref = useBlurOnFulfill({ value, cellCount: CELL_COUNT });
   const [props, getCellOnLayoutHandler] = useClearByFocusCell({
     value,
@@ -18,10 +16,9 @@ export default function CodeInput({ cellCount }) {
   return (
     <CodeField
       ref={ref}
-      // eslint-disable-next-line react/jsx-props-no-spreading
       {...props}
       value={value}
-      onChangeText={setValue}
+      onChangeText={(val) => setValue(val)}
       cellCount={CELL_COUNT}
       rootStyle={styles.codeFieldRoot}
       keyboardType="number-pad"

@@ -1,6 +1,8 @@
 /* eslint-disable import/no-named-as-default-member */
 /* eslint-disable global-require */
-import { View, StyleSheet, Image } from 'react-native';
+import {
+  View, StyleSheet, Image, StatusBar,
+} from 'react-native';
 import React, { useRef, useState } from 'react';
 import PagerView from 'react-native-pager-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -70,6 +72,7 @@ export default function IntroScreen() {
 
   return (
     <View style={styles.container}>
+      <StatusBar barStyle="dark-content" />
       <PagerView
         style={{ flex: 1 }}
         initialPage={0}

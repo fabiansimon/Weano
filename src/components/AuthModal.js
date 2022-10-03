@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import CountryPicker from 'react-native-country-picker-modal';
 import PagerView from 'react-native-pager-view';
 import { useNavigation } from '@react-navigation/native';
+import auth from '@react-native-firebase/auth';
 import TitleModal from './TitleModal';
 import i18n from '../utils/i18n';
 import Headline from './typography/Headline';
@@ -19,6 +20,8 @@ import ROUTES from '../constants/Routes';
 export default function AuthModal({ isVisible, onRequestClose }) {
   const [phoneNr, setPhoneNr] = useState('');
   const [pickerVisible, setPickerVisible] = useState(false);
+  const [confirm, setConfirm] = useState(null);
+  const [code, setCode] = useState('');
   const [countryCode, setCountryCode] = useState('43');
   const [pageIndex, setPageIndex] = useState(0);
   const pageRef = useRef(null);
@@ -58,13 +61,29 @@ export default function AuthModal({ isVisible, onRequestClose }) {
     return 'Resend code';
   };
 
-  const handleChange = () => {
-    if (pageIndex === 1) {
-      navigation.navigate(ROUTES.mainScreen);
-      onRequestClose();
-    } else {
+  const handleChange = async () => {
+    if (pageIndex === 0) {
+      console.log(phoneNr);
+      await signInWithPhoneNumber();
       setPageIndex(1);
       pageRef.current?.setPage(1);
+    } else {
+      console.log(code);
+      // confirmCode();
+    }
+  };
+
+  const signInWithPhoneNumber = async (phoneNumber) => {
+    const confirmation = await auth().signInWithPhoneNumber('+436641865358');
+    console.log(confirmation);
+    setConfirm(confirmation);
+  };
+
+  const confirmCode = async () => {
+    try {
+      await confirm.confirm(code);
+    } catch (error) {
+      console.log(('Invalid Code'));
     }
   };
 
@@ -111,7 +130,7 @@ export default function AuthModal({ isVisible, onRequestClose }) {
               />
               <Headline
                 type={4}
-                onPress={() => handleChange(0)}
+                onPress={() => handleChange()}
                 text={`+${countryCode} ${phoneNr}`}
                 style={{ fontWeight: '600' }}
                 color={COLORS.neutral[900]}
@@ -120,9 +139,16 @@ export default function AuthModal({ isVisible, onRequestClose }) {
                 width: 280, marginTop: 26, marginBottom: 20, alignSelf: 'center',
               }}
               >
-                <CodeInput />
+                <CodeInput
+                  value={code}
+                  setValue={(val) => setCode(val)}
+                />
               </View>
               <Body
+                onPress={() => {
+                  setPageIndex(0);
+                  pageRef.current?.setPage(0);
+                }}
                 type={2}
                 style={{ textDecorationLine: 'underline', alignSelf: 'center' }}
                 text={getTimerString()}
@@ -132,7 +158,7 @@ export default function AuthModal({ isVisible, onRequestClose }) {
           </PagerView>
           <Button
             text={i18n.t('Next')}
-            onPress={() => handleChange(1)}
+            onPress={() => handleChange()}
             style={{ margin: 25 }}
           />
         </View>
