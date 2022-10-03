@@ -1,9 +1,12 @@
-import React, { useEffect } from 'react';
-import { AppRegistry, LogBox, StatusBar } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  AppRegistry, LogBox, StatusBar, Text, View,
+} from 'react-native';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import auth from '@react-native-firebase/auth';
 import ROUTES from './src/constants/Routes';
 import IntroScreen from './src/screens/Intro/IntroScreen';
 import MainScreen from './src/screens/MainScreen';
@@ -22,15 +25,39 @@ import MemoriesScreen from './src/screens/MemoriesScreen';
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState();
+
+  function onAuthStateChanged(user) {
+    setUser(user);
+    if (initializing) setInitializing(false);
+  }
+
   useEffect(() => {
     LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
     LogBox.ignoreAllLogs();// Ignore all log notifications
   });
 
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber;
+  }, []);
+
   const client = new ApolloClient({
     uri: 'http://localhost:4000/graphql',
     cache: new InMemoryCache(),
   });
+
+  if (initializing) return null;
+
+  if (!user) {
+    return (
+      <NavigationContainer>
+        <IntroScreen />
+      </NavigationContainer>
+    );
+  }
+
   return (
     <ApolloProvider client={client}>
       <NavigationContainer>

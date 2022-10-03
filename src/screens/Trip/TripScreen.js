@@ -25,6 +25,7 @@ import ChecklistContainer from '../../components/Trip/ChecklistContainer';
 import AccomodationCarousel from '../../components/Trip/AccomodationCarousel';
 import ROUTES from '../../constants/Routes';
 import StatusContainer from '../../components/Trip/StatusContainer';
+import ExpensesContainer from '../../components/Trip/ExpenseContainer';
 
 const mockData = {
   title: 'Maturareise VBS Gang 🐕',
@@ -38,16 +39,31 @@ const mockData = {
   invitees: [
     {
       name: 'Fabian Simon',
+      id: 'fabian simon',
       uri: 'https://i.pravatar.cc/300',
       status: true,
     },
     {
       name: 'Julia Stefan',
+      id: 'julia stefan',
       uri: 'https://i.pravatar.cc/300',
       status: false,
     },
     {
       name: 'Matthias Betonmisha',
+      id: 'matthias betonmisha',
+      uri: 'https://i.pravatar.cc/300',
+      status: false,
+    },
+    {
+      name: 'Didi Chovookkaran',
+      id: 'didi chovookkaran',
+      uri: 'https://i.pravatar.cc/300',
+      status: false,
+    },
+    {
+      name: 'Alexander Wieser',
+      id: 'alexander wieser',
       uri: 'https://i.pravatar.cc/300',
       status: false,
     },
@@ -121,6 +137,44 @@ const mockData = {
       },
     ],
   },
+  expenses: [
+    {
+      id: 'fabian simon',
+      amount: 123,
+      description: 'Airbnb 🎂',
+      timestamp: 1660998973,
+    },
+    {
+      id: 'julia stefan',
+      amount: 12,
+      description: 'Pizza 🍕',
+      timestamp: 1660994973,
+    },
+    {
+      id: 'alexander wieser',
+      amount: 99,
+      description: 'Pass 🛂',
+      timestamp: 1660998973,
+    },
+    {
+      id: 'julia stefan',
+      amount: 100,
+      description: 'Cocaine 🏂',
+      timestamp: 1660998973,
+    },
+    {
+      id: 'didi chovookkaran',
+      amount: 78,
+      description: 'AGMO 👚',
+      timestamp: 1660998973,
+    },
+    {
+      id: 'matthias betonmisha',
+      amount: 1,
+      description: 'Beer 🍺',
+      timestamp: 1660998973,
+    },
+  ],
 };
 
 const statusData = [
@@ -213,6 +267,24 @@ export default function TripScreen() {
         onPress={(val, index, type) => updateTasks(val, index, type)}
         onLayout={(e) => {
           console.log(`Checklist: ${e.nativeEvent.layout.y}`);
+        }}
+      />,
+      yPos: 0,
+    },
+    {
+      title: i18n.t('Expenses'),
+      trailing: <Headline
+        onPress={() => navigation.navigate(ROUTES.expenseScreen)}
+        type={4}
+        text={i18n.t('see all')}
+        color={COLORS.neutral[500]}
+      />,
+      content: <ExpensesContainer
+        data={tripData.expenses}
+        users={tripData.invitees}
+        tileBackground={COLORS.shades[0]}
+        onLayout={(e) => {
+          console.log(`Invitees: ${e.nativeEvent.layout.y}`);
         }}
       />,
       yPos: 0,

@@ -23,7 +23,7 @@ export default function ExpenseIndividualCard({ style, data, onPress }) {
       <View>
         <Body
           type={2}
-          text={`${data.user.name} ${i18n.t('spent')}`}
+          text={`${data.user.name.split(' ')[0]} ${i18n.t('spent')}`}
           color={COLORS.neutral[300]}
         />
         <Headline

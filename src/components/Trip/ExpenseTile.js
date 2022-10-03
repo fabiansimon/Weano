@@ -5,14 +5,14 @@ import Headline from '../typography/Headline';
 import Body from '../typography/Body';
 import Utils from '../../utils';
 
-export default function ExpenseTile({ style, data }) {
+export default function ExpenseTile({ style, data, user }) {
   return (
     <View style={[styles.container, style]}>
       <View style={styles.initalContainer}>
         <Headline
           type={3}
           color={COLORS.neutral[300]}
-          text={data.user[0]}
+          text={user.name[0]}
         />
       </View>
       <View style={{
@@ -27,7 +27,7 @@ export default function ExpenseTile({ style, data }) {
           <Body
             type={2}
             color={COLORS.neutral[300]}
-            text={data.user}
+            text={user.name}
           />
         </View>
         <View>
@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   initalContainer: {
+    marginTop: 4,
     height: 40,
     width: 40,
     borderRadius: RADIUS.s,

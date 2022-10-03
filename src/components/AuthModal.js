@@ -74,7 +74,7 @@ export default function AuthModal({ isVisible, onRequestClose }) {
       onRequestClose={onRequestClose}
       title={i18n.t('Log in or signup')}
     >
-      <KeyboardView>
+      <KeyboardView paddingBottom={50}>
         <View style={styles.container}>
           <PagerView
             style={{ flex: 1 }}

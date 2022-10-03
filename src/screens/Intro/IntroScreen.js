@@ -86,7 +86,10 @@ export default function IntroScreen() {
           style={{ alignSelf: 'center', marginTop: 22 }}
         />
       </SafeAreaView>
-      <AuthModal isVisible={authVisible} onRequestClose={() => setAuthVisible(false)} />
+      <AuthModal
+        isVisible={authVisible}
+        onRequestClose={() => setAuthVisible(false)}
+      />
     </View>
   );
 }
@@ -94,11 +97,12 @@ export default function IntroScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: COLORS.shades[0],
   },
   footer: {
     position: 'absolute',
     paddingHorizontal: 20,
-    bottom: 10,
+    bottom: 40,
     width: '100%',
   },
   imageContainer: {

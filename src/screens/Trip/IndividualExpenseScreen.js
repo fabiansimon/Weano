@@ -18,13 +18,14 @@ export default function IndividualExpenseScreen({ route }) {
   const getExpenseTile = (expense) => (
     <ExpenseTile
       data={expense}
+      user={data.user}
     />
   );
 
   return (
     <View style={styles.container}>
       <HybridHeader
-        title={`${data.user.name}'s ${i18n.t('Expenses')}`}
+        title={`${data.user.name.split(' ')[0]}'s ${i18n.t('Expenses')}`}
         scrollY={scrollY}
         info={INFORMATION.dateScreen}
       >

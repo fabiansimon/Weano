@@ -8,7 +8,12 @@ export default function PageIndicator({ data, pageIndex, style }) {
     const width = pageIndex === index ? 32 : 8;
     const marginRight = index === data.length - 1 ? 0 : 10;
 
-    return <View style={[styles.bubble, { width, opacity, marginRight }]} key={index} />;
+    return (
+      <View
+        style={[styles.bubble, { width, opacity, marginRight }]}
+        key={index}
+      />
+    );
   };
 
   return (
