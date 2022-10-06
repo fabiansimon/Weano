@@ -94,12 +94,6 @@ export default function CameraScreen() {
         </View>
         <FooterContainer />
       </SafeAreaView>
-      {devices !== null && (
-      <Camera
-        style={StyleSheet.absoluteFill}
-        device={devices}
-      />
-      ) }
     </View>
   );
 }
