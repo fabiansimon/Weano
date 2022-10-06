@@ -1,20 +1,62 @@
 import {
   Dimensions,
+  ImageBackground,
   StyleSheet, TouchableOpacity, View,
 } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import MatIcon from 'react-native-vector-icons/MaterialIcons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import * as Animatable from 'react-native-animatable';
+import moment from 'moment';
+import { Camera, CameraType, FlashMode } from 'expo-camera';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import Headline from '../../components/typography/Headline';
 import i18n from '../../utils/i18n';
+import Button from '../../components/Button';
+
 import Utils from '../../utils';
 
+let camera;
 export default function CameraScreen() {
+  const [cameraType, setCameraType] = useState(CameraType.back);
+  const [flashMode, setFlashMode] = useState(FlashMode.off);
+  const [permission, requestPermission] = Camera.useCameraPermissions();
+  const [capturedImage, setCapturedImage] = useState(null);
+
+  const [timer, setTimer] = useState(120);
   const navigation = useNavigation();
+
+  const changeFlash = () => { setFlashMode((current) => (current === FlashMode.on ? FlashMode.off : FlashMode.on)); };
+
+  const captureImage = () => {
+    if (camera) {
+      camera.takePictureAsync({ onPictureSaved });
+    }
+  };
+
+  const onPictureSaved = (photo) => {
+    setCapturedImage(photo);
+  };
+
+  const rotateCamera = () => { setCameraType((current) => (current === CameraType.back ? CameraType.front : CameraType.back)); };
+
+  if (!permission) {
+    // Camera permissions are still loading
+    return <View />;
+  }
+
+  if (!permission.granted) {
+    // Camera permissions are not granted yet
+    return (
+      <View style={styles.container}>
+        <Headline text="We need your permission to show the camera" />
+        <Button onPress={requestPermission} text="grant permission" />
+      </View>
+    );
+  }
 
   const RoundedBackButton = () => (
     <TouchableOpacity
@@ -32,68 +74,120 @@ export default function CameraScreen() {
 
   const CaptureContainer = () => (
     <View style={{ position: 'absolute', width: Dimensions.get('window').width }}>
-      <View style={styles.captureContainer}>
-        <Headline
-          type={3}
-          isDense
-          text={i18n.t('Capture now')}
-          color={COLORS.shades[0]}
-        />
-      </View>
+      <Animatable.View
+        animation="bounceInDown"
+        easing="ease-out"
+        style={styles.captureContainer}
+      >
+        <View style={{ textAlign: 'center' }}>
+          <Headline
+            type={4}
+            isDense
+            text={i18n.t('Capture now')}
+            color={COLORS.shades[0]}
+          />
+        </View>
+      </Animatable.View>
     </View>
   );
-  const FooterContainer = () => (
-    <View style={styles.footerContainer}>
-      <View style={styles.countdown}>
-        <Headline
-          type={3}
-          color={COLORS.shades[0]}
-          text="01:33"
-        />
-      </View>
-      <View style={styles.recordUnit}>
-        <TouchableOpacity
-          activeOpacity={0.9}
-          style={styles.flashButton}
-        >
-          <IonIcons
-            name="ios-flash"
+  const FooterContainer = () => {
+    const AnimatableTouchableOpacity = Animatable.createAnimatableComponent(TouchableOpacity);
+    return (
+      <View style={styles.footerContainer}>
+        <View style={styles.countdown}>
+          <Headline
+            type={3}
             color={COLORS.shades[0]}
-            size={18}
+            text={moment.utc(timer * 1000).format('mm:ss')}
           />
-        </TouchableOpacity>
-        <TouchableOpacity
-          activeOpacity={0.9}
-          style={styles.recordButton}
-        >
-          <View style={{
-            backgroundColor: COLORS.shades[0], height: 54, width: 54, borderRadius: RADIUS.xl,
-          }}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          activeOpacity={0.9}
-          style={styles.flipButton}
-        >
-          <MatIcon
-            name="flip-camera-android"
-            color={COLORS.shades[0]}
-            size={22}
-          />
-        </TouchableOpacity>
+        </View>
+        <View style={styles.recordUnit}>
+          <TouchableOpacity
+            activeOpacity={0.9}
+            style={[styles.flashButton, flashMode === FlashMode.on ? styles.flashOn : styles.flashOff]}
+            onPress={changeFlash}
+          >
+            <IonIcons
+              name="ios-flash"
+              color={flashMode === FlashMode.on ? COLORS.neutral[500] : COLORS.shades[0]}
+              size={18}
+            />
+          </TouchableOpacity>
+          <AnimatableTouchableOpacity
+            onPress={captureImage}
+            animation="pulse"
+            easing="ease-out"
+            iterationCount="infinite"
+            activeOpacity={0.9}
+            style={styles.recordButton}
+          >
+            <View
+              style={{
+                backgroundColor: COLORS.shades[0],
+                height: 54,
+                width: 54,
+                borderRadius: RADIUS.xl,
+              }}
+            />
+          </AnimatableTouchableOpacity>
+          <TouchableOpacity
+            onPress={rotateCamera}
+            activeOpacity={0.9}
+            style={styles.flipButton}
+          >
+            <MatIcon
+              name="flip-camera-android"
+              color={COLORS.shades[0]}
+              size={22}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    );
+  };
+
+  const CameraPreview = () => (
+    <TouchableOpacity
+      onPress={() => setCapturedImage(null)}
+      style={{
+        backgroundColor: 'transparent',
+        flex: 1,
+        width: '100%',
+        height: '100%',
+      }}
+    >
+      <ImageBackground
+          // eslint-disable-next-line react/destructuring-assignment
+        source={{ uri: capturedImage.uri || null }}
+        style={{
+          flex: 1,
+        }}
+      />
+    </TouchableOpacity>
   );
 
   return (
     <View style={styles.container}>
-      <SafeAreaView style={styles.overlay} edges={['top']}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <CaptureContainer />
-          <RoundedBackButton />
-        </View>
-        <FooterContainer />
-      </SafeAreaView>
+      {capturedImage ? <CameraPreview /> : (
+        <>
+          <Camera
+            style={{ flex: 1 }}
+            flashMode={flashMode}
+            type={cameraType}
+            ref={(r) => {
+              camera = r;
+            }}
+          />
+          <SafeAreaView style={styles.overlay} edges={['top']}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <CaptureContainer />
+              <RoundedBackButton />
+            </View>
+            <FooterContainer />
+          </SafeAreaView>
+        </>
+      )}
+
     </View>
   );
 }
@@ -104,12 +198,11 @@ const styles = StyleSheet.create({
     height: 35,
     borderRadius: RADIUS.xl,
     backgroundColor: COLORS.primary[700],
-    paddingHorizontal: 8,
-    paddingVertical: 5,
+    paddingHorizontal: 12,
+    justifyContent: 'center',
   },
   container: {
     flex: 1,
-    backgroundColor: COLORS.neutral[700],
   },
   overlay: {
     position: 'absolute',
@@ -128,12 +221,17 @@ const styles = StyleSheet.create({
   },
   flashButton: {
     borderRadius: RADIUS.xl,
-    borderWidth: 1,
-    borderColor: COLORS.shades[0],
     height: 40,
     width: 40,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  flashOff: {
+    borderWidth: 1,
+    borderColor: COLORS.shades[0],
+  },
+  flashOn: {
+    backgroundColor: COLORS.shades[0],
   },
   flipButton: {
     borderRadius: RADIUS.xl,
@@ -167,7 +265,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: Utils.addAlpha(COLORS.neutral[300], 0.5),
     alignSelf: 'center',
-    width: 80,
+    width: 100,
     paddingHorizontal: 12,
     borderRadius: RADIUS.l,
     height: 40,
