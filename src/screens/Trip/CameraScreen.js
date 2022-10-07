@@ -12,33 +12,56 @@ import { useNavigation } from '@react-navigation/native';
 import * as Animatable from 'react-native-animatable';
 import moment from 'moment';
 import { Camera, CameraType, FlashMode } from 'expo-camera';
+import { manipulateAsync, FlipType } from 'expo-image-manipulator';
+
+import { PinchGestureHandler } from 'react-native-gesture-handler';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import Headline from '../../components/typography/Headline';
 import i18n from '../../utils/i18n';
 import Button from '../../components/Button';
-
 import Utils from '../../utils';
 
 let camera;
 export default function CameraScreen() {
   const [cameraType, setCameraType] = useState(CameraType.back);
   const [flashMode, setFlashMode] = useState(FlashMode.off);
-  const [permission, requestPermission] = Camera.useCameraPermissions();
   const [capturedImage, setCapturedImage] = useState(null);
+  const [zoom, setZoom] = useState(0);
+  const [permission, requestPermission] = Camera.useCameraPermissions();
 
   const [timer, setTimer] = useState(120);
   const navigation = useNavigation();
 
-  const changeFlash = () => { setFlashMode((current) => (current === FlashMode.on ? FlashMode.off : FlashMode.on)); };
-
-  const captureImage = () => {
-    if (camera) {
-      camera.takePictureAsync({ onPictureSaved });
+  const changeZoom = (event) => {
+    if (event.nativeEvent.scale > 1 && zoom < 1) {
+      setZoom(zoom + 0.001);
+    }
+    if (event.nativeEvent.scale < 1 && zoom > 0) {
+      setZoom(zoom - 0.001);
     }
   };
 
-  const onPictureSaved = (photo) => {
-    setCapturedImage(photo);
+  const changeFlash = () => { setFlashMode((current) => (current === FlashMode.on ? FlashMode.off : FlashMode.on)); };
+
+  const captureImage = async () => {
+    if (camera) {
+      const image = await camera.takePictureAsync();
+      let flippedImage;
+
+      if (cameraType === CameraType.front) {
+        flippedImage = await manipulateAsync(
+          image.localUri || image.uri,
+          [{ flip: FlipType.Horizontal }],
+          { compress: 0.5 },
+        );
+      }
+
+      onPictureSaved(cameraType === CameraType.front ? flippedImage : image);
+    }
+  };
+
+  const onPictureSaved = (image) => {
+    setCapturedImage(image);
   };
 
   const rotateCamera = () => { setCameraType((current) => (current === CameraType.back ? CameraType.front : CameraType.back)); };
@@ -167,28 +190,30 @@ export default function CameraScreen() {
   );
 
   return (
-    <View style={styles.container}>
-      {capturedImage ? <CameraPreview /> : (
-        <>
-          <Camera
-            style={{ flex: 1 }}
-            flashMode={flashMode}
-            type={cameraType}
-            ref={(r) => {
-              camera = r;
-            }}
-          />
-          <SafeAreaView style={styles.overlay} edges={['top']}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <CaptureContainer />
-              <RoundedBackButton />
-            </View>
-            <FooterContainer />
-          </SafeAreaView>
-        </>
-      )}
-
-    </View>
+    <PinchGestureHandler onGestureEvent={(event) => changeZoom(event)}>
+      <View style={styles.container}>
+        {capturedImage ? <CameraPreview /> : (
+          <>
+            <Camera
+              style={{ flex: 1 }}
+              flashMode={flashMode}
+              zoom={zoom}
+              type={cameraType}
+              ref={(r) => {
+                camera = r;
+              }}
+            />
+            <SafeAreaView style={styles.overlay} edges={['top']}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <CaptureContainer />
+                <RoundedBackButton />
+              </View>
+              <FooterContainer />
+            </SafeAreaView>
+          </>
+        )}
+      </View>
+    </PinchGestureHandler>
   );
 }
 
