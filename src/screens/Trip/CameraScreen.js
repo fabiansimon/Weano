@@ -3,7 +3,7 @@ import {
   ImageBackground,
   StyleSheet, TouchableOpacity, View,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import MatIcon from 'react-native-vector-icons/MaterialIcons';
@@ -13,8 +13,8 @@ import * as Animatable from 'react-native-animatable';
 import moment from 'moment';
 import { Camera, CameraType, FlashMode } from 'expo-camera';
 import { manipulateAsync, FlipType } from 'expo-image-manipulator';
-
 import { PinchGestureHandler } from 'react-native-gesture-handler';
+import Video from 'react-native-video';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import Headline from '../../components/typography/Headline';
 import i18n from '../../utils/i18n';
@@ -26,11 +26,16 @@ export default function CameraScreen() {
   const [cameraType, setCameraType] = useState(CameraType.back);
   const [flashMode, setFlashMode] = useState(FlashMode.off);
   const [capturedImage, setCapturedImage] = useState(null);
+  const [capturedVideo, setCapturedVideo] = useState(null);
   const [zoom, setZoom] = useState(0);
   const [permission, requestPermission] = Camera.useCameraPermissions();
-
+  const [isRecording, setIsRecording] = useState(false);
   const [timer, setTimer] = useState(120);
+
   const navigation = useNavigation();
+
+  let lastPress = 0;
+  const DOUBLE_PRESS_DELAY = 500;
 
   const changeZoom = (event) => {
     if (event.nativeEvent.scale > 1 && zoom < 1) {
@@ -43,8 +48,14 @@ export default function CameraScreen() {
 
   const changeFlash = () => { setFlashMode((current) => (current === FlashMode.on ? FlashMode.off : FlashMode.on)); };
 
-  const captureImage = async () => {
+  const handleCapture = async () => {
+    if (isRecording) {
+      endCaptureVideo();
+      return;
+    }
+
     if (camera) {
+      camera.pausePreview();
       const image = await camera.takePictureAsync();
       let flippedImage;
 
@@ -66,6 +77,20 @@ export default function CameraScreen() {
 
   const rotateCamera = () => { setCameraType((current) => (current === CameraType.back ? CameraType.front : CameraType.back)); };
 
+  const startCaptureVideo = async () => {
+    setIsRecording(true);
+    const options = {
+      maxDuration: 10,
+    };
+    const video = await camera.recordAsync(options);
+    setCapturedVideo(video);
+  };
+
+  const endCaptureVideo = () => {
+    setIsRecording(false);
+    camera.stopRecording();
+  };
+
   if (!permission) {
     // Camera permissions are still loading
     return <View />;
@@ -81,11 +106,22 @@ export default function CameraScreen() {
     );
   }
 
+  const checkDoublePress = () => {
+    const time = new Date().getTime();
+    const delta = time - lastPress;
+
+    if (delta < DOUBLE_PRESS_DELAY && !isRecording) {
+      rotateCamera();
+    }
+    lastPress = time;
+  };
+
   const RoundedBackButton = () => (
     <TouchableOpacity
       onPress={() => navigation.goBack()}
       activeOpacity={0.9}
-      style={styles.roundButton}
+      disabled={isRecording}
+      style={[styles.roundButton, { opacity: isRecording && 0 }]}
     >
       <Icon
         name="arrowleft"
@@ -97,26 +133,46 @@ export default function CameraScreen() {
 
   const CaptureContainer = () => (
     <View style={{ position: 'absolute', width: Dimensions.get('window').width }}>
-      <Animatable.View
-        animation="bounceInDown"
-        easing="ease-out"
-        style={styles.captureContainer}
-      >
-        <View style={{ textAlign: 'center' }}>
-          <Headline
-            type={4}
-            isDense
-            text={i18n.t('Capture now')}
-            color={COLORS.shades[0]}
-          />
-        </View>
-      </Animatable.View>
+      {isRecording
+        ? (
+          <Animatable.View
+            animation="bounceInDown"
+            easing="ease-out"
+            style={styles.recordingContainer}
+          >
+            <View style={{ textAlign: 'center' }}>
+              <Headline
+                type={4}
+                isDense
+                text={i18n.t('• Recording')}
+                color={COLORS.error[900]}
+              />
+            </View>
+          </Animatable.View>
+        ) : (
+          <Animatable.View
+            animation="bounceInDown"
+            easing="ease-out"
+            style={styles.captureContainer}
+          >
+            <View style={{ textAlign: 'center' }}>
+              <Headline
+                type={4}
+                isDense
+                text={i18n.t('Capture now')}
+                color={COLORS.shades[0]}
+              />
+            </View>
+          </Animatable.View>
+        )}
+
     </View>
   );
   const FooterContainer = () => {
     const AnimatableTouchableOpacity = Animatable.createAnimatableComponent(TouchableOpacity);
     return (
-      <View style={styles.footerContainer}>
+      <View>
+        {!isRecording && (
         <View style={styles.countdown}>
           <Headline
             type={3}
@@ -124,7 +180,10 @@ export default function CameraScreen() {
             text={moment.utc(timer * 1000).format('mm:ss')}
           />
         </View>
-        <View style={styles.recordUnit}>
+        )}
+
+        <View style={[styles.recordUnit, { backgroundColor: isRecording ? 'transparent' : Utils.addAlpha(COLORS.shades[100], 0.4) }]}>
+          {!isRecording && (
           <TouchableOpacity
             activeOpacity={0.9}
             style={[styles.flashButton, flashMode === FlashMode.on ? styles.flashOn : styles.flashOff]}
@@ -136,23 +195,26 @@ export default function CameraScreen() {
               size={18}
             />
           </TouchableOpacity>
+          )}
           <AnimatableTouchableOpacity
-            onPress={captureImage}
+            onPress={handleCapture}
+            onLongPress={startCaptureVideo}
             animation="pulse"
             easing="ease-out"
             iterationCount="infinite"
             activeOpacity={0.9}
-            style={styles.recordButton}
+            style={[styles.recordButton, { borderColor: isRecording ? COLORS.error[900] : COLORS.shades[0] }]}
           >
             <View
               style={{
-                backgroundColor: COLORS.shades[0],
+                backgroundColor: isRecording ? COLORS.error[900] : COLORS.shades[0],
                 height: 54,
                 width: 54,
                 borderRadius: RADIUS.xl,
               }}
             />
           </AnimatableTouchableOpacity>
+          {!isRecording && (
           <TouchableOpacity
             onPress={rotateCamera}
             activeOpacity={0.9}
@@ -164,12 +226,13 @@ export default function CameraScreen() {
               size={22}
             />
           </TouchableOpacity>
+          )}
         </View>
       </View>
     );
   };
 
-  const CameraPreview = () => (
+  const ImagePreview = () => (
     <TouchableOpacity
       onPress={() => setCapturedImage(null)}
       style={{
@@ -181,7 +244,7 @@ export default function CameraScreen() {
     >
       <ImageBackground
           // eslint-disable-next-line react/destructuring-assignment
-        source={{ uri: capturedImage.uri || null }}
+        source={{ uri: capturedImage && capturedImage.uri }}
         style={{
           flex: 1,
         }}
@@ -189,10 +252,51 @@ export default function CameraScreen() {
     </TouchableOpacity>
   );
 
+  const VideoPreview = () => (
+    <TouchableOpacity
+      onPress={() => setCapturedVideo(null)}
+      style={{
+        backgroundColor: COLORS.shades[100],
+        flex: 1,
+        width: '100%',
+        height: '100%',
+      }}
+    >
+      <Video
+        source={{ uri: capturedVideo && capturedVideo.uri }} // Can be a URL or a local file.
+        // ref={(ref) => {
+        //   this.player = ref;
+        // }} // Store reference
+        // onBuffer={this.onBuffer} // Callback when remote video is buffering
+        // onError={this.videoError} // Callback when video cannot be loaded
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          bottom: 0,
+          right: 0,
+          transform: [{ scaleX: -1 }],
+        }}
+      />
+    </TouchableOpacity>
+  );
+
+  if (capturedImage) {
+    return <ImagePreview />;
+  }
+
+  if (capturedVideo) {
+    return <VideoPreview />;
+  }
+
   return (
-    <PinchGestureHandler onGestureEvent={(event) => changeZoom(event)}>
-      <View style={styles.container}>
-        {capturedImage ? <CameraPreview /> : (
+    <TouchableOpacity
+      activeOpacity={1}
+      style={{ flex: 1 }}
+      onPress={checkDoublePress}
+    >
+      <PinchGestureHandler onGestureEvent={(event) => changeZoom(event)}>
+        <View style={styles.container}>
           <>
             <Camera
               style={{ flex: 1 }}
@@ -211,9 +315,10 @@ export default function CameraScreen() {
               <FooterContainer />
             </SafeAreaView>
           </>
-        )}
-      </View>
-    </PinchGestureHandler>
+
+        </View>
+      </PinchGestureHandler>
+    </TouchableOpacity>
   );
 }
 
@@ -223,6 +328,16 @@ const styles = StyleSheet.create({
     height: 35,
     borderRadius: RADIUS.xl,
     backgroundColor: COLORS.primary[700],
+    paddingHorizontal: 12,
+    justifyContent: 'center',
+  },
+  recordingContainer: {
+    alignSelf: 'center',
+    height: 35,
+    backgroundColor: Utils.addAlpha(COLORS.error[900], 0.1),
+    borderWidth: 2,
+    borderColor: COLORS.error[900],
+    borderRadius: RADIUS.xl,
     paddingHorizontal: 12,
     justifyContent: 'center',
   },
@@ -267,17 +382,16 @@ const styles = StyleSheet.create({
     backgroundColor: Utils.addAlpha(COLORS.neutral[50], 0.2),
   },
   recordButton: {
+    borderColor: COLORS.shades[0],
     marginHorizontal: 24,
     height: 66,
     width: 66,
     borderRadius: RADIUS.xl,
     borderWidth: 2,
-    borderColor: COLORS.shades[0],
     justifyContent: 'center',
     alignItems: 'center',
   },
   recordUnit: {
-    backgroundColor: Utils.addAlpha(COLORS.shades[100], 0.4),
     flexDirection: 'row',
     alignItems: 'center',
     paddingBottom: 110,
