@@ -5,7 +5,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import CountryPicker from 'react-native-country-picker-modal';
 import PagerView from 'react-native-pager-view';
 import { useNavigation } from '@react-navigation/native';
-import auth from '@react-native-firebase/auth';
 import TitleModal from './TitleModal';
 import i18n from '../utils/i18n';
 import Headline from './typography/Headline';
@@ -70,20 +69,6 @@ export default function AuthModal({ isVisible, onRequestClose }) {
     } else {
       console.log(code);
       // confirmCode();
-    }
-  };
-
-  const signInWithPhoneNumber = async (phoneNumber) => {
-    const confirmation = await auth().signInWithPhoneNumber('+436641865358');
-    console.log(confirmation);
-    setConfirm(confirmation);
-  };
-
-  const confirmCode = async () => {
-    try {
-      await confirm.confirm(code);
-    } catch (error) {
-      console.log(('Invalid Code'));
     }
   };
 
