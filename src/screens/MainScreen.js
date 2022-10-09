@@ -123,7 +123,8 @@ export default function MainScreen() {
     },
   ];
 
-  console.log(data);
+  console.log(`data ${data}`);
+  console.log(`error ${error}`);
 
   return (
     <View style={{ backgroundColor: COLORS.neutral[50] }}>

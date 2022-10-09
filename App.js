@@ -33,9 +33,14 @@ export default function App() {
     LogBox.ignoreAllLogs();// Ignore all log notifications
   });
 
+  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQyZTFlYjQ5MWVlODQ3ZTIwMjVjMzgiLCJpYXQiOjE2NjUzMzE3MzYsImV4cCI6MTY2NTkzNjUzNn0.BvmGQ1t66Nmf9uacp1QWgl6EX548Xq6pFX76Up5l91c';
+
   const client = new ApolloClient({
-    uri: 'http://localhost:4000/graphql',
+    uri: 'http://192.168.1.164:4000/graphql',
     cache: new InMemoryCache(),
+    headers: {
+      Authorization: token,
+    },
   });
 
   return (
