@@ -3,7 +3,8 @@ import {
   ImageBackground,
   StyleSheet, TouchableOpacity, View,
 } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { ACCESS_KEY_ID, SECRET_ACCESS_KEY, S3_BUCKET } from '@env';
 import Icon from 'react-native-vector-icons/AntDesign';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import MatIcon from 'react-native-vector-icons/MaterialIcons';
@@ -15,6 +16,7 @@ import { Camera, CameraType, FlashMode } from 'expo-camera';
 import { manipulateAsync, FlipType } from 'expo-image-manipulator';
 import { PinchGestureHandler } from 'react-native-gesture-handler';
 import Video from 'react-native-video';
+import { Credentials, S3 } from 'aws-sdk';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import Headline from '../../components/typography/Headline';
 import i18n from '../../utils/i18n';
@@ -36,6 +38,31 @@ export default function CameraScreen() {
 
   let lastPress = 0;
   const DOUBLE_PRESS_DELAY = 500;
+
+  const handleImageUpload = async () => {
+    const credentials = new Credentials({
+      accessKeyId: ACCESS_KEY_ID,
+      secretAccessKey: SECRET_ACCESS_KEY,
+    });
+
+    const s3 = new S3({
+      credentials,
+      region: 'us-east-1',
+      signatureVersion: 'v4',
+    });
+
+    const url = await s3.getSignedUrlPromise('putObject', {
+      Bucket: process.env.S3_BUCKET,
+      Key: `${fileId}.jpg`,
+      ContentType: 'image/jpeg',
+    });
+
+    setCapturedImage(null);
+
+    return {
+      url,
+    };
+  };
 
   const changeZoom = (event) => {
     if (event.nativeEvent.scale > 1 && zoom < 1) {
@@ -234,7 +261,7 @@ export default function CameraScreen() {
 
   const ImagePreview = () => (
     <TouchableOpacity
-      onPress={() => setCapturedImage(null)}
+      onPress={handleImageUpload}
       style={{
         backgroundColor: 'transparent',
         flex: 1,

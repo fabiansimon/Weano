@@ -123,9 +123,6 @@ export default function MainScreen() {
     },
   ];
 
-  console.log(`data ${data}`);
-  console.log(`error ${error}`);
-
   return (
     <View style={{ backgroundColor: COLORS.neutral[50] }}>
       {loading && <View style={{ flex: 1, backgroundColor: 'blue' }} />}

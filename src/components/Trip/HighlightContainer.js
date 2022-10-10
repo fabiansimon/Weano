@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 import React from 'react';
-import COLORS from '../../constants/Theme';
+import COLORS, { RADIUS } from '../../constants/Theme';
 import Headline from '../typography/Headline';
 import Body from '../typography/Body';
 import RoleChip from '../RoleChip';
@@ -43,9 +43,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    paddingTop: 14,
+    paddingTop: 12,
     paddingBottom: 12,
-    borderRadius: 14,
+    borderRadius: RADIUS.m,
     height: 86,
   },
   addButton: {

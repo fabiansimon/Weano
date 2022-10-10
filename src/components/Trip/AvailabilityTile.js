@@ -1,12 +1,13 @@
 import { Alert, StyleSheet, View } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/EvilIcons';
-import COLORS from '../../constants/Theme';
+import COLORS, { RADIUS } from '../../constants/Theme';
 import Body from '../typography/Body';
 import i18n from '../../utils/i18n';
 import Divider from '../Divider';
 import Headline from '../typography/Headline';
 import Utils from '../../utils';
+import Label from '../typography/Label';
 
 export default function AvailabilityTile({ style, dateRange, isAvailable = true }) {
   const dateString = `${Utils.getDateFromTimestamp(dateRange.startDate, 'DD.MM')} - ${Utils.getDateFromTimestamp(dateRange.endDate, 'DD.MM')}`;
@@ -31,14 +32,14 @@ export default function AvailabilityTile({ style, dateRange, isAvailable = true 
     <View style={[styles.container, style]}>
       <Body
         style={{ marginTop: 10, marginLeft: 15 }}
-        color={COLORS.neutral[500]}
+        color={COLORS.neutral[300]}
         type={2}
         text={isAvailable ? i18n.t('available from - to') : i18n.t('unavailable from - to')}
       />
-      <Divider />
+      <Divider color={COLORS.neutral[50]} />
       <View style={styles.bottomContainer}>
         <Headline
-          type={3}
+          type={4}
           text={dateString}
         />
         <Icon
@@ -55,7 +56,7 @@ export default function AvailabilityTile({ style, dateRange, isAvailable = true 
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 14,
+    borderRadius: RADIUS.s,
     backgroundColor: COLORS.shades[0],
     borderWidth: 1,
     borderColor: COLORS.neutral[100],

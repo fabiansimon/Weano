@@ -7,10 +7,9 @@ import Icon from 'react-native-vector-icons/AntDesign';
 import moment from 'moment';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import COLORS from '../../constants/Theme';
+import COLORS, { PADDING } from '../../constants/Theme';
 import Headline from '../typography/Headline';
 import Divider from '../Divider';
-import Label from '../typography/Label';
 import i18n from '../../utils/i18n';
 import Utils from '../../utils';
 import Avatar from '../Avatar';
@@ -18,11 +17,11 @@ import Subtitle from '../typography/Subtitle';
 import CalendarDateTile from './CalendarDateTile';
 import FilterModal from '../FilterModal';
 
-export default function CalendarAvailabilityContainer({ style }) {
+export default function CalendarAvailabilityContainer({ style, onPress }) {
   const [monthVisible, setMonthVisible] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(6);
   const CELL_HEIGHT = 70;
-  const CELL_WIDTH = 50;
+  const CELL_WIDTH = 60;
   const dateFormat = 'MMDYY';
   let monthArray = [];
 
@@ -74,7 +73,7 @@ export default function CalendarAvailabilityContainer({ style }) {
         value: 10,
       },
       {
-        name: 'Dezember',
+        name: i18n.t('Dezember'),
         value: 11,
       },
     ],
@@ -159,33 +158,6 @@ export default function CalendarAvailabilityContainer({ style }) {
     return false;
   };
 
-  const availbleExplanation = () => (
-    <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 4 }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <View style={{
-          height: 8, width: 8, borderRadius: 100, marginTop: 2, marginRight: 6, backgroundColor: COLORS.primary[700],
-        }}
-        />
-        <Label
-          type={1}
-          color={COLORS.primary[700]}
-          text={i18n.t('available')}
-        />
-      </View>
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10 }}>
-        <View style={{
-          height: 8, width: 8, borderRadius: 100, marginTop: 2, marginRight: 6, borderWidth: 1, borderColor: COLORS.neutral[300],
-        }}
-        />
-        <Label
-          type={1}
-          color={COLORS.neutral[300]}
-          text={i18n.t('unavailable')}
-        />
-      </View>
-    </View>
-  );
-
   const getAvatarTile = (person) => (
     <View style={{
       height: CELL_HEIGHT, width: CELL_WIDTH, justifyContent: 'center', alignItems: 'center',
@@ -198,19 +170,19 @@ export default function CalendarAvailabilityContainer({ style }) {
       <Subtitle
         type={2}
         text={person.name}
-        style={{ marginTop: 2 }}
-        color={COLORS.neutral[500]}
+        style={{ marginTop: 4 }}
+        color={COLORS.neutral[300]}
       />
     </View>
   );
 
   const getHeader = () => (
     <View style={[styles.column, { height: CELL_HEIGHT, alignItems: 'center' }]}>
-      <View style={{ width: 50 }} />
+      <View style={{ width: CELL_WIDTH }} />
       {getDaysOfMonth().map((date) => (
         <CalendarDateTile
           date={date}
-          style={{ width: 50 }}
+          style={{ width: CELL_WIDTH }}
         />
       )) }
     </View>
@@ -231,6 +203,7 @@ export default function CalendarAvailabilityContainer({ style }) {
               size={30}
               disableText
               isChecked={isAvailable(person, date)}
+              onPress={onPress}
               fillColor={COLORS.primary[700]}
               iconStyle={{
                 borderRadius: 10,
@@ -265,13 +238,12 @@ export default function CalendarAvailabilityContainer({ style }) {
           size={22}
         />
       </View>
-      <Divider vertical={2} />
-      {availbleExplanation()}
       <ScrollView horizontal>
         <View
           style={{ paddingHorizontal: 8, marginTop: 10 }}
         >
           {getHeader()}
+          <Divider color={COLORS.neutral[50]} />
           {mockData.map((_, index) => getColumn(index))}
         </View>
       </ScrollView>
@@ -288,17 +260,13 @@ export default function CalendarAvailabilityContainer({ style }) {
 const styles = StyleSheet.create({
   column: {
     flexDirection: 'row',
-    borderBottomColor: COLORS.neutral[50],
-    borderBottomWidth: 1,
   },
   container: {
     backgroundColor: COLORS.shades[0],
     borderRadius: 14,
-    borderWidth: 1,
-    borderColor: COLORS.neutral[100],
   },
   header: {
-    paddingHorizontal: 10,
+    paddingHorizontal: PADDING.l,
     marginVertical: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
