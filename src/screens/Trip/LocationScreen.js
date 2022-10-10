@@ -9,9 +9,11 @@ import HybridHeader from '../../components/HybridHeader';
 import INFORMATION from '../../constants/Information';
 import AddSuggestionModal from '../../components/Trip/AddSuggestionModal';
 import BoardingPassModal from '../../components/Trip/BoardingPassModal';
+import HighlightContainer from '../../components/Trip/HighlightContainer';
 
 export default function LocationScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
+  const [isBoardingPassVisible, setBoardingPassVisible] = useState(false);
   const mockData = [
     {
       string: 'Paris, France',
@@ -65,10 +67,17 @@ export default function LocationScreen() {
         data={pollData}
         setPollData={setPollData}
       />
+
+      <HighlightContainer
+        onPress={() => setBoardingPassVisible(true)}
+        description={i18n.t('Date')}
+        text="Paris, France"
+      />
+
       <BoardingPassModal
+        isVisible={isBoardingPassVisible}
+        onRequestClose={() => setBoardingPassVisible(false)}
         type="destination"
-        onRequestClose={() => setIsVisible(false)}
-        isVisible={isVisible}
       />
     </View>
   );

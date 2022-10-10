@@ -1,9 +1,8 @@
 import {
-  View, StyleSheet, StatusBar, TouchableOpacity,
+  View, StyleSheet, StatusBar,
 } from 'react-native';
 import React, { useState, useRef } from 'react';
 import Animated from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import COLORS, { PADDING } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import AvailabilityModal from '../../components/Trip/AvailabilityModal';
@@ -98,7 +97,7 @@ export default function DateScreen() {
         <View style={styles.innerContainer}>
           <CalendarAvailabilityContainer
             onPress={() => setIsVisible(true)}
-            style={{ marginBottom: 20 }}
+            style={{ marginBottom: 40 }}
           />
         </View>
       </HybridHeader>
@@ -108,18 +107,11 @@ export default function DateScreen() {
         onRequestClose={() => setIsVisible(false)}
       />
 
-      <TouchableOpacity
+      <HighlightContainer
         onPress={() => setBoardingPassVisible(true)}
-        activeOpacity={1}
-        style={styles.bottomContainer}
-      >
-        <SafeAreaView edges={['bottom']}>
-          <HighlightContainer
-            description={i18n.t('Date')}
-            text="Paris, France"
-          />
-        </SafeAreaView>
-      </TouchableOpacity>
+        description={i18n.t('Date')}
+        text="Paris, France"
+      />
 
       <BoardingPassModal
         isVisible={isBoardingPassVisible}
@@ -134,14 +126,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.shades[0],
-  },
-  bottomContainer: {
-    paddingTop: 6,
-    width: '100%',
-    paddingHorizontal: PADDING.m,
-    position: 'absolute',
-    bottom: 0,
-    backgroundColor: COLORS.primary[700],
   },
   dateCarousel: {
     paddingHorizontal: PADDING.m,

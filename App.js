@@ -3,7 +3,6 @@ import {
   AppRegistry, LogBox, StatusBar,
 } from 'react-native';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
-
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ROUTES from './src/constants/Routes';
@@ -48,11 +47,11 @@ export default function App() {
       <NavigationContainer>
         <StatusBar barStyle="dark-content" />
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name={ROUTES.dateScreen} component={DateScreen} />
           <Stack.Screen name={ROUTES.mainScreen} component={MainScreen} />
           <Stack.Screen name={ROUTES.mapScreen} component={MapScreen} />
           <Stack.Screen name={ROUTES.tripScreen} component={TripScreen} />
           <Stack.Screen name={ROUTES.introScreen} component={IntroScreen} />
+          <Stack.Screen name={ROUTES.dateScreen} component={DateScreen} />
           <Stack.Screen name={ROUTES.inviteeScreen} component={InviteeScreen} />
           <Stack.Screen name={ROUTES.accomodationsScreen} component={AccomodationsScreen} />
           <Stack.Screen name={ROUTES.locationScreen} component={LocationScreen} />

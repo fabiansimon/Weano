@@ -2,7 +2,7 @@
 import {
   ScrollView, StyleSheet, View,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
 import moment from 'moment';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
@@ -19,10 +19,11 @@ import FilterModal from '../FilterModal';
 
 export default function CalendarAvailabilityContainer({ style, onPress }) {
   const [monthVisible, setMonthVisible] = useState(false);
-  const [currentMonth, setCurrentMonth] = useState(6);
+  const [currentMonth, setCurrentMonth] = useState(9);
+  const [daysOfMonth, setdaysOfMonth] = useState([]);
   const CELL_HEIGHT = 70;
   const CELL_WIDTH = 60;
-  const dateFormat = 'MMDYY';
+  const dateFormat = 'DDMMYY';
   let monthArray = [];
 
   const monthOptions = {
@@ -89,6 +90,7 @@ export default function CalendarAvailabilityContainer({ style, onPress }) {
         1659700134,
         1659790134,
         1661261227,
+        1665416143,
       ],
     },
     {
@@ -123,17 +125,28 @@ export default function CalendarAvailabilityContainer({ style, onPress }) {
     },
   ];
 
+  useEffect(() => {
+    getDaysOfMonth();
+  }, [currentMonth]);
+
   const getDaysOfMonth = () => {
-    const now = moment();
     const year = moment().year();
-    const month = moment().month();
-    const daysAmount = new Date(year, month, 0).getDate();
-    const startDay = moment(now).startOf('month');
-    // const endDay = moment(now).endOf('month');
+    const month = currentMonth + 1 < 10 ? `0${currentMonth + 1}` : currentMonth + 1;
+    const days = moment(`${year}-${month}`).daysInMonth();
+    const startDay = moment().startOf('month');
+    console.log(startDay);
+    // const daysOfMonth = moment()
+    // const month = currentMonth;
+    // const endDay = moment(month).endOf('month');
+    // const daysAmount = new Date(year, month, 0).getDate();
+
+    // console.log(currentMonth);
+    // console.log(endDay.diff(startDay, 'days'));
+    // // console.log(endDay);
 
     monthArray = [];
 
-    for (let i = 0; i < daysAmount; i += 1) {
+    for (let i = 0; i < days; i += 1) {
       const day = startDay;
       monthArray.push({
         dayString: Utils.getDayFromInt(day.day()),
@@ -143,7 +156,7 @@ export default function CalendarAvailabilityContainer({ style, onPress }) {
       startDay.add(1, 'day');
     }
 
-    return monthArray;
+    setdaysOfMonth(monthArray);
   };
 
   const isAvailable = (person, date) => {
@@ -179,7 +192,7 @@ export default function CalendarAvailabilityContainer({ style, onPress }) {
   const getHeader = () => (
     <View style={[styles.column, { height: CELL_HEIGHT, alignItems: 'center' }]}>
       <View style={{ width: CELL_WIDTH }} />
-      {getDaysOfMonth().map((date) => (
+      {daysOfMonth && daysOfMonth.map((date) => (
         <CalendarDateTile
           date={date}
           style={{ width: CELL_WIDTH }}
@@ -194,23 +207,25 @@ export default function CalendarAvailabilityContainer({ style, onPress }) {
     return (
       <View style={styles.column}>
         {getAvatarTile(person)}
-        {getDaysOfMonth().map((date) => (
-          <View style={{
-            height: CELL_HEIGHT, width: CELL_WIDTH, alignItems: 'center', justifyContent: 'center',
-          }}
+        {daysOfMonth && daysOfMonth.map((date) => (
+          <TouchableOpacity
+            onPress={onPress}
+            style={{
+              height: CELL_HEIGHT, width: CELL_WIDTH, alignItems: 'center', justifyContent: 'center',
+            }}
           >
             <BouncyCheckbox
               size={30}
               disableText
+              disabled
               isChecked={isAvailable(person, date)}
-              onPress={onPress}
               fillColor={COLORS.primary[700]}
               iconStyle={{
                 borderRadius: 10,
                 borderColor: COLORS.neutral[100],
               }}
             />
-          </View>
+          </TouchableOpacity>
         ))}
       </View>
     );

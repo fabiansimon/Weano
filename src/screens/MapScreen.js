@@ -1,11 +1,12 @@
 import React, { useMemo, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
-// import MapboxGL from '@react-native-mapbox-gl/maps';
+import MapboxGL from '@react-native-mapbox-gl/maps';
 import BottomSheet from '@gorhom/bottom-sheet';
+import { MAPBOX_TOKEN } from '@env';
 import BackButton from '../components/BackButton';
 import CountriesVisited from '../components/Map/CountriesVisited';
 
-// MapboxGL.setAccessToken('pk.eyJ1IjoiZmFiaWFuc2ltb24iLCJhIjoiY2w0c3g4OGE0MDk4MDNlcGg0MHY4aWV1aiJ9.easvfaRgYjcC3tV6C4Vz6w');
+MapboxGL.setAccessToken(MAPBOX_TOKEN);
 
 export default function MapScreen() {
   const snapPoints = useMemo(() => ['20%', '90%'], []);
@@ -13,7 +14,7 @@ export default function MapScreen() {
 
   return (
     <View style={styles.container}>
-      {/* <MapboxGL.MapView style={styles.map} /> */}
+      <MapboxGL.MapView style={styles.map} />
       <BackButton style={styles.backButton} />
       <BottomSheet
         handleIndicatorStyle={{ opacity: 0 }}

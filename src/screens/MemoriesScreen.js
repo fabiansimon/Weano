@@ -26,440 +26,310 @@ export default function MemoriesScreen() {
 
   let loadingIndex = 0;
   const maxAngle = 8;
+
   const images = [
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
     {
       uri: 'https://picsum.photos/320/580',
-      isLoading: true,
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-      isLoading: true,
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-      isLoading: true,
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-      isLoading: true,
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-      isLoading: true,
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-      isLoading: true,
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-      isLoading: true,
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-      isLoading: true,
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-      isLoading: true,
     },
   ];
+
   const numColumns = Math.round(Math.sqrt(images.length));
 
   const checkLoadingStatus = () => {

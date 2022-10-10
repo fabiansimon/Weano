@@ -1,40 +1,51 @@
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import React from 'react';
-import COLORS, { RADIUS } from '../../constants/Theme';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import Headline from '../typography/Headline';
 import Body from '../typography/Body';
 import RoleChip from '../RoleChip';
 import i18n from '../../utils/i18n';
 
 export default function HighlightContainer({
-  style, description, text,
+  style, description, text, onPress,
 }) {
   return (
-    <View
-      style={[styles.tile, style]}
+
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={1}
+      style={styles.bottomContainer}
     >
-      <View>
-        <Headline
-          type={4}
-          text={description}
-          color={COLORS.shades[0]}
-        />
-        <Headline
-          type={2}
-          text={text}
-          color={COLORS.shades[0]}
-          style={{ alignSelf: 'flex-start' }}
-        />
-      </View>
-      <View style={{ flexDirection: 'row' }}>
-        <Body
-          type={2}
-          text={i18n.t('set by')}
-          color={COLORS.shades[0]}
-        />
-        <RoleChip isHost style={{ marginLeft: 6 }} />
-      </View>
-    </View>
+      <SafeAreaView edges={['bottom']}>
+        <View
+          style={[styles.tile, style]}
+        >
+          <View>
+            <Headline
+              type={4}
+              text={description}
+              color={COLORS.shades[0]}
+            />
+            <Headline
+              type={2}
+              text={text}
+              color={COLORS.shades[0]}
+              style={{ alignSelf: 'flex-start' }}
+            />
+          </View>
+          <View style={{ flexDirection: 'row' }}>
+            <Body
+              type={2}
+              text={i18n.t('set by')}
+              color={COLORS.shades[0]}
+            />
+            <RoleChip isHost style={{ marginLeft: 6 }} />
+          </View>
+        </View>
+      </SafeAreaView>
+    </TouchableOpacity>
+
   );
 }
 
@@ -55,5 +66,13 @@ const styles = StyleSheet.create({
     marginTop: 10,
     alignSelf: 'flex-start',
     paddingHorizontal: 12,
+  },
+  bottomContainer: {
+    paddingTop: 6,
+    width: '100%',
+    paddingHorizontal: PADDING.m,
+    position: 'absolute',
+    bottom: 0,
+    backgroundColor: COLORS.primary[700],
   },
 });
