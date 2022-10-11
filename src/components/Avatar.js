@@ -23,23 +23,23 @@ export default function Avatar({
       onPress={onPress}
     >
       {!text && (
-      <Image
-        source={DefaultAvatar}
-        style={{ height, width, position: 'absolute' }}
-      />
+        <Image
+          source={DefaultAvatar}
+          style={{ height, width, position: 'absolute' }}
+        />
       )}
       {!text && (
-      <Image
-        source={{ uri }}
-        style={{ height, width }}
-      />
+        <Image
+          source={{ uri }}
+          style={{ height, width }}
+        />
       )}
       {text && (
-      <Headline
-        type={4}
-        text={text}
-        color={COLORS.shades[0]}
-      />
+        <Headline
+          type={4}
+          text={text}
+          color={COLORS.shades[0]}
+        />
       )}
     </TouchableOpacity>
   );

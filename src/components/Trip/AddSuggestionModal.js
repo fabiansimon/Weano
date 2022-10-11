@@ -33,7 +33,7 @@ export default function AddSuggestionModal({
       onRequestClose={onRequestClose}
       title={i18n.t('Add suggestion')}
     >
-      <KeyboardView>
+      <KeyboardView paddingBottom={50}>
         <View style={{ flex: 1 }}>
           <View style={{ paddingHorizontal: PADDING.l, paddingTop: 25, paddingBottom: 15 }}>
             <Headline
@@ -54,7 +54,7 @@ export default function AddSuggestionModal({
               {data.map((sugg) => (
                 <Chip
                   style={{ marginBottom: 10, marginRight: 10 }}
-                  text={sugg.title}
+                  text={sugg.string}
                   onDelete={() => console.log('delete')}
                 />
               ))}

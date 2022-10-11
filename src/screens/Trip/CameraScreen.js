@@ -4,6 +4,7 @@ import {
   StyleSheet, TouchableOpacity, View,
 } from 'react-native';
 import React, { useState } from 'react';
+// eslint-disable-next-line import/no-unresolved
 import { ACCESS_KEY_ID, SECRET_ACCESS_KEY, S3_BUCKET } from '@env';
 import Icon from 'react-native-vector-icons/AntDesign';
 import IonIcons from 'react-native-vector-icons/Ionicons';
@@ -40,28 +41,28 @@ export default function CameraScreen() {
   const DOUBLE_PRESS_DELAY = 500;
 
   const handleImageUpload = async () => {
-    const credentials = new Credentials({
-      accessKeyId: ACCESS_KEY_ID,
-      secretAccessKey: SECRET_ACCESS_KEY,
-    });
+    // const credentials = new Credentials({
+    //   accessKeyId: ACCESS_KEY_ID,
+    //   secretAccessKey: SECRET_ACCESS_KEY,
+    // });
 
-    const s3 = new S3({
-      credentials,
-      region: 'us-east-1',
-      signatureVersion: 'v4',
-    });
+    // const s3 = new S3({
+    //   credentials,
+    //   region: 'us-east-1',
+    //   signatureVersion: 'v4',
+    // });
 
-    const url = await s3.getSignedUrlPromise('putObject', {
-      Bucket: process.env.S3_BUCKET,
-      Key: `${fileId}.jpg`,
-      ContentType: 'image/jpeg',
-    });
+    // const url = await s3.getSignedUrlPromise('putObject', {
+    //   Bucket: process.env.S3_BUCKET,
+    //   Key: `${fileId}.jpg`,
+    //   ContentType: 'image/jpeg',
+    // });
 
     setCapturedImage(null);
 
-    return {
-      url,
-    };
+    // return {
+    //   url,
+    // };
   };
 
   const changeZoom = (event) => {

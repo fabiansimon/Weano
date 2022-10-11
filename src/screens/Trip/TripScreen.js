@@ -191,7 +191,7 @@ const statusData = [
   {
     name: i18n.t('Tasks'),
     isDone: true,
-    route: ROUTES.dateScreen,
+    route: ROUTES.checklistScreen,
   },
 ];
 

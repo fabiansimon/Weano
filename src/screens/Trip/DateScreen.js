@@ -110,7 +110,7 @@ export default function DateScreen() {
       <HighlightContainer
         onPress={() => setBoardingPassVisible(true)}
         description={i18n.t('Date')}
-        text="Paris, France"
+        text="28.02.2022 - 31.02.022"
       />
 
       <BoardingPassModal

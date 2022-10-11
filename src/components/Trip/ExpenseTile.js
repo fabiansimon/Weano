@@ -40,7 +40,7 @@ export default function ExpenseTile({ style, data, user }) {
             type={2}
             style={{ textAlign: 'right' }}
             color={COLORS.neutral[300]}
-            text={Utils.getDateFromTimestamp(data.timestamp, 'DD.MM.YYYY • mm:ss')}
+            text={Utils.getDateFromTimestamp(data.timestamp, 'DD.MM.YYYY • HH:mm')}
           />
         </View>
       </View>

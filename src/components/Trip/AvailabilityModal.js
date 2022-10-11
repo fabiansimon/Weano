@@ -2,7 +2,6 @@ import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import React, { useState, useRef } from 'react';
 import PagerView from 'react-native-pager-view';
 import TitleModal from '../TitleModal';
-import KeyboardView from '../KeyboardView';
 import Headline from '../typography/Headline';
 import i18n from '../../utils/i18n';
 import COLORS, { RADIUS } from '../../constants/Theme';

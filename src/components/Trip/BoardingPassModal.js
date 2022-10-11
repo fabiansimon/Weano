@@ -39,13 +39,18 @@ export default function BoardingPassModal({ type, isVisible, onRequestClose }) {
     }
   };
   const getDestinationContainer = () => (
-    <HighlightContainer description={i18n.t('Date')} text="21.04 to 28.04" />
+    <HighlightContainer
+      description={i18n.t('Date')}
+      text="21.04 to 28.04"
+      onBottom={false}
+    />
   );
 
   const getDateContainer = () => (
     <HighlightContainer
       description={i18n.t('Destination')}
       text="Paris, France"
+      onBottom={false}
     />
   );
 
@@ -99,8 +104,8 @@ export default function BoardingPassModal({ type, isVisible, onRequestClose }) {
                 paddingBottom: PADDING.l,
               }}
             >
-              {type === 'date' ? getDateContainer() : getDestinationContainer()}
-              {type === 'destination' ? getDestinationContainer() : getDateContainer()}
+              {getDateContainer()}
+              {getDestinationContainer()}
             </View>
             <Dash
               style={{ width: '85%', alignSelf: 'center' }}

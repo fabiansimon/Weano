@@ -80,6 +80,12 @@ export default function ExpenseScreen() {
       timestamp: 1660998973,
     },
     {
+      id: 'fabian simon',
+      amount: 92,
+      description: 'Snickers 🍫',
+      timestamp: 1665504336,
+    },
+    {
       id: 'julia stefan',
       amount: 12,
       description: 'Pizza 🍕',
@@ -147,7 +153,7 @@ export default function ExpenseScreen() {
 
   const getExpenseTile = (expense) => (
     <ExpenseTile
-      style={{ paddingHorizontal: 15 }}
+      style={{ marginHorizontal: 15 }}
       data={expense}
       user={users.find((user) => user.id === expense.id)}
     />

@@ -6,11 +6,10 @@ import Body from '../typography/Body';
 import Utils from '../../utils';
 
 export default function CalendarDateTile({
-  style, date, available = 2, total = 5,
+  style, date, opacity,
 }) {
-  const opacity = available / total;
-  const backgroundColor = Utils.addAlpha(COLORS.primary[700], available / total);
-  const color = opacity < 0.4 ? COLORS.shades[100] : COLORS.shades[0];
+  const backgroundColor = !opacity ? COLORS.neutral[50] : Utils.addAlpha(COLORS.primary[700], opacity);
+  const color = !opacity ? COLORS.shades[100] : COLORS.shades[0];
 
   return (
     <View style={[style, styles.container]}>

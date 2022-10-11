@@ -7,7 +7,7 @@ import Headline from './typography/Headline';
 import COLORS from '../constants/Theme';
 
 export default function FilterModal({
-  isVisible, onRequestClose, data, onPress,
+  isVisible, onRequestClose, data, onPress, selectedIndex,
 }) {
   const [showModal, setShowModal] = useState(isVisible);
   const animatedBottom = useRef(new Animated.Value(900)).current;
@@ -55,16 +55,18 @@ export default function FilterModal({
             <Headline type={2} text={data.title} />
           </View>
           <ScrollView contentContainerStyle={{ paddingBottom: 0 }}>
-            {data.options.map((option) => (
+            {data.options.map((option, index) => (
               <TouchableOpacity
                 style={styles.tile}
                 onPress={() => {
-                  onPress(option);
                   onRequestClose();
+                  setTimeout(() => {
+                    onPress(option);
+                  }, 350);
                 }}
               >
                 <Headline type={4} text={option.name} />
-                <MaterialIcon name="check" size={20} />
+                {selectedIndex === index && <MaterialIcon name="check" size={20} />}
               </TouchableOpacity>
             ))}
             <View style={{ height: 150 }} />

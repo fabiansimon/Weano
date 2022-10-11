@@ -194,7 +194,7 @@ export default function ChatScreen() {
     if (type === 'STRING' && message.trim().length === 0) return;
 
     const newMessage = {
-      timestamp: Date.now(),
+      timestamp: Date.now() / 1000,
       senderData: {
         id: 'fabian',
         name: 'Fabian',

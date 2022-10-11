@@ -8,44 +8,72 @@ import RoleChip from '../RoleChip';
 import i18n from '../../utils/i18n';
 
 export default function HighlightContainer({
-  style, description, text, onPress,
+  style, description, text, onPress, onBottom = true,
 }) {
+  if (onBottom) {
+    return (
+      <TouchableOpacity
+        onPress={onPress}
+        activeOpacity={1}
+        style={styles.bottomContainer}
+      >
+        <SafeAreaView edges={['bottom']}>
+          <View
+            style={[styles.tile, style]}
+          >
+            <View>
+              <Headline
+                type={4}
+                text={description}
+                color={COLORS.shades[0]}
+              />
+              <Headline
+                type={2}
+                text={text}
+                color={COLORS.shades[0]}
+                style={{ alignSelf: 'flex-start' }}
+              />
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Body
+                type={2}
+                text={i18n.t('set by')}
+                color={COLORS.shades[0]}
+              />
+              <RoleChip isHost style={{ marginLeft: 6 }} />
+            </View>
+          </View>
+        </SafeAreaView>
+      </TouchableOpacity>
+    );
+  }
+
   return (
-
-    <TouchableOpacity
-      onPress={onPress}
-      activeOpacity={1}
-      style={styles.bottomContainer}
+    <View
+      style={[styles.tile, style]}
     >
-      <SafeAreaView edges={['bottom']}>
-        <View
-          style={[styles.tile, style]}
-        >
-          <View>
-            <Headline
-              type={4}
-              text={description}
-              color={COLORS.shades[0]}
-            />
-            <Headline
-              type={2}
-              text={text}
-              color={COLORS.shades[0]}
-              style={{ alignSelf: 'flex-start' }}
-            />
-          </View>
-          <View style={{ flexDirection: 'row' }}>
-            <Body
-              type={2}
-              text={i18n.t('set by')}
-              color={COLORS.shades[0]}
-            />
-            <RoleChip isHost style={{ marginLeft: 6 }} />
-          </View>
-        </View>
-      </SafeAreaView>
-    </TouchableOpacity>
-
+      <View>
+        <Headline
+          type={4}
+          text={description}
+          color={COLORS.shades[0]}
+        />
+        <Headline
+          type={2}
+          text={text}
+          color={COLORS.shades[0]}
+          style={{ alignSelf: 'flex-start' }}
+        />
+      </View>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Body
+          type={2}
+          text={i18n.t('set by')}
+          color={COLORS.shades[0]}
+        />
+        <RoleChip isHost style={{ marginLeft: 6 }} />
+      </View>
+    </View>
   );
 }
 

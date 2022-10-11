@@ -13,6 +13,8 @@ export default function ChatBubble({
 
   const noRadius = 5;
 
+  console.log(data);
+
   const multiple = length > 1;
   const isLast = index === length - 1;
   const isFirst = index === 0;
@@ -100,7 +102,7 @@ export default function ChatBubble({
         type={2}
         style={{ marginTop: 2, alignSelf: isSender ? 'flex-end' : 'flex-start' }}
         color={COLORS.neutral[300]}
-        text={`${data.senderData.name} • ${Utils.getTimeFromTimeStamp(data.timestamp)}`}
+        text={`${data.senderData.name} • ${Utils.getDateFromTimestamp(data.timestamp, 'HH:mm')}`}
       />
     </View>
   );
