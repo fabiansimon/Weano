@@ -7,6 +7,8 @@ PODS:
     - ExpoModulesCore
   - EXConstants (13.1.1):
     - ExpoModulesCore
+  - EXErrorRecovery (3.1.0):
+    - ExpoModulesCore
   - EXFileSystem (14.0.0):
     - ExpoModulesCore
   - EXFont (10.1.0):
@@ -344,6 +346,8 @@ PODS:
     - React-Core
   - RNCPicker (2.4.2):
     - React-Core
+  - RNFS (2.20.0):
+    - React-Core
   - RNGestureHandler (2.5.0):
     - React-Core
   - RNLocalize (2.2.2):
@@ -388,6 +392,7 @@ DEPENDENCIES:
   - EXApplication (from `../node_modules/expo-application/ios`)
   - EXCamera (from `../node_modules/expo-camera/ios`)
   - EXConstants (from `../node_modules/expo-constants/ios`)
+  - EXErrorRecovery (from `../node_modules/expo-error-recovery/ios`)
   - EXFileSystem (from `../node_modules/expo-file-system/ios`)
   - EXFont (from `../node_modules/expo-font/ios`)
   - EXImageLoader (from `../node_modules/expo-image-loader/ios`)
@@ -433,6 +438,7 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCMaskedView (from `../node_modules/@react-native-masked-view/masked-view`)"
   - "RNCPicker (from `../node_modules/@react-native-picker/picker`)"
+  - RNFS (from `../node_modules/react-native-fs`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNLocalize (from `../node_modules/react-native-localize`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
@@ -457,6 +463,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-camera/ios"
   EXConstants:
     :path: "../node_modules/expo-constants/ios"
+  EXErrorRecovery:
+    :path: "../node_modules/expo-error-recovery/ios"
   EXFileSystem:
     :path: "../node_modules/expo-file-system/ios"
   EXFont:
@@ -543,6 +551,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-masked-view/masked-view"
   RNCPicker:
     :path: "../node_modules/@react-native-picker/picker"
+  RNFS:
+    :path: "../node_modules/react-native-fs"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
   RNLocalize:
@@ -562,6 +572,7 @@ SPEC CHECKSUMS:
   EXApplication: d6562af1204162e0ac46d341a7d4e5dc720b33de
   EXCamera: 2cbc8206cb520562c1527fe565aa9f00df8e5e8f
   EXConstants: fdbe52259365b6a6faaa5e99a3b82cfa6bc2eb61
+  EXErrorRecovery: 3ce46e5d42e53c0371ff048a7f0cbc959968ef4a
   EXFileSystem: 2aa2d9289f84bca9532b9ccbd81504fa31eb1ded
   EXFont: 04235cc22e6fef86028feb67db452978dc6f240f
   EXImageLoader: b88e053d760f85a82405b1db2de4abf11978fc9f
@@ -608,6 +619,7 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 0c357f3156fcb16c8589ede67cc036330b6698ca
   RNCMaskedView: cb9670ea9239998340eaab21df13fa12a1f9de15
   RNCPicker: 0250e95ad170569a96f5b0555cdd5e65b9084dca
+  RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNGestureHandler: bad495418bcbd3ab47017a38d93d290ebd406f50
   RNLocalize: 95a43f85e41a966be7bc9cff2437128911c52da0
   RNReanimated: 64573e25e078ae6bec03b891586d50b9ec284393
@@ -615,6 +627,6 @@ SPEC CHECKSUMS:
   RNVectorIcons: fcc2f6cb32f5735b586e66d14103a74ce6ad61f8
   Yoga: 99652481fcd320aefa4a7ef90095b95acd181952
 
-PODFILE CHECKSUM: 05b3d8f4361eb4dbd2e62a513bf36d6f79dc024c
+PODFILE CHECKSUM: 86b2361866fc6b66cbe7562d88a25ef5e23b1965
 
 COCOAPODS: 1.11.3

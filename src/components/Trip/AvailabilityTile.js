@@ -7,7 +7,6 @@ import i18n from '../../utils/i18n';
 import Divider from '../Divider';
 import Headline from '../typography/Headline';
 import Utils from '../../utils';
-import Label from '../typography/Label';
 
 export default function AvailabilityTile({ style, dateRange, isAvailable = true }) {
   const dateString = `${Utils.getDateFromTimestamp(dateRange.startDate, 'DD.MM')} - ${Utils.getDateFromTimestamp(dateRange.endDate, 'DD.MM')}`;

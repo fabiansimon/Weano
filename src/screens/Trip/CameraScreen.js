@@ -18,6 +18,8 @@ import { manipulateAsync, FlipType } from 'expo-image-manipulator';
 import { PinchGestureHandler } from 'react-native-gesture-handler';
 import Video from 'react-native-video';
 import { Credentials, S3 } from 'aws-sdk';
+import { readFile } from 'react-native-fs';
+import { decode } from 'base64-arraybuffer';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import Headline from '../../components/typography/Headline';
 import i18n from '../../utils/i18n';
@@ -41,22 +43,33 @@ export default function CameraScreen() {
   const DOUBLE_PRESS_DELAY = 500;
 
   const handleImageUpload = async () => {
-    // const credentials = new Credentials({
-    //   accessKeyId: ACCESS_KEY_ID,
-    //   secretAccessKey: SECRET_ACCESS_KEY,
-    // });
+    const bucket = new S3({
+      accessKeyId: ACCESS_KEY_ID,
+      secretAccessKey: SECRET_ACCESS_KEY,
+      Bucket: S3_BUCKET,
+      signatureVersion: 'v4',
+    });
 
-    // const s3 = new S3({
-    //   credentials,
-    //   region: 'us-east-1',
-    //   signatureVersion: 'v4',
-    // });
+    const type = 'image/jpeg';
+    const path = capturedImage.uri;
+    const base64 = await readFile(path, 'base64');
+    const arrayBuffer = decode(base64);
 
-    // const url = await s3.getSignedUrlPromise('putObject', {
-    //   Bucket: process.env.S3_BUCKET,
-    //   Key: `${fileId}.jpg`,
-    //   ContentType: 'image/jpeg',
-    // });
+    bucket.createBucket(() => {
+      const params = {
+        Bucket: S3_BUCKET,
+        Key: '12321312',
+        Body: arrayBuffer,
+        ContentDisposition: 'asv',
+        ContentType: type,
+      };
+
+      bucket.upload(params, (err, data) => {
+        if (err) {
+          console.log(err);
+        }
+      });
+    });
 
     setCapturedImage(null);
 
