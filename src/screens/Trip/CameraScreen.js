@@ -4,8 +4,6 @@ import {
   StyleSheet, TouchableOpacity, View,
 } from 'react-native';
 import React, { useState } from 'react';
-// eslint-disable-next-line import/no-unresolved
-import { ACCESS_KEY_ID, SECRET_ACCESS_KEY, S3_BUCKET } from '@env';
 import Icon from 'react-native-vector-icons/AntDesign';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import MatIcon from 'react-native-vector-icons/MaterialIcons';
@@ -17,9 +15,6 @@ import { Camera, CameraType, FlashMode } from 'expo-camera';
 import { manipulateAsync, FlipType } from 'expo-image-manipulator';
 import { PinchGestureHandler } from 'react-native-gesture-handler';
 import Video from 'react-native-video';
-import { Credentials, S3 } from 'aws-sdk';
-import { readFile } from 'react-native-fs';
-import { decode } from 'base64-arraybuffer';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import Headline from '../../components/typography/Headline';
 import i18n from '../../utils/i18n';
@@ -43,39 +38,9 @@ export default function CameraScreen() {
   const DOUBLE_PRESS_DELAY = 500;
 
   const handleImageUpload = async () => {
-    const bucket = new S3({
-      accessKeyId: ACCESS_KEY_ID,
-      secretAccessKey: SECRET_ACCESS_KEY,
-      Bucket: S3_BUCKET,
-      signatureVersion: 'v4',
-    });
-
-    const type = 'image/jpeg';
-    const path = capturedImage.uri;
-    const base64 = await readFile(path, 'base64');
-    const arrayBuffer = decode(base64);
-
-    bucket.createBucket(() => {
-      const params = {
-        Bucket: S3_BUCKET,
-        Key: '12321312',
-        Body: arrayBuffer,
-        ContentDisposition: 'asv',
-        ContentType: type,
-      };
-
-      bucket.upload(params, (err, data) => {
-        if (err) {
-          console.log(err);
-        }
-      });
-    });
-
     setCapturedImage(null);
-
-    // return {
-    //   url,
-    // };
+    const uri = Utils.uploadToS3(capturedImage);
+    console.log(uri);
   };
 
   const changeZoom = (event) => {

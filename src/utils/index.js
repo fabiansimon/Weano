@@ -1,5 +1,12 @@
 /* eslint-disable import/no-extraneous-dependencies */
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from 'uuid';
+import { decode } from 'base64-arraybuffer';
 import moment from 'moment';
+import { readFile } from 'react-native-fs';
+// eslint-disable-next-line import/no-unresolved
+import { ACCESS_KEY_ID, SECRET_ACCESS_KEY, S3_BUCKET } from '@env';
+import { S3 } from 'aws-sdk';
 import i18n from './i18n';
 
 export default class Utils {
@@ -116,6 +123,39 @@ export default class Utils {
   static addAlpha(color, opacity) {
     const op = Math.round(Math.min(Math.max(opacity || 1, 0), 1) * 255);
     return color + op.toString(16).toUpperCase();
+  }
+
+  /**
+     * Convert MonthInt to a Month String
+     * @param {Dynamic} image - Image from expo camera module
+     * @return {String} aws image.uri
+     */
+  static async uploadToS3(image) {
+    const key = uuidv4();
+
+    console.log(key);
+
+    const bucket = new S3({
+      accessKeyId: ACCESS_KEY_ID,
+      secretAccessKey: SECRET_ACCESS_KEY,
+      Bucket: S3_BUCKET,
+      signatureVersion: 'v4',
+    });
+
+    const type = 'image/jpeg';
+    const path = image.uri;
+    const base64 = await readFile(path, 'base64');
+    const arrayBuffer = decode(base64);
+
+    const data = await bucket.upload({
+      Bucket: S3_BUCKET,
+      Key: key,
+      ContentDisposition: 'attachment',
+      Body: arrayBuffer,
+      ContentType: type,
+    }).promise();
+
+    console.log(data);
   }
 
   /**
