@@ -20,6 +20,7 @@ import Headline from '../../components/typography/Headline';
 import i18n from '../../utils/i18n';
 import Button from '../../components/Button';
 import Utils from '../../utils';
+import ImageModal from '../../components/ImageModal';
 
 let camera;
 export default function CameraScreen() {
@@ -36,12 +37,6 @@ export default function CameraScreen() {
 
   let lastPress = 0;
   const DOUBLE_PRESS_DELAY = 500;
-
-  const handleImageUpload = async () => {
-    setCapturedImage(null);
-    const uri = Utils.uploadToS3(capturedImage);
-    console.log(uri);
-  };
 
   const changeZoom = (event) => {
     if (event.nativeEvent.scale > 1 && zoom < 1) {
@@ -73,12 +68,11 @@ export default function CameraScreen() {
         );
       }
 
-      onPictureSaved(cameraType === CameraType.front ? flippedImage : image);
+      setCapturedImage(cameraType === CameraType.front ? flippedImage : image);
+      setTimeout(() => {
+        camera.resumePreview();
+      }, 500);
     }
-  };
-
-  const onPictureSaved = (image) => {
-    setCapturedImage(image);
   };
 
   const rotateCamera = () => { setCameraType((current) => (current === CameraType.back ? CameraType.front : CameraType.back)); };
@@ -105,9 +99,15 @@ export default function CameraScreen() {
   if (!permission.granted) {
     // Camera permissions are not granted yet
     return (
-      <View style={styles.container}>
-        <Headline text="We need your permission to show the camera" />
-        <Button onPress={requestPermission} text="grant permission" />
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <Headline
+          type={4}
+          text="We need your permission to show the camera"
+        />
+        <Button
+          onPress={requestPermission}
+          text="grant permission"
+        />
       </View>
     );
   }
@@ -141,7 +141,7 @@ export default function CameraScreen() {
     <View style={{ position: 'absolute', width: Dimensions.get('window').width }}>
       {isRecording
         ? (
-          <Animatable.View
+          <View
             animation="bounceInDown"
             easing="ease-out"
             style={styles.recordingContainer}
@@ -154,14 +154,12 @@ export default function CameraScreen() {
                 color={COLORS.error[900]}
               />
             </View>
-          </Animatable.View>
+          </View>
         ) : (
-          <Animatable.View
-            animation="bounceInDown"
-            easing="ease-out"
+          <View
             style={styles.captureContainer}
           >
-            <View style={{ textAlign: 'center' }}>
+            <View style={{ textAlign: 'center', transform: [{ skewX: '+8deg' }] }}>
               <Headline
                 type={4}
                 isDense
@@ -169,7 +167,7 @@ export default function CameraScreen() {
                 color={COLORS.shades[0]}
               />
             </View>
-          </Animatable.View>
+          </View>
         )}
 
     </View>
@@ -238,26 +236,6 @@ export default function CameraScreen() {
     );
   };
 
-  const ImagePreview = () => (
-    <TouchableOpacity
-      onPress={handleImageUpload}
-      style={{
-        backgroundColor: 'transparent',
-        flex: 1,
-        width: '100%',
-        height: '100%',
-      }}
-    >
-      <ImageBackground
-          // eslint-disable-next-line react/destructuring-assignment
-        source={{ uri: capturedImage && capturedImage.uri }}
-        style={{
-          flex: 1,
-        }}
-      />
-    </TouchableOpacity>
-  );
-
   const VideoPreview = () => (
     <TouchableOpacity
       onPress={() => setCapturedVideo(null)}
@@ -287,52 +265,60 @@ export default function CameraScreen() {
     </TouchableOpacity>
   );
 
-  if (capturedImage) {
-    return <ImagePreview />;
-  }
-
   if (capturedVideo) {
     return <VideoPreview />;
   }
 
   return (
-    <TouchableOpacity
-      activeOpacity={1}
-      style={{ flex: 1 }}
-      onPress={checkDoublePress}
-    >
-      <PinchGestureHandler onGestureEvent={(event) => changeZoom(event)}>
-        <View style={styles.container}>
-          <>
-            <Camera
-              style={{ flex: 1 }}
-              flashMode={flashMode}
-              zoom={zoom}
-              type={cameraType}
-              ref={(r) => {
-                camera = r;
-              }}
-            />
-            <SafeAreaView style={styles.overlay} edges={['top']}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <CaptureContainer />
-                <RoundedBackButton />
-              </View>
-              <FooterContainer />
-            </SafeAreaView>
-          </>
+    <>
+      <TouchableOpacity
+        activeOpacity={1}
+        style={{ flex: 1 }}
+        onPress={checkDoublePress}
+      >
+        <PinchGestureHandler onGestureEvent={(event) => changeZoom(event)}>
+          <View style={styles.container}>
+            <>
+              <Camera
+                style={{ flex: 1 }}
+                flashMode={flashMode}
+                zoom={zoom}
+                type={cameraType}
+                ref={(r) => {
+                  camera = r;
+                }}
+              />
+              <SafeAreaView style={styles.overlay} edges={['top']}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <CaptureContainer />
+                  <RoundedBackButton />
+                </View>
+                <FooterContainer />
+              </SafeAreaView>
+            </>
 
-        </View>
-      </PinchGestureHandler>
-    </TouchableOpacity>
+          </View>
+        </PinchGestureHandler>
+      </TouchableOpacity>
+      <ImageModal
+        isVisible={capturedImage !== null}
+        onRequestClose={() => setCapturedImage(null)}
+        image={capturedImage}
+        onRetake={() => setCapturedImage(null)}
+      />
+    </>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   captureContainer: {
     alignSelf: 'center',
     height: 35,
-    borderRadius: RADIUS.xl,
+    borderRadius: 2,
+    transform: [{ skewX: '-8deg' }],
     backgroundColor: COLORS.primary[700],
     paddingHorizontal: 12,
     justifyContent: 'center',
@@ -346,9 +332,6 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.xl,
     paddingHorizontal: 12,
     justifyContent: 'center',
-  },
-  container: {
-    flex: 1,
   },
   overlay: {
     position: 'absolute',
