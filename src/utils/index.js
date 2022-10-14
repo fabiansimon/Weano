@@ -5,7 +5,9 @@ import { decode } from 'base64-arraybuffer';
 import moment from 'moment';
 import { readFile } from 'react-native-fs';
 // eslint-disable-next-line import/no-unresolved
-import { ACCESS_KEY_ID, SECRET_ACCESS_KEY, S3_BUCKET } from '@env';
+import {
+  ACCESS_KEY_ID, SECRET_ACCESS_KEY, S3_BUCKET, MAPBOX_TOKEN,
+} from '@env';
 import { S3 } from 'aws-sdk';
 import i18n from './i18n';
 
@@ -162,7 +164,7 @@ export default class Utils {
      */
   static async getLocationFromCoordinates(latlon) {
     const geocodingClient = mbxGeocoding({
-      accessToken: 'pk.eyJ1IjoiZmFiaWFuc2ltb24iLCJhIjoiY2w0c3g4OGE0MDk4MDNlcGg0MHY4aWV1aiJ9.easvfaRgYjcC3tV6C4Vz6w',
+      accessToken: MAPBOX_TOKEN,
     });
 
     geocodingClient.reverseGeocode({

@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import {
   AppRegistry, LogBox, StatusBar,
 } from 'react-native';
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import {
+  ApolloClient, InMemoryCache, ApolloProvider, HttpLink,
+} from '@apollo/client';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ROUTES from './src/constants/Routes';
@@ -35,7 +37,7 @@ export default function App() {
   const token = 'eyJphbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQyZTFlYjQ5MWVlODQ3ZTIwMjVjMzgiLCJpYXQiOjE2NjUzMzE3MzYsImV4cCI6MTY2NTkzNjUzNn0.BvmGQ1t66Nmf9uacp1QWgl6EX548Xq6pFX76Up5l91c';
 
   const client = new ApolloClient({
-    uri: 'http://192.168.1.164:4000/graphql',
+    uri: 'http://192.168.0.31:4000/graphql',
     cache: new InMemoryCache(),
     headers: {
       Authorization: token,
@@ -61,7 +63,6 @@ export default function App() {
           <Stack.Screen name={ROUTES.expenseScreen} component={ExpenseScreen} />
           <Stack.Screen name={ROUTES.checklistScreen} component={ChecklistScreen} />
           <Stack.Screen name={ROUTES.memoriesScreen} component={MemoriesScreen} />
-
         </Stack.Navigator>
       </NavigationContainer>
     </ApolloProvider>

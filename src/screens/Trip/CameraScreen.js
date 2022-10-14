@@ -32,7 +32,7 @@ export default function CameraScreen() {
   const [zoom, setZoom] = useState(0);
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const [isRecording, setIsRecording] = useState(false);
-  const [timer, setTimer] = useState(120);
+  const [timer] = useState(120);
 
   const navigation = useNavigation();
 

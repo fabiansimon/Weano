@@ -1,9 +1,18 @@
+import 'react-native-get-random-values';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { v4 as uuidv4 } from 'uuid';
+// eslint-disable-next-line import/no-unresolved
+import { ACCESS_KEY_ID, SECRET_ACCESS_KEY, S3_BUCKET } from '@env';
 import {
-  ImageBackground, Modal, StyleSheet, TextInput, View, TouchableOpacity, Dimensions,
+  ImageBackground, Modal, StyleSheet, TextInput, View, TouchableOpacity,
 } from 'react-native';
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
+import { S3 } from 'aws-sdk';
+import { readFile } from 'react-native-fs';
+import { decode } from 'base64-arraybuffer';
+import { useMutation } from '@apollo/client';
 import Avatar from './Avatar';
 import Headline from './typography/Headline';
 import i18n from '../utils/i18n';
@@ -14,22 +23,66 @@ import Button from './Button';
 import KeyboardView from './KeyboardView';
 import ImageSharedModal from './ImageSharedModal';
 import ROUTES from '../constants/Routes';
+import UPLOAD_IMAGE from '../mutations/uploadImage';
 
 export default function ImageModal({
   style, image, isVisible, onRetake, onRequestClose,
 }) {
+  const [uploadImage, { data, loading, error }] = useMutation(UPLOAD_IMAGE);
   const navigation = useNavigation();
-
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [isShared, setIsShared] = useState(false);
 
   const name = 'Fabian Simon';
   const timestamp = 1656865380;
 
   const handlePublish = async () => {
-    setIsShared(true);
-    await Utils.uploadToS3(image);
+    setIsLoading(true);
+    const key = uuidv4();
+
+    const bucket = new S3({
+      accessKeyId: ACCESS_KEY_ID,
+      secretAccessKey: SECRET_ACCESS_KEY,
+      Bucket: S3_BUCKET,
+      signatureVersion: 'v4',
+    });
+
+    const type = 'image/jpeg';
+    const path = image.uri;
+    const base64 = await readFile(path, 'base64');
+    const arrayBuffer = decode(base64);
+
+    try {
+      const { Location } = await bucket.upload({
+        Bucket: S3_BUCKET,
+        Key: key,
+        ContentDisposition: 'attachment',
+        Body: arrayBuffer,
+        ContentType: type,
+      }).promise();
+
+      console.log('__________');
+
+      await uploadImage({
+        variables: {
+          image: {
+            imageUri: 'www.aws-eu-1.s3/abccccc',
+            title: 'sss huh',
+            description: 'sss image',
+          },
+        },
+      }).catch((e) => {
+        console.log(e);
+        setIsLoading(false);
+      });
+
+      setIsLoading(false);
+    } catch (e) {
+      setIsLoading(false);
+      console.log(e);
+    }
   };
 
   const handleDone = () => {
@@ -69,6 +122,7 @@ export default function ImageModal({
       <Button
         text={i18n.t('Publish')}
         fullWidth={false}
+        isLoading={isLoading}
         style={[{ borderRadius: RADIUS.xl, paddingHorizontal: 30 }, styles.shadow]}
         backgroundColor={COLORS.primary[700]}
         onPress={handlePublish}
