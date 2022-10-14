@@ -3,6 +3,7 @@ import {
 } from 'react-native';
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { useNavigation } from '@react-navigation/native';
 import Avatar from './Avatar';
 import Headline from './typography/Headline';
 import i18n from '../utils/i18n';
@@ -12,10 +13,13 @@ import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import Button from './Button';
 import KeyboardView from './KeyboardView';
 import ImageSharedModal from './ImageSharedModal';
+import ROUTES from '../constants/Routes';
 
 export default function ImageModal({
   style, image, isVisible, onRetake, onRequestClose,
 }) {
+  const navigation = useNavigation();
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [isShared, setIsShared] = useState(false);
@@ -24,13 +28,16 @@ export default function ImageModal({
   const timestamp = 1656865380;
 
   const handlePublish = async () => {
-    // console.log(title);
-    // console.log(description);
     setIsShared(true);
+    await Utils.uploadToS3(image);
+  };
+
+  const handleDone = () => {
+    navigation.navigate(ROUTES.tripScreen);
+    setIsShared(false);
     setTimeout(() => {
       onRequestClose();
-    }, 400);
-    // Utils.uploadToS3(capturedImage);
+    }, 500);
   };
 
   const PublishFooter = () => (
@@ -107,42 +114,50 @@ export default function ImageModal({
       onRequestClose={onRequestClose}
     >
       <View style={[styles.container, style]}>
-        <ImageBackground
-          source={{ uri: image && image.uri }}
-          style={{
-            flex: 1,
-          }}
+        <ImageSharedModal
+          style={styles.doneContainer}
+          image={image}
+          onDone={handleDone}
         />
-        <KeyboardView
-          paddingBottom={20}
-          style={styles.textinputs}
-        >
-          <View style={{ flex: 1 }} />
-          <View style={{ marginLeft: PADDING.m }}>
-            <TextInput
-              maxLength={20}
-              placeholder={i18n.t('Add a title')}
-              placeholderTextColor={Utils.addAlpha(COLORS.neutral[100], 0.6)}
-              style={[styles.titleStyle, styles.shadow]}
-              onChangeText={(val) => setTitle(val)}
+
+        {!isShared && (
+          <>
+            <ImageBackground
+              source={{ uri: image && image.uri }}
+              style={{
+                flex: 1,
+              }}
             />
-            <TextInput
-              maxLength={80}
-              placeholder={i18n.t('Or even an description')}
-              placeholderTextColor={Utils.addAlpha(COLORS.neutral[100], 0.6)}
-              style={[styles.descriptionStyle, styles.shadow]}
-              onChangeText={(val) => setDescription(val)}
-            />
-          </View>
-        </KeyboardView>
-        <DetailsHeader />
-        <PublishFooter />
+            <>
+              <KeyboardView
+                paddingBottom={20}
+                style={styles.textinputs}
+              >
+                <View style={{ flex: 1 }} />
+                <View style={{ marginLeft: PADDING.m }}>
+                  <TextInput
+                    maxLength={20}
+                    placeholder={i18n.t('Add a title')}
+                    placeholderTextColor={Utils.addAlpha(COLORS.neutral[100], 0.6)}
+                    style={[styles.titleStyle, styles.shadow]}
+                    onChangeText={(val) => setTitle(val)}
+                  />
+                  <TextInput
+                    maxLength={80}
+                    placeholder={i18n.t('Or even an description')}
+                    placeholderTextColor={Utils.addAlpha(COLORS.neutral[100], 0.6)}
+                    style={[styles.descriptionStyle, styles.shadow]}
+                    onChangeText={(val) => setDescription(val)}
+                  />
+                </View>
+              </KeyboardView>
+              <DetailsHeader />
+              <PublishFooter />
+            </>
+
+          </>
+        )}
       </View>
-      <ImageSharedModal
-        image={image}
-        isVisible={isShared}
-        onRequestClose={() => setIsShared(false)}
-      />
     </Modal>
   );
 }
@@ -203,5 +218,10 @@ const styles = StyleSheet.create({
     width: '100%',
     position: 'absolute',
     bottom: '20%',
+  },
+  doneContainer: {
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
   },
 });

@@ -1,7 +1,8 @@
 import {
   Dimensions,
-  ImageBackground,
-  StyleSheet, TouchableOpacity, View,
+  StyleSheet,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
@@ -247,12 +248,7 @@ export default function CameraScreen() {
       }}
     >
       <Video
-        source={{ uri: capturedVideo && capturedVideo.uri }} // Can be a URL or a local file.
-        // ref={(ref) => {
-        //   this.player = ref;
-        // }} // Store reference
-        // onBuffer={this.onBuffer} // Callback when remote video is buffering
-        // onError={this.videoError} // Callback when video cannot be loaded
+        source={{ uri: capturedVideo && capturedVideo.uri }}
         style={{
           position: 'absolute',
           left: 0,

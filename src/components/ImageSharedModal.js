@@ -1,11 +1,12 @@
 import {
   Image,
-  Modal, StyleSheet, TouchableOpacity, View,
+  StyleSheet,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import FIcon from 'react-native-vector-icons/FontAwesome';
 import React from 'react';
-import { useNavigation } from '@react-navigation/native';
 import Headline from './typography/Headline';
 import i18n from '../utils/i18n';
 import COLORS, { RADIUS } from '../constants/Theme';
@@ -13,22 +14,12 @@ import Body from './typography/Body';
 import Utils from '../utils';
 import InstagramBubble from '../../assets/images/instagram_bubble.png';
 import Button from './Button';
-import ROUTES from '../constants/Routes';
 
 export default function ImageSharedModal({
-  isVisible, image, onRequestClose,
+  image, style, onDone,
 }) {
-  const navigation = useNavigation();
-
   const facebookColor = '#4267B2';
   const whatsappColor = '#25D366';
-
-  const handleDone = () => {
-    navigation.navigate(ROUTES.tripScreen);
-    setTimeout(() => {
-      onRequestClose();
-    }, 300);
-  };
 
   const ShareContainer = () => (
     <View style={styles.shareContainer}>
@@ -75,57 +66,50 @@ export default function ImageSharedModal({
   );
 
   return (
-    <Modal
-      animationType="fade"
-      visible={isVisible}
-      useNativeDriver
-      collapsable
-      transparent
-    >
-      <View style={styles.container}>
-        <View style={{ flexDirection: 'row' }}>
+
+    <View style={[styles.container, style]}>
+      <View style={{ flexDirection: 'row' }}>
+        <Headline
+          type={2}
+          text={i18n.t('What a')}
+          color={COLORS.shades[0]}
+        />
+        <View style={styles.memoryContainer}>
           <Headline
             type={2}
-            text={i18n.t('What a')}
-            color={COLORS.shades[0]}
-          />
-          <View style={styles.memoryContainer}>
-            <Headline
-              type={2}
-              isDense
-              text={i18n.t('memory,')}
-              style={{ transform: [{ skewX: '+8deg' }] }}
-              color={COLORS.shades[0]}
-            />
-          </View>
-          <Headline
-            type={2}
-            text={i18n.t('huh?')}
+            isDense
+            text={i18n.t('memory,')}
+            style={{ transform: [{ skewX: '+8deg' }] }}
             color={COLORS.shades[0]}
           />
         </View>
-        <Body
-          type={1}
-          text={i18n.t('You should share it')}
-          style={{ marginTop: 6 }}
-          color={COLORS.neutral[300]}
+        <Headline
+          type={2}
+          text={i18n.t('huh?')}
+          color={COLORS.shades[0]}
         />
-        <Image
-          source={{ uri: image && image.uri }}
-          style={styles.image}
-        />
-        <View>
-          <ShareContainer />
-          <Button
-            text={i18n.t('Done')}
-            onPress={handleDone}
-            backgroundColor={COLORS.shades[0]}
-            textColor={COLORS.shades[100]}
-            style={{ marginTop: 20, borderRadius: RADIUS.xl }}
-          />
-        </View>
       </View>
-    </Modal>
+      <Body
+        type={1}
+        text={i18n.t('You should share it')}
+        style={{ marginTop: 6 }}
+        color={COLORS.neutral[300]}
+      />
+      <Image
+        source={{ uri: image && image.uri }}
+        style={styles.image}
+      />
+      <View>
+        <ShareContainer />
+        <Button
+          text={i18n.t('Done')}
+          backgroundColor={COLORS.shades[0]}
+          textColor={COLORS.shades[100]}
+          onPress={onDone}
+          style={{ marginTop: 20, borderRadius: RADIUS.xl }}
+        />
+      </View>
+    </View>
   );
 }
 

@@ -126,14 +126,12 @@ export default class Utils {
   }
 
   /**
-     * Convert MonthInt to a Month String
+     * Upload image to S3
      * @param {Dynamic} image - Image from expo camera module
      * @return {String} aws image.uri
      */
   static async uploadToS3(image) {
     const key = uuidv4();
-
-    console.log(key);
 
     const bucket = new S3({
       accessKeyId: ACCESS_KEY_ID,
@@ -147,15 +145,14 @@ export default class Utils {
     const base64 = await readFile(path, 'base64');
     const arrayBuffer = decode(base64);
 
-    const data = await bucket.upload({
+    // eslint-disable-next-line no-return-await
+    return await bucket.upload({
       Bucket: S3_BUCKET,
       Key: key,
       ContentDisposition: 'attachment',
       Body: arrayBuffer,
       ContentType: type,
     }).promise();
-
-    console.log(data);
   }
 
   /**
