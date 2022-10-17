@@ -3,7 +3,7 @@ import {
   AppRegistry, LogBox, StatusBar,
 } from 'react-native';
 import {
-  ApolloClient, InMemoryCache, ApolloProvider, HttpLink,
+  ApolloClient, InMemoryCache, ApolloProvider,
 } from '@apollo/client';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -34,10 +34,10 @@ export default function App() {
     LogBox.ignoreAllLogs();// Ignore all log notifications
   });
 
-  const token = 'eyJphbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzQyZTFlYjQ5MWVlODQ3ZTIwMjVjMzgiLCJpYXQiOjE2NjUzMzE3MzYsImV4cCI6MTY2NTkzNjUzNn0.BvmGQ1t66Nmf9uacp1QWgl6EX548Xq6pFX76Up5l91c';
+  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzRkODdhMjRjOTcxYmNhZGYzYTliODAiLCJpYXQiOjE2NjYwNDEzMzUsImV4cCI6MTY2NjY0NjEzNX0.a9U0-UtcQuDCLzJF6zn0Wac9jOhccxxHb9jG7HKAYZY';
 
   const client = new ApolloClient({
-    uri: 'http://192.168.0.31:4000/graphql',
+    uri: 'http://143.198.241.91:4000/graphql',
     cache: new InMemoryCache(),
     headers: {
       Authorization: token,

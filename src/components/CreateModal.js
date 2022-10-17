@@ -115,22 +115,21 @@ export default function CreateModal({ isVisible, onRequestClose }) {
   };
 
   const handleData = async () => {
-    const trip = {
-      title: tripName,
-      location: location.length > 0 ? location : null,
-      endDate: parseInt(dateRange.selectedStartDate, 10) || null,
-      startDate: parseInt(dateRange.selectedEndDate, 10) || null,
-      invitees: ['Fabian', 'Julia'],
-    };
-
+    // const trip = {
+    //   title: tripName,
+    //   location: location.length > 0 ? location : null,
+    //   endDate: parseInt(dateRange.selectedStartDate, 10) || null,
+    //   startDate: parseInt(dateRange.selectedEndDate, 10) || null,
+    //   invitees: ['Fabian', 'Julia'],
+    // };
     await addTrip({
       variables: {
         trip: {
-          title: trip.title,
-          location: trip.location,
-          invitees: trip.invitees,
-          startDate: trip.startDate,
-          endDate: trip.endDate,
+          title: 'trip.title',
+          location: 'trip.location',
+          invitees: ['Rene', 'Simon'],
+          startDate: 123123,
+          endDate: 21321312,
         },
       },
     }).catch((e) => console.log(`ERROR: ${e.message}`));

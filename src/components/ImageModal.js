@@ -63,14 +63,12 @@ export default function ImageModal({
         ContentType: type,
       }).promise();
 
-      console.log('__________');
-
       await uploadImage({
         variables: {
           image: {
-            imageUri: 'www.aws-eu-1.s3/abccccc',
-            title: 'sss huh',
-            description: 'sss image',
+            uri: Location,
+            title: title || '',
+            description: description || '',
           },
         },
       }).catch((e) => {
