@@ -1,21 +1,13 @@
 import {
-  View, StyleSheet, SafeAreaViewBase, ScrollView,
+  View, StyleSheet,
 } from 'react-native';
-import React, { useState, useRef } from 'react';
-import Animated from 'react-native-reanimated';
+import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import COLORS, { PADDING } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
-import PollView from '../../components/Polls/PollView';
 import Headline from '../../components/typography/Headline';
-import HybridHeader from '../../components/HybridHeader';
-import INFORMATION from '../../constants/Information';
-import AddSuggestionModal from '../../components/Trip/AddSuggestionModal';
-import BoardingPassModal from '../../components/Trip/BoardingPassModal';
-import HighlightContainer from '../../components/Trip/HighlightContainer';
 import Body from '../../components/typography/Body';
 import TextField from '../../components/TextField';
-import Divider from '../../components/Divider';
 import AuthModal from '../../components/AuthModal';
 import KeyboardView from '../../components/KeyboardView';
 import Button from '../../components/Button';
