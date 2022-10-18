@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    fontSize: 20,
+    fontSize: 18,
     fontFamily: 'WorkSans-Regular',
     letterSpacing: -1.0,
     paddingHorizontal: 12,

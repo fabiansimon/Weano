@@ -22,13 +22,11 @@ import ExpenseScreen from './src/screens/Trip/ExpenseScreen';
 import IndividualExpenseScreen from './src/screens/Trip/IndividualExpenseScreen';
 import MemoriesScreen from './src/screens/MemoriesScreen';
 import CameraScreen from './src/screens/Trip/CameraScreen';
+import SignUpScreen from './src/screens/Intro/SignUpScreen';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const [initializing, setInitializing] = useState(true);
-  const [user, setUser] = useState();
-
   useEffect(() => {
     LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
     LogBox.ignoreAllLogs();// Ignore all log notifications
@@ -49,11 +47,11 @@ export default function App() {
       <NavigationContainer>
         <StatusBar barStyle="dark-content" />
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name={ROUTES.cameraScreen} component={CameraScreen} />
+          <Stack.Screen name={ROUTES.signUpScreen} component={SignUpScreen} />
+          <Stack.Screen name={ROUTES.introScreen} component={IntroScreen} />
           <Stack.Screen name={ROUTES.mainScreen} component={MainScreen} />
           <Stack.Screen name={ROUTES.mapScreen} component={MapScreen} />
           <Stack.Screen name={ROUTES.tripScreen} component={TripScreen} />
-          <Stack.Screen name={ROUTES.introScreen} component={IntroScreen} />
           <Stack.Screen name={ROUTES.dateScreen} component={DateScreen} />
           <Stack.Screen name={ROUTES.inviteeScreen} component={InviteeScreen} />
           <Stack.Screen name={ROUTES.accomodationsScreen} component={AccomodationsScreen} />
@@ -63,6 +61,7 @@ export default function App() {
           <Stack.Screen name={ROUTES.expenseScreen} component={ExpenseScreen} />
           <Stack.Screen name={ROUTES.checklistScreen} component={ChecklistScreen} />
           <Stack.Screen name={ROUTES.memoriesScreen} component={MemoriesScreen} />
+          <Stack.Screen name={ROUTES.cameraScreen} component={CameraScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </ApolloProvider>

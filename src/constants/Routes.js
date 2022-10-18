@@ -13,6 +13,7 @@ const ROUTES = {
   individualExpenseScreen: 'individualExpenseScreen',
   memoriesScreen: 'memoriesScreen',
   cameraScreen: 'cameraScreen',
+  signUpScreen: 'signUpScreen',
 };
 
 export default ROUTES;

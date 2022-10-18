@@ -158,7 +158,7 @@ export default function ImageModal({
   );
   return (
     <Modal
-      animationType="fade"
+      animationType="none"
       visible={isVisible}
       useNativeDriver
       collapsable

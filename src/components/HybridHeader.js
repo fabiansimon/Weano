@@ -9,15 +9,17 @@ import BasicHeader from './BasicHeader';
 import { PADDING } from '../constants/Theme';
 
 export default function HybridHeader({
-  style, title, subtitle, onPressBack, info, children, scrollY, content,
+  style, title, subtitle, onPressBack, info, children, scrollY, content, backButton = true, backgroundColor,
 }) {
   return (
     <View style={{ flex: 1 }}>
+      {backButton && (
       <SafeAreaView style={styles.backButton}>
         <BackButton isClear onPress={onPressBack} />
       </SafeAreaView>
+      )}
       <AnimatedHeader
-        maxHeight={100}
+        maxHeight={160}
         style={[style, { justifyContent: 'flex-end', opacity: 1 }]}
         scrollY={scrollY}
       >
@@ -41,7 +43,7 @@ export default function HybridHeader({
         )}
       >
         <BasicHeader
-          style={{ paddingTop: 800, marginTop: -750 }}
+          style={{ paddingTop: 800, marginTop: backButton ? -750 : -780, backgroundColor }}
           scrollY={scrollY}
           title={title}
           subtitle={subtitle}

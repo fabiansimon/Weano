@@ -8,15 +8,16 @@ import { useNavigation } from '@react-navigation/native';
 import TitleModal from './TitleModal';
 import i18n from '../utils/i18n';
 import Headline from './typography/Headline';
-import COLORS from '../constants/Theme';
+import COLORS, { PADDING } from '../constants/Theme';
 import TextField from './TextField';
 import Body from './typography/Body';
 import Button from './Button';
 import KeyboardView from './KeyboardView';
 import CodeInput from './CodeInput';
 import ROUTES from '../constants/Routes';
+import Divider from './Divider';
 
-export default function AuthModal({ isVisible, onRequestClose }) {
+export default function AuthModal({ isVisible, onRequestClose, isRegister }) {
   const [phoneNr, setPhoneNr] = useState('');
   const [pickerVisible, setPickerVisible] = useState(false);
   const [confirm, setConfirm] = useState(null);
@@ -63,7 +64,6 @@ export default function AuthModal({ isVisible, onRequestClose }) {
   const handleChange = async () => {
     if (pageIndex === 0) {
       console.log(phoneNr);
-      await signInWithPhoneNumber();
       setPageIndex(1);
       pageRef.current?.setPage(1);
     } else {
@@ -76,7 +76,7 @@ export default function AuthModal({ isVisible, onRequestClose }) {
     <TitleModal
       isVisible={isVisible}
       onRequestClose={onRequestClose}
-      title={i18n.t('Log in or signup')}
+      title={isRegister ? i18n.t('Authenticate') : i18n.t('Log in')}
     >
       <KeyboardView paddingBottom={50}>
         <View style={styles.container}>
@@ -104,8 +104,27 @@ export default function AuthModal({ isVisible, onRequestClose }) {
               <Body
                 type={2}
                 text={i18n.t('We will confirm your number via text. Standard message and data rates apply')}
-                color={COLORS.neutral[500]}
+                color={COLORS.neutral[300]}
               />
+              {!isRegister && (
+              <>
+                <Divider
+                  vertical={14}
+                />
+                <Body
+                  type={2}
+                  text={i18n.t('No account yet?')}
+                  color={COLORS.neutral[300]}
+                />
+                <Headline
+                  type={4}
+                  style={{ marginTop: 6, textDecorationLine: 'underline' }}
+                  text={i18n.t('Register')}
+                  onPress={() => navigation.navigate(ROUTES.signUpScreen)}
+                  color={COLORS.neutral[700]}
+                />
+              </>
+              )}
             </View>
             <View style={{ padding: 25 }}>
               <Headline
@@ -144,7 +163,7 @@ export default function AuthModal({ isVisible, onRequestClose }) {
           <Button
             text={i18n.t('Next')}
             onPress={() => handleChange()}
-            style={{ margin: 25 }}
+            style={{ margin: PADDING.l }}
           />
         </View>
       </KeyboardView>
