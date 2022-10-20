@@ -22,6 +22,8 @@ export default function TextField({
   onPress,
   iconColor,
   disabled,
+  ref,
+  ...rest
 }) {
   const [focused, setFocused] = useState(false);
 
@@ -51,6 +53,8 @@ export default function TextField({
       </TouchableOpacity>
       )}
       <TextInput
+        {...rest}
+        ref={ref}
         onPressIn={onPress || null}
         editable={!disabled}
         keyboardType={keyboardType}

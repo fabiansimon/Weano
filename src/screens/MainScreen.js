@@ -1,5 +1,5 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import Animated from 'react-native-reanimated';
@@ -18,6 +18,9 @@ import AnimatedHeader from '../components/AnimatedHeader';
 import SearchModal from '../components/Search/SearchModal';
 import RewindTile from '../components/Trip/RewindTile';
 import GET_TRIPS_FROM_USER from '../queries/getTripsFromUser';
+import AsyncStorageDAO from '../utils/AsyncStorageDAO';
+
+const asyncStorageDAO = new AsyncStorageDAO();
 
 export default function MainScreen() {
   const { loading, error, data } = useQuery(GET_TRIPS_FROM_USER);
@@ -26,6 +29,15 @@ export default function MainScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
 
   const navigation = useNavigation();
+
+  const getInitData = async () => {
+    const token = await asyncStorageDAO.getAccessToken();
+    console.log(token);
+  };
+
+  useEffect(() => {
+    getInitData();
+  }, []);
 
   const mockTrips = [
     {
@@ -172,7 +184,7 @@ export default function MainScreen() {
               </View>
               <Avatar
                 uri="https://i.pravatar.cc/300"
-                onPress={() => navigation.navigate(ROUTES.introScreen)}
+                onPress={() => asyncStorageDAO.clearAccessToken()}
               />
             </View>
             <TextField

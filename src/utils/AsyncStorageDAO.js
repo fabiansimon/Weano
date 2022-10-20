@@ -26,6 +26,10 @@ class AsyncStorageDAO {
     return AsyncStorage.getItem(keys.accessToken);
   }
 
+  clearAccessToken() {
+    return AsyncStorage.removeItem(keys.accessToken);
+  }
+
   async setRefreshToken(token) {
     try {
       await AsyncStorage.setItem(keys.refreshToken, token);

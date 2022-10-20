@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   AppRegistry, LogBox, StatusBar,
 } from 'react-native';
@@ -23,6 +23,7 @@ import IndividualExpenseScreen from './src/screens/Trip/IndividualExpenseScreen'
 import MemoriesScreen from './src/screens/MemoriesScreen';
 import CameraScreen from './src/screens/Trip/CameraScreen';
 import SignUpScreen from './src/screens/Intro/SignUpScreen';
+import InitDataCrossroads from './src/screens/InitDataCrossroads';
 
 const Stack = createNativeStackNavigator();
 
@@ -47,9 +48,22 @@ export default function App() {
       <NavigationContainer>
         <StatusBar barStyle="dark-content" />
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name={ROUTES.signUpScreen} component={SignUpScreen} />
-          <Stack.Screen name={ROUTES.introScreen} component={IntroScreen} />
-          <Stack.Screen name={ROUTES.mainScreen} component={MainScreen} />
+          <Stack.Screen name={ROUTES.initDataCrossroads} component={InitDataCrossroads} />
+          <Stack.Screen
+            name={ROUTES.signUpScreen}
+            component={SignUpScreen}
+            options={{ gestureEnabled: false }}
+          />
+          <Stack.Screen
+            name={ROUTES.introScreen}
+            component={IntroScreen}
+            options={{ gestureEnabled: false }}
+          />
+          <Stack.Screen
+            name={ROUTES.mainScreen}
+            component={MainScreen}
+            options={{ gestureEnabled: false }}
+          />
           <Stack.Screen name={ROUTES.mapScreen} component={MapScreen} />
           <Stack.Screen name={ROUTES.tripScreen} component={TripScreen} />
           <Stack.Screen name={ROUTES.dateScreen} component={DateScreen} />

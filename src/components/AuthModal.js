@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import CountryPicker from 'react-native-country-picker-modal';
 import PagerView from 'react-native-pager-view';
 import { useNavigation } from '@react-navigation/native';
+import { useMutation } from '@apollo/client';
 import TitleModal from './TitleModal';
 import i18n from '../utils/i18n';
 import Headline from './typography/Headline';
@@ -16,18 +17,26 @@ import KeyboardView from './KeyboardView';
 import CodeInput from './CodeInput';
 import ROUTES from '../constants/Routes';
 import Divider from './Divider';
+import REGISTER_USER from '../mutations/registerUser';
+import LOGIN_USER from '../mutations/loginUser';
+import AsyncStorageDAO from '../utils/AsyncStorageDAO';
 
-export default function AuthModal({ isVisible, onRequestClose, isRegister }) {
+const asyncStorageDAO = new AsyncStorageDAO();
+
+export default function AuthModal({ isVisible, onRequestClose, registerData }) {
+  const [registerUser, { regData, regLoading, regError }] = useMutation(REGISTER_USER);
+  const [loginUser, { logData, logLoading, logError }] = useMutation(LOGIN_USER);
+
   const [phoneNr, setPhoneNr] = useState('');
   const [pickerVisible, setPickerVisible] = useState(false);
-  const [confirm, setConfirm] = useState(null);
   const [code, setCode] = useState('');
   const [countryCode, setCountryCode] = useState('43');
-  const [pageIndex, setPageIndex] = useState(0);
   const pageRef = useRef(null);
   const [timer, setTimer] = useState(10);
 
   const navigation = useNavigation();
+
+  const isLogin = !registerData;
 
   function useInterval() {
     setTimer(10);
@@ -45,6 +54,57 @@ export default function AuthModal({ isVisible, onRequestClose, isRegister }) {
     useInterval();
   }, []);
 
+  useEffect(() => {
+    if (code.length === 4) {
+      if (!isLogin) {
+        handleRegister();
+        return;
+      }
+      handleLogin();
+    }
+  }, [code]);
+
+  const handleRegister = async () => {
+    const { email, firstName, lastName } = registerData;
+    const phoneNumber = `+${countryCode}${phoneNr}`;
+
+    await registerUser({
+      variables: {
+        user: {
+          email,
+          firstName,
+          lastName,
+          phoneNumber,
+        },
+      },
+    }).then((res) => {
+      asyncStorageDAO.setAccessToken(res.data.registerUser);
+      asyncStorageDAO.setIsAuth(true);
+      navigation.navigate(ROUTES.mainScreen);
+      onRequestClose();
+    }).catch((e) => {
+      console.log(e);
+    });
+  };
+
+  const handleLogin = async () => {
+    const phoneNumber = `+${countryCode}${phoneNr}`;
+    await loginUser({
+      variables: {
+        user: {
+          phoneNumber,
+        },
+      },
+    }).then((res) => {
+      asyncStorageDAO.setAccessToken(res.data.loginUser);
+      asyncStorageDAO.setIsAuth(true);
+      navigation.navigate(ROUTES.mainScreen);
+      onRequestClose();
+    }).catch((e) => {
+      console.log(e);
+    });
+  };
+
   const countryPickerTheme = {
     primaryColorVariant: COLORS.neutral[100],
     onBackgroundTextColor: COLORS.shades[100],
@@ -61,22 +121,11 @@ export default function AuthModal({ isVisible, onRequestClose, isRegister }) {
     return 'Resend code';
   };
 
-  const handleChange = async () => {
-    if (pageIndex === 0) {
-      console.log(phoneNr);
-      setPageIndex(1);
-      pageRef.current?.setPage(1);
-    } else {
-      console.log(code);
-      // confirmCode();
-    }
-  };
-
   return (
     <TitleModal
       isVisible={isVisible}
       onRequestClose={onRequestClose}
-      title={isRegister ? i18n.t('Authenticate') : i18n.t('Log in')}
+      title={isLogin ? i18n.t('Log in') : i18n.t('Authenticate')}
     >
       <KeyboardView paddingBottom={50}>
         <View style={styles.container}>
@@ -106,7 +155,7 @@ export default function AuthModal({ isVisible, onRequestClose, isRegister }) {
                 text={i18n.t('We will confirm your number via text. Standard message and data rates apply')}
                 color={COLORS.neutral[300]}
               />
-              {!isRegister && (
+              {isLogin && (
               <>
                 <Divider
                   vertical={14}
@@ -134,7 +183,6 @@ export default function AuthModal({ isVisible, onRequestClose, isRegister }) {
               />
               <Headline
                 type={4}
-                onPress={() => handleChange()}
                 text={`+${countryCode} ${phoneNr}`}
                 style={{ fontWeight: '600' }}
                 color={COLORS.neutral[900]}
@@ -149,10 +197,7 @@ export default function AuthModal({ isVisible, onRequestClose, isRegister }) {
                 />
               </View>
               <Body
-                onPress={() => {
-                  setPageIndex(0);
-                  pageRef.current?.setPage(0);
-                }}
+                onPress={() => pageRef.current?.setPage(0)}
                 type={2}
                 style={{ textDecorationLine: 'underline', alignSelf: 'center' }}
                 text={getTimerString()}
@@ -161,8 +206,10 @@ export default function AuthModal({ isVisible, onRequestClose, isRegister }) {
             </View>
           </PagerView>
           <Button
+            isDisabled={phoneNr.length < 8}
+            isLoading={regLoading || logLoading}
             text={i18n.t('Next')}
-            onPress={() => handleChange()}
+            onPress={() => pageRef.current?.setPage(1)}
             style={{ margin: PADDING.l }}
           />
         </View>

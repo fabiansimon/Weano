@@ -4,7 +4,6 @@ import {
 import React, { useRef, useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/Entypo';
 import PagerView from 'react-native-pager-view';
-import CalendarPicker from 'react-native-calendar-picker';
 import Contacts from 'react-native-contacts';
 import { useMutation } from '@apollo/client';
 import i18n from '../utils/i18n';

@@ -1,7 +1,7 @@
 import {
   View, StyleSheet,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import COLORS, { PADDING } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
@@ -18,39 +18,153 @@ export default function SignUpScreen() {
     success: COLORS.success[700],
     neutral: COLORS.neutral[300],
   };
-  const [isVisible, setIsVisible] = useState(false);
+  const lastNameRef = useRef();
+  const emailRef = useRef();
+  const [loginVisible, setLoginVisible] = useState(false);
+  const [registerVisible, setRegisterVisible] = useState(false);
+  const [allValid, setAllValid] = useState(false);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
-  const [errorChecks, setErrorChecks] = useState([
+  const [errorChecks, setErrorChecks] = useState(
     {
       firstName: {
         error: i18n.t('missing'),
         color: errorColors.neutral,
+        isValid: false,
+      },
+      lastName: {
+        error: i18n.t('missing'),
+        color: errorColors.neutral,
+        isValid: false,
+      },
+      email: {
+        error: i18n.t('missing'),
+        color: errorColors.neutral,
+        isValid: false,
       },
     },
-  ]);
+  );
+
+  // eslint-disable-next-line no-useless-escape
+  const nameReg = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+  const emailReg = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+  useEffect(() => {
+    checkForErrors();
+  }, [firstName, lastName, email]);
+
+  const checkForErrors = () => {
+    // First Name checks
+    if (firstName.length === 0) {
+      setErrorChecks((prev) => ({
+        ...prev,
+        firstName: {
+          error: i18n.t('missing'),
+          color: errorColors.neutral,
+        },
+      }));
+    } else if (nameReg.test(firstName.trim())) {
+      setErrorChecks((prev) => ({
+        ...prev,
+        firstName: {
+          error: i18n.t('contains invalid characters'),
+          color: errorColors.error,
+        },
+      }));
+    } else {
+      setErrorChecks((prev) => ({
+        ...prev,
+        firstName: {
+          error: i18n.t('is valid'),
+          color: errorColors.success,
+          isValid: true,
+        },
+      }));
+    }
+
+    // Last Name checks
+    if (lastName.length === 0) {
+      setErrorChecks((prev) => ({
+        ...prev,
+        lastName: {
+          error: i18n.t('missing'),
+          color: errorColors.neutral,
+        },
+      }));
+    } else if (nameReg.test(lastName.trim())) {
+      setErrorChecks((prev) => ({
+        ...prev,
+        lastName: {
+          error: i18n.t('contains invalid characters'),
+          color: errorColors.error,
+        },
+      }));
+    } else {
+      setErrorChecks((prev) => ({
+        ...prev,
+        lastName: {
+          error: i18n.t('is valid'),
+          color: errorColors.success,
+          isValid: true,
+        },
+      }));
+    }
+
+    // Email checks
+    if (email.length === 0) {
+      setErrorChecks((prev) => ({
+        ...prev,
+        email: {
+          error: i18n.t('missing'),
+          color: errorColors.neutral,
+        },
+      }));
+    } else if (!email.toLowerCase().match(emailReg)) {
+      setErrorChecks((prev) => ({
+        ...prev,
+        email: {
+          error: i18n.t('is not a valid email'),
+          color: errorColors.error,
+        },
+      }));
+    } else {
+      setErrorChecks((prev) => ({
+        ...prev,
+        email: {
+          error: i18n.t('is valid'),
+          color: errorColors.success,
+          isValid: true,
+        },
+      }));
+    }
+
+    setAllValid(errorChecks.firstName.isValid && errorChecks.lastName.isValid && errorChecks.email.isValid);
+  };
 
   const CheckList = () => (
-    <View style={{ marginBottom: 10 }}>
+    <View style={{ marginBottom: 20 }}>
       <Body
         type={2}
-        text={`• ${i18n.t('First name')}`}
+        color={errorChecks.firstName.color}
+        text={`• ${i18n.t('First name')} ${errorChecks.firstName.error}`}
       />
       <Body
         type={2}
-        text={`• ${i18n.t('Last name')}`}
+        color={errorChecks.lastName.color}
+        text={`• ${i18n.t('Last name')} ${errorChecks.lastName.error}`}
       />
       <Body
         type={2}
-        text={`• ${i18n.t('Email')}`}
+        color={errorChecks.email.color}
+        text={`• ${i18n.t('Email')} ${errorChecks.email.error}`}
       />
     </View>
   );
 
   return (
 
-    <KeyboardView>
+    <KeyboardView paddingBottom={-30}>
       <SafeAreaView style={{ backgroundColor: COLORS.neutral[50], flex: 1, justifyContent: 'space-between' }}>
         <View style={styles.container}>
           <Headline
@@ -64,7 +178,9 @@ export default function SignUpScreen() {
               text={i18n.t('Click')}
             />
             <Body
-              onPress={() => setIsVisible(true)}
+              onPress={() => {
+                setLoginVisible(true);
+              }}
               text={i18n.t('here')}
               style={{ textDecorationLine: 'underline', fontWeight: '500' }}
             />
@@ -80,10 +196,15 @@ export default function SignUpScreen() {
                   text={i18n.t('First name')}
                 />
                 <TextField
+                  onDelete={() => setFirstName('')}
+                  autoFocus
+                  returnKeyType="next"
                   label={i18n.t('First name')}
                   value={firstName || null}
                   onChangeText={(val) => setFirstName(val)}
                   placeholder={i18n.t('John')}
+                  autoComplete={false}
+                  autoCorrect
                 />
               </View>
 
@@ -95,10 +216,15 @@ export default function SignUpScreen() {
                   text={i18n.t('Last name')}
                 />
                 <TextField
+                  ref={lastNameRef}
+                  onDelete={() => setLastName('')}
+                  returnKeyType="next"
                   label={i18n.t('Last name')}
                   value={lastName || null}
                   onChangeText={(val) => setLastName(val)}
                   placeholder={i18n.t('Doe')}
+                  autoComplete={false}
+                  autoCorrect={false}
                 />
               </View>
             </View>
@@ -110,8 +236,15 @@ export default function SignUpScreen() {
                 text={i18n.t('Email')}
               />
               <TextField
+                ref={emailRef}
+                onDelete={() => setEmail('')}
+                keyboardType="email-address"
+                autoCapitalize={false}
                 label={i18n.t('Email')}
                 value={email || null}
+                returnKeyType="done"
+                autoComplete={false}
+                autoCorrect={false}
                 onChangeText={(val) => setEmail(val)}
                 placeholder={i18n.t('Your Email')}
               />
@@ -123,16 +256,25 @@ export default function SignUpScreen() {
           <View style={{ width: '100%', height: 60 }}>
             <Button
               fullWidth
-              onPress={() => setIsVisible(true)}
+              onPress={() => setRegisterVisible(true)}
               text={i18n.t('Next')}
+              isDisabled={!allValid}
             />
           </View>
         </View>
       </SafeAreaView>
       <AuthModal
-        isVisible={isVisible}
-        onRequestClose={() => setIsVisible(false)}
-        isRegister
+        isVisible={registerVisible}
+        onRequestClose={() => setRegisterVisible(false)}
+        registerData={{
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          email,
+        }}
+      />
+      <AuthModal
+        isVisible={loginVisible}
+        onRequestClose={() => setLoginVisible(false)}
       />
     </KeyboardView>
   );
@@ -140,7 +282,7 @@ export default function SignUpScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 24,
+    marginTop: 14,
     marginHorizontal: PADDING.l,
   },
   footer: {

@@ -14,6 +14,7 @@ const ROUTES = {
   memoriesScreen: 'memoriesScreen',
   cameraScreen: 'cameraScreen',
   signUpScreen: 'signUpScreen',
+  initDataCrossroads: 'initDataCrossroads',
 };
 
 export default ROUTES;
