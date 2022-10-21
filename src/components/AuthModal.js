@@ -20,6 +20,7 @@ import Divider from './Divider';
 import REGISTER_USER from '../mutations/registerUser';
 import LOGIN_USER from '../mutations/loginUser';
 import AsyncStorageDAO from '../utils/AsyncStorageDAO';
+import Utils from '../utils';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
@@ -64,9 +65,17 @@ export default function AuthModal({ isVisible, onRequestClose, registerData }) {
     }
   }, [code]);
 
+  const requestCode = async () => {
+    const phoneNumber = `+${countryCode}${phoneNr}`;
+    await Utils.getVerificationCode(phoneNumber);
+  };
+
   const handleRegister = async () => {
     const { email, firstName, lastName } = registerData;
     const phoneNumber = `+${countryCode}${phoneNr}`;
+
+    console.log(Utils.checkVerificationCode(phoneNumber, code));
+    return;
 
     await registerUser({
       variables: {
@@ -89,6 +98,8 @@ export default function AuthModal({ isVisible, onRequestClose, registerData }) {
 
   const handleLogin = async () => {
     const phoneNumber = `+${countryCode}${phoneNr}`;
+    console.log(Utils.checkVerificationCode(phoneNumber, code));
+    return;
     await loginUser({
       variables: {
         user: {
@@ -209,7 +220,10 @@ export default function AuthModal({ isVisible, onRequestClose, registerData }) {
             isDisabled={phoneNr.length < 8}
             isLoading={regLoading || logLoading}
             text={i18n.t('Next')}
-            onPress={() => pageRef.current?.setPage(1)}
+            onPress={() => {
+              pageRef.current?.setPage(1);
+              requestCode();
+            }}
             style={{ margin: PADDING.l }}
           />
         </View>
