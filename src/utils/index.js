@@ -20,23 +20,26 @@ export default class Utils {
   static async getVerificationCode(phoneNumber) {
     const baseUrl = 'http://143.198.241.91:4000';
 
-    await fetch(`${baseUrl}/verify/${phoneNumber}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        console.log(res);
-        if (res.status === 'pending') {
-          return true;
-        }
+    (async () => {
+      await fetch(`${baseUrl}/verify/${phoneNumber}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       })
-      .catch((err) => {
-        console.log(err);
-        return false;
-      });
+        .then((res) => res.json())
+        .then((res) => {
+          console.log('21321321');
+          console.log(res);
+          if (res.status === 'pending') {
+            return true;
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          return false;
+        });
+    })();
   }
 
   /**
@@ -48,23 +51,25 @@ export default class Utils {
   static async checkVerificationCode(phoneNumber, code) {
     const baseUrl = 'http://143.198.241.91:4000';
 
-    await fetch(`${baseUrl}/check/${phoneNumber}/${code}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        console.log(res);
-        if (res.status === 'approved') {
-          return true;
-        }
+    (async () => {
+      await fetch(`${baseUrl}/check/${phoneNumber}/${code}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       })
-      .catch((err) => {
-        console.log(err);
-        return false;
-      });
+        .then((res) => res.json())
+        .then((res) => {
+          console.log(res);
+          if (res.status === 'approved') {
+            return true;
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          return false;
+        });
+    })();
   }
 
   /**

@@ -9,7 +9,7 @@ import { useMutation } from '@apollo/client';
 import TitleModal from './TitleModal';
 import i18n from '../utils/i18n';
 import Headline from './typography/Headline';
-import COLORS, { PADDING } from '../constants/Theme';
+import COLORS from '../constants/Theme';
 import TextField from './TextField';
 import Body from './typography/Body';
 import Button from './Button';
@@ -72,9 +72,10 @@ export default function AuthModal({ isVisible, onRequestClose, registerData }) {
 
   const handleRegister = async () => {
     const { email, firstName, lastName } = registerData;
-    const phoneNumber = `+${countryCode}${phoneNr}`;
+    const phoneNumber = `+${countryCode}${phoneNr.trim()}`;
 
-    console.log(Utils.checkVerificationCode(phoneNumber, code));
+    console.log(await Utils.checkVerificationCode(phoneNumber, code));
+    console.log('hello');
     return;
 
     await registerUser({
@@ -119,7 +120,7 @@ export default function AuthModal({ isVisible, onRequestClose, registerData }) {
   const countryPickerTheme = {
     primaryColorVariant: COLORS.neutral[100],
     onBackgroundTextColor: COLORS.shades[100],
-    fontSize: 18,
+    fontSize: 16,
     filterPlaceholderTextColor: 'red',
     activeOpacity: 0.7,
     itemHeight: 70,
@@ -145,46 +146,57 @@ export default function AuthModal({ isVisible, onRequestClose, registerData }) {
             ref={pageRef}
             scrollEnabled
           >
-            <View style={{ padding: 25 }}>
-              <Headline
-                type={4}
-                text={i18n.t('Phone number')}
-                color={COLORS.neutral[700]}
-              />
-              <TextField
-                keyboardType="phone-pad"
-                style={{ marginTop: 18, marginBottom: 10 }}
-                prefix={countryCode}
-                onPrefixPress={() => setPickerVisible(true)}
-                value={phoneNr || null}
-                onChangeText={(val) => setPhoneNr(val)}
-                placeholder={i18n.t('123 45 56')}
-                onDelete={() => setPhoneNr('')}
-              />
-              <Body
-                type={2}
-                text={i18n.t('We will confirm your number via text. Standard message and data rates apply')}
-                color={COLORS.neutral[300]}
-              />
-              {isLogin && (
-              <>
-                <Divider
-                  vertical={14}
+            <View style={{ padding: 25, justifyContent: 'space-between' }}>
+              <View>
+                <Headline
+                  type={4}
+                  text={i18n.t('Phone number')}
+                  color={COLORS.neutral[700]}
+                />
+                <TextField
+                  keyboardType="phone-pad"
+                  style={{ marginTop: 18, marginBottom: 10 }}
+                  prefix={countryCode}
+                  onPrefixPress={() => setPickerVisible(true)}
+                  value={phoneNr || null}
+                  onChangeText={(val) => setPhoneNr(val)}
+                  placeholder={i18n.t('123 45 56')}
+                  onDelete={() => setPhoneNr('')}
                 />
                 <Body
                   type={2}
-                  text={i18n.t('No account yet?')}
+                  text={i18n.t('We will confirm your number via text. Standard message and data rates apply')}
                   color={COLORS.neutral[300]}
                 />
-                <Headline
-                  type={4}
-                  style={{ marginTop: 6, textDecorationLine: 'underline' }}
-                  text={i18n.t('Register')}
-                  onPress={() => navigation.navigate(ROUTES.signUpScreen)}
-                  color={COLORS.neutral[700]}
-                />
-              </>
-              )}
+                {isLogin && (
+                <>
+                  <Divider
+                    vertical={14}
+                  />
+                  <Body
+                    type={2}
+                    text={i18n.t('No account yet?')}
+                    color={COLORS.neutral[300]}
+                  />
+                  <Headline
+                    type={4}
+                    style={{ marginTop: 6, textDecorationLine: 'underline' }}
+                    text={i18n.t('Register')}
+                    onPress={() => navigation.navigate(ROUTES.signUpScreen)}
+                    color={COLORS.neutral[700]}
+                  />
+                </>
+                )}
+              </View>
+              <Button
+                isDisabled={phoneNr.length < 8}
+                isLoading={regLoading || logLoading}
+                text={i18n.t('Next')}
+                onPress={() => {
+                  pageRef.current?.setPage(1);
+                  requestCode();
+                }}
+              />
             </View>
             <View style={{ padding: 25 }}>
               <Headline
@@ -216,16 +228,7 @@ export default function AuthModal({ isVisible, onRequestClose, registerData }) {
               />
             </View>
           </PagerView>
-          <Button
-            isDisabled={phoneNr.length < 8}
-            isLoading={regLoading || logLoading}
-            text={i18n.t('Next')}
-            onPress={() => {
-              pageRef.current?.setPage(1);
-              requestCode();
-            }}
-            style={{ margin: PADDING.l }}
-          />
+
         </View>
       </KeyboardView>
       <CountryPicker
