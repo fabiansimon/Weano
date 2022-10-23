@@ -1,17 +1,10 @@
 import 'react-native-get-random-values';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { v4 as uuidv4 } from 'uuid';
-// eslint-disable-next-line import/no-unresolved
-import { ACCESS_KEY_ID, SECRET_ACCESS_KEY, S3_BUCKET } from '@env';
 import {
   ImageBackground, Modal, StyleSheet, TextInput, View, TouchableOpacity,
 } from 'react-native';
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
-import { S3 } from 'aws-sdk';
-import { readFile } from 'react-native-fs';
-import { decode } from 'base64-arraybuffer';
 import { useMutation } from '@apollo/client';
 import Avatar from './Avatar';
 import Headline from './typography/Headline';
@@ -24,6 +17,7 @@ import KeyboardView from './KeyboardView';
 import ImageSharedModal from './ImageSharedModal';
 import ROUTES from '../constants/Routes';
 import UPLOAD_IMAGE from '../mutations/uploadImage';
+import httpService from '../utils/httpService';
 
 export default function ImageModal({
   style, image, isVisible, onRetake, onRequestClose,
@@ -40,28 +34,9 @@ export default function ImageModal({
 
   const handlePublish = async () => {
     setIsLoading(true);
-    const key = uuidv4();
-
-    const bucket = new S3({
-      accessKeyId: ACCESS_KEY_ID,
-      secretAccessKey: SECRET_ACCESS_KEY,
-      Bucket: S3_BUCKET,
-      signatureVersion: 'v4',
-    });
-
-    const type = 'image/jpeg';
-    const path = image.uri;
-    const base64 = await readFile(path, 'base64');
-    const arrayBuffer = decode(base64);
 
     try {
-      const { Location } = await bucket.upload({
-        Bucket: S3_BUCKET,
-        Key: key,
-        ContentDisposition: 'attachment',
-        Body: arrayBuffer,
-        ContentType: type,
-      }).promise();
+      const { Location } = await httpService.uploadToS3(image);
 
       await uploadImage({
         variables: {
@@ -71,11 +46,11 @@ export default function ImageModal({
             description: description || '',
           },
         },
-      }).catch((e) => {
-        console.log(e);
-        setIsLoading(false);
-      });
-
+      }).then((_) => setIsShared(true))
+        .catch((e) => {
+          console.log(e);
+          setIsLoading(false);
+        });
       setIsLoading(false);
     } catch (e) {
       setIsLoading(false);

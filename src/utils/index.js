@@ -13,66 +13,6 @@ import i18n from './i18n';
 
 export default class Utils {
   /**
-     * Request twilio authentication code
-     * @param {String} phoneNumber - phoneNumber with prefix
-     * @return {boolean} returns success of req
-     */
-  static async getVerificationCode(phoneNumber) {
-    const baseUrl = 'http://143.198.241.91:4000';
-
-    (async () => {
-      await fetch(`${baseUrl}/verify/${phoneNumber}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-        .then((res) => res.json())
-        .then((res) => {
-          console.log('21321321');
-          console.log(res);
-          if (res.status === 'pending') {
-            return true;
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          return false;
-        });
-    })();
-  }
-
-  /**
-     * Request twilio authentication code
-     * @param {String} phoneNumber - phoneNumber with prefix
-     * @param {String} code - received OTP code
-     * @return {boolean} returns success of req
-     */
-  static async checkVerificationCode(phoneNumber, code) {
-    const baseUrl = 'http://143.198.241.91:4000';
-
-    (async () => {
-      await fetch(`${baseUrl}/check/${phoneNumber}/${code}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-        .then((res) => res.json())
-        .then((res) => {
-          console.log(res);
-          if (res.status === 'approved') {
-            return true;
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          return false;
-        });
-    })();
-  }
-
-  /**
      * Format UNIX Timestamp to MMM Do (YY) date
      * @param {Number} timestamp - UNIX Timestamp
      * @param {String} format - e.g. 'MMM Do'
@@ -185,36 +125,6 @@ export default class Utils {
   static addAlpha(color, opacity) {
     const op = Math.round(Math.min(Math.max(opacity || 1, 0), 1) * 255);
     return color + op.toString(16).toUpperCase();
-  }
-
-  /**
-     * Upload image to S3
-     * @param {Dynamic} image - Image from expo camera module
-     * @return {String} aws image.uri
-     */
-  static async uploadToS3(image) {
-    const key = uuidv4();
-
-    const bucket = new S3({
-      accessKeyId: ACCESS_KEY_ID,
-      secretAccessKey: SECRET_ACCESS_KEY,
-      Bucket: S3_BUCKET,
-      signatureVersion: 'v4',
-    });
-
-    const type = 'image/jpeg';
-    const path = image.uri;
-    const base64 = await readFile(path, 'base64');
-    const arrayBuffer = decode(base64);
-
-    // eslint-disable-next-line no-return-await
-    return await bucket.upload({
-      Bucket: S3_BUCKET,
-      Key: key,
-      ContentDisposition: 'attachment',
-      Body: arrayBuffer,
-      ContentType: type,
-    }).promise();
   }
 
   /**

@@ -48,6 +48,8 @@ export default function App() {
       <NavigationContainer>
         <StatusBar barStyle="dark-content" />
         <Stack.Navigator screenOptions={{ headerShown: false }}>
+          {/* <Stack.Screen name={ROUTES.cameraScreen} component={CameraScreen} /> */}
+
           <Stack.Screen name={ROUTES.initDataCrossroads} component={InitDataCrossroads} />
           <Stack.Screen
             name={ROUTES.signUpScreen}
@@ -75,7 +77,6 @@ export default function App() {
           <Stack.Screen name={ROUTES.expenseScreen} component={ExpenseScreen} />
           <Stack.Screen name={ROUTES.checklistScreen} component={ChecklistScreen} />
           <Stack.Screen name={ROUTES.memoriesScreen} component={MemoriesScreen} />
-          <Stack.Screen name={ROUTES.cameraScreen} component={CameraScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </ApolloProvider>

@@ -21,6 +21,7 @@ import REGISTER_USER from '../mutations/registerUser';
 import LOGIN_USER from '../mutations/loginUser';
 import AsyncStorageDAO from '../utils/AsyncStorageDAO';
 import Utils from '../utils';
+import httpService from '../utils/httpService';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
@@ -34,6 +35,7 @@ export default function AuthModal({ isVisible, onRequestClose, registerData }) {
   const [countryCode, setCountryCode] = useState('43');
   const pageRef = useRef(null);
   const [timer, setTimer] = useState(10);
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigation = useNavigation();
 
@@ -66,17 +68,39 @@ export default function AuthModal({ isVisible, onRequestClose, registerData }) {
   }, [code]);
 
   const requestCode = async () => {
-    const phoneNumber = `+${countryCode}${phoneNr}`;
-    await Utils.getVerificationCode(phoneNumber);
+    setIsLoading(true);
+    const phoneNumber = `+${countryCode}${phoneNr.trim()}`;
+    await httpService.getVerificationCode(phoneNumber)
+      .then((res) => {
+        if (res.status === 'pending') {
+          pageRef.current?.setPage(1);
+          setIsLoading(false);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        setIsLoading(false);
+      });
+  };
+
+  const checkCode = async () => {
+    setIsLoading(true);
+    const phoneNumber = `+${countryCode}${phoneNr.trim()}`;
+    const res = await httpService.checkVerificationCode(phoneNumber, code);
+
+    return res.status;
   };
 
   const handleRegister = async () => {
     const { email, firstName, lastName } = registerData;
     const phoneNumber = `+${countryCode}${phoneNr.trim()}`;
 
-    console.log(await Utils.checkVerificationCode(phoneNumber, code));
-    console.log('hello');
-    return;
+    const check = await checkCode();
+
+    if (check !== 'approved') {
+      setCode('');
+      return;
+    }
 
     await registerUser({
       variables: {
@@ -98,9 +122,14 @@ export default function AuthModal({ isVisible, onRequestClose, registerData }) {
   };
 
   const handleLogin = async () => {
-    const phoneNumber = `+${countryCode}${phoneNr}`;
-    console.log(Utils.checkVerificationCode(phoneNumber, code));
-    return;
+    const phoneNumber = `+${countryCode}${phoneNr.trim()}`;
+    const check = await checkCode();
+
+    if (check !== 'approved') {
+      setCode('');
+      return;
+    }
+
     await loginUser({
       variables: {
         user: {
@@ -192,10 +221,7 @@ export default function AuthModal({ isVisible, onRequestClose, registerData }) {
                 isDisabled={phoneNr.length < 8}
                 isLoading={regLoading || logLoading}
                 text={i18n.t('Next')}
-                onPress={() => {
-                  pageRef.current?.setPage(1);
-                  requestCode();
-                }}
+                onPress={requestCode}
               />
             </View>
             <View style={{ padding: 25 }}>
