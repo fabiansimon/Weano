@@ -168,7 +168,10 @@ export default function AuthModal({ isVisible, onRequestClose, registerData }) {
       onRequestClose={onRequestClose}
       title={isLogin ? i18n.t('Log in') : i18n.t('Authenticate')}
     >
-      <KeyboardView paddingBottom={50}>
+      <KeyboardView
+        ignoreTouch
+        paddingBottom={50}
+      >
         <View style={styles.container}>
           <PagerView
             style={{ flex: 1 }}

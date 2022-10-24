@@ -184,7 +184,8 @@ export default function MainScreen() {
               </View>
               <Avatar
                 uri="https://i.pravatar.cc/300"
-                onPress={() => asyncStorageDAO.clearAccessToken()}
+                // onPress={() => asyncStorageDAO.clearAccessToken()}
+                onPress={() => navigation.navigate(ROUTES.profileScreen)}
               />
             </View>
             <TextField

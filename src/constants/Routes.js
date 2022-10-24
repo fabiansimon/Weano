@@ -15,6 +15,7 @@ const ROUTES = {
   cameraScreen: 'cameraScreen',
   signUpScreen: 'signUpScreen',
   initDataCrossroads: 'initDataCrossroads',
+  profileScreen: 'profileScreen',
 };
 
 export default ROUTES;
