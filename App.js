@@ -34,7 +34,7 @@ export default function App() {
     LogBox.ignoreAllLogs();// Ignore all log notifications
   });
 
-  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzRkODdhMjRjOTcxYmNhZGYzYTliODAiLCJpYXQiOjE2NjYwNDEzMzUsImV4cCI6MTY2NjY0NjEzNX0.a9U0-UtcQuDCLzJF6zn0Wac9jOhccxxHb9jG7HKAYZY';
+  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzU2ZDMyMWUyMmZhYmZkZjcwZGU2ZmUiLCJpYXQiOjE2NjY2MzQ1MjksImV4cCI6MTY2NzIzOTMyOX0.L1KaID3ha2ozRxI9fyc_bbajJoHoJiSJYAUx-wEyI4U';
 
   const client = new ApolloClient({
     uri: 'http://143.198.241.91:4000/graphql',

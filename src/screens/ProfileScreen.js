@@ -4,6 +4,7 @@ import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
+import { useMutation } from '@apollo/client';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import i18n from '../utils/i18n';
 import HybridHeader from '../components/HybridHeader';
@@ -13,11 +14,16 @@ import Headline from '../components/typography/Headline';
 import Body from '../components/typography/Body';
 import AsyncStorageDAO from '../utils/AsyncStorageDAO';
 import ROUTES from '../constants/Routes';
+import DELETE_USER from '../mutations/deleteUserAccount';
+import Utils from '../utils';
+import userStore from '../stores/UserStore';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
 export default function ProfileScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
+  const [deleteUser] = useMutation(DELETE_USER);
+  const user = userStore((state) => state.user);
 
   const navigation = useNavigation();
 
@@ -76,9 +82,28 @@ export default function ProfileScreen() {
   ];
 
   const handleLogOut = async () => {
-    console.log('hello');
-    await asyncStorageDAO.clearAccessToken();
-    navigation.navigate(ROUTES.initDataCrossroads);
+    Utils.showConfirmationAlert(
+      i18n.t('Log out'),
+      i18n.t('Are you sure you want to sign out of your Account?'),
+      i18n.t('Sign out'),
+      async () => {
+        await asyncStorageDAO.clearAccessToken();
+        navigation.navigate(ROUTES.initDataCrossroads);
+      },
+    );
+  };
+
+  const handleDeleteAccount = () => {
+    Utils.showConfirmationAlert(
+      i18n.t('Delete Account'),
+      i18n.t('Are you sure you want to delete your Account?'),
+      i18n.t('Delete'),
+      async () => {
+        deleteUser();
+        await asyncStorageDAO.clearAccessToken();
+        navigation.navigate(ROUTES.initDataCrossroads);
+      },
+    );
   };
 
   const ListTile = ({ item, index }) => (
@@ -111,7 +136,7 @@ export default function ProfileScreen() {
       </View>
       <Headline
         type={2}
-        text="Fabian Simon"
+        text={user.firstName}
       />
       <Body
         type={1}
@@ -153,7 +178,7 @@ export default function ProfileScreen() {
           <StatsContainer />
           {profileLinks.map((link, index) => <ListTile item={link} index={index} />)}
           <TouchableOpacity
-            onPress={() => console.log('delete')}
+            onPress={handleDeleteAccount}
             style={{
               flexDirection: 'row', alignItems: 'center', marginTop: 28, width: '95%',
             }}

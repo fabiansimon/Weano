@@ -20,14 +20,13 @@ import Divider from './Divider';
 import REGISTER_USER from '../mutations/registerUser';
 import LOGIN_USER from '../mutations/loginUser';
 import AsyncStorageDAO from '../utils/AsyncStorageDAO';
-import Utils from '../utils';
 import httpService from '../utils/httpService';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
 export default function AuthModal({ isVisible, onRequestClose, registerData }) {
-  const [registerUser, { regData, regLoading, regError }] = useMutation(REGISTER_USER);
-  const [loginUser, { logData, logLoading, logError }] = useMutation(LOGIN_USER);
+  const [registerUser] = useMutation(REGISTER_USER);
+  const [loginUser] = useMutation(LOGIN_USER);
 
   const [phoneNr, setPhoneNr] = useState('');
   const [pickerVisible, setPickerVisible] = useState(false);
@@ -222,7 +221,7 @@ export default function AuthModal({ isVisible, onRequestClose, registerData }) {
               </View>
               <Button
                 isDisabled={phoneNr.length < 8}
-                isLoading={regLoading || logLoading}
+                isLoading={isLoading}
                 text={i18n.t('Next')}
                 onPress={requestCode}
               />

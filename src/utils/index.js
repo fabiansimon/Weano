@@ -1,14 +1,11 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import 'react-native-get-random-values';
-import { v4 as uuidv4 } from 'uuid';
-import { decode } from 'base64-arraybuffer';
 import moment from 'moment';
-import { readFile } from 'react-native-fs';
 import {
-  ACCESS_KEY_ID, SECRET_ACCESS_KEY, S3_BUCKET, MAPBOX_TOKEN,
+  MAPBOX_TOKEN,
   // eslint-disable-next-line import/no-unresolved
 } from '@env';
-import { S3 } from 'aws-sdk';
+import { Alert } from 'react-native';
 import i18n from './i18n';
 
 export default class Utils {
@@ -52,6 +49,31 @@ export default class Utils {
     const today = Date.now();
     if (today > startDate * 1000) return false;
     return true;
+  }
+
+  /**
+     * Show confirmation Alert
+     * @param {String} title - Title
+     * @param {String} subtitle - Subtitle
+     * @param {String} action - action
+     * @return {boolean} isFuture
+     */
+  static showConfirmationAlert(title, subtitle, actionMessage, action) {
+    Alert.alert(
+      title,
+      subtitle,
+      [
+        {
+          text: i18n.t('Cancel'),
+          style: 'cancel',
+        },
+        {
+          text: actionMessage,
+          onPress: () => action(),
+          style: 'destructive',
+        },
+      ],
+    );
   }
 
   /**
@@ -133,6 +155,7 @@ export default class Utils {
      * @return {String} Location as String
      */
   static async getLocationFromCoordinates(latlon) {
+    // eslint-disable-next-line no-undef
     const geocodingClient = mbxGeocoding({
       accessToken: MAPBOX_TOKEN,
     });
