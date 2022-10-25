@@ -19,10 +19,12 @@ import SearchModal from '../components/Search/SearchModal';
 import RewindTile from '../components/Trip/RewindTile';
 import GET_TRIPS_FROM_USER from '../queries/getTripsFromUser';
 import AsyncStorageDAO from '../utils/AsyncStorageDAO';
+import userStore from '../stores/UserStore';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
 export default function MainScreen() {
+  const user = userStore((state) => state.user);
   const { loading, error, data } = useQuery(GET_TRIPS_FROM_USER);
   const [createVisible, setCreateVisible] = useState(false);
   const [searchVisible, setSearchVisible] = useState(false);
@@ -183,7 +185,7 @@ export default function MainScreen() {
                 />
               </View>
               <Avatar
-                uri="https://i.pravatar.cc/300"
+                uri={user.avatarUri}
                 onPress={() => navigation.navigate(ROUTES.profileScreen)}
               />
             </View>
@@ -260,7 +262,7 @@ export default function MainScreen() {
         <Button
           style={[styles.globeButton, styles.buttonShadow]}
           backgroundColor={COLORS.shades[0]}
-          onPress={() => navigation.navigate(ROUTES.mapScreen)}
+          onPress={() => navigation.navigate(ROUTES.cameraScreen)}
           icon="globe"
           isSecondary
           fullWidth={false}

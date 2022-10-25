@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { useMutation } from '@apollo/client';
+import { launchImageLibrary } from 'react-native-image-picker';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import i18n from '../utils/i18n';
 import HybridHeader from '../components/HybridHeader';
@@ -17,24 +18,28 @@ import ROUTES from '../constants/Routes';
 import DELETE_USER from '../mutations/deleteUserAccount';
 import Utils from '../utils';
 import userStore from '../stores/UserStore';
+import httpService from '../utils/httpService';
+import UPDATE_USER from '../mutations/updateUser';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
 export default function ProfileScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
+  const [updateUser, { data, loading, error }] = useMutation(UPDATE_USER);
   const [deleteUser] = useMutation(DELETE_USER);
   const user = userStore((state) => state.user);
+  const updateUserState = userStore((state) => state.updateUser);
 
   const navigation = useNavigation();
 
   const statData = [
     {
       title: i18n.t('Trips'),
-      amount: 12,
+      amount: user.trips && user.trips.length,
     },
     {
       title: i18n.t('Moments'),
-      amount: 12,
+      amount: user.images && user.images.length,
     },
     {
       title: i18n.t('Countries'),
@@ -81,6 +86,33 @@ export default function ProfileScreen() {
     },
   ];
 
+  const handleAddImage = async () => {
+    const options = {
+      mediaType: 'photo',
+      presentationStyle: 'fullScreen',
+    };
+    const result = await launchImageLibrary(options);
+
+    try {
+      const { Location } = await httpService.uploadToS3(result.assets[0]);
+
+      await updateUser({
+        variables: {
+          user: {
+            avatarUri: Location,
+          },
+        },
+      }).then(() => {
+        updateUserState(Location);
+      })
+        .catch((e) => {
+          console.log(e);
+        });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const handleLogOut = async () => {
     Utils.showConfirmationAlert(
       i18n.t('Log out'),
@@ -126,21 +158,28 @@ export default function ProfileScreen() {
 
   const Header = () => (
     <>
-      <Avatar size={85} />
-      <View style={styles.editContainer}>
+      <Avatar
+        uri={user && user.avatarUri}
+        size={85}
+      />
+      <TouchableOpacity
+        onPress={handleAddImage}
+        activeOpacity={0.8}
+        style={styles.editContainer}
+      >
         <Icon
           size={18}
           color={COLORS.neutral[300]}
           name="square-edit-outline"
         />
-      </View>
+      </TouchableOpacity>
       <Headline
         type={2}
-        text={user.firstName}
+        text={`${user && user.firstName} ${user && user.lastName}`}
       />
       <Body
         type={1}
-        text="+436641865358"
+        text={user && user.phoneNumber}
         color={COLORS.neutral[300]}
       />
     </>

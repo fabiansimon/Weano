@@ -6,10 +6,21 @@ const userStore = create((set) => ({
     lastName: 'Fabian',
     email: 'fabian.simon98@gmail.',
   },
-  updateFirstName: (firstName) => set((state) => ({
+  setUserData: (data) => set(() => ({
     user: {
-      ...state,
-      firstName,
+      firstName: data.firstName || null,
+      lastName: data.lastName || null,
+      email: data.email || null,
+      phoneNumber: data.phoneNumber || null,
+      avatarUri: data.avatarUri || null,
+      images: data.images || null,
+      trips: data.trips || null,
+    },
+  })),
+  updateUser: (avatarUri) => set((state) => ({
+    user: {
+      ...state.user,
+      avatarUri,
     },
   })),
 }));

@@ -16,6 +16,7 @@ import Subtitle from '../components/typography/Subtitle';
 import ImageContainer from '../components/Trip/ImageContainer';
 import LoadingGif from '../../assets/images/loading.gif';
 import Body from '../components/typography/Body';
+import userStore from '../stores/UserStore';
 
 export default function MemoriesScreen() {
   const [isLoading, setIsLoading] = useState(true);
@@ -23,318 +24,319 @@ export default function MemoriesScreen() {
   const headerOpacity = useSharedValue(1);
   const gridRef = useRef();
   const navigation = useNavigation();
+  const user = userStore((state) => state.user);
 
   let loadingIndex = 0;
   const maxAngle = 8;
 
-  const images = [
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-    {
-      uri: 'https://picsum.photos/320/580',
-    },
-  ];
+  // const images = [
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  //   {
+  //     uri: 'https://picsum.photos/320/580',
+  //   },
+  // ];
 
-  const numColumns = Math.round(Math.sqrt(images.length));
+  const numColumns = Math.round(Math.sqrt(user.images.length));
 
   const checkLoadingStatus = () => {
     setTimeout(() => {
-      if (loadingIndex >= images.length) {
+      if (loadingIndex >= user.images.length) {
         setIsLoading(false);
         return;
       }
@@ -407,7 +409,7 @@ export default function MemoriesScreen() {
             type={1}
             style={[{ fontWeight: '500', marginTop: -2 }, shadow]}
             color={COLORS.shades[0]}
-            text={images.length}
+            text={user.images.length}
           />
           <View style={{ marginLeft: 12 }}>
             <Headline
@@ -480,7 +482,7 @@ export default function MemoriesScreen() {
           style={gAnimated}
           onScrollBeginDrag={() => headerOpacity.value = withSpring(0)}
           onScrollEndDrag={() => headerOpacity.value = withSpring(1)}
-          data={images}
+          data={user.images}
           numColumns={numColumns}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ padding: 60 }}

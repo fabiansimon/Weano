@@ -1,5 +1,5 @@
 import {
-  StyleSheet, Image, TouchableOpacity,
+  StyleSheet, Image, TouchableOpacity, ActivityIndicator,
 } from 'react-native';
 import React from 'react';
 import COLORS from '../constants/Theme';
