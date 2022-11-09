@@ -1,5 +1,5 @@
 import {
-  View, StyleSheet, Modal, Dimensions, ScrollView,
+  View, StyleSheet, Modal,
 } from 'react-native';
 import React, { useRef, useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/Entypo';
@@ -16,11 +16,10 @@ import ContactChip from './ContactChip';
 import PopUpModal from './PopUpModal';
 import Utils from '../utils';
 import PageIndicator from './PageIndicator';
-import TitleModal from './TitleModal';
-import ContactTile from './ContactTile';
 import BackButton from './BackButton';
 import ADD_TRIP from '../mutations/addTrip';
 import CalendarModal from './CalendarModal';
+import ContactsModal from './ContactsModal';
 
 export default function CreateModal({ isVisible, onRequestClose }) {
   const [startDate, setStartDate] = useState(new Date());
@@ -32,11 +31,12 @@ export default function CreateModal({ isVisible, onRequestClose }) {
   const [addTrip, { data, loading, error }] = useMutation(ADD_TRIP);
 
   const [location, setLocation] = useState('');
-  // const [invitees, setInvitees] = useState([]);
+  const [invitees, setInvitees] = useState([]);
   const [tripName, setTripName] = useState([]);
-  const [dateRange, setDateRange] = useState();
-  const [contactsVisible, setContactsVisible] = useState(false);
   const [contacts, setContacts] = useState([]);
+
+  // MODALS
+  const [contactsVisible, setContactsVisible] = useState(false);
   const [calendarVisible, setCalendarVisible] = useState(false);
   const [popUpVisible, setPopUpVisible] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
@@ -58,6 +58,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
       // });
 
       setContacts(c);
+      console.log(c);
     });
   };
 
@@ -76,25 +77,13 @@ export default function CreateModal({ isVisible, onRequestClose }) {
     },
   ];
 
-  const onDateChange = (date, type) => {
-    if (type === 'END_DATE') {
-      setDateRange((prev) => ({
-        ...prev,
-        selectedEndDate: Utils.convertDateToTimestamp(date),
-      }));
-    } else {
-      setDateRange(() => ({
-        selectedStartDate: Utils.convertDateToTimestamp(date),
-        selectedEndDate: null,
-      }));
-    }
-  };
-
   const getDateValue = () => {
-    const startDate = dateRange && Utils.getDateFromTimestamp(dateRange.selectedStartDate, 'MMM Do');
-    const endDate = dateRange && Utils.getDateFromTimestamp(dateRange.selectedEndDate, 'MMM Do YY');
+    let start = '--';
+    let end = '--';
+    start = startDate && Utils.getDateFromTimestamp(startDate, 'MMM Do');
+    end = endDate && Utils.getDateFromTimestamp(endDate, 'MMM Do YY');
 
-    return `${startDate} - ${endDate}`;
+    return `${start} - ${end}`;
   };
 
   const handleChange = (isBack) => {
@@ -133,9 +122,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
       },
     }).catch((e) => console.log(`ERROR: ${e.message}`));
 
-    setDateRange();
     setTripName('');
-    setDateRange();
     setLocation('');
     onRequestClose();
     setPageIndex(0);
@@ -149,7 +136,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
         focusable={false}
         disabled
         style={{ marginTop: 18, marginBottom: 10 }}
-        value={dateRange && getDateValue()}
+        value={getDateValue()}
         icon="calendar"
         placeholder={i18n.t('Select a date')}
       />
@@ -161,50 +148,11 @@ export default function CreateModal({ isVisible, onRequestClose }) {
         initialEndDate={endDate}
         onApplyClick={(startData, endData) => {
           if (startData != null && endData != null) {
-            setStartDate(startData);
-            setEndDate(endData);
+            setStartDate(Date.parse(startData) / 1000);
+            setEndDate(Date.parse(endData) / 1000);
           }
         }}
       />
-      {/* <PopUpModal
-        isVisible={calendarVisible}
-        title={i18n.t('Select dates')}
-        subtitle={i18n.t('Nothing is set in stone. No worries')}
-        onRequestClose={() => setCalendarVisible(false)}
-      >
-        <View>
-          <View style={{ marginTop: 30, alignItems: 'center' }}>
-            <CalendarPicker
-              onDateChange={(date, type) => onDateChange(date, type)}
-              dayLabelsWrapper={{ borderColor: 'transparent' }}
-              width={Dimensions.get('window').width * 0.85}
-              allowRangeSelection
-              todayBackgroundColor={COLORS.neutral[300]}
-              selectedDayColor={COLORS.secondary[700]}
-              selectedDayTextColor={COLORS.shades[0]}
-              previousComponent={<Icon name="arrowleft" size={22} />}
-              nextComponent={<Icon name="arrowright" size={22} />}
-            />
-            <Button
-              text={i18n.t('Confirm')}
-              style={{ marginTop: 40, width: '100%' }}
-              fullWidth={false}
-              onPress={() => setCalendarVisible(false)}
-              isDisabled={false}
-            />
-            <Headline
-              type={4}
-              text={i18n.t('Reset')}
-              color={COLORS.neutral[500]}
-              onPress={() => {
-                setDateRange(null);
-                setCalendarVisible(false);
-              }}
-              style={{ textDecorationLine: 'underline', marginTop: 18, marginBottom: 4 }}
-            />
-          </View>
-        </View>
-      </PopUpModal> */}
       <PopUpModal
         isVisible={popUpVisible}
         title={i18n.t('No rush!')}
@@ -366,24 +314,11 @@ export default function CreateModal({ isVisible, onRequestClose }) {
           </View>
         </View>
       </KeyboardView>
-      <TitleModal
+      <ContactsModal
         isVisible={contactsVisible}
         onRequestClose={() => setContactsVisible(false)}
-        title={i18n.t('Add friends')}
-      >
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 50 }}
-        >
-          {contacts.map((c, index) => (
-            <ContactTile
-              key={c}
-              index={index}
-              contact={c}
-            />
-          ))}
-        </ScrollView>
-      </TitleModal>
+        data={contacts}
+      />
     </Modal>
   );
 }

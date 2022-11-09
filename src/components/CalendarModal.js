@@ -2,13 +2,9 @@ import React, { useState } from 'react';
 import {
   StyleSheet,
   View,
-  Text,
   Modal,
   SafeAreaView,
-  Pressable,
-  StatusBar,
   TouchableWithoutFeedback,
-  Platform,
 } from 'react-native';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import i18n from '../utils/i18n';

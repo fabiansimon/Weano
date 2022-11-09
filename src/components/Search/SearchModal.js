@@ -2,7 +2,7 @@ import {
   FlatList,
   StyleSheet, View,
 } from 'react-native';
-import React, { useState } from 'react';
+import React from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
 import MatIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import PopUpModal from '../PopUpModal';
@@ -15,8 +15,6 @@ import SearchResultTile from './SearchResultTile';
 import Subtitle from '../typography/Subtitle';
 
 export default function SearchModal({ isVisible, onRequestClose }) {
-  const [searchTerm, setSearchTerm] = useState();
-
   const mockResults = [
     {
       title: 'Maturareise VBS Gang 🐕',

@@ -42,7 +42,6 @@ const CalendarPicker = ({
     newDate.setFullYear(monthDate.getFullYear(), monthDate.getMonth(), 0);
     const prevMonthDate = newDate.getDate();
     let previousMothDay = 0;
-    // console.log(new Date().toLocaleDateString('default', { weekday: 'long' }));
 
     if (newDate.getDay() !== 0) {
       previousMothDay = newDate.getDay() === 0 ? 7 : newDate.getDay();
@@ -68,10 +67,6 @@ const CalendarPicker = ({
 
   const getIsInRange = (date) => {
     if (startDate != null && endDate != null) {
-      // change, "new Date(date.toDateString())" started giving "Inavlid date" for some reason
-      /* if (
-        new Date(date.toDateString()) > new Date(startDate.toDateString()) &&
-        new Date(date.toDateString()) < new Date(endDate.toDateString()) */
       if (date > startDate && date < endDate) {
         return true;
       }
@@ -239,13 +234,7 @@ const CalendarPicker = ({
                       }
                     } else if (minimumDate != null) {
                       const newMinimumDate = new Date(minimumDate);
-                      // newMinimumDate.setDate(minimumDate.getDate() - 1);
-                      // // newMinimumDate.setHours(0, 0, 0);
-                      // console.log(date, newMinimumDate);
 
-                      /* if (
-                        new Date(date.toDateString()) >
-                        new Date(newMinimumDate.toDateString()) */
                       if (date >= newMinimumDate) {
                         onDateClick(date);
                       }
