@@ -46,7 +46,7 @@ export default function ImageModal({
             description: description || '',
           },
         },
-      }).then((_) => setIsShared(true))
+      }).then(() => setIsShared(true))
         .catch((e) => {
           console.log(e);
           setIsLoading(false);

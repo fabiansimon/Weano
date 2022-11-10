@@ -20,6 +20,7 @@ import BackButton from './BackButton';
 import ADD_TRIP from '../mutations/addTrip';
 import CalendarModal from './CalendarModal';
 import ContactsModal from './ContactsModal';
+import Body from './typography/Body';
 
 export default function CreateModal({ isVisible, onRequestClose }) {
   const [startDate, setStartDate] = useState(new Date());
@@ -31,9 +32,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
   const [addTrip, { data, loading, error }] = useMutation(ADD_TRIP);
 
   const [location, setLocation] = useState('');
-  const [invitees, setInvitees] = useState([]);
   const [tripName, setTripName] = useState([]);
-  const [contacts, setContacts] = useState([]);
 
   // MODALS
   const [contactsVisible, setContactsVisible] = useState(false);
@@ -41,41 +40,41 @@ export default function CreateModal({ isVisible, onRequestClose }) {
   const [popUpVisible, setPopUpVisible] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
   const pageRef = useRef(null);
+  const [contacts, setContacts] = useState([]);
 
   useEffect(() => {
     getContacts();
   }, []);
 
   const getContacts = () => {
+    setContacts([]);
+
     Contacts.getAll().then((c) => {
-      // BEST APPROACH? QUESTIONABLE
-
-      // const currentContacts = [];
-      // c.forEach((item) => {
-      //   // eslint-disable-next-line no-param-reassign
-      //   item.selectedNumber = '';
-      //   currentContacts.push(item);
-      // });
-
-      setContacts(c);
-      console.log(c);
+      c.forEach((contact) => {
+        setContacts((prev) => [...prev, {
+          ...contact,
+          isInvited: false,
+        }]);
+      });
     });
   };
 
-  const currentInvitees = [
-    {
-      name: 'Jonathan',
-    },
-    {
-      name: 'Alex',
-    },
-    {
-      name: 'Julia',
-    },
-    {
-      name: 'Matthias M.',
-    },
-  ];
+  const handleInvite = (index) => {
+    setContacts((prev) => {
+      // eslint-disable-next-line no-param-reassign
+      prev[index].isInvited = !prev[index].isInvited;
+      return [...prev];
+    });
+  };
+  const handleDeselection = (invitee) => {
+    setContacts((prev) => {
+      const index = prev.findIndex((item) => item.recordID === invitee.recordID);
+
+      // eslint-disable-next-line no-param-reassign
+      prev[index].isInvited = false;
+      return [...prev];
+    });
+  };
 
   const getDateValue = () => {
     let start = '--';
@@ -103,27 +102,36 @@ export default function CreateModal({ isVisible, onRequestClose }) {
   };
 
   const handleData = async () => {
-    // const trip = {
-    //   title: tripName,
-    //   location: location.length > 0 ? location : null,
-    //   endDate: parseInt(dateRange.selectedStartDate, 10) || null,
-    //   startDate: parseInt(dateRange.selectedEndDate, 10) || null,
-    //   invitees: ['Fabian', 'Julia'],
-    // };
+    const invitees = [];
+    const invited = contacts.filter((item) => item.isInvited);
+
+    invited.forEach((invitee) => {
+      invitees.push({
+        fullName: `${invitee.givenName} ${invitee.familyName}`,
+        phoneNumber: invitee.phoneNumbers[0].number,
+        status: 'PENDING',
+      });
+    });
+
     await addTrip({
       variables: {
         trip: {
-          title: 'trip.title',
-          location: 'trip.location',
-          invitees: ['Rene', 'Simon'],
-          startDate: 123123,
-          endDate: 21321312,
+          dateRange: {
+            endDate,
+            startDate,
+          },
+          invitees,
+          location,
+          title: tripName,
         },
       },
     }).catch((e) => console.log(`ERROR: ${e.message}`));
 
     setTripName('');
     setLocation('');
+    setStartDate();
+    setEndDate();
+    setContacts();
     onRequestClose();
     setPageIndex(0);
   };
@@ -180,18 +188,29 @@ export default function CreateModal({ isVisible, onRequestClose }) {
     </View>
   );
 
-  const getInviteContent = () => (
-    <View style={styles.wrapContainer}>
-      {currentInvitees.map((invitee) => (
-        <ContactChip
-          key={invitee.name}
-          style={{ marginBottom: 10, marginRight: 10 }}
-          string={invitee.name}
-          onDelete={() => console.log(`delete: ${invitee.name}`)}
-        />
-      ))}
-    </View>
-  );
+  const getInviteContent = () => {
+    const invitees = contacts?.filter((item) => item.isInvited);
+
+    return (
+      <View style={styles.wrapContainer}>
+        {!invitees || invitees?.length < 1 ? (
+          <Body
+            type={2}
+            style={{ textAlign: 'center', flex: 1 }}
+            color={COLORS.neutral[300]}
+            text={i18n.t('No one invited yet, Start inviting people!')}
+          />
+        ) : invitees.map((invitee) => (
+          <ContactChip
+            key={invitee.givenName}
+            style={{ marginBottom: 10, marginRight: 10 }}
+            string={`${invitee.givenName} ${invitee.familyName}`}
+            onDelete={() => handleDeselection(invitee)}
+          />
+        ))}
+      </View>
+    );
+  };
 
   const getTitleContent = () => (
     <TextField
@@ -282,7 +301,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
       onRequestClose={onRequestClose}
       presentationStyle="pageSheet"
     >
-      <KeyboardView>
+      <KeyboardView paddingBottom={40}>
         <View style={styles.container}>
           <Headline
             type={2}
@@ -318,6 +337,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
         isVisible={contactsVisible}
         onRequestClose={() => setContactsVisible(false)}
         data={contacts}
+        onPress={(index) => handleInvite(index)}
       />
     </Modal>
   );

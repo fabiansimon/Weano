@@ -34,7 +34,7 @@ export default function App() {
     LogBox.ignoreAllLogs();// Ignore all log notifications
   });
 
-  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzU1OTIxNzJiYjA1NTUzNzA3NDYxYjkiLCJpYXQiOjE2NjY3MTgyMjYsImV4cCI6MTY2NzMyMzAyNn0.PwYSPqABGvPIXS4_UQaUZthVsEd1amqSCRI4Q6D0Xuw';
+  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MzVhZDA5N2VjMDA0YTc4MjNhMjFjNGYiLCJpYXQiOjE2NjgxMTEyNjIsImV4cCI6MTY2ODcxNjA2Mn0.5N7nsVnIld-CLJUt0tFFGuDjYQGbOGs8vFxzAvBjPoE';
 
   const client = new ApolloClient({
     uri: 'http://143.198.241.91:4000/graphql',
@@ -49,6 +49,11 @@ export default function App() {
       <NavigationContainer>
         <StatusBar barStyle="dark-content" />
         <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen
+            name={ROUTES.mainScreen}
+            component={MainScreen}
+            options={{ gestureEnabled: false }}
+          />
           <Stack.Screen name={ROUTES.initDataCrossroads} component={InitDataCrossroads} />
           <Stack.Screen
             name={ROUTES.signUpScreen}
@@ -58,11 +63,6 @@ export default function App() {
           <Stack.Screen
             name={ROUTES.introScreen}
             component={IntroScreen}
-            options={{ gestureEnabled: false }}
-          />
-          <Stack.Screen
-            name={ROUTES.mainScreen}
-            component={MainScreen}
             options={{ gestureEnabled: false }}
           />
           <Stack.Screen name={ROUTES.profileScreen} component={ProfileScreen} />
