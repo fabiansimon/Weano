@@ -9,9 +9,11 @@ import Headline from '../typography/Headline';
 import COLORS, { PADDING } from '../../constants/Theme';
 import Subtitle from '../typography/Subtitle';
 
-export default function AddExpenseModal({ isVisible, onRequestClose, onPress }) {
+export default function AddExpenseModal({
+  isVisible, onRequestClose, onPress, isLoading,
+}) {
   const [amount, setAmount] = useState();
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState('');
 
   return (
     <TitleModal
@@ -54,7 +56,7 @@ export default function AddExpenseModal({ isVisible, onRequestClose, onPress }) 
                 text={i18n.t('Expense description')}
               />
               <TextInput
-                onChangeText={(val) => setDescription(val)}
+                onChangeText={(val) => setTitle(val)}
                 style={styles.descriptionInput}
                 placeholderTextColor={COLORS.neutral[100]}
                 placeholder={i18n.t('Birthday Cake 🎂')}
@@ -64,10 +66,8 @@ export default function AddExpenseModal({ isVisible, onRequestClose, onPress }) 
           <Button
             text={i18n.t('Add Expense')}
             style={{ margin: 25 }}
-            onPress={() => {
-              onPress({ amount, description });
-              onRequestClose();
-            }}
+            isLoading={isLoading}
+            onPress={() => onPress({ amount, title })}
           />
         </View>
       </KeyboardView>

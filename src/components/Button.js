@@ -35,9 +35,9 @@ export default function Button({
   return (
     <TouchableOpacity
       activeOpacity={0.9}
-      style={[styles.container, style, {
+      style={[styles.container, {
         flex, backgroundColor: isSecondary ? COLORS.shades[0] : bg, borderColor, borderWidth,
-      }]}
+      }, style]}
       onPress={onPress}
       disabled={isDisabled}
     >

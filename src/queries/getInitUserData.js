@@ -5,23 +5,73 @@ const GET_INIT_USER_DATA = gql`
         getUserInitData {
             userData {
                 id
+                phoneNumber
                 avatarUri
                 email
                 firstName
                 lastName
-                phoneNumber
                 images
                 trips
-            }
-            images {
-                uri
-                description
-                title
+                expenses {
+                    expense
+                    trip
+                }
             }
             trips {
                 id
                 title
                 location
+                expenses {
+                    amount
+                    title
+                    creatorId
+                    createdAt
+                    currency
+                }
+                invitees {
+                    phoneNumber
+                    status
+                }
+                activeMembers {
+                    id
+                    phoneNumber
+                    avatarUri
+                    email
+                    firstName
+                    lastName
+                    images
+                    trips
+                }
+                dateRange {
+                    startDate
+                    endDate
+                }
+            }
+            activeTrip {
+                id
+                title
+                location
+                expenses {
+                    createdAt
+                    creatorId
+                    title
+                    amount
+                    currency
+                }
+                activeMembers {
+                    id
+                    phoneNumber
+                    avatarUri
+                    email
+                    firstName
+                    lastName
+                    images
+                    trips
+                    expenses {
+                    expense
+                    trip
+                    }
+                }
                 invitees {
                     phoneNumber
                     status
@@ -30,6 +80,48 @@ const GET_INIT_USER_DATA = gql`
                     startDate
                     endDate
                 }
+                images
+            }
+            recapTrip {
+                id
+                title
+                location
+                expenses {
+                    createdAt
+                    creatorId
+                    title
+                    amount
+                    currency
+                }
+                activeMembers {
+                    id
+                    phoneNumber
+                    avatarUri
+                    email
+                    firstName
+                    lastName
+                    images
+                    trips
+                    expenses {
+                    expense
+                    trip
+                    }
+                }
+                invitees {
+                    phoneNumber
+                    status
+                }
+                dateRange {
+                    startDate
+                    endDate
+                }
+                images
+            }
+            images {
+                uri
+                title
+                description
+                author
             }
         }
     }

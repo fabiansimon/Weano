@@ -4,6 +4,7 @@ import {
 import React, { useRef, useState, useEffect } from 'react';
 import Animated from 'react-native-reanimated';
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
+import { useMutation } from '@apollo/client';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import HybridHeader from '../../components/HybridHeader';
@@ -12,11 +13,19 @@ import Headline from '../../components/typography/Headline';
 import ExpenseTile from '../../components/Trip/ExpenseTile';
 import Divider from '../../components/Divider';
 import ExpensesContainer from '../../components/Trip/ExpenseContainer';
+import FAButton from '../../components/FAButton';
+import AddExpenseModal from '../../components/Trip/AddExpenseModal';
+import ADD_EXPENSE from '../../mutations/addExpense';
 
-export default function ExpenseScreen() {
-  const [showTotal, setShowTotal] = useState(true);
+export default function ExpenseScreen({ route }) {
   const scrollY = useRef(new Animated.Value(0)).current;
+
+  const [addExpense, { loading, error }] = useMutation(ADD_EXPENSE);
+
+  const [showTotal, setShowTotal] = useState(true);
   const [expenseData, setExpenseData] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [myData, setMyData] = useState([]);
 
   useEffect(() => {
@@ -117,6 +126,29 @@ export default function ExpenseScreen() {
     },
   ];
 
+  const handleAddExpense = async (data) => {
+    setIsLoading(true);
+
+    let { amount } = data;
+    const { title } = data;
+    amount = amount.replaceAll(',', '.');
+    amount = parseFloat(amount);
+
+    await addExpense({
+      variables: {
+        expense: {
+          amount,
+          title,
+          tripId: '636e85cc1340c364d33f04c9',
+        },
+      },
+    }).catch((e) => console.log(`ERROR: ${e.message}`))
+      .then(() => {
+        setIsLoading(false);
+        setShowModal(false);
+      });
+  };
+
   const getListHeader = () => (
     <View style={{
       flexDirection: 'row', marginTop: 16,
@@ -202,6 +234,17 @@ export default function ExpenseScreen() {
           </View>
         </View>
       </HybridHeader>
+      <FAButton
+        icon="add"
+        iconSize={28}
+        onPress={() => setShowModal(true)}
+      />
+      <AddExpenseModal
+        isVisible={showModal}
+        onRequestClose={() => setShowModal(false)}
+        onPress={(data) => handleAddExpense(data)}
+        isLoading={isLoading || loading}
+      />
     </View>
   );
 }

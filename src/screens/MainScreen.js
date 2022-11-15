@@ -4,7 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/AntDesign';
-import { useQuery } from '@apollo/client';
 import COLORS, { PADDING } from '../constants/Theme';
 import Headline from '../components/typography/Headline';
 import i18n from '../utils/i18n';
@@ -17,7 +16,6 @@ import ROUTES from '../constants/Routes';
 import AnimatedHeader from '../components/AnimatedHeader';
 import SearchModal from '../components/Search/SearchModal';
 import RewindTile from '../components/Trip/RewindTile';
-import GET_TRIPS_FROM_USER from '../queries/getTripsFromUser';
 import AsyncStorageDAO from '../utils/AsyncStorageDAO';
 import userStore from '../stores/UserStore';
 
@@ -25,7 +23,6 @@ const asyncStorageDAO = new AsyncStorageDAO();
 
 export default function MainScreen() {
   const user = userStore((state) => state.user);
-  const { loading, error, data } = useQuery(GET_TRIPS_FROM_USER);
   const [createVisible, setCreateVisible] = useState(false);
   const [searchVisible, setSearchVisible] = useState(false);
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -43,8 +40,8 @@ export default function MainScreen() {
 
   const mockTrips = [
     {
-      title: 'Maturareise VBS Gang 🐕',
-      description: 'Fucking sending it for a few weeks straight. Guys trip baby. LET’S GO 🍻',
+      title: 'Graduation Trip 2022 🎓',
+      description: 'Paris for a week with as a graduate. Nothing better than that! 😎',
       dateRange: {
         startDate: 1656865380,
         endDate: 1658074980,
@@ -139,8 +136,6 @@ export default function MainScreen() {
 
   return (
     <View style={{ backgroundColor: COLORS.neutral[50] }}>
-      {loading && <View style={{ flex: 1, backgroundColor: 'blue' }} />}
-      {error && <View style={{ flex: 1, backgroundColor: 'red' }} />}
       <AnimatedHeader
         scrollY={scrollY}
         maxHeight={120}

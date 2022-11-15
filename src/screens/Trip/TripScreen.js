@@ -1,13 +1,13 @@
 import {
   View, StyleSheet, Image, Dimensions, TouchableOpacity,
 } from 'react-native';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
 import { ScrollView } from 'react-native-gesture-handler';
-import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
+import COLORS, { PADDING } from '../../constants/Theme';
 import AnimatedHeader from '../../components/AnimatedHeader';
 import Headline from '../../components/typography/Headline';
 import i18n from '../../utils/i18n';
@@ -26,10 +26,12 @@ import AccomodationCarousel from '../../components/Trip/AccomodationCarousel';
 import ROUTES from '../../constants/Routes';
 import StatusContainer from '../../components/Trip/StatusContainer';
 import ExpensesContainer from '../../components/Trip/ExpenseContainer';
+import FAButton from '../../components/FAButton';
+import activeTripStore from '../../stores/ActiveTripStore';
 
 const mockData = {
-  title: 'Maturareise VBS Gang 🐕',
-  description: 'Fucking sending it for a few weeks straight. Guys trip baby. LET’S GO 🍻',
+  title: 'Graduation Trip 2022 🎓',
+  description: 'Paris for a week with as a graduate. Nothing better than that! 😎',
   dateRange: {
     startDate: 1656865380,
     endDate: 1658074980,
@@ -177,27 +179,15 @@ const mockData = {
   ],
 };
 
-const statusData = [
-  {
-    name: i18n.t('Location'),
-    isDone: true,
-    route: ROUTES.locationScreen,
-  },
-  {
-    name: i18n.t('Date'),
-    isDone: false,
-    route: ROUTES.dateScreen,
-  },
-  {
-    name: i18n.t('Tasks'),
-    isDone: true,
-    route: ROUTES.checklistScreen,
-  },
-];
+export default function TripScreen({ route }) {
+  const { isActive = false } = route.params;
+  const activeTrip = activeTripStore((state) => state.activeTrip);
 
-export default function TripScreen() {
+  const data = activeTrip;
+
   const scrollY = useRef(new Animated.Value(0)).current;
   const scrollRef = useRef();
+
   const [currentTab, setCurrentTab] = useState(0);
   const [tripData, setTripData] = useState(mockData);
 
@@ -206,9 +196,28 @@ export default function TripScreen() {
   const getDate = (timestamp) => Utils.getDateFromTimestamp(timestamp, 'MMM Do');
 
   const handleTabPress = (index) => {
+    console.log(activeTrip.invitees);
     setCurrentTab(index);
     scrollRef.current?.scrollTo({ y: contentItems[index].yPos, animated: true });
   };
+
+  const statusData = [
+    {
+      name: i18n.t('Location'),
+      isDone: data.location,
+      route: ROUTES.locationScreen,
+    },
+    {
+      name: i18n.t('Date'),
+      isDone: data.dateRange.startDate,
+      route: ROUTES.dateScreen,
+    },
+    {
+      name: i18n.t('Tasks'),
+      isDone: false,
+      route: ROUTES.checklistScreen,
+    },
+  ];
 
   const updateTasks = (val, index, type) => {
     if (type === 'PRIVATE') {
@@ -292,13 +301,13 @@ export default function TripScreen() {
     {
       title: i18n.t('Invitees'),
       trailing: <Headline
-        onPress={() => navigation.navigate(ROUTES.inviteeScreen)}
+        onPress={() => navigation.navigate(ROUTES.inviteeScreen, { data: data.invitees || {} })}
         type={4}
         text={i18n.t('see all')}
         color={COLORS.neutral[500]}
       />,
       content: <InviteeContainer
-        data={tripData.invitees}
+        data={data.invitees}
         onLayout={(e) => {
           console.log(`Invitees: ${e.nativeEvent.layout.y}`);
         }}
@@ -307,6 +316,13 @@ export default function TripScreen() {
     },
   ];
 
+  const getDateRange = () => {
+    const { startDate, endDate } = data.dateRange;
+    const start = Utils.getDateFromTimestamp(startDate, endDate ? 'MM.DD' : 'MM.DD.YY');
+    const end = endDate ? Utils.getDateFromTimestamp(endDate, 'MM.DD.YY') : i18n.t('open');
+
+    return `${start} - ${end}`;
+  };
   const getTopContent = () => (
     <>
       <TouchableOpacity
@@ -315,29 +331,39 @@ export default function TripScreen() {
       />
       <View style={styles.bodyContainer}>
         <View style={{ paddingHorizontal: PADDING.l }}>
-          <Headline type={2} text={tripData.title} />
-          <View style={{ flexDirection: 'row', marginTop: 12 }}>
+          <Headline type={2} text={data.title} />
+          <ScrollView
+            horizontal
+            contentContainerStyle={{ paddingRight: 30 }}
+            style={{
+              flexDirection: 'row',
+              marginTop: 12,
+              marginHorizontal: -PADDING.l,
+              paddingLeft: PADDING.m,
+
+            }}
+          >
             <Button
               isSecondary
-              text={i18n.t('Set location')}
+              text={data.location || i18n.t('Set location')}
               fullWidth={false}
               icon="location-pin"
               onPress={() => navigation.push(ROUTES.locationScreen)}
               backgroundColor={COLORS.shades[0]}
               textColor={COLORS.shades[100]}
-              style={styles.infoButton}
+              style={data.location ? styles.infoTile : styles.infoButton}
             />
             <Button
               isSecondary
-              text={i18n.t('Find date')}
+              text={data.dateRange.startDate ? getDateRange() : i18n.t('Find date')}
               fullWidth={false}
               icon={<AntIcon name="calendar" size={22} />}
               onPress={() => navigation.push(ROUTES.dateScreen)}
               backgroundColor={COLORS.shades[0]}
               textColor={COLORS.shades[100]}
-              style={[styles.infoButton, { marginLeft: PADDING.s }]}
+              style={[data.dateRange.startDate ? styles.infoTile : styles.infoButton, { marginLeft: 14 }]}
             />
-          </View>
+          </ScrollView>
           <Body
             type={1}
             text={tripData.description}
@@ -352,9 +378,9 @@ export default function TripScreen() {
           />
           <Headline
             type={4}
-            text={i18n.t('21d : 32h : 56m')}
+            text={isActive ? i18n.t('• live') : i18n.t('21 days left')}
             style={{ fontWeight: '600', fontSize: 16 }}
-            color={COLORS.primary[700]}
+            color={isActive ? COLORS.error[900] : COLORS.primary[700]}
           />
         </View>
         <ScrollView horizontal style={{ paddingHorizontal: PADDING.l, paddingTop: 14, paddingBottom: 6 }}>
@@ -448,17 +474,10 @@ export default function TripScreen() {
             position: 'absolute', top: 47, left: 20, zIndex: 10,
           }}
           />
-          <TouchableOpacity
-            activeOpacity={0.8}
-            style={styles.fab}
+          <FAButton
+            icon="chatbox-ellipses"
             onPress={() => navigation.push(ROUTES.chatScreen)}
-          >
-            <Icon
-              name="chatbox-ellipses"
-              color={COLORS.shades[0]}
-              size={22}
-            />
-          </TouchableOpacity>
+          />
         </View>
       )
 
@@ -509,21 +528,6 @@ const styles = StyleSheet.create({
     width: '100%',
     bottom: 0,
   },
-  fab: {
-    position: 'absolute',
-    bottom: 50,
-    right: PADDING.xl,
-    height: 55,
-    width: 55,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: RADIUS.xl,
-    backgroundColor: COLORS.primary[700],
-    shadowColor: COLORS.neutral[500],
-    shadowOpacity: 0.2,
-    shadowRadius: 20,
-    shadowOffset: {},
-  },
   image: {
     resizeMode: 'stretch',
     height: 290,
@@ -537,6 +541,12 @@ const styles = StyleSheet.create({
     borderColor: COLORS.neutral[300],
     borderWidth: 1,
     height: 40,
+    paddingHorizontal: 12,
+  },
+  infoTile: {
+    height: 40,
+    borderWidth: 0,
+    backgroundColor: COLORS.neutral[50],
     paddingHorizontal: 12,
   },
   mainContainer: {

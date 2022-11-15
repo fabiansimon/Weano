@@ -2,18 +2,26 @@ import create from 'zustand';
 
 const userStore = create((set) => ({
   user: {
-    firstName: 'Fabian',
-    lastName: 'Fabian',
-    email: 'fabian.simon98@gmail.',
+    id: '',
+    avatarUri: '',
+    email: '',
+    expenses: [],
+    firstName: '',
+    lastName: '',
+    images: [],
+    phoneNumber: '',
+    trips: [],
   },
   setUserData: (data) => set(() => ({
     user: {
+      id: data.id || null,
+      avatarUri: data.avatarUri || null,
+      email: data.email || null,
+      expenses: data.expenses || null,
       firstName: data.firstName || null,
       lastName: data.lastName || null,
-      email: data.email || null,
-      phoneNumber: data.phoneNumber || null,
-      avatarUri: data.avatarUri || null,
       images: data.images || null,
+      phoneNumber: data.phoneNumber || null,
       trips: data.trips || null,
     },
   })),
