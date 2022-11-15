@@ -173,6 +173,16 @@ export default function TripScreen({ route }) {
 
   const handleAddImage = async (index) => {
     if (index === 2) {
+      await updateTrip({
+        variables: {
+          trip: {
+            thumbnailUri: '',
+            tripId: data.id,
+          },
+        },
+      }).catch((e) => {
+        console.log(e);
+      });
       return;
     }
 
