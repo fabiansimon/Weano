@@ -2,10 +2,12 @@ import create from 'zustand';
 
 const activeTripStore = create((set) => ({
   activeTrip: {},
-  setActiveTrip: (data) => set(() => ({
+  setActiveTrip: (data) => set((state) => ({
     activeTrip: {
-      id: data.id || null,
+      id: data.id || state.id || null,
+      thumbnailUri: data.thumbnailUri || state.thumbnailUri || null,
       title: data.title || null,
+      description: data.description || null,
       location: data.location || null,
       expenses: data.expenses || null,
       activeMembers: data.activeMembers || null,

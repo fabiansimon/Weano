@@ -18,14 +18,15 @@ export default function TripHeader({
         <View style={{ width: 50 }} />
         <View>
           <Headline type={4} text={title} style={{ fontWeight: '600' }} />
-          <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
             <EntypoIcon
               name="location-pin"
-              size={16}
+              size={20}
               color={COLORS.neutral[300]}
             />
             <Body
-              type={2}
+              style={{ marginLeft: 2 }}
+              type={1}
               text={subtitle}
               color={COLORS.neutral[300]}
             />
@@ -37,7 +38,6 @@ export default function TripHeader({
           icon={<Ionicon name="ios-chatbubbles-outline" size={22} />}
           fullWidth={false}
           color={COLORS.neutral[900]}
-          // onPress={() => (onPress ? onPress() : navigation.goBack())}
         />
       </View>
       <View>

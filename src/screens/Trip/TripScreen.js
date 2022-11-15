@@ -1,12 +1,15 @@
 import {
   View, StyleSheet, Image, Dimensions, TouchableOpacity,
 } from 'react-native';
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
 import { ScrollView } from 'react-native-gesture-handler';
+import { useMutation } from '@apollo/client';
+import ActionSheet from 'react-native-actionsheet';
+import { launchImageLibrary } from 'react-native-image-picker';
 import COLORS, { PADDING } from '../../constants/Theme';
 import AnimatedHeader from '../../components/AnimatedHeader';
 import Headline from '../../components/typography/Headline';
@@ -28,10 +31,13 @@ import StatusContainer from '../../components/Trip/StatusContainer';
 import ExpensesContainer from '../../components/Trip/ExpenseContainer';
 import FAButton from '../../components/FAButton';
 import activeTripStore from '../../stores/ActiveTripStore';
+import userStore from '../../stores/UserStore';
+import UPDATE_TRIP from '../../mutations/updateTrip';
+import httpService from '../../utils/httpService';
 
 const mockData = {
   title: 'Graduation Trip 2022 🎓',
-  description: 'Paris for a week with as a graduate. Nothing better than that! 😎',
+  description: 'Paris for a week as a graduate. Nothing better than that! 😎',
   dateRange: {
     startDate: 1656865380,
     endDate: 1658074980,
@@ -139,67 +145,93 @@ const mockData = {
       },
     ],
   },
-  expenses: [
-    {
-      id: 'fabian simon',
-      amount: 123,
-      description: 'Airbnb 🎂',
-      timestamp: 1660998973,
-    },
-    {
-      id: 'julia stefan',
-      amount: 12,
-      description: 'Pizza 🍕',
-      timestamp: 1660994973,
-    },
-    {
-      id: 'alexander wieser',
-      amount: 99,
-      description: 'Pass 🛂',
-      timestamp: 1660998973,
-    },
-    {
-      id: 'julia stefan',
-      amount: 100,
-      description: 'Cocaine 🏂',
-      timestamp: 1660998973,
-    },
-    {
-      id: 'didi chovookkaran',
-      amount: 78,
-      description: 'AGMO 👚',
-      timestamp: 1660998973,
-    },
-    {
-      id: 'matthias betonmisha',
-      amount: 1,
-      description: 'Beer 🍺',
-      timestamp: 1660998973,
-    },
-  ],
 };
 
 export default function TripScreen({ route }) {
   const { isActive = false } = route.params;
+
+  const [updateTrip, { loading, error }] = useMutation(UPDATE_TRIP);
+
   const activeTrip = activeTripStore((state) => state.activeTrip);
 
-  const data = activeTrip;
+  const user = userStore((state) => state.user);
 
   const scrollY = useRef(new Animated.Value(0)).current;
   const scrollRef = useRef();
 
   const [currentTab, setCurrentTab] = useState(0);
   const [tripData, setTripData] = useState(mockData);
+  const addImageRef = useRef();
 
   const navigation = useNavigation();
-
-  const getDate = (timestamp) => Utils.getDateFromTimestamp(timestamp, 'MMM Do');
+  const data = activeTrip;
 
   const handleTabPress = (index) => {
-    console.log(activeTrip.invitees);
     setCurrentTab(index);
     scrollRef.current?.scrollTo({ y: contentItems[index].yPos, animated: true });
   };
+
+  const handleAddImage = async (index) => {
+    if (index === 2) {
+      return;
+    }
+
+    const options = {
+      mediaType: 'photo',
+      presentationStyle: 'fullScreen',
+    };
+    const result = await launchImageLibrary(options);
+
+    try {
+      const { Location } = await httpService.uploadToS3(result.assets[0]);
+
+      await updateTrip({
+        variables: {
+          trip: {
+            thumbnailUri: Location,
+            tripId: data.id,
+          },
+        },
+      }).catch((e) => {
+        console.log(e);
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const users = [
+    {
+      name: 'Fabian Simon',
+      id: user.id,
+      uri: 'https://i.pravatar.cc/300',
+      status: true,
+    },
+    {
+      name: 'Julia Stefan',
+      id: 'julia stefan',
+      uri: 'https://i.pravatar.cc/300',
+      status: false,
+    },
+    {
+      name: 'Matthias Betonmisha',
+      id: 'matthias betonmisha',
+      uri: 'https://i.pravatar.cc/300',
+      status: false,
+    },
+    {
+      name: 'Didi Chovookkaran',
+      id: 'didi chovookkaran',
+      uri: 'https://i.pravatar.cc/300',
+      status: false,
+    },
+    {
+      name: 'Alexander Wieser',
+      id: 'alexander wieser',
+      uri: 'https://i.pravatar.cc/300',
+      status: false,
+    },
+  ];
 
   const statusData = [
     {
@@ -283,14 +315,14 @@ export default function TripScreen({ route }) {
     {
       title: i18n.t('Expenses'),
       trailing: <Headline
-        onPress={() => navigation.navigate(ROUTES.expenseScreen)}
+        onPress={() => navigation.navigate(ROUTES.expenseScreen, { expenses: data.expenses || {}, tripId: data.id || '' })}
         type={4}
         text={i18n.t('see all')}
         color={COLORS.neutral[500]}
       />,
       content: <ExpensesContainer
-        data={tripData.expenses}
-        users={tripData.invitees}
+        data={data.expenses}
+        users={users}
         tileBackground={COLORS.shades[0]}
         onLayout={(e) => {
           console.log(`Invitees: ${e.nativeEvent.layout.y}`);
@@ -326,8 +358,8 @@ export default function TripScreen({ route }) {
   const getTopContent = () => (
     <>
       <TouchableOpacity
-        style={{ height: 240, backgroundColor: 'transparent' }}
-        onPress={() => console.log('Add Image')}
+        style={{ height: 240 }}
+        onPress={() => addImageRef.current?.show()}
       />
       <View style={styles.bodyContainer}>
         <View style={{ paddingHorizontal: PADDING.l }}>
@@ -365,8 +397,9 @@ export default function TripScreen({ route }) {
             />
           </ScrollView>
           <Body
+            onPress={() => console.log('update description')}
             type={1}
-            text={tripData.description}
+            text={data.description || i18n.t('Add a description to the trip 😎')}
             style={{ marginTop: 16, color: COLORS.neutral[300] }}
           />
         </View>
@@ -422,16 +455,15 @@ export default function TripScreen({ route }) {
     !tripData
       ? <Headline text="Loading..." />
       : (
-        <View style={{ backgroundColor: COLORS.shades[50], flex: 1 }}>
-
+        <View style={{ backgroundColor: COLORS.shades[0], flex: 1 }}>
           <AnimatedHeader
             style={{ height: 170 }}
             maxHeight={380}
             scrollY={scrollY}
           >
             <TripHeader
-              title={tripData.title}
-              subtitle={`${getDate(tripData.dateRange.startDate)} - ${getDate(tripData.dateRange.endDate)}`}
+              title={data.title}
+              subtitle={`${getDateRange()}`}
               invitees={tripData.invitees}
               items={contentItems}
               onPress={(index) => handleTabPress(index)}
@@ -441,9 +473,10 @@ export default function TripScreen({ route }) {
           <View style={styles.imageContainer}>
             <Image
               style={styles.image}
-              source={DefaultImage}
-              blurRadius={10}
+              source={data.thumbnailUri ? { uri: data.thumbnailUri } : DefaultImage}
+              blurRadius={!data.thumbnailUri ? 10 : 0}
             />
+            {!data.thumbnailUri && (
             <View style={styles.addImage}>
               <Headline
                 type={3}
@@ -456,6 +489,7 @@ export default function TripScreen({ route }) {
                 color={COLORS.shades[0]}
               />
             </View>
+            )}
           </View>
           <Animated.ScrollView
             ref={scrollRef}
@@ -478,9 +512,15 @@ export default function TripScreen({ route }) {
             icon="chatbox-ellipses"
             onPress={() => navigation.push(ROUTES.chatScreen)}
           />
+          <ActionSheet
+            ref={addImageRef}
+            title={i18n.t('Choose an option')}
+            options={['Cancel', i18n.t('Choose from Camera Roll'), i18n.t('Reset image')]}
+            cancelButtonIndex={0}
+            onPress={(index) => handleAddImage(index)}
+          />
         </View>
       )
-
   );
 }
 

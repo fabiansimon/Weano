@@ -35,8 +35,7 @@ export default function InitDataCrossroads() {
 
     const { activeTrip, recapTrip, userData } = res;
     if (activeTrip) {
-      console.log('activeTrip.expenses');
-      console.log(activeTrip.expenses);
+      console.log(activeTrip.thumbnailUri);
       setActiveTrip(activeTrip);
     }
 

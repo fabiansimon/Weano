@@ -17,7 +17,9 @@ const recapTripStore = create((set) => ({
   setRecapTrip: (data) => set(() => ({
     recapTrip: {
       id: data.id || null,
+      thumbnailUri: data.thumbnailUri || null,
       title: data.title || null,
+      description: data.description || null,
       location: data.location || null,
       expenses: data.expenses || null,
       activeMembers: data.activeMembers || null,

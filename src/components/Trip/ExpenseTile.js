@@ -16,13 +16,15 @@ export default function ExpenseTile({ style, data, user }) {
         />
       </View>
       <View style={{
-        flexDirection: 'row', justifyContent: 'space-between', flex: 1, marginLeft: 15,
+        flexDirection: 'row', flex: 1, marginLeft: 15,
       }}
       >
-        <View>
+        <View style={{ flex: 1 }}>
           <Headline
             type={3}
-            text={data.description}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            text={data.title}
           />
           <Body
             type={2}
@@ -40,7 +42,7 @@ export default function ExpenseTile({ style, data, user }) {
             type={2}
             style={{ textAlign: 'right' }}
             color={COLORS.neutral[300]}
-            text={Utils.getDateFromTimestamp(data.timestamp, 'DD.MM.YYYY • HH:mm')}
+            text={Utils.getDateFromTimestamp(data.createdAt / 1000, 'DD.MM.YYYY • HH:mm')}
           />
         </View>
       </View>

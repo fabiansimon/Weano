@@ -19,6 +19,7 @@ const GET_INIT_USER_DATA = gql`
             }
             trips {
                 id
+                thumbnailUri
                 title
                 location
                 expenses {
@@ -51,6 +52,7 @@ const GET_INIT_USER_DATA = gql`
                 id
                 title
                 location
+                thumbnailUri
                 expenses {
                     createdAt
                     creatorId

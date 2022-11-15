@@ -16,8 +16,14 @@ import ExpensesContainer from '../../components/Trip/ExpenseContainer';
 import FAButton from '../../components/FAButton';
 import AddExpenseModal from '../../components/Trip/AddExpenseModal';
 import ADD_EXPENSE from '../../mutations/addExpense';
+import Body from '../../components/typography/Body';
+import userStore from '../../stores/UserStore';
 
 export default function ExpenseScreen({ route }) {
+  const { expenses, tripId } = route.params;
+
+  const user = userStore((state) => state.user);
+
   const scrollY = useRef(new Animated.Value(0)).current;
 
   const [addExpense, { loading, error }] = useMutation(ADD_EXPENSE);
@@ -29,7 +35,7 @@ export default function ExpenseScreen({ route }) {
   const [myData, setMyData] = useState([]);
 
   useEffect(() => {
-    setExpenseData(mockExpenses);
+    setExpenseData(expenses);
   }, []);
 
   useEffect(() => {
@@ -37,7 +43,7 @@ export default function ExpenseScreen({ route }) {
   }, [expenseData]);
 
   const extractMyData = (data) => {
-    setMyData(data.filter((expense) => expense.id === 'fabian simon'));
+    setMyData(data.filter((expense) => expense.creatorId === user.id));
   };
 
   const getTotal = () => {
@@ -51,7 +57,7 @@ export default function ExpenseScreen({ route }) {
   const users = [
     {
       name: 'Fabian Simon',
-      id: 'fabian simon',
+      id: user.id,
       uri: 'https://i.pravatar.cc/300',
       status: true,
     },
@@ -81,51 +87,6 @@ export default function ExpenseScreen({ route }) {
     },
   ];
 
-  const mockExpenses = [
-    {
-      id: 'fabian simon',
-      amount: 123,
-      description: 'Airbnb 🎂',
-      timestamp: 1660998973,
-    },
-    {
-      id: 'fabian simon',
-      amount: 92,
-      description: 'Snickers 🍫',
-      timestamp: 1665504336,
-    },
-    {
-      id: 'julia stefan',
-      amount: 12,
-      description: 'Pizza 🍕',
-      timestamp: 1660994973,
-    },
-    {
-      id: 'alexander wieser',
-      amount: 99,
-      description: 'Pass 🛂',
-      timestamp: 1660998973,
-    },
-    {
-      id: 'julia stefan',
-      amount: 100,
-      description: 'Cocaine 🏂',
-      timestamp: 1660998973,
-    },
-    {
-      id: 'didi chovookkaran',
-      amount: 78,
-      description: 'AGMO 👚',
-      timestamp: 1660998973,
-    },
-    {
-      id: 'matthias betonmisha',
-      amount: 1,
-      description: 'Beer 🍺',
-      timestamp: 1660998973,
-    },
-  ];
-
   const handleAddExpense = async (data) => {
     setIsLoading(true);
 
@@ -139,7 +100,7 @@ export default function ExpenseScreen({ route }) {
         expense: {
           amount,
           title,
-          tripId: '636e85cc1340c364d33f04c9',
+          tripId,
         },
       },
     }).catch((e) => console.log(`ERROR: ${e.message}`))
@@ -183,13 +144,17 @@ export default function ExpenseScreen({ route }) {
     </View>
   );
 
-  const getExpenseTile = (expense) => (
-    <ExpenseTile
-      style={{ marginHorizontal: 15 }}
-      data={expense}
-      user={users.find((user) => user.id === expense.id)}
-    />
-  );
+  const getExpenseTile = (expense) => {
+    const userData = users.find((u) => u.id === expense.creatorId);
+
+    return (
+      <ExpenseTile
+        style={{ marginHorizontal: 15 }}
+        data={expense}
+        user={userData}
+      />
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -218,6 +183,13 @@ export default function ExpenseScreen({ route }) {
           <View style={styles.summaryContainer}>
             {getListHeader()}
             <FlatList
+              ListEmptyComponent={(
+                <Body
+                  style={{ textAlign: 'center', marginTop: 0 }}
+                  text={i18n.t('No one expenses yet')}
+                  color={COLORS.neutral[300]}
+                />
+              )}
               style={{ paddingTop: 20 }}
               contentContainerStyle={{ paddingBottom: 20 }}
               data={showTotal ? expenseData : myData}

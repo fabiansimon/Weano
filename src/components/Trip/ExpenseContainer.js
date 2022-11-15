@@ -14,7 +14,7 @@ export default function ExpensesContainer({
 
   const extractIndividualData = (user) => {
     const { amount } = getAmount(user);
-    const expenses = data.filter((expense) => expense.id === user.id);
+    const expenses = data.filter((expense) => expense.creatorId === user.id);
     return {
       user,
       amount,
@@ -26,7 +26,7 @@ export default function ExpensesContainer({
     let amount = 0;
     data.forEach((expense) => {
       if (user) {
-        if (expense.id === user.id) {
+        if (expense.creatorId === user.id) {
           amount += expense.amount;
         }
       } else {
