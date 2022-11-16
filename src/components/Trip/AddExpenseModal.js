@@ -1,6 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 import React, { useState } from 'react';
 import { TextInput } from 'react-native-gesture-handler';
+import Toast from 'react-native-toast-message';
 import TitleModal from '../TitleModal';
 import KeyboardView from '../KeyboardView';
 import Button from '../Button';
@@ -12,8 +13,39 @@ import Subtitle from '../typography/Subtitle';
 export default function AddExpenseModal({
   isVisible, onRequestClose, onPress, isLoading,
 }) {
-  const [amount, setAmount] = useState();
+  const [amount, setAmount] = useState('');
   const [title, setTitle] = useState('');
+
+  const showWarning = (message) => {
+    Toast.show({
+      type: 'warning',
+      text1: i18n.t('Whoops!'),
+      text2: message,
+    });
+  };
+
+  const handlePress = () => {
+    const regVal = /^[0-9]*(,[0-9]{0,2})?$/;
+    const amountString = amount.toString();
+
+    if (amountString.length <= 0) {
+      showWarning(i18n.t('Please enter an amount first.'));
+      return;
+    }
+
+    if (amountString.includes(',')) {
+      if (!regVal.test(amountString)) {
+        showWarning(i18n.t('Your amount is not valid'));
+        return;
+      }
+    }
+
+    if (title.trim().length <= 0) {
+      showWarning(i18n.t('Please enter a description'));
+      return;
+    }
+    onPress({ amount, title });
+  };
 
   return (
     <TitleModal
@@ -67,7 +99,7 @@ export default function AddExpenseModal({
             text={i18n.t('Add Expense')}
             style={{ margin: 25 }}
             isLoading={isLoading}
-            onPress={() => onPress({ amount, title })}
+            onPress={() => handlePress()}
           />
         </View>
       </KeyboardView>

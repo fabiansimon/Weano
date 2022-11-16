@@ -51,6 +51,7 @@ const GET_INIT_USER_DATA = gql`
             activeTrip {
                 id
                 title
+                description
                 location
                 thumbnailUri
                 expenses {

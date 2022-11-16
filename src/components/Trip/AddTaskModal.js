@@ -59,7 +59,6 @@ export default function AddTaskModal({
   }, [isPrivate]);
 
   const toggleExpand = () => {
-    console.log('Hello');
     if (!isPrivate) {
       Animated.spring(animatedY, {
         toValue: 1,

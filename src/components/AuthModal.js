@@ -24,7 +24,9 @@ import httpService from '../utils/httpService';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
-export default function AuthModal({ isVisible, onRequestClose, registerData }) {
+export default function AuthModal({
+  isVisible, onRequestClose, registerData, joinTripId,
+}) {
   const [registerUser] = useMutation(REGISTER_USER);
   const [loginUser] = useMutation(LOGIN_USER);
 
@@ -248,7 +250,7 @@ export default function AuthModal({ isVisible, onRequestClose, registerData }) {
                 />
               </View>
               <Body
-                onPress={() => pageRef.current?.setPage(0)}
+                onPress={() => console.log(joinTripId)}
                 type={2}
                 style={{ textDecorationLine: 'underline', alignSelf: 'center' }}
                 text={getTimerString()}

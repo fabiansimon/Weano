@@ -5,6 +5,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import Animated from 'react-native-reanimated';
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
 import { useMutation } from '@apollo/client';
+import Toast from 'react-native-toast-message';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import HybridHeader from '../../components/HybridHeader';
@@ -41,6 +42,18 @@ export default function ExpenseScreen({ route }) {
   useEffect(() => {
     extractMyData(expenseData);
   }, [expenseData]);
+
+  useEffect(() => {
+    if (error) {
+      setTimeout(() => {
+        Toast.show({
+          type: 'error',
+          text1: i18n.t('Whoops!'),
+          text2: error.message,
+        });
+      }, 500);
+    }
+  }, [error]);
 
   const extractMyData = (data) => {
     setMyData(data.filter((expense) => expense.creatorId === user.id));
@@ -103,11 +116,9 @@ export default function ExpenseScreen({ route }) {
           tripId,
         },
       },
-    }).catch((e) => console.log(`ERROR: ${e.message}`))
-      .then(() => {
-        setIsLoading(false);
-        setShowModal(false);
-      });
+    }).catch((e) => console.log(`ERROR: ${e.message}`));
+    setIsLoading(false);
+    setShowModal(false);
   };
 
   const getListHeader = () => (

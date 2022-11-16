@@ -103,7 +103,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
 
   const handleData = async () => {
     const invitees = [];
-    const invited = contacts.filter((item) => item.isInvited);
+    const invited = contacts?.filter((item) => item.isInvited);
 
     invited.forEach((invitee) => {
       invitees.push({

@@ -1,7 +1,8 @@
 import {
   View, StyleSheet, Image, Dimensions, TouchableOpacity,
 } from 'react-native';
-import React, { useRef, useState } from 'react';
+import Toast from 'react-native-toast-message';
+import React, { useRef, useState, useEffect } from 'react';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
@@ -34,6 +35,7 @@ import activeTripStore from '../../stores/ActiveTripStore';
 import userStore from '../../stores/UserStore';
 import UPDATE_TRIP from '../../mutations/updateTrip';
 import httpService from '../../utils/httpService';
+import InputModal from '../../components/InputModal';
 
 const mockData = {
   title: 'Graduation Trip 2022 🎓',
@@ -150,7 +152,7 @@ const mockData = {
 export default function TripScreen({ route }) {
   const { isActive = false } = route.params;
 
-  const [updateTrip, { loading, error }] = useMutation(UPDATE_TRIP);
+  const [updateTrip, { error }] = useMutation(UPDATE_TRIP);
 
   const activeTrip = activeTripStore((state) => state.activeTrip);
 
@@ -160,11 +162,24 @@ export default function TripScreen({ route }) {
   const scrollRef = useRef();
 
   const [currentTab, setCurrentTab] = useState(0);
+  const [inputOpen, setInputOpen] = useState(0);
   const [tripData, setTripData] = useState(mockData);
   const addImageRef = useRef();
 
   const navigation = useNavigation();
   const data = activeTrip;
+
+  useEffect(() => {
+    if (error) {
+      setTimeout(() => {
+        Toast.show({
+          type: 'error',
+          text1: i18n.t('Whoops!'),
+          text2: error.message,
+        });
+      }, 500);
+    }
+  }, [error]);
 
   const handleTabPress = (index) => {
     setCurrentTab(index);
@@ -172,6 +187,10 @@ export default function TripScreen({ route }) {
   };
 
   const handleAddImage = async (index) => {
+    if (index === 0) {
+      return;
+    }
+
     if (index === 2) {
       await updateTrip({
         variables: {
@@ -192,6 +211,10 @@ export default function TripScreen({ route }) {
     };
     const result = await launchImageLibrary(options);
 
+    if (result.didCancel) {
+      return;
+    }
+
     try {
       const { Location } = await httpService.uploadToS3(result.assets[0]);
 
@@ -206,8 +229,40 @@ export default function TripScreen({ route }) {
         console.log(e);
       });
     } catch (e) {
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('Whoops!'),
+        text2: e.message,
+      });
       console.log(e);
     }
+  };
+
+  const updateDescription = async (description) => {
+    if (description.trim().length <= 0) {
+      setTimeout(() => {
+        Toast.show({
+          type: 'error',
+          text1: i18n.t('Whoops!'),
+          text2: i18n.t('Description is not valid'),
+        });
+      }, 500);
+
+      return;
+    }
+
+    await updateTrip({
+      variables: {
+        trip: {
+          description,
+          tripId: data.id,
+        },
+      },
+    }).catch((e) => {
+      console.log(e);
+    });
+
+    setInputOpen(false);
   };
 
   const users = [
@@ -406,12 +461,21 @@ export default function TripScreen({ route }) {
               style={[data.dateRange.startDate ? styles.infoTile : styles.infoButton, { marginLeft: 14 }]}
             />
           </ScrollView>
-          <Body
-            onPress={() => console.log('update description')}
-            type={1}
-            text={data.description || i18n.t('Add a description to the trip 😎')}
-            style={{ marginTop: 16, color: COLORS.neutral[300] }}
-          />
+          <TouchableOpacity
+            style={{ flexDirection: 'row', marginTop: 16, alignItems: 'center' }}
+            onPress={() => setInputOpen(true)}
+          >
+            <Icon
+              size={16}
+              color={COLORS.neutral[300]}
+              name="pencil-sharp"
+            />
+            <Body
+              type={1}
+              text={data.description || i18n.t('Add a description to the trip 😎')}
+              style={{ marginLeft: 4, color: COLORS.neutral[300] }}
+            />
+          </TouchableOpacity>
         </View>
         <Divider vertical={20} />
         <View style={styles.statusContainer}>
@@ -528,6 +592,12 @@ export default function TripScreen({ route }) {
             options={['Cancel', i18n.t('Choose from Camera Roll'), i18n.t('Reset image')]}
             cancelButtonIndex={0}
             onPress={(index) => handleAddImage(index)}
+          />
+          <InputModal
+            isVisible={inputOpen}
+            placeholder={i18n.t('Enter description')}
+            onRequestClose={() => setInputOpen(false)}
+            onPress={(description) => updateDescription(description)}
           />
         </View>
       )

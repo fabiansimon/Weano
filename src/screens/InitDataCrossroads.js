@@ -2,6 +2,7 @@ import { ActivityIndicator, View } from 'react-native';
 import React, { useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { useQuery } from '@apollo/client';
+import Toast from 'react-native-toast-message';
 import Headline from '../components/typography/Headline';
 import i18n from '../utils/i18n';
 import ROUTES from '../constants/Routes';
@@ -35,7 +36,6 @@ export default function InitDataCrossroads() {
 
     const { activeTrip, recapTrip, userData } = res;
     if (activeTrip) {
-      console.log(activeTrip.thumbnailUri);
       setActiveTrip(activeTrip);
     }
 
@@ -60,7 +60,11 @@ export default function InitDataCrossroads() {
     }
 
     if (error) {
-      console.log(error);
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('Whoops!'),
+        text2: error.message,
+      });
     }
   }, [data, error]);
 

@@ -7,6 +7,7 @@ import {
 } from '@apollo/client';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Toast from 'react-native-toast-message';
 import ROUTES from './src/constants/Routes';
 import IntroScreen from './src/screens/Intro/IntroScreen';
 import MainScreen from './src/screens/MainScreen';
@@ -25,6 +26,8 @@ import CameraScreen from './src/screens/Trip/CameraScreen';
 import SignUpScreen from './src/screens/Intro/SignUpScreen';
 import InitDataCrossroads from './src/screens/InitDataCrossroads';
 import ProfileScreen from './src/screens/ProfileScreen';
+import toastConfig from './src/constants/ToastConfig';
+import InvitationScreen from './src/screens/InvitationScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -45,46 +48,59 @@ export default function App() {
   });
 
   return (
-    <ApolloProvider client={client}>
-      <NavigationContainer>
-        <StatusBar barStyle="dark-content" />
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name={ROUTES.initDataCrossroads} component={InitDataCrossroads} />
-          <Stack.Screen
-            name={ROUTES.mainScreen}
-            component={MainScreen}
-            options={{ gestureEnabled: false }}
-          />
-          <Stack.Screen
-            name={ROUTES.signUpScreen}
-            component={SignUpScreen}
-            options={{ gestureEnabled: false }}
-          />
-          <Stack.Screen
-            name={ROUTES.introScreen}
-            component={IntroScreen}
-            options={{ gestureEnabled: false }}
-          />
-          <Stack.Screen name={ROUTES.profileScreen} component={ProfileScreen} />
-          <Stack.Screen name={ROUTES.mapScreen} component={MapScreen} />
-          <Stack.Screen
-            name={ROUTES.tripScreen}
-            options={{ gestureEnabled: false }}
-            component={TripScreen}
-          />
-          <Stack.Screen name={ROUTES.dateScreen} component={DateScreen} />
-          <Stack.Screen name={ROUTES.inviteeScreen} component={InviteeScreen} />
-          <Stack.Screen name={ROUTES.accomodationsScreen} component={AccomodationsScreen} />
-          <Stack.Screen name={ROUTES.locationScreen} component={LocationScreen} />
-          <Stack.Screen name={ROUTES.chatScreen} component={ChatScreen} />
-          <Stack.Screen name={ROUTES.individualExpenseScreen} component={IndividualExpenseScreen} />
-          <Stack.Screen name={ROUTES.expenseScreen} component={ExpenseScreen} />
-          <Stack.Screen name={ROUTES.checklistScreen} component={ChecklistScreen} />
-          <Stack.Screen name={ROUTES.memoriesScreen} component={MemoriesScreen} />
-          <Stack.Screen name={ROUTES.cameraScreen} component={CameraScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </ApolloProvider>
+    <>
+      <ApolloProvider client={client}>
+        <NavigationContainer>
+          <StatusBar barStyle="dark-content" />
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen
+              name={ROUTES.invitationScreen}
+              component={InvitationScreen}
+              initialParams={{ tripId: '63750ba1c902414671369460' }}
+              options={{ gestureEnabled: false }}
+            />
+            <Stack.Screen name={ROUTES.initDataCrossroads} component={InitDataCrossroads} />
+            <Stack.Screen
+              name={ROUTES.mainScreen}
+              component={MainScreen}
+              options={{ gestureEnabled: false }}
+            />
+            <Stack.Screen
+              name={ROUTES.signUpScreen}
+              component={SignUpScreen}
+              options={{ gestureEnabled: false }}
+            />
+            <Stack.Screen
+              name={ROUTES.introScreen}
+              component={IntroScreen}
+              options={{ gestureEnabled: false }}
+            />
+            <Stack.Screen name={ROUTES.profileScreen} component={ProfileScreen} />
+            <Stack.Screen name={ROUTES.mapScreen} component={MapScreen} />
+            <Stack.Screen
+              name={ROUTES.tripScreen}
+              options={{ gestureEnabled: false }}
+              component={TripScreen}
+            />
+            <Stack.Screen name={ROUTES.dateScreen} component={DateScreen} />
+            <Stack.Screen name={ROUTES.inviteeScreen} component={InviteeScreen} />
+            <Stack.Screen name={ROUTES.accomodationsScreen} component={AccomodationsScreen} />
+            <Stack.Screen name={ROUTES.locationScreen} component={LocationScreen} />
+            <Stack.Screen name={ROUTES.chatScreen} component={ChatScreen} />
+            <Stack.Screen name={ROUTES.individualExpenseScreen} component={IndividualExpenseScreen} />
+            <Stack.Screen name={ROUTES.expenseScreen} component={ExpenseScreen} />
+            <Stack.Screen name={ROUTES.checklistScreen} component={ChecklistScreen} />
+            <Stack.Screen name={ROUTES.memoriesScreen} component={MemoriesScreen} />
+            <Stack.Screen name={ROUTES.cameraScreen} component={CameraScreen} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </ApolloProvider>
+      <Toast
+        topOffset={60}
+        position="top"
+        config={toastConfig}
+      />
+    </>
   );
 }
 AppRegistry.registerComponent('MyApplication', () => App);

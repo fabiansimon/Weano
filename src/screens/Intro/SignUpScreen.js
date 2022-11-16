@@ -12,7 +12,7 @@ import AuthModal from '../../components/AuthModal';
 import KeyboardView from '../../components/KeyboardView';
 import Button from '../../components/Button';
 
-export default function SignUpScreen() {
+export default function SignUpScreen({ invitationId }) {
   const errorColors = {
     error: COLORS.error[900],
     success: COLORS.success[700],
@@ -275,6 +275,7 @@ export default function SignUpScreen() {
       <AuthModal
         isVisible={loginVisible}
         onRequestClose={() => setLoginVisible(false)}
+        joinTripId={invitationId}
       />
     </KeyboardView>
   );

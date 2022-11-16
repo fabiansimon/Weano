@@ -16,6 +16,7 @@ const ROUTES = {
   signUpScreen: 'signUpScreen',
   initDataCrossroads: 'initDataCrossroads',
   profileScreen: 'profileScreen',
+  invitationScreen: 'invitationScreen',
 };
 
 export default ROUTES;

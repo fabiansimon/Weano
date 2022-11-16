@@ -3,8 +3,10 @@ import {
 } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
+import Toast from 'react-native-toast-message';
 import COLORS from '../constants/Theme';
 import Headline from './typography/Headline';
+import toastConfig from '../constants/ToastConfig';
 
 export default function TitleModal({
   isVisible, onRequestClose, title, children,
@@ -26,6 +28,7 @@ export default function TitleModal({
         </View>
         {children}
       </View>
+      <Toast config={toastConfig} />
     </Modal>
   );
 }
