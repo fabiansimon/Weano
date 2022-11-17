@@ -28,12 +28,6 @@ const recapTripStore = create((set) => ({
       images: data.images || null,
     },
   })),
-//   updateUser: (avatarUri) => set((state) => ({
-//     user: {
-//       ...state.user,
-//       avatarUri,
-//     },
-//   })),
 }));
 
 export default recapTripStore;

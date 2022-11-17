@@ -19,6 +19,7 @@ import AddExpenseModal from '../../components/Trip/AddExpenseModal';
 import ADD_EXPENSE from '../../mutations/addExpense';
 import Body from '../../components/typography/Body';
 import userStore from '../../stores/UserStore';
+import activeTripStore from '../../stores/ActiveTripStore';
 
 export default function ExpenseScreen({ route }) {
   const { expenses, tripId } = route.params;
@@ -28,6 +29,8 @@ export default function ExpenseScreen({ route }) {
   const scrollY = useRef(new Animated.Value(0)).current;
 
   const [addExpense, { loading, error }] = useMutation(ADD_EXPENSE);
+
+  const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
 
   const [showTotal, setShowTotal] = useState(true);
   const [expenseData, setExpenseData] = useState([]);
@@ -197,7 +200,7 @@ export default function ExpenseScreen({ route }) {
               ListEmptyComponent={(
                 <Body
                   style={{ textAlign: 'center', marginTop: 0 }}
-                  text={i18n.t('No one expenses yet')}
+                  text={i18n.t('No expenses yet')}
                   color={COLORS.neutral[300]}
                 />
               )}

@@ -17,7 +17,11 @@ export default function TripHeader({
       <View style={styles.header}>
         <View style={{ width: 50 }} />
         <View>
-          <Headline type={4} text={title} style={{ fontWeight: '600' }} />
+          <Headline
+            type={4}
+            text={title}
+            style={{ fontWeight: '600' }}
+          />
           <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
             <EntypoIcon
               name="location-pin"

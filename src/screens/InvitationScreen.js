@@ -23,6 +23,7 @@ import GET_INVITATION_TRIP_DATA from '../queries/getInvitationTripData';
 
 export default function InvitationScreen({ route }) {
   const { tripId } = route.params;
+  const navigation = useNavigation();
 
   const { loading, error, data } = useQuery(GET_INVITATION_TRIP_DATA, {
     variables: {
@@ -33,7 +34,8 @@ export default function InvitationScreen({ route }) {
   const [tripData, setTripData] = useState(null);
 
   const pageRef = useRef();
-  const navigation = useNavigation();
+
+  const isAuth = true;
 
   useEffect(() => {
     if (error) {
@@ -50,6 +52,12 @@ export default function InvitationScreen({ route }) {
     }
   }, [data, error]);
 
+  const handlePress = () => {
+    if (!isAuth) {
+      pageRef.current?.setPage(1);
+    }
+  };
+
   const getDateRange = () => {
     const { startDate, endDate } = tripData.dateRange;
     const start = Utils.getDateFromTimestamp(startDate, endDate ? 'MM.DD' : 'MM.DD.YY');
@@ -61,7 +69,7 @@ export default function InvitationScreen({ route }) {
   const handleDecline = async () => {
     Utils.showConfirmationAlert(
       i18n.t('Decline Invitation'),
-      i18n.t('Are you sure you want to decline the invitation?'),
+      i18n.t(`Are you sure you want to decline ${tripData.hostName}'s invitation?`),
       i18n.t('Decline'),
       async () => {
         navigation.navigate(ROUTES.introScreen);
@@ -139,9 +147,9 @@ export default function InvitationScreen({ route }) {
           <PagerView
             style={{ flex: 1, backgroundColor: COLORS.neutral[50] }}
             ref={pageRef}
-            scrollEnabled
+            scrollEnable={false}
           >
-            <SafeAreaView style={{ flex: 1 }}>
+            <SafeAreaView style={{ flex: 1, marginRight: 2 }}>
               <KeyboardView paddingBottom={40}>
                 <View style={styles.inviteContainer}>
                   <View>
@@ -162,7 +170,7 @@ export default function InvitationScreen({ route }) {
                     <Button
                       isLoading={false}
                       text={i18n.t('Continue')}
-                      onPress={() => pageRef.current?.setPage(1)}
+                      onPress={handlePress}
                     />
                     <Headline
                       type={4}
@@ -175,7 +183,7 @@ export default function InvitationScreen({ route }) {
                 </View>
               </KeyboardView>
             </SafeAreaView>
-            <SignUpScreen invitationId={tripId} />
+            {!isAuth ? <SignUpScreen invitationId={tripId} /> : <View />}
           </PagerView>
         )}
     </View>

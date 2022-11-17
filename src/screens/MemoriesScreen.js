@@ -3,12 +3,14 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
 import EntIcon from 'react-native-vector-icons/Entypo';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { PinchGestureHandler } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withSpring, withTiming,
 } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
+import { useQuery } from '@apollo/client';
+import Toast from 'react-native-toast-message';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import Headline from '../components/typography/Headline';
 import i18n from '../utils/i18n';
@@ -17,17 +19,39 @@ import ImageContainer from '../components/Trip/ImageContainer';
 import LoadingGif from '../../assets/images/loading.gif';
 import Body from '../components/typography/Body';
 import userStore from '../stores/UserStore';
+import GET_IMAGES_FROM_TRIP from '../queries/getImagesFromTrip';
 
-export default function MemoriesScreen() {
-  const [isLoading, setIsLoading] = useState(true);
+export default function MemoriesScreen({ route }) {
+  const { tripId } = route.params;
+  const navigation = useNavigation();
+
+  const { loading, error, data } = useQuery(GET_IMAGES_FROM_TRIP, {
+    variables: {
+      tripId,
+    },
+  });
+
+  const [isLoading, setIsLoading] = useState(false);
+  const gridRef = useRef();
+
   const scale = useSharedValue(1);
   const headerOpacity = useSharedValue(1);
-  const gridRef = useRef();
-  const navigation = useNavigation();
+
   const user = userStore((state) => state.user);
 
   let loadingIndex = 0;
   const maxAngle = 8;
+
+  useEffect(() => {
+    if (error) {
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('Whoops!'),
+        text2: error.message,
+      });
+      setIsLoading(false);
+    }
+  }, [data, error]);
 
   // const images = [
   //   {
@@ -334,16 +358,16 @@ export default function MemoriesScreen() {
 
   const numColumns = Math.round(Math.sqrt(user.images.length));
 
-  const checkLoadingStatus = () => {
-    setTimeout(() => {
-      if (loadingIndex >= user.images.length) {
-        setIsLoading(false);
-        return;
-      }
-      checkLoadingStatus();
-    }, 2000);
-  };
-  checkLoadingStatus();
+  // const checkLoadingStatus = () => {
+  //   setTimeout(() => {
+  //     if (loadingIndex >= user.images.length) {
+  //       setIsLoading(false);
+  //       return;
+  //     }
+  //     checkLoadingStatus();
+  //   }, 2000);
+  // };
+  // checkLoadingStatus();
 
   const pinchHandler = useAnimatedGestureHandler({
     onActive: (event) => {
@@ -378,8 +402,12 @@ export default function MemoriesScreen() {
       } else if (result.action === Share.dismissedAction) {
         // dismissed
       }
-    } catch (error) {
-      alert(error.message);
+    } catch (e) {
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('Whoops!'),
+        text2: e.message,
+      });
     }
   };
 
@@ -482,7 +510,7 @@ export default function MemoriesScreen() {
           style={gAnimated}
           onScrollBeginDrag={() => headerOpacity.value = withSpring(0)}
           onScrollEndDrag={() => headerOpacity.value = withSpring(1)}
-          data={user.images}
+          data={data?.getImagesFromTrip}
           numColumns={numColumns}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ padding: 60 }}
@@ -491,7 +519,7 @@ export default function MemoriesScreen() {
         />
       </PinchGestureHandler>
       <PlayButton />
-      {isLoading && (
+      {(loading || error) && (
         <View style={styles.loading}>
           <View style={{ justifyContent: 'center', alignItems: 'center', top: '40%' }}>
             <Image

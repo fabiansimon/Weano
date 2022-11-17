@@ -2,10 +2,11 @@ import 'react-native-get-random-values';
 import {
   ImageBackground, Modal, StyleSheet, TextInput, View, TouchableOpacity,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { useMutation } from '@apollo/client';
+import Toast from 'react-native-toast-message';
 import Avatar from './Avatar';
 import Headline from './typography/Headline';
 import i18n from '../utils/i18n';
@@ -16,21 +17,32 @@ import Button from './Button';
 import KeyboardView from './KeyboardView';
 import ImageSharedModal from './ImageSharedModal';
 import ROUTES from '../constants/Routes';
-import UPLOAD_IMAGE from '../mutations/uploadImage';
 import httpService from '../utils/httpService';
+import userStore from '../stores/UserStore';
+import toastConfig from '../constants/ToastConfig';
+import UPLOAD_TRIP_IMAGE from '../mutations/uploadTripImage';
 
 export default function ImageModal({
   style, image, isVisible, onRetake, onRequestClose,
 }) {
-  const [uploadImage, { data, loading, error }] = useMutation(UPLOAD_IMAGE);
+  const [uploadTripImage, { error }] = useMutation(UPLOAD_TRIP_IMAGE);
+  const user = userStore((state) => state.user);
   const navigation = useNavigation();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isShared, setIsShared] = useState(false);
 
-  const name = 'Fabian Simon';
-  const timestamp = 1656865380;
+  useEffect(() => {
+    if (error) {
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('Whoops!'),
+        text2: error.message,
+      });
+      setIsLoading(false);
+    }
+  }, [error]);
 
   const handlePublish = async () => {
     setIsLoading(true);
@@ -38,28 +50,32 @@ export default function ImageModal({
     try {
       const { Location } = await httpService.uploadToS3(image);
 
-      await uploadImage({
+      await uploadTripImage({
         variables: {
           image: {
             uri: Location,
             title: title || '',
             description: description || '',
+            tripId: '6376718ec191f0760fc39543',
           },
         },
-      }).then(() => setIsShared(true))
-        .catch((e) => {
-          console.log(e);
-          setIsLoading(false);
-        });
-      setIsLoading(false);
+      }).then(() => {
+        setIsShared(true);
+        setIsLoading(false);
+      });
     } catch (e) {
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('Whoops!'),
+        text2: e.message,
+      });
       setIsLoading(false);
       console.log(e);
     }
   };
 
   const handleDone = () => {
-    navigation.navigate(ROUTES.tripScreen);
+    navigation.navigate(ROUTES.mainScreen);
     setIsShared(false);
     setTimeout(() => {
       onRequestClose();
@@ -106,17 +122,20 @@ export default function ImageModal({
   const DetailsHeader = () => (
     <View style={styles.header}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Avatar size={55} />
+        <Avatar
+          size={55}
+          uri={user?.avatarUri}
+        />
         <View style={{ marginLeft: 10 }}>
           <Headline
             type={4}
-            text={`${i18n.t('By')} ${name}`}
+            text={`${i18n.t('By')} ${user?.firstName} ${user?.lastName}`}
             color={COLORS.shades[0]}
             style={styles.shadow}
           />
           <Body
             type={2}
-            text={`${Utils.getDateFromTimestamp(timestamp, 'MMM Do YY')}`}
+            text={`${Utils.getDateFromTimestamp(Date.now() / 1000, 'MMM Do YYYY')}`}
             color={Utils.addAlpha(COLORS.neutral[50], 0.8)}
             style={styles.shadow}
           />
@@ -181,10 +200,10 @@ export default function ImageModal({
               <DetailsHeader />
               <PublishFooter />
             </>
-
           </>
         )}
       </View>
+      <Toast config={toastConfig} />
     </Modal>
   );
 }

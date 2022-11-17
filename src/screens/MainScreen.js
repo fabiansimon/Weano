@@ -193,7 +193,7 @@ export default function MainScreen() {
             />
           </View>
           <RewindTile
-            onPress={() => navigation.navigate(ROUTES.memoriesScreen)}
+            onPress={() => navigation.navigate(ROUTES.memoriesScreen, { tripId: '6376718ec191f0760fc39543' })}
             style={{ marginHorizontal: PADDING.l, marginTop: 20 }}
           />
           <View>
@@ -212,7 +212,7 @@ export default function MainScreen() {
                 <>
                   <RecapCard
                     key={trip.latlon}
-                    onPress={() => navigation.navigate(ROUTES.tripScreen)}
+                    onPress={() => navigation.navigate(ROUTES.tripScreen, { isActive: false })}
                     data={trip}
                     style={{ marginRight: 20 }}
                   />

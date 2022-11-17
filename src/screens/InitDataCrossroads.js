@@ -1,7 +1,7 @@
 import { ActivityIndicator, View } from 'react-native';
 import React, { useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { useQuery } from '@apollo/client';
+import { useLazyQuery } from '@apollo/client';
 import Toast from 'react-native-toast-message';
 import Headline from '../components/typography/Headline';
 import i18n from '../utils/i18n';
@@ -11,9 +11,12 @@ import activeTripStore from '../stores/ActiveTripStore';
 import recapTripStore from '../stores/RecapTripStore';
 import userStore from '../stores/UserStore';
 import COLORS from '../constants/Theme';
+import AsyncStorageDAO from '../utils/AsyncStorageDAO';
+
+const asyncStorageDAO = new AsyncStorageDAO();
 
 export default function InitDataCrossroads() {
-  const { loading, error, data } = useQuery(GET_INIT_USER_DATA);
+  const [getInitData, { loading, error, data }] = useLazyQuery(GET_INIT_USER_DATA);
 
   const setActiveTrip = activeTripStore((state) => state.setActiveTrip);
 
@@ -23,13 +26,14 @@ export default function InitDataCrossroads() {
 
   const navigation = useNavigation();
 
-  // const getInitData = async () => {
-  //   const token = await asyncStorageDAO.getAccessToken();
-  //   if (token) {
-  //     // navigation.push(ROUTES.mainScreen);
-  //   }
-  //   // navigation.push(ROUTES.signUpScreen);
-  // };
+  const checkInitStatus = async () => {
+    const token = await asyncStorageDAO.getAccessToken();
+    if (token) {
+      getInitData();
+      return;
+    }
+    navigation.push(ROUTES.signUpScreen);
+  };
 
   const populateState = () => {
     const res = data.getUserInitData;
@@ -49,9 +53,9 @@ export default function InitDataCrossroads() {
 
     if (activeTrip) {
       navigation.push(ROUTES.tripScreen, { isActive: true });
-      return;
+    } else {
+      navigation.push(ROUTES.mainScreen);
     }
-    navigation.push(ROUTES.mainScreen);
   };
 
   useEffect(() => {
@@ -68,9 +72,9 @@ export default function InitDataCrossroads() {
     }
   }, [data, error]);
 
-  // useEffect(() => {
-  //   getInitData();
-  // }, []);
+  useEffect(() => {
+    checkInitStatus();
+  }, []);
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>

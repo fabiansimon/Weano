@@ -1,11 +1,12 @@
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { useMutation } from '@apollo/client';
 import { launchImageLibrary } from 'react-native-image-picker';
+import Toast from 'react-native-toast-message';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import i18n from '../utils/i18n';
 import HybridHeader from '../components/HybridHeader';
@@ -25,12 +26,22 @@ const asyncStorageDAO = new AsyncStorageDAO();
 
 export default function ProfileScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
-  const [updateUser, { data, loading, error }] = useMutation(UPDATE_USER);
+  const [updateUser, { error }] = useMutation(UPDATE_USER);
   const [deleteUser] = useMutation(DELETE_USER);
   const user = userStore((state) => state.user);
-  const updateUserState = userStore((state) => state.updateUser);
+  const updateUserState = userStore((state) => state.updateUserData);
 
   const navigation = useNavigation();
+
+  useEffect(() => {
+    if (error) {
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('Whoops!'),
+        text2: error.message,
+      });
+    }
+  }, [error]);
 
   const statData = [
     {
@@ -96,19 +107,24 @@ export default function ProfileScreen() {
     try {
       const { Location } = await httpService.uploadToS3(result.assets[0]);
 
+      const oldUri = user.thumbnailUri;
+      updateUserState({ avatarUri: Location });
+
       await updateUser({
         variables: {
           user: {
             avatarUri: Location,
           },
         },
-      }).then(() => {
-        updateUserState(Location);
-      })
-        .catch((e) => {
-          console.log(e);
-        });
+      }).catch(() => {
+        updateUserState({ avatarUri: oldUri });
+      });
     } catch (e) {
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('Whoops!'),
+        text2: e.message,
+      });
       console.log(e);
     }
   };
@@ -159,7 +175,7 @@ export default function ProfileScreen() {
   const Header = () => (
     <>
       <Avatar
-        uri={user && user.avatarUri}
+        uri={user?.avatarUri}
         size={85}
       />
       <TouchableOpacity
@@ -175,11 +191,11 @@ export default function ProfileScreen() {
       </TouchableOpacity>
       <Headline
         type={2}
-        text={`${user && user.firstName} ${user && user.lastName}`}
+        text={`${user?.firstName} ${user?.lastName}`}
       />
       <Body
         type={1}
-        text={user && user.phoneNumber}
+        text={user?.phoneNumber}
         color={COLORS.neutral[300]}
       />
     </>

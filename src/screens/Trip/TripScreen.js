@@ -155,6 +155,7 @@ export default function TripScreen({ route }) {
   const [updateTrip, { error }] = useMutation(UPDATE_TRIP);
 
   const activeTrip = activeTripStore((state) => state.activeTrip);
+  const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
 
   const user = userStore((state) => state.user);
 
@@ -218,6 +219,9 @@ export default function TripScreen({ route }) {
     try {
       const { Location } = await httpService.uploadToS3(result.assets[0]);
 
+      const oldUri = activeTrip.thumbnailUri;
+      updateActiveTrip({ thumbnailUri: Location });
+
       await updateTrip({
         variables: {
           trip: {
@@ -226,6 +230,7 @@ export default function TripScreen({ route }) {
           },
         },
       }).catch((e) => {
+        updateActiveTrip({ thumbnailUri: oldUri });
         console.log(e);
       });
     } catch (e) {
@@ -247,9 +252,11 @@ export default function TripScreen({ route }) {
           text2: i18n.t('Description is not valid'),
         });
       }, 500);
-
       return;
     }
+
+    const oldDescription = activeTrip.description;
+    updateActiveTrip({ description });
 
     await updateTrip({
       variables: {
@@ -259,6 +266,7 @@ export default function TripScreen({ route }) {
         },
       },
     }).catch((e) => {
+      updateActiveTrip({ description: oldDescription });
       console.log(e);
     });
 
@@ -301,12 +309,12 @@ export default function TripScreen({ route }) {
   const statusData = [
     {
       name: i18n.t('Location'),
-      isDone: data.location,
+      isDone: data?.location,
       route: ROUTES.locationScreen,
     },
     {
       name: i18n.t('Date'),
-      isDone: data.dateRange.startDate,
+      isDone: data.dateRange?.startDate,
       route: ROUTES.dateScreen,
     },
     {
@@ -380,13 +388,13 @@ export default function TripScreen({ route }) {
     {
       title: i18n.t('Expenses'),
       trailing: <Headline
-        onPress={() => navigation.navigate(ROUTES.expenseScreen, { expenses: data.expenses || {}, tripId: data.id || '' })}
+        onPress={() => navigation.navigate(ROUTES.expenseScreen, { expenses: data?.expenses || {}, tripId: data.id || '' })}
         type={4}
         text={i18n.t('see all')}
         color={COLORS.neutral[500]}
       />,
       content: <ExpensesContainer
-        data={data.expenses}
+        data={data?.expenses}
         users={users}
         tileBackground={COLORS.shades[0]}
         onLayout={(e) => {
@@ -398,13 +406,13 @@ export default function TripScreen({ route }) {
     {
       title: i18n.t('Invitees'),
       trailing: <Headline
-        onPress={() => navigation.navigate(ROUTES.inviteeScreen, { data: data.invitees || {} })}
+        onPress={() => navigation.navigate(ROUTES.inviteeScreen, { data: data?.invitees || {} })}
         type={4}
         text={i18n.t('see all')}
         color={COLORS.neutral[500]}
       />,
       content: <InviteeContainer
-        data={data.invitees}
+        data={data?.invitees}
         onLayout={(e) => {
           console.log(`Invitees: ${e.nativeEvent.layout.y}`);
         }}
@@ -414,6 +422,10 @@ export default function TripScreen({ route }) {
   ];
 
   const getDateRange = () => {
+    if (!data.dateRange) {
+      return 'N/A';
+    }
+
     const { startDate, endDate } = data.dateRange;
     const start = Utils.getDateFromTimestamp(startDate, endDate ? 'MM.DD' : 'MM.DD.YY');
     const end = endDate ? Utils.getDateFromTimestamp(endDate, 'MM.DD.YY') : i18n.t('open');
@@ -452,13 +464,13 @@ export default function TripScreen({ route }) {
             />
             <Button
               isSecondary
-              text={data.dateRange.startDate ? getDateRange() : i18n.t('Find date')}
+              text={data.dateRange?.startDate ? getDateRange() : i18n.t('Find date')}
               fullWidth={false}
               icon={<AntIcon name="calendar" size={22} />}
               onPress={() => navigation.push(ROUTES.dateScreen)}
               backgroundColor={COLORS.shades[0]}
               textColor={COLORS.shades[100]}
-              style={[data.dateRange.startDate ? styles.infoTile : styles.infoButton, { marginLeft: 14 }]}
+              style={[data.dateRange?.startDate ? styles.infoTile : styles.infoButton, { marginLeft: 14 }]}
             />
           </ScrollView>
           <TouchableOpacity
@@ -578,9 +590,11 @@ export default function TripScreen({ route }) {
             <View style={{ backgroundColor: COLORS.neutral[50], height: 0 }} />
             {getMainContent()}
           </Animated.ScrollView>
-          <BackButton style={{
-            position: 'absolute', top: 47, left: 20, zIndex: 10,
-          }}
+          <BackButton
+            onPress={() => navigation.navigate(ROUTES.mainScreen)}
+            style={{
+              position: 'absolute', top: 47, left: 20, zIndex: 10,
+            }}
           />
           <FAButton
             icon="chatbox-ellipses"

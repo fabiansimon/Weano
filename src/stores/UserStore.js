@@ -25,10 +25,17 @@ const userStore = create((set) => ({
       trips: data.trips || null,
     },
   })),
-  updateUser: (avatarUri) => set((state) => ({
+  updateUserData: (data) => set((state) => ({
     user: {
-      ...state.user,
-      avatarUri,
+      id: data.id || state.user.id,
+      avatarUri: data.avatarUri || state.user.avatarUri,
+      email: data.email || state.user.email,
+      expenses: data.expenses || state.user.expenses,
+      firstName: data.firstName || state.user.firstName,
+      lastName: data.lastName || state.user.lastName,
+      images: data.images || state.user.images,
+      phoneNumber: data.phoneNumber || state.user.phoneNumber,
+      trips: data.trips || state.user.trips,
     },
   })),
 }));

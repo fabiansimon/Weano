@@ -6,6 +6,7 @@ import CountryPicker from 'react-native-country-picker-modal';
 import PagerView from 'react-native-pager-view';
 import { useNavigation } from '@react-navigation/native';
 import { useMutation } from '@apollo/client';
+import Toast from 'react-native-toast-message';
 import TitleModal from './TitleModal';
 import i18n from '../utils/i18n';
 import Headline from './typography/Headline';
@@ -27,8 +28,8 @@ const asyncStorageDAO = new AsyncStorageDAO();
 export default function AuthModal({
   isVisible, onRequestClose, registerData, joinTripId,
 }) {
-  const [registerUser] = useMutation(REGISTER_USER);
-  const [loginUser] = useMutation(LOGIN_USER);
+  const [registerUser, { registerError }] = useMutation(REGISTER_USER);
+  const [loginUser, { loginError }] = useMutation(LOGIN_USER);
 
   const [phoneNr, setPhoneNr] = useState('');
   const [pickerVisible, setPickerVisible] = useState(false);
@@ -41,6 +42,22 @@ export default function AuthModal({
   const navigation = useNavigation();
 
   const isLogin = !registerData;
+  useEffect(() => {
+    if (registerError) {
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('Whoops!'),
+        text2: registerError.message,
+      });
+    }
+    if (loginError) {
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('Whoops!'),
+        text2: loginError.message,
+      });
+    }
+  }, [loginError, registerError]);
 
   function useInterval() {
     setTimer(10);
@@ -79,6 +96,11 @@ export default function AuthModal({
         }
       })
       .catch((err) => {
+        Toast.show({
+          type: 'error',
+          text1: i18n.t('Whoops!'),
+          text2: err.message,
+        });
         console.log(err);
         setIsLoading(false);
       });
@@ -87,7 +109,11 @@ export default function AuthModal({
   const checkCode = async () => {
     setIsLoading(true);
     const phoneNumber = `+${countryCode}${phoneNr.trim()}`;
-    const res = await httpService.checkVerificationCode(phoneNumber, code);
+    const res = await httpService.checkVerificationCode(phoneNumber, code).catch((err) => Toast.show({
+      type: 'error',
+      text1: i18n.t('Whoops!'),
+      text2: err.message,
+    }));
 
     return res.status;
   };
@@ -117,8 +143,6 @@ export default function AuthModal({
       asyncStorageDAO.setIsAuth(true);
       navigation.navigate(ROUTES.mainScreen);
       onRequestClose();
-    }).catch((e) => {
-      console.log(e);
     });
   };
 
@@ -142,8 +166,6 @@ export default function AuthModal({
       asyncStorageDAO.setIsAuth(true);
       navigation.navigate(ROUTES.mainScreen);
       onRequestClose();
-    }).catch((e) => {
-      console.log(e);
     });
   };
 

@@ -41,6 +41,7 @@ export default function ExpensesContainer({
 
   return (
     <View style={style}>
+      {data && (
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -57,6 +58,7 @@ export default function ExpensesContainer({
           );
         })}
       </ScrollView>
+      )}
     </View>
   );
 }
