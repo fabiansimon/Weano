@@ -71,7 +71,7 @@ export default function ContactsModal({
         style={{ marginHorizontal: PADDING.l }}
         data={data}
         extraData={data}
-        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
         renderItem={({ item, index }) => getContactTile(item, index)}
       />
     </TitleModal>

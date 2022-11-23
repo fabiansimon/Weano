@@ -1,10 +1,13 @@
-import { ScrollView, StyleSheet, View } from 'react-native';
+import {
+  Pressable, ScrollView, StyleSheet, View,
+} from 'react-native';
 import React, { useRef, useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/AntDesign';
-import COLORS, { PADDING } from '../constants/Theme';
+import EvilIcon from 'react-native-vector-icons/EvilIcons';
+import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import Headline from '../components/typography/Headline';
 import i18n from '../utils/i18n';
 import TextField from '../components/TextField';
@@ -18,6 +21,8 @@ import SearchModal from '../components/Search/SearchModal';
 import RewindTile from '../components/Trip/RewindTile';
 import AsyncStorageDAO from '../utils/AsyncStorageDAO';
 import userStore from '../stores/UserStore';
+import Subtitle from '../components/typography/Subtitle';
+import ActiveTripContainer from '../components/ActiveTripContainer';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
@@ -134,6 +139,28 @@ export default function MainScreen() {
     },
   ];
 
+  const ActiveTripMinimized = () => {
+    const i = 1;
+
+    return (
+      <Pressable
+        onPress={() => console.log('hello')}
+        style={styles.activeTripMinimized}
+      >
+        <Subtitle
+          type={1}
+          color={COLORS.shades[0]}
+          text={i18n.t('• Live Trip')}
+        />
+        <EvilIcon
+          color={COLORS.shades[0]}
+          name="chevron-up"
+          size={30}
+        />
+      </Pressable>
+    );
+  };
+
   return (
     <View style={{ backgroundColor: COLORS.neutral[50] }}>
       <AnimatedHeader
@@ -248,22 +275,26 @@ export default function MainScreen() {
           </View>
         </SafeAreaView>
       </Animated.ScrollView>
-      <View style={styles.buttonContainer}>
-        <Button
-          text={i18n.t('new adventure')}
-          onPress={() => setCreateVisible(true)}
-          style={[styles.buttonShadow]}
-        />
-        <Button
-          style={[styles.globeButton, styles.buttonShadow]}
-          backgroundColor={COLORS.shades[0]}
-          onPress={() => navigation.navigate(ROUTES.cameraScreen)}
-          icon="globe"
-          isSecondary
-          fullWidth={false}
-          color={COLORS.neutral[900]}
-        />
+      <View style={styles.bottom}>
+        <ActiveTripMinimized />
+        <View style={styles.buttonContainer}>
+          <Button
+            text={i18n.t('new adventure')}
+            onPress={() => setCreateVisible(true)}
+            style={[styles.buttonShadow]}
+          />
+          <Button
+            style={[styles.globeButton, styles.buttonShadow]}
+            backgroundColor={COLORS.shades[0]}
+            onPress={() => navigation.navigate(ROUTES.cameraScreen)}
+            icon="globe"
+            isSecondary
+            fullWidth={false}
+            color={COLORS.neutral[900]}
+          />
+        </View>
       </View>
+      <ActiveTripContainer />
       <CreateModal
         isVisible={createVisible}
         onRequestClose={() => setCreateVisible(false)}
@@ -277,6 +308,11 @@ export default function MainScreen() {
 }
 
 const styles = StyleSheet.create({
+  bottom: {
+    width: '100%',
+    position: 'absolute',
+    bottom: 0,
+  },
   buttonContainer: {
     borderTopEndRadius: 20,
     borderTopStartRadius: 20,
@@ -289,14 +325,12 @@ const styles = StyleSheet.create({
     shadowOffset: {
       height: -10,
     },
-    position: 'absolute',
     backgroundColor: COLORS.shades[0],
     paddingHorizontal: PADDING.l,
     justifyContent: 'flex-start',
     flexDirection: 'row',
     height: 110,
     width: '100%',
-    bottom: 0,
   },
   buttonShadow: {
     shadowColor: COLORS.shades[100],
@@ -325,4 +359,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 14,
   },
+  activeTripMinimized: {
+    bottom: -16,
+    paddingTop: 4,
+    paddingBottom: 18,
+    alignItems: 'center',
+    flexDirection: 'row',
+    backgroundColor: COLORS.error[900],
+    justifyContent: 'space-between',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    paddingHorizontal: PADDING.m,
+  },
+
 });

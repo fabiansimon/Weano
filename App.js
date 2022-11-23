@@ -53,6 +53,11 @@ export default function App() {
         <NavigationContainer>
           <StatusBar barStyle="dark-content" />
           <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen
+              name={ROUTES.mainScreen}
+              component={MainScreen}
+              options={{ gestureEnabled: false }}
+            />
             <Stack.Screen name={ROUTES.initDataCrossroads} component={InitDataCrossroads} />
             <Stack.Screen
               name={ROUTES.signUpScreen}
@@ -63,11 +68,6 @@ export default function App() {
               name={ROUTES.invitationScreen}
               component={InvitationScreen}
               initialParams={{ tripId: '63750ba1c902414671369460' }}
-              options={{ gestureEnabled: false }}
-            />
-            <Stack.Screen
-              name={ROUTES.mainScreen}
-              component={MainScreen}
               options={{ gestureEnabled: false }}
             />
             <Stack.Screen
