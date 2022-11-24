@@ -1,36 +1,35 @@
 import {
-  View, SafeAreaView, Pressable, StyleSheet,
+  View, SafeAreaView, Pressable, StyleSheet, Animated,
 } from 'react-native';
 import { createAnimatableComponent } from 'react-native-animatable';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import React, { useRef, useState, useEffect } from 'react';
-import Animated from 'react-native-reanimated';
 import Headline from './typography/Headline';
 import i18n from '../utils/i18n';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 
-export default function ActiveTripContainer() {
-  const [isVisible, setIsVisible] = useState(false);
-  const translateY = useRef(new Animated.Value(100)).current;
-  const duration = 300;
+export default function ActiveTripContainer({ isVisible }) {
+  const [isHidden, setIsHidden] = useState(false);
+  const translateY = useRef(new Animated.Value(0)).current;
+  const duration = 100;
 
   useEffect(() => {
     toggleModal();
   }, [isVisible]);
 
   const toggleModal = () => {
-    if (isVisible) {
-      setIsVisible(true);
+    if (isHidden) {
+      setIsHidden(true);
       Animated.spring(translateY, {
-        toValue: 0,
+        toValue: 400,
         duration,
         useNativeDriver: true,
         bounciness: 0.4,
       }).start();
     } else {
-      setTimeout(() => setIsVisible(false), duration);
+      setTimeout(() => setIsHidden(false), duration);
       Animated.spring(translateY, {
-        toValue: 100,
+        toValue: 0,
         duration,
         useNativeDriver: true,
         bounciness: 0.4,
@@ -56,6 +55,7 @@ export default function ActiveTripContainer() {
             text={i18n.t('Ongoing Trip')}
           />
           <IonIcon
+            onPress={() => setIsHidden(true)}
             name="ios-chevron-down-circle-sharp"
             color={COLORS.primary[300]}
             size={26}
