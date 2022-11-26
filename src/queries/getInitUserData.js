@@ -71,8 +71,8 @@ const GET_INIT_USER_DATA = gql`
                     images
                     trips
                     expenses {
-                    expense
-                    trip
+                        expense
+                        trip
                     }
                 }
                 invitees {

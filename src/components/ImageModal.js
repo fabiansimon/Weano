@@ -1,6 +1,6 @@
 import 'react-native-get-random-values';
 import {
-  ImageBackground, Modal, StyleSheet, TextInput, View, TouchableOpacity,
+  ImageBackground, Modal, StyleSheet, TextInput, View, TouchableOpacity, Share,
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -23,7 +23,7 @@ import toastConfig from '../constants/ToastConfig';
 import UPLOAD_TRIP_IMAGE from '../mutations/uploadTripImage';
 
 export default function ImageModal({
-  style, image, isVisible, onRetake, onRequestClose,
+  style, image, isVisible, onRetake, onRequestClose, tripId,
 }) {
   const [uploadTripImage, { error }] = useMutation(UPLOAD_TRIP_IMAGE);
   const user = userStore((state) => state.user);
@@ -44,6 +44,30 @@ export default function ImageModal({
     }
   }, [error]);
 
+  const handleShare = async () => {
+    try {
+      const result = await Share.share({
+        message:
+              'React Native | A framework for building native apps using React',
+      });
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+        } else {
+          // shared
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (e) {
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('Whoops!'),
+        text2: e.message,
+      });
+    }
+  };
+
   const handlePublish = async () => {
     setIsLoading(true);
 
@@ -56,7 +80,7 @@ export default function ImageModal({
             uri: Location,
             title: title || '',
             description: description || '',
-            tripId: '6376718ec191f0760fc39543',
+            tripId,
           },
         },
       }).then(() => {
@@ -86,6 +110,7 @@ export default function ImageModal({
     <View style={styles.footer}>
       <View style={{ flexDirection: 'row' }}>
         <TouchableOpacity
+          onPress={() => Utils.downloadImage(image)}
           activeOpacity={0.8}
           style={styles.roundButton}
         >
@@ -97,6 +122,7 @@ export default function ImageModal({
           />
         </TouchableOpacity>
         <TouchableOpacity
+          onPress={handleShare}
           activeOpacity={0.8}
           style={[styles.roundButton, { marginLeft: 10 }]}
         >
@@ -123,6 +149,7 @@ export default function ImageModal({
     <View style={styles.header}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Avatar
+          disabled
           size={55}
           uri={user?.avatarUri}
         />

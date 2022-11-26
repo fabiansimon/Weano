@@ -1,6 +1,6 @@
 import {
   ActivityIndicator,
-  ScrollView, StyleSheet, Text, View,
+  ScrollView, StyleSheet, View,
 } from 'react-native';
 import Toast from 'react-native-toast-message';
 import React, { useRef, useEffect, useState } from 'react';
@@ -9,7 +9,7 @@ import AntIcon from 'react-native-vector-icons/AntDesign';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Entypo';
 import { useNavigation } from '@react-navigation/native';
-import { useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import KeyboardView from '../components/KeyboardView';
 import Headline from '../components/typography/Headline';
 import i18n from '../utils/i18n';
@@ -20,11 +20,16 @@ import Button from '../components/Button';
 import SignUpScreen from './Intro/SignUpScreen';
 import ROUTES from '../constants/Routes';
 import GET_INVITATION_TRIP_DATA from '../queries/getInvitationTripData';
+import JOIN_TRIP from '../mutations/joinTrip';
+import userStore from '../stores/UserStore';
 
 export default function InvitationScreen({ route }) {
   const { tripId } = route.params;
   const navigation = useNavigation();
 
+  const { authToken } = userStore((state) => state.user);
+
+  const [joinTrip, { jError }] = useMutation(JOIN_TRIP);
   const { loading, error, data } = useQuery(GET_INVITATION_TRIP_DATA, {
     variables: {
       tripId,
@@ -32,17 +37,18 @@ export default function InvitationScreen({ route }) {
   });
 
   const [tripData, setTripData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const pageRef = useRef();
 
-  const isAuth = true;
+  const isAuth = authToken !== '';
 
   useEffect(() => {
-    if (error) {
+    if (error || jError) {
       Toast.show({
         type: 'error',
         text1: i18n.t('Whoops!'),
-        text2: error.message,
+        text2: error ? error.message : jError.message,
       });
     }
 
@@ -50,12 +56,34 @@ export default function InvitationScreen({ route }) {
       const { getInvitationTripData } = data;
       setTripData(getInvitationTripData);
     }
-  }, [data, error]);
+  }, [data, error, jError]);
 
   const handlePress = () => {
     if (!isAuth) {
       pageRef.current?.setPage(1);
+      return;
     }
+
+    handleJoinTrip();
+  };
+
+  const handleJoinTrip = async () => {
+    setIsLoading(true);
+    await joinTrip({
+      variables: {
+        tripId,
+      },
+    }).catch((e) => {
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('Whoops!'),
+        text2: e.message,
+      });
+    }).then(() => {
+      navigation.navigate(ROUTES.initDataCrossroads);
+    });
+
+    setIsLoading(false);
   };
 
   const getDateRange = () => {
@@ -72,7 +100,7 @@ export default function InvitationScreen({ route }) {
       i18n.t(`Are you sure you want to decline ${tripData.hostName}'s invitation?`),
       i18n.t('Decline'),
       async () => {
-        navigation.navigate(ROUTES.introScreen);
+        navigation.navigate(ROUTES.initDataCrossroads);
       },
     );
   };
@@ -168,7 +196,7 @@ export default function InvitationScreen({ route }) {
                   </View>
                   <View style={{ width: '100%', height: 100 }}>
                     <Button
-                      isLoading={false}
+                      isLoading={isLoading}
                       text={i18n.t('Continue')}
                       onPress={handlePress}
                     />

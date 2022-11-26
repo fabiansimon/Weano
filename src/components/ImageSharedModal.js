@@ -7,6 +7,7 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import FIcon from 'react-native-vector-icons/FontAwesome';
 import React from 'react';
+import Toast from 'react-native-toast-message';
 import Headline from './typography/Headline';
 import i18n from '../utils/i18n';
 import COLORS, { RADIUS } from '../constants/Theme';
@@ -14,6 +15,7 @@ import Body from './typography/Body';
 import Utils from '../utils';
 import InstagramBubble from '../../assets/images/instagram_bubble.png';
 import Button from './Button';
+import toastConfig from '../constants/ToastConfig';
 
 export default function ImageSharedModal({
   image, style, onDone,
@@ -26,6 +28,7 @@ export default function ImageSharedModal({
       <TouchableOpacity
         activeOpacity={0.9}
         style={styles.roundButton}
+        onPress={() => Utils.downloadImage(image)}
       >
         <Icon
           name="ios-download"
@@ -109,6 +112,7 @@ export default function ImageSharedModal({
           style={{ marginTop: 20, borderRadius: RADIUS.xl }}
         />
       </View>
+      <Toast config={toastConfig} />
     </View>
   );
 }

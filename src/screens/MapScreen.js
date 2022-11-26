@@ -2,6 +2,7 @@ import React, { useMemo, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import MapboxGL from '@react-native-mapbox-gl/maps';
 import BottomSheet from '@gorhom/bottom-sheet';
+// eslint-disable-next-line import/no-unresolved
 import { MAPBOX_TOKEN } from '@env';
 import BackButton from '../components/BackButton';
 import CountriesVisited from '../components/Map/CountriesVisited';
@@ -22,7 +23,6 @@ export default function MapScreen() {
           backgroundColor: 'transparent',
           borderRadius: 20,
         }}
-        style={styles.bottomSheet}
         ref={sheetRef}
         index={0}
         snapPoints={snapPoints}

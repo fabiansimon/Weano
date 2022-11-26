@@ -24,7 +24,9 @@ import Utils from '../../utils';
 import ImageModal from '../../components/ImageModal';
 
 let camera;
-export default function CameraScreen() {
+export default function CameraScreen({ route }) {
+  const { tripId } = route.params;
+
   const [cameraType, setCameraType] = useState(CameraType.back);
   const [flashMode, setFlashMode] = useState(FlashMode.off);
   const [capturedImage, setCapturedImage] = useState(null);
@@ -301,6 +303,7 @@ export default function CameraScreen() {
         onRequestClose={() => setCapturedImage(null)}
         image={capturedImage}
         onRetake={() => setCapturedImage(null)}
+        tripId={tripId}
       />
     </>
   );

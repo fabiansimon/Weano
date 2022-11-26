@@ -2,6 +2,7 @@ import create from 'zustand';
 
 const userStore = create((set) => ({
   user: {
+    authToken: '',
     id: '',
     avatarUri: '',
     email: '',
@@ -27,6 +28,7 @@ const userStore = create((set) => ({
   })),
   updateUserData: (data) => set((state) => ({
     user: {
+      authToken: data.authToken || state.user.authToken,
       id: data.id || state.user.id,
       avatarUri: data.avatarUri || state.user.avatarUri,
       email: data.email || state.user.email,

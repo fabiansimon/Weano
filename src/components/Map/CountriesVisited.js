@@ -9,6 +9,7 @@ import Button from '../Button';
 import ContinentChip from './ContinentChip';
 import CONTINENTS_DATA from '../../constants/Continents';
 import SearchModal from '../Search/SearchModal';
+import TextField from '../TextField';
 
 export default function CountriesVisited() {
   const [selectedContinent, setSelectedContinent] = useState('worldwide');
@@ -58,12 +59,6 @@ export default function CountriesVisited() {
             />
           ))}
         </ScrollView>
-        {/* <TextField
-          style={{ marginVertical: 20 }}
-          placeholder={i18n.t('Barcelona 2021 🇪🇸')}
-          value={searchTerm || null}
-          onChangeText={(val) => setSearchTerm(val)}
-        /> */}
       </View>
       <SearchModal isVisible={searchVisible} onRequestClose={() => setSearchVisible(false)} />
     </View>

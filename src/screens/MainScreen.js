@@ -1,30 +1,29 @@
 import {
-  Pressable, ScrollView, StyleSheet, View,
+  Pressable,
+  ScrollView, StyleSheet, View,
 } from 'react-native';
-import React, { useRef, useState, useEffect } from 'react';
+import React, {
+  useRef, useState,
+} from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/AntDesign';
-import EvilIcon from 'react-native-vector-icons/EvilIcons';
-import COLORS, { PADDING, RADIUS } from '../constants/Theme';
+import IonIcon from 'react-native-vector-icons/Ionicons';
+import COLORS, { PADDING } from '../constants/Theme';
 import Headline from '../components/typography/Headline';
 import i18n from '../utils/i18n';
-import TextField from '../components/TextField';
 import RecapCard from '../components/RecapCard';
 import Button from '../components/Button';
-import Avatar from '../components/Avatar';
 import CreateModal from '../components/CreateModal';
 import ROUTES from '../constants/Routes';
 import AnimatedHeader from '../components/AnimatedHeader';
 import SearchModal from '../components/Search/SearchModal';
 import RewindTile from '../components/Trip/RewindTile';
-import AsyncStorageDAO from '../utils/AsyncStorageDAO';
 import userStore from '../stores/UserStore';
-import Subtitle from '../components/typography/Subtitle';
-import ActiveTripContainer from '../components/ActiveTripContainer';
-
-const asyncStorageDAO = new AsyncStorageDAO();
+import Body from '../components/typography/Body';
+import Utils from '../utils';
+import Avatar from '../components/Avatar';
 
 export default function MainScreen() {
   const user = userStore((state) => state.user);
@@ -33,15 +32,6 @@ export default function MainScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
 
   const navigation = useNavigation();
-
-  const getInitData = async () => {
-    const token = await asyncStorageDAO.getAccessToken();
-    console.log(token);
-  };
-
-  useEffect(() => {
-    getInitData();
-  }, []);
 
   const mockTrips = [
     {
@@ -139,25 +129,86 @@ export default function MainScreen() {
     },
   ];
 
-  const ActiveTripMinimized = () => {
-    const i = 1;
+  const HeaderSection = () => (
+    <View style={{
+      flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    }}
+    >
+      <Avatar
+        onPress={() => navigation.navigate(ROUTES.profileScreen)}
+        uri={user?.avatarUri}
+        size={45}
+      />
+      <View style={{ }}>
+        <Headline
+          type={3}
+          style={{ textAlign: 'center' }}
+          text={`${i18n.t('Hey')} ${user?.firstName}!`}
+        />
+        <Body
+          type={1}
+          style={{ textAlign: 'center' }}
+          text={i18n.t('ready for a new Adventure?')}
+          color={COLORS.neutral[300]}
+        />
+      </View>
+      <Button
+        isSecondary
+        style={styles.searchButton}
+        backgroundColor={COLORS.shades[0]}
+        icon={<Icon name="search1" size={20} />}
+        fullWidth={false}
+        onPress={() => setSearchVisible(true)}
+        color={COLORS.neutral[900]}
+      />
+    </View>
+  );
+
+  const ChipSelection = () => {
+    const options = [
+      {
+        title: i18n.t('• Active trip 🏖'),
+        onPress: () => console.log('0'),
+        fontColor: COLORS.error[900],
+        style: styles.activeTripChip,
+        isShown: true,
+      },
+      {
+        title: i18n.t('Successful Trips ✈️'),
+        onPress: () => console.log('0'),
+        style: styles.basicChip,
+        fontColor: COLORS.neutral[900],
+        isShown: true,
+      },
+      {
+        title: i18n.t('Upcoming Trips ⏳'),
+        fontColor: COLORS.neutral[900],
+        onPress: () => console.log('1'),
+        style: styles.basicChip,
+        isShown: true,
+      },
+    ];
 
     return (
-      <Pressable
-        onPress={() => console.log('hello')}
-        style={styles.activeTripMinimized}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: PADDING.m }}
+        style={{ marginTop: 20, marginBottom: 5 }}
       >
-        <Subtitle
-          type={1}
-          color={COLORS.shades[0]}
-          text={i18n.t('• Live Trip')}
-        />
-        <EvilIcon
-          color={COLORS.shades[0]}
-          name="chevron-up"
-          size={30}
-        />
-      </Pressable>
+        {options.map((option) => option.isShown && (
+          <Pressable
+            onPress={option.onPress}
+            style={[option.style, { marginRight: 10 }]}
+          >
+            <Body
+              type={1}
+              color={option.fontColor}
+              text={option.title}
+            />
+          </Pressable>
+        ))}
+      </ScrollView>
     );
   };
 
@@ -169,16 +220,16 @@ export default function MainScreen() {
       >
         <View style={styles.header}>
           <View>
-            <Headline type={3} text={i18n.t('Hey Fabian')} />
-            <Headline
-              type={4}
+            <Headline type={3} text={`${i18n.t('Hey')} ${user?.firstName}!`} />
+            <Body
+              type={1}
               text={i18n.t('Are you looking for something? 👀')}
               color={COLORS.neutral[300]}
             />
           </View>
           <Button
             isSecondary
-            style={[styles.searchButton, styles.buttonShadow]}
+            style={styles.searchButton}
             backgroundColor={COLORS.shades[0]}
             icon={<Icon name="search1" size={20} />}
             fullWidth={false}
@@ -197,28 +248,9 @@ export default function MainScreen() {
       >
         <SafeAreaView style={styles.container}>
           <View style={{ paddingHorizontal: PADDING.l }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <View>
-                <Headline type={3} text={i18n.t('Hey Fabian')} />
-                <Headline
-                  type={4}
-                  text={i18n.t('ready for a new Adventure? 🌍')}
-                  color={COLORS.neutral[300]}
-                />
-              </View>
-              <Avatar
-                uri={user.avatarUri}
-                onPress={() => navigation.navigate(ROUTES.profileScreen)}
-              />
-            </View>
-            <TextField
-              style={{ marginTop: 20 }}
-              focusable={false}
-              disabled
-              onPress={() => setSearchVisible(true)}
-              placeholder={i18n.t('Barcelona 2021 🇪🇸')}
-            />
+            <HeaderSection />
           </View>
+          <ChipSelection />
           <RewindTile
             onPress={() => navigation.navigate(ROUTES.memoriesScreen, { tripId: '6376718ec191f0760fc39543' })}
             style={{ marginHorizontal: PADDING.l, marginTop: 20 }}
@@ -276,7 +308,6 @@ export default function MainScreen() {
         </SafeAreaView>
       </Animated.ScrollView>
       <View style={styles.bottom}>
-        <ActiveTripMinimized />
         <View style={styles.buttonContainer}>
           <Button
             text={i18n.t('new adventure')}
@@ -294,7 +325,6 @@ export default function MainScreen() {
           />
         </View>
       </View>
-      <ActiveTripContainer />
       <CreateModal
         isVisible={createVisible}
         onRequestClose={() => setCreateVisible(false)}
@@ -303,6 +333,7 @@ export default function MainScreen() {
         isVisible={searchVisible}
         onRequestClose={() => setSearchVisible(false)}
       />
+
     </View>
   );
 }
@@ -332,13 +363,9 @@ const styles = StyleSheet.create({
     height: 110,
     width: '100%',
   },
-  buttonShadow: {
-    shadowColor: COLORS.shades[100],
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-  },
+
   container: {
-    marginTop: 30,
+    marginTop: 20,
     flex: 1,
     backgroundColor: COLORS.neutral[50],
   },
@@ -359,17 +386,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 14,
   },
-  activeTripMinimized: {
-    bottom: -16,
-    paddingTop: 4,
-    paddingBottom: 18,
-    alignItems: 'center',
-    flexDirection: 'row',
-    backgroundColor: COLORS.error[900],
-    justifyContent: 'space-between',
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-    paddingHorizontal: PADDING.m,
+  activeTripChip: {
+    borderRadius: 100,
+    padding: 15,
+    backgroundColor: Utils.addAlpha(COLORS.error[700], 0.08),
+    borderWidth: 1,
+    borderColor: COLORS.error[700],
   },
-
+  basicChip: {
+    borderRadius: 100,
+    padding: 15,
+    backgroundColor: COLORS.shades[0],
+    borderWidth: 1,
+    borderColor: COLORS.neutral[100],
+  },
 });

@@ -22,6 +22,7 @@ import REGISTER_USER from '../mutations/registerUser';
 import LOGIN_USER from '../mutations/loginUser';
 import AsyncStorageDAO from '../utils/AsyncStorageDAO';
 import httpService from '../utils/httpService';
+import userStore from '../stores/UserStore';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
@@ -31,17 +32,18 @@ export default function AuthModal({
   const [registerUser, { registerError }] = useMutation(REGISTER_USER);
   const [loginUser, { loginError }] = useMutation(LOGIN_USER);
 
+  const updateUserData = userStore((state) => state.updateUserData);
+
   const [phoneNr, setPhoneNr] = useState('');
   const [pickerVisible, setPickerVisible] = useState(false);
   const [code, setCode] = useState('');
   const [countryCode, setCountryCode] = useState('43');
   const pageRef = useRef(null);
-  const [timer, setTimer] = useState(10);
   const [isLoading, setIsLoading] = useState(false);
 
   const navigation = useNavigation();
-
   const isLogin = !registerData;
+
   useEffect(() => {
     if (registerError) {
       Toast.show({
@@ -58,22 +60,6 @@ export default function AuthModal({
       });
     }
   }, [loginError, registerError]);
-
-  function useInterval() {
-    setTimer(10);
-    const interval = setInterval(() => {
-      setTimer((lastTimerCount) => {
-        // eslint-disable-next-line no-unused-expressions
-        lastTimerCount <= 1 && clearInterval(interval);
-        return lastTimerCount - 1;
-      });
-    }, 1000); // Each count lasts for a second
-    return () => clearInterval(interval);
-  }
-
-  useEffect(() => {
-    useInterval();
-  }, []);
 
   useEffect(() => {
     if (code.length === 4) {
@@ -101,7 +87,6 @@ export default function AuthModal({
           text1: i18n.t('Whoops!'),
           text2: err.message,
         });
-        console.log(err);
         setIsLoading(false);
       });
   };
@@ -122,12 +107,12 @@ export default function AuthModal({
     const { email, firstName, lastName } = registerData;
     const phoneNumber = `+${countryCode}${phoneNr.trim()}`;
 
-    const check = await checkCode();
+    // const check = await checkCode();
 
-    if (check !== 'approved') {
-      setCode('');
-      return;
-    }
+    // if (check !== 'approved') {
+    //   setCode('');
+    //   return;
+    // }
 
     await registerUser({
       variables: {
@@ -138,22 +123,29 @@ export default function AuthModal({
           phoneNumber,
         },
       },
+    }).catch((e) => {
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('Whoops!'),
+        text2: e.message,
+      });
     }).then((res) => {
       asyncStorageDAO.setAccessToken(res.data.registerUser);
       asyncStorageDAO.setIsAuth(true);
-      navigation.navigate(ROUTES.mainScreen);
+      updateUserData({ authToken: res.data.registerUser });
+      navigation.navigate(ROUTES.initDataCrossroads);
       onRequestClose();
     });
   };
 
   const handleLogin = async () => {
     const phoneNumber = `+${countryCode}${phoneNr.trim()}`;
-    const check = await checkCode();
+    // const check = await checkCode();
 
-    if (check !== 'approved') {
-      setCode('');
-      return;
-    }
+    // if (check !== 'approved') {
+    //   setCode('');
+    //   return;
+    // }
 
     await loginUser({
       variables: {
@@ -161,12 +153,20 @@ export default function AuthModal({
           phoneNumber,
         },
       },
-    }).then((res) => {
-      asyncStorageDAO.setAccessToken(res.data.loginUser);
-      asyncStorageDAO.setIsAuth(true);
-      navigation.navigate(ROUTES.mainScreen);
-      onRequestClose();
-    });
+    }).catch((e) => {
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('Whoops!'),
+        text2: e.message,
+      });
+    })
+      .then((res) => {
+        asyncStorageDAO.setAccessToken(res.data.loginUser);
+        asyncStorageDAO.setIsAuth(true);
+        updateUserData({ authToken: res.data.loginUser });
+        navigation.navigate(ROUTES.initDataCrossroads);
+        onRequestClose();
+      });
   };
 
   const countryPickerTheme = {
@@ -177,12 +177,6 @@ export default function AuthModal({
     activeOpacity: 0.7,
     itemHeight: 70,
     marginHorizontal: 10,
-  };
-
-  const getTimerString = () => {
-    if (timer >= 10) return `${i18n.t('Resend code in')} 0:${timer}`;
-    if (timer < 10 && timer > 0) return `${i18n.t('Resend code in')} 0:0${timer}`;
-    return 'Resend code';
   };
 
   return (
@@ -237,7 +231,6 @@ export default function AuthModal({
                     type={4}
                     style={{ marginTop: 6, textDecorationLine: 'underline' }}
                     text={i18n.t('Register')}
-                    onPress={() => navigation.navigate(ROUTES.signUpScreen)}
                     color={COLORS.neutral[700]}
                   />
                 </>
@@ -271,13 +264,6 @@ export default function AuthModal({
                   setValue={(val) => setCode(val)}
                 />
               </View>
-              <Body
-                onPress={() => console.log(joinTripId)}
-                type={2}
-                style={{ textDecorationLine: 'underline', alignSelf: 'center' }}
-                text={getTimerString()}
-                color={COLORS.neutral[500]}
-              />
             </View>
           </PagerView>
 

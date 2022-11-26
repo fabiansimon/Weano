@@ -6,6 +6,8 @@ import {
   // eslint-disable-next-line import/no-unresolved
 } from '@env';
 import { Alert } from 'react-native';
+import { CameraRoll } from '@react-native-camera-roll/camera-roll';
+import Toast from 'react-native-toast-message';
 import i18n from './i18n';
 
 export default class Utils {
@@ -147,6 +149,21 @@ export default class Utils {
   static addAlpha(color, opacity) {
     const op = Math.round(Math.min(Math.max(opacity || 1, 0), 1) * 255);
     return color + op.toString(16).toUpperCase();
+  }
+
+  /**
+     * Convert MonthInt to a Month String
+     * @param {image} image - image to download
+     */
+  static downloadImage(image) {
+    CameraRoll.save(image, { type: 'photo', album: 'Ayno' });
+    setTimeout(() => {
+      Toast.show({
+        type: 'success',
+        text1: i18n.t('Done!'),
+        text2: i18n.t('Image successfully saved on your device'),
+      });
+    }, 1000);
   }
 
   /**

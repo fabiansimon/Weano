@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import {
-  AppRegistry, LogBox, StatusBar,
+  AppRegistry, Linking, LogBox, StatusBar,
 } from 'react-native';
 import {
   ApolloClient, InMemoryCache, ApolloProvider,
@@ -28,23 +28,37 @@ import InitDataCrossroads from './src/screens/InitDataCrossroads';
 import ProfileScreen from './src/screens/ProfileScreen';
 import toastConfig from './src/constants/ToastConfig';
 import InvitationScreen from './src/screens/InvitationScreen';
+import userStore from './src/stores/UserStore';
+import AsyncStorageDAO from './src/utils/AsyncStorageDAO';
 
 const Stack = createNativeStackNavigator();
 
-export default function App() {
-  useEffect(() => {
-    LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
-    LogBox.ignoreAllLogs();// Ignore all log notifications
-  });
+const asyncStorageDAO = new AsyncStorageDAO();
 
-  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2Mzc2NmQ2ZDRhOTViZjg3OTMwMWM1MzIiLCJpYXQiOjE2Njg3MDU2NDUsImV4cCI6MTY2OTMxMDQ0NX0.m4f3lGD3SPvYfoOh0r9fJDJudZSURFT-belvjIMawO0';
+export default function App() {
+  const updateUserData = userStore((state) => state.updateUserData);
+  const { authToken } = userStore((state) => state.user);
 
   const client = new ApolloClient({
     uri: 'http://143.198.241.91:4000/graphql',
     cache: new InMemoryCache(),
-    headers: {
-      Authorization: token,
-    },
+    headers: { Authorization: authToken || '' },
+  });
+
+  const checkAuth = async () => {
+    const token = await asyncStorageDAO.getAccessToken();
+    if (token) {
+      updateUserData({ authToken: token });
+    }
+  };
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  useEffect(() => {
+    LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
+    LogBox.ignoreAllLogs();// Ignore all log notifications
   });
 
   return (
@@ -53,12 +67,18 @@ export default function App() {
         <NavigationContainer>
           <StatusBar barStyle="dark-content" />
           <Stack.Navigator screenOptions={{ headerShown: false }}>
+            {/* <Stack.Screen
+              name={ROUTES.invitationScreen}
+              component={InvitationScreen}
+              initialParams={{ tripId: '6376718ec191f076c0fc39543' }}
+              options={{ gestureEnabled: false }}
+            /> */}
+            <Stack.Screen name={ROUTES.initDataCrossroads} component={InitDataCrossroads} />
             <Stack.Screen
               name={ROUTES.mainScreen}
               component={MainScreen}
               options={{ gestureEnabled: false }}
             />
-            <Stack.Screen name={ROUTES.initDataCrossroads} component={InitDataCrossroads} />
             <Stack.Screen
               name={ROUTES.signUpScreen}
               component={SignUpScreen}

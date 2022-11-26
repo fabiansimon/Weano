@@ -1,6 +1,8 @@
-import { ActivityIndicator, View } from 'react-native';
-import React, { useEffect } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import {
+  ActivityIndicator, Linking, Platform, View,
+} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigation } from '@react-navigation/native';
 import { useLazyQuery } from '@apollo/client';
 import Toast from 'react-native-toast-message';
 import Headline from '../components/typography/Headline';
@@ -17,25 +19,34 @@ const asyncStorageDAO = new AsyncStorageDAO();
 
 export default function InitDataCrossroads() {
   const [getInitData, { loading, error, data }] = useLazyQuery(GET_INIT_USER_DATA);
-
+  const [init, setInit] = useState(false);
+  const { authToken } = userStore((state) => state.user);
   const setActiveTrip = activeTripStore((state) => state.setActiveTrip);
-
   const setRecapTrip = recapTripStore((state) => state.setRecapTrip);
-
-  const setUserData = userStore((state) => state.setUserData);
+  const updateUserData = userStore((state) => state.updateUserData);
 
   const navigation = useNavigation();
 
   const checkInitStatus = async () => {
+    return;
+    if (authToken) {
+      getInitData();
+      return;
+    }
+
     const token = await asyncStorageDAO.getAccessToken();
     if (token) {
-      getInitData();
+      updateUserData({ authToken: token });
+      setTimeout(() => {
+        getInitData();
+      }, 500);
       return;
     }
     navigation.push(ROUTES.signUpScreen);
   };
 
   const populateState = () => {
+    setInit(true);
     const res = data.getUserInitData;
 
     const { activeTrip, recapTrip, userData } = res;
@@ -48,7 +59,7 @@ export default function InitDataCrossroads() {
     }
 
     if (userData) {
-      setUserData(userData);
+      updateUserData(userData);
     }
 
     if (activeTrip) {
@@ -59,7 +70,7 @@ export default function InitDataCrossroads() {
   };
 
   useEffect(() => {
-    if (data) {
+    if (data && !init) {
       populateState();
     }
 
@@ -74,7 +85,47 @@ export default function InitDataCrossroads() {
 
   useEffect(() => {
     checkInitStatus();
+  }, [authToken]);
+
+  useEffect(() => {
+    checkInitStatus();
   }, []);
+
+  useEffect(() => {
+    Linking.getInitialURL().then((url) => {
+      navigateHandler(url);
+    });
+    if (Platform.OS === 'ios') {
+      Linking.addEventListener('url', handleOpenUrl);
+    }
+    return () => {
+      if (Platform.OS === 'ios') {
+        Linking.removeEventListener('url', handleOpenUrl);
+      }
+    };
+  }, []);
+
+  const handleOpenUrl = (event) => {
+    navigateHandler(event.url);
+  };
+  const navigateHandler = async (url) => {
+    if (url) {
+      const route = url.match(/[\d\w]+$/);
+      const tripId = route[0].toString();
+      if (tripId < 24) {
+        return;
+      }
+
+      if (url.includes('invitation')) {
+        navigation.navigate(ROUTES.invitationScreen, { tripId });
+        return;
+      }
+
+      if (url.includes('upload-reminder')) {
+        navigation.navigate(ROUTES.cameraScreen, { tripId });
+      }
+    }
+  };
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>

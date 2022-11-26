@@ -29,7 +29,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
     date.setDate(date.getDate() + 5);
     return date;
   });
-  const [addTrip, { loading, error }] = useMutation(ADD_TRIP);
+  const [addTrip, { loading }] = useMutation(ADD_TRIP);
 
   const [location, setLocation] = useState('');
   const [tripName, setTripName] = useState([]);

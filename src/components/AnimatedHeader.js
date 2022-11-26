@@ -13,7 +13,7 @@ function AnimatedHeader({
   // Animated Header Data
   const translateY = scrollY.interpolate({
     inputRange: [0, HEADER_SCROLL_DISTANCE / 2, HEADER_SCROLL_DISTANCE],
-    outputRange: [0, 0, -10],
+    outputRange: [-200, 0, -10],
     extrapolate: 'clamp',
   });
   const opacity = scrollY.interpolate({

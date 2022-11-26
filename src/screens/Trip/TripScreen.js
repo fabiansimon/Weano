@@ -477,11 +477,13 @@ export default function TripScreen({ route }) {
             style={{ flexDirection: 'row', marginTop: 16, alignItems: 'center' }}
             onPress={() => setInputOpen(true)}
           >
+            {!data.description && (
             <Icon
               size={16}
               color={COLORS.neutral[300]}
               name="pencil-sharp"
             />
+            )}
             <Body
               type={1}
               text={data.description || i18n.t('Add a description to the trip 😎')}
@@ -559,6 +561,7 @@ export default function TripScreen({ route }) {
           <View style={styles.imageContainer}>
             <Image
               style={styles.image}
+              resizeMode="center"
               source={data.thumbnailUri ? { uri: data.thumbnailUri } : DefaultImage}
               blurRadius={!data.thumbnailUri ? 10 : 0}
             />

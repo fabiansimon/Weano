@@ -104,6 +104,10 @@ export default function ProfileScreen() {
     };
     const result = await launchImageLibrary(options);
 
+    if (result.didCancel) {
+      return;
+    }
+
     try {
       const { Location } = await httpService.uploadToS3(result.assets[0]);
 
@@ -136,6 +140,7 @@ export default function ProfileScreen() {
       i18n.t('Sign out'),
       async () => {
         await asyncStorageDAO.clearAccessToken();
+        updateUserState({ authToken: '' });
         navigation.navigate(ROUTES.initDataCrossroads);
       },
     );
@@ -175,6 +180,7 @@ export default function ProfileScreen() {
   const Header = () => (
     <>
       <Avatar
+        onPress={handleAddImage}
         uri={user?.avatarUri}
         size={85}
       />
@@ -262,6 +268,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.shades[0],
   },
   innerContainer: {
+    marginTop: 20,
     flex: 1,
     marginHorizontal: PADDING.xl,
     alignItems: 'center',
