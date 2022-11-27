@@ -269,6 +269,7 @@ const styles = StyleSheet.create({
   },
   innerContainer: {
     marginTop: 20,
+    paddingBottom: 60,
     flex: 1,
     marginHorizontal: PADDING.xl,
     alignItems: 'center',

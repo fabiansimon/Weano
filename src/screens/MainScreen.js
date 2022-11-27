@@ -168,7 +168,7 @@ export default function MainScreen() {
     const options = [
       {
         title: i18n.t('• Active trip 🏖'),
-        onPress: () => console.log('0'),
+        onPress: () => navigation.navigate(ROUTES.tripScreen, { isActive: true }),
         fontColor: COLORS.error[900],
         style: styles.activeTripChip,
         isShown: true,

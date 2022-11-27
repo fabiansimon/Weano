@@ -27,8 +27,24 @@ export default function InitDataCrossroads() {
 
   const navigation = useNavigation();
 
+  let requestedRoute;
+
+  const handleNavigation = () => {
+    // no deep linked route && no active trip && authenticated
+    if (requestedRoute) {
+      navigation.navigate(requestedRoute.screen, requestedRoute.params || null);
+      return;
+    }
+
+    if (authToken) {
+      navigation.navigate(ROUTES.mainScreen);
+      return;
+    }
+
+    navigation.navigate(ROUTES.signUpScreen);
+  };
+
   const checkInitStatus = async () => {
-    return;
     if (authToken) {
       getInitData();
       return;
@@ -42,16 +58,24 @@ export default function InitDataCrossroads() {
       }, 500);
       return;
     }
-    navigation.push(ROUTES.signUpScreen);
+
+    handleNavigation();
   };
 
   const populateState = () => {
     setInit(true);
     const res = data.getUserInitData;
-
     const { activeTrip, recapTrip, userData } = res;
+
     if (activeTrip) {
       setActiveTrip(activeTrip);
+
+      if (!requestedRoute) {
+        requestedRoute = {
+          screen: ROUTES.tripScreen,
+          params: { isActive: true },
+        };
+      }
     }
 
     if (recapTrip) {
@@ -61,17 +85,12 @@ export default function InitDataCrossroads() {
     if (userData) {
       updateUserData(userData);
     }
-
-    if (activeTrip) {
-      navigation.push(ROUTES.tripScreen, { isActive: true });
-    } else {
-      navigation.push(ROUTES.mainScreen);
-    }
   };
 
   useEffect(() => {
     if (data && !init) {
       populateState();
+      handleNavigation();
     }
 
     if (error) {
@@ -117,12 +136,22 @@ export default function InitDataCrossroads() {
       }
 
       if (url.includes('invitation')) {
-        navigation.navigate(ROUTES.invitationScreen, { tripId });
+        requestedRoute = ({
+          screen: ROUTES.invitationScreen,
+          params: {
+            tripId,
+          },
+        });
         return;
       }
 
       if (url.includes('upload-reminder')) {
-        navigation.navigate(ROUTES.cameraScreen, { tripId });
+        requestedRoute = ({
+          screen: ROUTES.cameraScreen,
+          params: {
+            tripId,
+          },
+        });
       }
     }
   };
@@ -131,7 +160,7 @@ export default function InitDataCrossroads() {
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       {loading && <Headline type={3} text={i18n.t('Loading')} />}
       {error && <Headline type={3} text="error" />}
-      <ActivityIndicator color={COLORS.shades[0]} />
+      <ActivityIndicator color={COLORS.shades[100]} />
     </View>
   );
 }

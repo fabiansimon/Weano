@@ -20,7 +20,7 @@ export default function AddTaskModal({
   const [assigneIndex, setAssigneIndex] = useState(0);
   const [assigneeData, setAssigneeData] = useState([]);
   const animatedBottom = useRef(new Animated.Value(900)).current;
-  const animatedY = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(0)).current;
   const duration = 300;
 
   const mockPersonalData = {
@@ -60,15 +60,15 @@ export default function AddTaskModal({
 
   const toggleExpand = () => {
     if (!isPrivate) {
-      Animated.spring(animatedY, {
-        toValue: 1,
+      Animated.spring(translateY, {
+        toValue: 0,
         duration,
         useNativeDriver: false,
 
       }).start();
     } else {
-      Animated.spring(animatedY, {
-        toValue: 0,
+      Animated.spring(translateY, {
+        toValue: 100,
         duration,
         useNativeDriver: false,
       }).start();
@@ -161,7 +161,7 @@ export default function AddTaskModal({
   );
 
   const getAssigneeRow = () => (
-    <Animated.View style={[styles.assigneeRow, { transform: [{ scaleY: animatedY }] }]}>
+    <Animated.View style={[styles.assigneeRow, { transform: [{ translateY }] }]}>
       <Subtitle
         text={i18n.t('Assignee')}
         color={COLORS.neutral[300]}

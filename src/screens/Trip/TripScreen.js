@@ -561,7 +561,7 @@ export default function TripScreen({ route }) {
           <View style={styles.imageContainer}>
             <Image
               style={styles.image}
-              resizeMode="center"
+              resizeMode={data.thumbnailUri ? 'center' : 'cover'}
               source={data.thumbnailUri ? { uri: data.thumbnailUri } : DefaultImage}
               blurRadius={!data.thumbnailUri ? 10 : 0}
             />

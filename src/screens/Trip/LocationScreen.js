@@ -15,21 +15,21 @@ export default function LocationScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
   const [isBoardingPassVisible, setBoardingPassVisible] = useState(false);
   const mockData = [
-    {
-      string: 'Paris, France',
-      subtitle: 'Fabian Simon',
-      votes: 6,
-    },
-    {
-      string: 'Pula, Croatia',
-      subtitle: 'Julia',
-      votes: 2,
-    },
-    {
-      string: 'Vienna, Austria',
-      subtitle: 'Matthias',
-      votes: 0,
-    },
+    // {
+    //   string: 'Paris, France',
+    //   subtitle: 'Fabian Simon',
+    //   votes: 6,
+    // },
+    // {
+    //   string: 'Pula, Croatia',
+    //   subtitle: 'Julia',
+    //   votes: 2,
+    // },
+    // {
+    //   string: 'Vienna, Austria',
+    //   subtitle: 'Matthias',
+    //   votes: 0,
+    // },
   ];
   const [isVisible, setIsVisible] = useState(false);
   const [pollData, setPollData] = useState(mockData || null);
@@ -46,7 +46,7 @@ export default function LocationScreen() {
             <PollView
               data={pollData}
               title={i18n.t('Destination options')}
-              subtitle={i18n.t('You can simply add a new one')}
+              subtitle={pollData.length < 1 ? i18n.t('No suggestion yet, add one!') : i18n.t('You can simply add a new one')}
             />
             <Headline
               onPress={() => setIsVisible(true)}

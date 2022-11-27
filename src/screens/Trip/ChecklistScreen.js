@@ -1,5 +1,5 @@
 import {
-  View, StyleSheet, ScrollView, Dimensions,
+  View, StyleSheet, ScrollView, Dimensions, FlatList,
 } from 'react-native';
 import React, { useRef, useState, useEffect } from 'react';
 import Animated from 'react-native-reanimated';
@@ -14,6 +14,7 @@ import Headline from '../../components/typography/Headline';
 import CheckboxTile from '../../components/Trip/CheckboxTile';
 import Button from '../../components/Button';
 import AddTaskModal from '../../components/Trip/AddTaskModal';
+import Body from '../../components/typography/Body';
 
 export default function ChecklistScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -57,7 +58,11 @@ export default function ChecklistScreen() {
     setPrivateTasks(mockTasks.privateTasks);
   }, []);
 
-  const taskCount = (isDone) => privateTasks.filter((task) => task.isDone === isDone).length + mutualTasks.filter((task) => task.isDone === isDone).length;
+  const taskCount = (isDone) => {
+    // eslint-disable-next-line no-unsafe-optional-chaining
+    const length = privateTasks?.filter((task) => task.isDone === isDone).length + mutualTasks?.filter((task) => task.isDone === isDone).length;
+    return length || 0;
+  };
 
   const handleInput = (data) => {
     setIsVisible(false);
@@ -127,7 +132,7 @@ export default function ChecklistScreen() {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          style={{ marginTop: 30, paddingLeft: PADDING.l }}
+          style={{ marginTop: 30 }}
         >
           <View style={{
             justifyContent: 'flex-start', borderRightColor: COLORS.neutral[100], borderRightWidth: 1, width: Dimensions.get('window').width * 0.75,
@@ -135,16 +140,30 @@ export default function ChecklistScreen() {
           >
             <Headline
               type={3}
+              style={{ marginLeft: PADDING.l }}
               text={i18n.t('Mutual list')}
             />
-            <Divider top={12} style={{ flex: 1 }} />
-            { mutualTasks && mutualTasks.map((item) => (
-              <CheckboxTile
-                style={{ marginVertical: 10, marginRight: 30 }}
-                item={item}
-                onPress={(isChecked) => console.log(isChecked)}
-              />
-            ))}
+            <Divider top={12} style={{ flex: 1, marginLeft: PADDING.l }} />
+            <FlatList
+              style={{ paddingLeft: PADDING.l }}
+              scrollEnabled={false}
+              data={mutualTasks}
+              ListEmptyComponent={() => (
+                <Body
+                  style={{ alignSelf: 'center', marginTop: 10 }}
+                  type={1}
+                  text={i18n.t('No task added yet')}
+                  color={COLORS.neutral[300]}
+                />
+              )}
+              renderItem={({ item }) => (
+                <CheckboxTile
+                  style={{ marginVertical: 10, marginRight: 30 }}
+                  item={item}
+                  onPress={(isChecked) => console.log(isChecked)}
+                />
+              )}
+            />
           </View>
           <View style={{ justifyContent: 'flex-start', width: Dimensions.get('window').width * 0.75, marginRight: 40 }}>
             <Headline
@@ -153,14 +172,27 @@ export default function ChecklistScreen() {
               style={{ marginLeft: 16 }}
             />
             <Divider top={12} />
-            { privateTasks && privateTasks.map((item) => (
-              <CheckboxTile
-                style={{ marginVertical: 10, marginLeft: 16 }}
-                item={item}
-                disableLabel
-                onPress={(isChecked) => console.log(isChecked)}
-              />
-            ))}
+            <FlatList
+              style={{ paddingLeft: PADDING.l }}
+              scrollEnabled={false}
+              data={privateTasks}
+              ListEmptyComponent={() => (
+                <Body
+                  style={{ alignSelf: 'center', marginTop: 10 }}
+                  type={1}
+                  text={i18n.t('No task added yet')}
+                  color={COLORS.neutral[300]}
+                />
+              )}
+              renderItem={({ item }) => (
+                <CheckboxTile
+                  style={{ marginVertical: 10, marginRight: 30 }}
+                  item={item}
+                  disableLabel
+                  onPress={(isChecked) => console.log(isChecked)}
+                />
+              )}
+            />
           </View>
         </ScrollView>
 

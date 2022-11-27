@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import PollTile from './PollTile';
 import Headline from '../typography/Headline';
@@ -55,16 +55,19 @@ export default function PollView({
         color={COLORS.neutral[300]}
         style={{ marginBottom: 16 }}
       />
-      {optionsData && optionsData.map((item, index) => (
-        <PollTile
-          style={{ marginBottom: 16 }}
-          data={item}
-          index={index}
-          onPress={() => handleVote(index)}
-          isActive={voteIndex === index}
-          percentage={`${getPercentage(item.votes)}%`}
-        />
-      ))}
+      <FlatList
+        data={optionsData}
+        renderItem={({ item, index }) => (
+          <PollTile
+            style={{ marginBottom: 16 }}
+            data={item}
+            index={index}
+            onPress={() => handleVote(index)}
+            isActive={voteIndex === index}
+            percentage={`${getPercentage(item.votes)}%`}
+          />
+        )}
+      />
     </View>
   );
 }
