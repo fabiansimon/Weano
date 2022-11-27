@@ -14,7 +14,9 @@ import Body from '../typography/Body';
 import TextField from '../TextField';
 import Divider from '../Divider';
 
-export default function AddPollModal({ isVisible, onRequestClose, onPress }) {
+export default function AddPollModal({
+  isVisible, onRequestClose, onPress, isLoading,
+}) {
   const [inputFields, setInputFields] = useState([]);
 
   const inputData = [
@@ -129,7 +131,8 @@ export default function AddPollModal({ isVisible, onRequestClose, onPress }) {
           <Button
             fullWidth
             style={styles.button}
-            text={i18n.t('Send Poll')}
+            isLoading={isLoading}
+            text={i18n.t('Add Poll')}
             onPress={() => {
               onPress(inputFields);
               setInputFields(inputData);

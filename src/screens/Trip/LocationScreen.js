@@ -4,7 +4,6 @@ import Animated from 'react-native-reanimated';
 import COLORS, { PADDING } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import PollView from '../../components/Polls/PollView';
-import Headline from '../../components/typography/Headline';
 import HybridHeader from '../../components/HybridHeader';
 import INFORMATION from '../../constants/Information';
 import AddSuggestionModal from '../../components/Trip/AddSuggestionModal';
@@ -15,21 +14,21 @@ export default function LocationScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
   const [isBoardingPassVisible, setBoardingPassVisible] = useState(false);
   const mockData = [
-    // {
-    //   string: 'Paris, France',
-    //   subtitle: 'Fabian Simon',
-    //   votes: 6,
-    // },
-    // {
-    //   string: 'Pula, Croatia',
-    //   subtitle: 'Julia',
-    //   votes: 2,
-    // },
-    // {
-    //   string: 'Vienna, Austria',
-    //   subtitle: 'Matthias',
-    //   votes: 0,
-    // },
+    {
+      string: 'Paris, France',
+      subtitle: 'Fabian Simon',
+      votes: 6,
+    },
+    {
+      string: 'Pula, Croatia',
+      subtitle: 'Julia',
+      votes: 2,
+    },
+    {
+      string: 'Vienna, Austria',
+      subtitle: 'Matthias',
+      votes: 0,
+    },
   ];
   const [isVisible, setIsVisible] = useState(false);
   const [pollData, setPollData] = useState(mockData || null);
@@ -46,17 +45,8 @@ export default function LocationScreen() {
             <PollView
               data={pollData}
               title={i18n.t('Destination options')}
+              onAdd={() => setIsVisible(true)}
               subtitle={pollData.length < 1 ? i18n.t('No suggestion yet, add one!') : i18n.t('You can simply add a new one')}
-            />
-            <Headline
-              onPress={() => setIsVisible(true)}
-              type={4}
-              text={i18n.t('Add suggestion')}
-              color={COLORS.neutral[300]}
-              style={{
-                alignSelf: 'center',
-                marginTop: pollData ? 18 : -10,
-              }}
             />
           </View>
         </View>

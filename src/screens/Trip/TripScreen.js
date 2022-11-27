@@ -26,7 +26,7 @@ import ListItem from '../../components/ListItem';
 import InviteeContainer from '../../components/Trip/InviteeContainer';
 import TabBar from '../../components/Trip/TabBar';
 import ChecklistContainer from '../../components/Trip/ChecklistContainer';
-import AccomodationCarousel from '../../components/Trip/AccomodationCarousel';
+// import AccomodationCarousel from '../../components/Trip/AccomodationCarousel';
 import ROUTES from '../../constants/Routes';
 import StatusContainer from '../../components/Trip/StatusContainer';
 import ExpensesContainer from '../../components/Trip/ExpenseContainer';
@@ -351,21 +351,38 @@ export default function TripScreen({ route }) {
   };
 
   const contentItems = [
+    // {
+    //   title: i18n.t('Accomodations'),
+    //   trailing: <Headline
+    //     onPress={() => navigation.navigate(ROUTES.accomodationsScreen, { data: mockData.accomodations })}
+    //     type={4}
+    //     text={i18n.t('see all')}
+    //     color={COLORS.neutral[500]}
+    //   />,
+    //   omitPadding: true,
+    //   content: <AccomodationCarousel
+    //     data={mockData.accomodations}
+    //     onLayout={(e) => {
+    //       console.log(`Accomodations: ${e.nativeEvent.layout.y}`);
+    //     }}
+    //   />,
+    //   yPos: 0,
+    // },
     {
-      title: i18n.t('Accomodations'),
+      title: i18n.t('Polls'),
       trailing: <Headline
-        onPress={() => navigation.navigate(ROUTES.accomodationsScreen, { data: mockData.accomodations })}
+        onPress={() => navigation.navigate(ROUTES.pollScreen)}
         type={4}
         text={i18n.t('see all')}
         color={COLORS.neutral[500]}
       />,
-      omitPadding: true,
-      content: <AccomodationCarousel
-        data={mockData.accomodations}
-        onLayout={(e) => {
-          console.log(`Accomodations: ${e.nativeEvent.layout.y}`);
-        }}
-      />,
+      // content: <ChecklistContainer
+      //   data={tripData.tasks}
+      //   onPress={(val, index, type) => updateTasks(val, index, type)}
+      //   onLayout={(e) => {
+      //     console.log(`Checklist: ${e.nativeEvent.layout.y}`);
+      //   }}
+      // />,
       yPos: 0,
     },
     {

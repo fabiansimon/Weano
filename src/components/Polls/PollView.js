@@ -1,5 +1,8 @@
-import { FlatList, View } from 'react-native';
+import {
+  FlatList, Pressable, StyleSheet, View,
+} from 'react-native';
 import React, { useState, useEffect } from 'react';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import PollTile from './PollTile';
 import Headline from '../typography/Headline';
 import Body from '../typography/Body';
@@ -7,36 +10,24 @@ import COLORS from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 
 export default function PollView({
-  style, data, title, subtitle,
+  style, data, title, subtitle, onPress,
 }) {
   const [voteIndex, setVoteIndex] = useState(-1);
-  const [optionsData, setOptionsData] = useState([]);
+  const [pollData, setPollData] = useState([]);
 
   useEffect(() => {
-    setOptionsData(data);
+    setPollData(data);
+    console.log(data);
   }, [data]);
 
   const handleVote = (index) => {
-    setOptionsData((prev) => {
-      const newArr = prev;
-      if (voteIndex === index) {
-        newArr[index].votes -= 1;
-        setVoteIndex(-1);
-        return newArr;
-      }
-      if (voteIndex !== -1) {
-        newArr[voteIndex].votes -= 1;
-      }
-      newArr[index].votes += 1;
-      setVoteIndex(index);
-      return newArr;
-    });
+    console.log(index);
   };
 
   const getPercentage = (votes) => {
     let countedVotes = 0;
-    for (let i = 0; i < data.length; i += 1) {
-      countedVotes += data[i].votes;
+    for (let i = 0; i < pollData.options.length; i += 1) {
+      countedVotes += pollData.options[i].votes.length;
     }
     return countedVotes === 0 ? 0 : ((votes / countedVotes) * 100).toFixed(1);
   };
@@ -45,18 +36,34 @@ export default function PollView({
 
   return (
     <View style={style}>
-      <Headline
-        type={3}
-        text={header}
-      />
-      <Body
-        type={1}
-        text={subtitle}
-        color={COLORS.neutral[300]}
-        style={{ marginBottom: 16 }}
-      />
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <View>
+          <Headline
+            type={4}
+            text={header}
+          />
+          <Body
+            type={2}
+            text={subtitle}
+            color={COLORS.neutral[300]}
+            style={{ marginBottom: 16, marginTop: 2 }}
+          />
+        </View>
+        {onPress && (
+        <Pressable
+          onPress={onPress}
+          style={styles.addIcon}
+        >
+          <Icon
+            name="plus"
+            size={20}
+            color={COLORS.neutral[700]}
+          />
+        </Pressable>
+        )}
+      </View>
       <FlatList
-        data={optionsData}
+        data={pollData.options}
         renderItem={({ item, index }) => (
           <PollTile
             style={{ marginBottom: 16 }}
@@ -64,10 +71,23 @@ export default function PollView({
             index={index}
             onPress={() => handleVote(index)}
             isActive={voteIndex === index}
-            percentage={`${getPercentage(item.votes)}%`}
+            percentage={`${getPercentage(item.votes.length)}%`}
           />
         )}
       />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  addIcon: {
+    borderRadius: 100,
+    backgroundColor: COLORS.neutral[50],
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 0.5,
+    borderColor: COLORS.neutral[100],
+    height: 35,
+    width: 35,
+  },
+});

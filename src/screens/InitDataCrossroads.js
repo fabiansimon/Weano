@@ -2,7 +2,7 @@ import {
   ActivityIndicator, Linking, Platform, View,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { useLazyQuery } from '@apollo/client';
 import Toast from 'react-native-toast-message';
 import Headline from '../components/typography/Headline';
@@ -20,6 +20,7 @@ const asyncStorageDAO = new AsyncStorageDAO();
 export default function InitDataCrossroads() {
   const [getInitData, { loading, error, data }] = useLazyQuery(GET_INIT_USER_DATA);
   const [init, setInit] = useState(false);
+  const [requestedRoute, setRequestedRoute] = useState(null);
   const { authToken } = userStore((state) => state.user);
   const setActiveTrip = activeTripStore((state) => state.setActiveTrip);
   const setRecapTrip = recapTripStore((state) => state.setRecapTrip);
@@ -27,21 +28,22 @@ export default function InitDataCrossroads() {
 
   const navigation = useNavigation();
 
-  let requestedRoute;
-
   const handleNavigation = () => {
-    // no deep linked route && no active trip && authenticated
-    if (requestedRoute) {
-      navigation.navigate(requestedRoute.screen, requestedRoute.params || null);
-      return;
-    }
+    setTimeout(() => {
+      // no deep linked route && no active trip && authenticated
+      console.log(requestedRoute);
+      if (requestedRoute != null) {
+        navigation.navigate(requestedRoute.screen, requestedRoute.params || null);
+        return;
+      }
 
-    if (authToken) {
-      navigation.navigate(ROUTES.mainScreen);
-      return;
-    }
+      if (authToken) {
+        navigation.navigate(ROUTES.mainScreen);
+        return;
+      }
 
-    navigation.navigate(ROUTES.signUpScreen);
+      navigation.navigate(ROUTES.signUpScreen);
+    }, 1000);
   };
 
   const checkInitStatus = async () => {
@@ -68,13 +70,15 @@ export default function InitDataCrossroads() {
     const { activeTrip, recapTrip, userData } = res;
 
     if (activeTrip) {
+      console.log(activeTrip);
       setActiveTrip(activeTrip);
 
-      if (!requestedRoute) {
-        requestedRoute = {
+      if (requestedRoute == null) {
+        // Not working for some reason
+        setRequestedRoute({
           screen: ROUTES.tripScreen,
           params: { isActive: true },
-        };
+        });
       }
     }
 
@@ -136,21 +140,17 @@ export default function InitDataCrossroads() {
       }
 
       if (url.includes('invitation')) {
-        requestedRoute = ({
+        setRequestedRoute({
           screen: ROUTES.invitationScreen,
-          params: {
-            tripId,
-          },
+          params: { tripId },
         });
         return;
       }
 
       if (url.includes('upload-reminder')) {
-        requestedRoute = ({
+        setRequestedRoute({
           screen: ROUTES.cameraScreen,
-          params: {
-            tripId,
-          },
+          params: { tripId },
         });
       }
     }

@@ -30,6 +30,7 @@ import toastConfig from './src/constants/ToastConfig';
 import InvitationScreen from './src/screens/InvitationScreen';
 import userStore from './src/stores/UserStore';
 import AsyncStorageDAO from './src/utils/AsyncStorageDAO';
+import PollScreen from './src/screens/Trip/PollScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -112,6 +113,7 @@ export default function App() {
             <Stack.Screen name={ROUTES.checklistScreen} component={ChecklistScreen} />
             <Stack.Screen name={ROUTES.memoriesScreen} component={MemoriesScreen} />
             <Stack.Screen name={ROUTES.cameraScreen} component={CameraScreen} />
+            <Stack.Screen name={ROUTES.pollScreen} component={PollScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </ApolloProvider>

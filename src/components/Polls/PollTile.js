@@ -5,7 +5,7 @@ import Headline from '../typography/Headline';
 import COLORS, { RADIUS } from '../../constants/Theme';
 
 export default function PollTile({
-  style, data, onPress, isActive, percentage, height = 55,
+  style, data, onPress, isActive, percentage, height = 50,
 }) {
   const color = isActive ? COLORS.shades[0] : COLORS.neutral[500];
 
@@ -33,8 +33,16 @@ export default function PollTile({
                 flexDirection: 'row', justifyContent: 'space-between', flex: 1,
               }}
               >
-                <Headline type={4} color={COLORS.neutral[500]} text={data.string} />
-                <Headline type={4} color={COLORS.neutral[500]} text={percentage} />
+                <Headline
+                  type={4}
+                  color={COLORS.neutral[500]}
+                  text={data.option}
+                />
+                <Headline
+                  type={4}
+                  color={COLORS.neutral[500]}
+                  text={percentage}
+                />
               </View>
             </View>
               )}

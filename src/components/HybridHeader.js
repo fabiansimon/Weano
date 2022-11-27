@@ -6,10 +6,10 @@ import AnimatedHeader from './AnimatedHeader';
 import BackButton from './BackButton';
 import Headline from './typography/Headline';
 import BasicHeader from './BasicHeader';
-import { PADDING } from '../constants/Theme';
+import COLORS, { PADDING } from '../constants/Theme';
 
 export default function HybridHeader({
-  style, title, subtitle, onPressBack, info, children, scrollY, content, backButton = true, backgroundColor,
+  style, title, subtitle, onPressBack, info, children, scrollY, content, backButton = true, backgroundColor = COLORS.shades[0],
 }) {
   return (
     <View style={{ flex: 1 }}>

@@ -61,6 +61,17 @@ const GET_INIT_USER_DATA = gql`
                     amount
                     currency
                 }
+                polls {
+                    creatorId
+                    title
+                    description
+                    createdAt
+                    options {
+                        option
+                        votes
+                        creatorId
+                    }
+                }
                 activeMembers {
                     id
                     phoneNumber

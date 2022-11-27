@@ -9,7 +9,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/AntDesign';
-import IonIcon from 'react-native-vector-icons/Ionicons';
 import COLORS, { PADDING } from '../constants/Theme';
 import Headline from '../components/typography/Headline';
 import i18n from '../utils/i18n';
