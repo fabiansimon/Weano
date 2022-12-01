@@ -14,6 +14,8 @@ import FAButton from '../../components/FAButton';
 import AddPollModal from '../../components/Trip/AddPollModal';
 import ADD_POLL from '../../mutations/addPoll';
 import userStore from '../../stores/UserStore';
+import Body from '../../components/typography/Body';
+import Headline from '../../components/typography/Headline';
 
 export default function PollScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -75,6 +77,16 @@ export default function PollScreen() {
       >
         <View style={styles.innerContainer}>
           <FlatList
+            ListEmptyComponent={(
+              <Headline
+                type={4}
+                style={{
+                  textAlign: 'center', alignSelf: 'center', marginTop: 18,
+                }}
+                text={i18n.t('No polls yet. \nBe the first one to add one 😎')}
+                color={COLORS.neutral[300]}
+              />
+          )}
             data={polls}
             ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
             renderItem={({ item }) => {

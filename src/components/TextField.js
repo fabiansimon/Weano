@@ -2,14 +2,16 @@
 import {
   TextInput, StyleSheet, TouchableOpacity, View, FlatList, Pressable, ActivityIndicator,
 } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
 import EntIcon from 'react-native-vector-icons/Entypo';
+import { debounce } from 'lodash';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import Headline from './typography/Headline';
 import Divider from './Divider';
 import Body from './typography/Body';
 import i18n from '../utils/i18n';
+import httpService from '../utils/httpService';
 
 export default function TextField({
   value,
@@ -27,17 +29,50 @@ export default function TextField({
   iconColor,
   disabled,
   ref,
-  suggestions,
+  geoMatching = false,
   onSuggestionPress,
-  suggestionLoading,
   ...rest
 }) {
   const [focused, setFocused] = useState(false);
-  const [suggestionData, setSuggestionData] = useState([]);
+  const [suggestionData, setSuggestionData] = useState(null);
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false);
 
   useEffect(() => {
-    setSuggestionData(suggestions);
-  }, [suggestions]);
+    if (!value) {
+      setSuggestionData(null);
+      setSuggestionsLoading(false);
+    }
+  }, [value]);
+
+  const handleChangeText = (val) => {
+    onChangeText(val);
+
+    if (geoMatching) {
+      delayedSearch(val);
+    }
+  };
+
+  const delayedSearch = useCallback(
+    debounce((val) => handleLocationQuery(val), 250),
+    [],
+  );
+
+  const handleLocationQuery = async (val) => {
+    if (val.trim().length < 2) {
+      return;
+    }
+
+    setSuggestionsLoading(true);
+    const res = await httpService.getLocationFromQuery(val).catch(() => setSuggestionsLoading(false));
+
+    const sugg = res.features.map((feat) => ({
+      string: feat.place_name,
+      location: feat.center,
+    }));
+
+    setSuggestionData(sugg);
+    setSuggestionsLoading(false);
+  };
 
   const getIcon = () => (icon && typeof icon.type === 'function' ? (
     React.cloneElement(icon, { fill: iconColor })
@@ -47,7 +82,10 @@ export default function TextField({
 
   const SuggestionTile = ({ item }) => (
     <Pressable
-      onPress={() => onSuggestionPress(item)}
+      onPress={() => {
+        onSuggestionPress(item);
+        setSuggestionData(null);
+      }}
       style={styles.suggestionTile}
     >
       <EntIcon
@@ -93,7 +131,7 @@ export default function TextField({
           onFocus={() => focusable && setFocused(true)}
           style={styles.textInput}
           value={value || null}
-          onChangeText={(val) => onChangeText(val)}
+          onChangeText={(val) => handleChangeText(val)}
           placeholder={prefix ? `+${prefix} ${placeholder}` : placeholder}
           placeholderTextColor={COLORS.neutral[300]}
         />
@@ -116,9 +154,9 @@ export default function TextField({
         />
         )}
       </TouchableOpacity>
-      {(suggestions || suggestionLoading) && (
+      {((geoMatching && suggestionData) || (suggestionsLoading && suggestionData)) && (
       <View style={styles.suggestionsContainer}>
-        {suggestionLoading ? (
+        {suggestionsLoading ? (
           <ActivityIndicator
             style={{ marginVertical: 16 }}
             color={COLORS.neutral[300]}
@@ -205,7 +243,8 @@ const styles = StyleSheet.create({
     },
   },
   suggestionTile: {
-    height: 55,
+    minHeight: 55,
+    paddingVertical: 10,
     alignItems: 'center',
     flexDirection: 'row',
     paddingHorizontal: PADDING.m,

@@ -11,9 +11,14 @@ import BoardingPassCode from '../../../assets/images/boarding_card_code.png';
 import Headline from '../typography/Headline';
 import Body from '../typography/Body';
 import Button from '../Button';
+import activeTripStore from '../../stores/ActiveTripStore';
+import Utils from '../../utils';
 
-export default function BoardingPassModal({ type, isVisible, onRequestClose }) {
+export default function BoardingPassModal({ isVisible, onRequestClose }) {
   const [showModal, setShowModal] = useState(isVisible);
+  const {
+    location, dateRange, description, title,
+  } = activeTripStore((state) => state.activeTrip);
   const animatedBottom = useRef(new Animated.Value(900)).current;
   const duration = 300;
 
@@ -41,7 +46,7 @@ export default function BoardingPassModal({ type, isVisible, onRequestClose }) {
   const getDestinationContainer = () => (
     <HighlightContainer
       description={i18n.t('Date')}
-      text="21.04 to 28.04"
+      text={Utils.getDateRange(dateRange)}
       onBottom={false}
     />
   );
@@ -49,7 +54,7 @@ export default function BoardingPassModal({ type, isVisible, onRequestClose }) {
   const getDateContainer = () => (
     <HighlightContainer
       description={i18n.t('Destination')}
-      text="Paris, France"
+      text={location?.placeName}
       onBottom={false}
     />
   );
@@ -82,14 +87,16 @@ export default function BoardingPassModal({ type, isVisible, onRequestClose }) {
               <Headline
                 type={2}
                 color={COLORS.shades[0]}
-                text="Dogpack trip 2022 🐶"
+                text={title}
               />
+              {description && (
               <Body
                 style={{ marginTop: 6, marginRight: 20 }}
                 type={1}
                 color={COLORS.shades[0]}
-                text="Fucking sending it for a few weeks straight. Guys trip baby. LET’S GO 🍻"
+                text={description}
               />
+              )}
             </View>
             <Dash
               style={{ width: '97%', alignSelf: 'center' }}

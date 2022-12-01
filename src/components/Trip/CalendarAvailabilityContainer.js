@@ -21,8 +21,8 @@ export default function CalendarAvailabilityContainer({ style, onPress }) {
   const [monthVisible, setMonthVisible] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(9);
   const [daysOfMonth, setdaysOfMonth] = useState([]);
-  const CELL_HEIGHT = 70;
-  const CELL_WIDTH = 60;
+  const CELL_HEIGHT = 60;
+  const CELL_WIDTH = 50;
   const dateFormat = 'DDMMYY';
 
   const monthOptions = {
@@ -269,7 +269,7 @@ export default function CalendarAvailabilityContainer({ style, onPress }) {
           onPress={() => setMonthVisible(true)}
           style={{ flex: 1, alignItems: 'center' }}
         >
-          <Headline type={3} text={Utils.getMonthFromInt(currentMonth)} />
+          <Headline type={4} text={Utils.getMonthFromInt(currentMonth)} />
         </TouchableOpacity>
         <Icon
           name="arrowright"

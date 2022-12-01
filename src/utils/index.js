@@ -40,6 +40,23 @@ export default class Utils {
 
   /**
      * Convert Date to UNIX timestamp
+     * @param {String} date - Date
+     * @return {Integer} Timestamp
+     */
+  static getDateRange(dateRange) {
+    if (!dateRange) {
+      return 'N/A';
+    }
+
+    const { startDate, endDate } = dateRange;
+    const start = Utils.getDateFromTimestamp(startDate, endDate ? 'MM.DD' : 'MM.DD.YY');
+    const end = endDate ? Utils.getDateFromTimestamp(endDate, 'MM.DD.YY') : i18n.t('open');
+
+    return `${start} - ${end}`;
+  }
+
+  /**
+     * Convert Date to UNIX timestamp
      * @param {Integer} date - Date
      * @return {boolean} isFuture
      */

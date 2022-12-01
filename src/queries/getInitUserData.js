@@ -21,7 +21,10 @@ const GET_INIT_USER_DATA = gql`
                 id
                 thumbnailUri
                 title
-                location
+                location {
+                    placeName
+                    latlon
+                }
                 expenses {
                     amount
                     title
@@ -52,7 +55,10 @@ const GET_INIT_USER_DATA = gql`
                 id
                 title
                 description
-                location
+                location {
+                    placeName
+                    latlon
+                }
                 thumbnailUri
                 expenses {
                     createdAt
@@ -99,7 +105,10 @@ const GET_INIT_USER_DATA = gql`
             recapTrip {
                 id
                 title
-                location
+                location {
+                    placeName
+                    latlon
+                }
                 expenses {
                     createdAt
                     creatorId

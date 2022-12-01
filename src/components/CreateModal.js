@@ -2,13 +2,13 @@ import {
   View, StyleSheet, Modal,
 } from 'react-native';
 import React, {
-  useRef, useState, useEffect, useCallback,
+  useRef, useState, useEffect,
 } from 'react';
 import Icon from 'react-native-vector-icons/Entypo';
 import PagerView from 'react-native-pager-view';
 import Contacts from 'react-native-contacts';
 import { useMutation } from '@apollo/client';
-import { debounce } from 'lodash';
+import Toast from 'react-native-toast-message';
 import i18n from '../utils/i18n';
 import Headline from './typography/Headline';
 import COLORS from '../constants/Theme';
@@ -24,7 +24,6 @@ import ADD_TRIP from '../mutations/addTrip';
 import CalendarModal from './CalendarModal';
 import ContactsModal from './ContactsModal';
 import Body from './typography/Body';
-import httpService from '../utils/httpService';
 
 export default function CreateModal({ isVisible, onRequestClose }) {
   const [startDate, setStartDate] = useState(new Date());
@@ -33,10 +32,10 @@ export default function CreateModal({ isVisible, onRequestClose }) {
     date.setDate(date.getDate() + 5);
     return date;
   });
-  const [addTrip, { loading }] = useMutation(ADD_TRIP);
+  const [addTrip, { loading, error }] = useMutation(ADD_TRIP);
 
   const [location, setLocation] = useState({
-    string: '',
+    placeName: '',
     latlon: [],
   });
   const [tripName, setTripName] = useState([]);
@@ -45,11 +44,19 @@ export default function CreateModal({ isVisible, onRequestClose }) {
   const [contactsVisible, setContactsVisible] = useState(false);
   const [calendarVisible, setCalendarVisible] = useState(false);
   const [popUpVisible, setPopUpVisible] = useState(false);
-  const [locationSuggestions, setLocationSuggestions] = useState(null);
-  const [suggestionLoading, setSuggestionLoading] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
   const pageRef = useRef(null);
   const [contacts, setContacts] = useState([]);
+
+  useEffect(() => {
+    if (error) {
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('Whoops!'),
+        text2: error.message,
+      });
+    }
+  }, [error]);
 
   useEffect(() => {
     getContacts();
@@ -83,41 +90,6 @@ export default function CreateModal({ isVisible, onRequestClose }) {
       prev[index].isInvited = false;
       return [...prev];
     });
-  };
-
-  const handleLocationInput = (val) => {
-    setLocation(val);
-    delayedSearch(val);
-  };
-
-  const handleLocationQuery = async (val) => {
-    if (val.trim().length < 2) {
-      return;
-    }
-
-    setSuggestionLoading(true);
-    const res = await httpService.getLocationFromQuery(val).catch(() => setSuggestionLoading(false));
-
-    const suggestions = res.features.map((feat) => ({
-      string: feat.place_name,
-      location: feat.center,
-    }));
-
-    setLocationSuggestions(suggestions);
-    setSuggestionLoading(false);
-  };
-
-  const delayedSearch = useCallback(
-    debounce((val) => handleLocationQuery(val), 250),
-    [],
-  );
-
-  const handleSuggestionPress = (sugg) => {
-    setLocation({
-      string: sugg.string,
-      latlon: sugg.location,
-    });
-    setLocationSuggestions(null);
   };
 
   const getDateValue = () => {
@@ -157,6 +129,8 @@ export default function CreateModal({ isVisible, onRequestClose }) {
       });
     });
 
+    const { placeName, latlon } = location;
+
     await addTrip({
       variables: {
         trip: {
@@ -165,14 +139,27 @@ export default function CreateModal({ isVisible, onRequestClose }) {
             startDate,
           },
           invitees,
-          location,
+          location: {
+            placeName,
+            latlon,
+          },
           title: tripName,
         },
       },
-    }).catch((e) => console.log(`ERROR: ${e.message}`));
+    }).catch((e) => {
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('Whoops!'),
+        text2: e.message,
+      });
+      console.log(`ERROR: ${e.message}`);
+    });
 
     setTripName('');
-    setLocation('');
+    setLocation({
+      string: '',
+      latlon: [],
+    });
     setStartDate();
     setEndDate();
     setContacts();
@@ -218,13 +205,21 @@ export default function CreateModal({ isVisible, onRequestClose }) {
     <View>
       <TextField
         style={{ marginTop: 18, marginBottom: 10 }}
-        value={location.string || null}
-        onChangeText={(val) => handleLocationInput(val)}
+        value={location.placeName || null}
+        onChangeText={(val) => setLocation({
+          placeName: val,
+          latlon: [],
+        })}
         placeholder={i18n.t('Paris, France 🇫🇷')}
-        onDelete={() => setLocation('')}
-        suggestions={locationSuggestions}
-        onSuggestionPress={(sugg) => handleSuggestionPress(sugg)}
-        suggestionLoading={suggestionLoading}
+        onDelete={() => setLocation({
+          placeName: '',
+          latlon: [],
+        })}
+        geoMatching
+        onSuggestionPress={(sugg) => setLocation({
+          placeName: sugg.string,
+          latlon: sugg.location,
+        })}
       />
 
       <PopUpModal

@@ -203,6 +203,13 @@ export default function TripScreen({ route }) {
         },
       }).catch((e) => {
         console.log(e);
+        setTimeout(() => {
+          Toast.show({
+            type: 'error',
+            text1: i18n.t('Whoops!'),
+            text2: e.message,
+          });
+        }, 500);
       });
       return;
     }
@@ -438,17 +445,6 @@ export default function TripScreen({ route }) {
     },
   ];
 
-  const getDateRange = () => {
-    if (!data.dateRange) {
-      return 'N/A';
-    }
-
-    const { startDate, endDate } = data.dateRange;
-    const start = Utils.getDateFromTimestamp(startDate, endDate ? 'MM.DD' : 'MM.DD.YY');
-    const end = endDate ? Utils.getDateFromTimestamp(endDate, 'MM.DD.YY') : i18n.t('open');
-
-    return `${start} - ${end}`;
-  };
   const getTopContent = () => (
     <>
       <TouchableOpacity
@@ -471,7 +467,7 @@ export default function TripScreen({ route }) {
           >
             <Button
               isSecondary
-              text={data.location || i18n.t('Set location')}
+              text={data.location.placeName || i18n.t('Set location')}
               fullWidth={false}
               icon="location-pin"
               onPress={() => navigation.push(ROUTES.locationScreen)}
@@ -481,7 +477,7 @@ export default function TripScreen({ route }) {
             />
             <Button
               isSecondary
-              text={data.dateRange?.startDate ? getDateRange() : i18n.t('Find date')}
+              text={data.dateRange?.startDate ? Utils.getDateRange(data.dateRange) : i18n.t('Find date')}
               fullWidth={false}
               icon={<AntIcon name="calendar" size={22} />}
               onPress={() => navigation.push(ROUTES.dateScreen)}
@@ -569,7 +565,7 @@ export default function TripScreen({ route }) {
           >
             <TripHeader
               title={data.title}
-              subtitle={`${getDateRange()}`}
+              subtitle={`${Utils.getDateRange(data?.dateRange)}`}
               invitees={tripData.invitees}
               items={contentItems}
               onPress={(index) => handleTabPress(index)}
