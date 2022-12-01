@@ -78,7 +78,7 @@ export default function PollScreen() {
             data={polls}
             ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
             renderItem={({ item }) => {
-              const onPress = user.id === item.creatorId ? () => console.log('hello') : null;
+              const onPress = user.id === item.creatorId ? () => console.log('helloo') : null;
               return (
                 <PollView
                   onPress={onPress}

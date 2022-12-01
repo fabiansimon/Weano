@@ -35,13 +35,18 @@ export default function CreateModal({ isVisible, onRequestClose }) {
   });
   const [addTrip, { loading }] = useMutation(ADD_TRIP);
 
-  const [location, setLocation] = useState('');
+  const [location, setLocation] = useState({
+    string: '',
+    latlon: [],
+  });
   const [tripName, setTripName] = useState([]);
 
   // MODALS
   const [contactsVisible, setContactsVisible] = useState(false);
   const [calendarVisible, setCalendarVisible] = useState(false);
   const [popUpVisible, setPopUpVisible] = useState(false);
+  const [locationSuggestions, setLocationSuggestions] = useState(null);
+  const [suggestionLoading, setSuggestionLoading] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
   const pageRef = useRef(null);
   const [contacts, setContacts] = useState([]);
@@ -81,20 +86,39 @@ export default function CreateModal({ isVisible, onRequestClose }) {
   };
 
   const handleLocationInput = (val) => {
-    console.log('hello');
     setLocation(val);
     delayedSearch(val);
   };
 
-  const handleLocationQuery = async () => {
-    console.log('CALLED');
-    httpService.getLocationFromQuery('Vienna').then((res) => console.log(res));
+  const handleLocationQuery = async (val) => {
+    if (val.trim().length < 2) {
+      return;
+    }
+
+    setSuggestionLoading(true);
+    const res = await httpService.getLocationFromQuery(val).catch(() => setSuggestionLoading(false));
+
+    const suggestions = res.features.map((feat) => ({
+      string: feat.place_name,
+      location: feat.center,
+    }));
+
+    setLocationSuggestions(suggestions);
+    setSuggestionLoading(false);
   };
 
   const delayedSearch = useCallback(
-    debounce((val) => handleLocationQuery(val), 1000),
+    debounce((val) => handleLocationQuery(val), 250),
     [],
   );
+
+  const handleSuggestionPress = (sugg) => {
+    setLocation({
+      string: sugg.string,
+      latlon: sugg.location,
+    });
+    setLocationSuggestions(null);
+  };
 
   const getDateValue = () => {
     let start = '--';
@@ -194,16 +218,15 @@ export default function CreateModal({ isVisible, onRequestClose }) {
     <View>
       <TextField
         style={{ marginTop: 18, marginBottom: 10 }}
-        value={location || null}
+        value={location.string || null}
         onChangeText={(val) => handleLocationInput(val)}
         placeholder={i18n.t('Paris, France 🇫🇷')}
         onDelete={() => setLocation('')}
+        suggestions={locationSuggestions}
+        onSuggestionPress={(sugg) => handleSuggestionPress(sugg)}
+        suggestionLoading={suggestionLoading}
       />
-      <Headline
-        type={1}
-        // onPress={(val) => handleLocationInput(val)}
-        text="SEARCH"
-      />
+
       <PopUpModal
         isVisible={popUpVisible}
         title={i18n.t('No rush!')}

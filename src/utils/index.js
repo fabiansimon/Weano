@@ -1,7 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import 'react-native-get-random-values';
 import moment from 'moment';
-
 import { Alert } from 'react-native';
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import Toast from 'react-native-toast-message';

@@ -76,13 +76,11 @@ async function uploadToS3(image) {
 async function getLocationFromQuery(input) {
   const baseUrl = 'https://api.mapbox.com/geocoding/v5/mapbox.places/';
   const query = input.trim();
-  const limit = 1;
+  const limit = 2;
 
   if (query.length < 1) {
     return;
   }
-
-  console.log('APIII');
 
   const queryUrl = `${baseUrl}${query}.json?limit=${limit}&types=place%2Ccountry&access_token=${MAPBOX_TOKEN}`;
   return new Promise((resolve, reject) => {
