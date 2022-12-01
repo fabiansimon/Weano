@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import PollTile from './PollTile';
 import Headline from '../typography/Headline';
 import Body from '../typography/Body';
-import COLORS from '../../constants/Theme';
+import COLORS, { PADDING } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 
 export default function PollView({
@@ -17,11 +17,10 @@ export default function PollView({
 
   useEffect(() => {
     setPollData(data);
-    console.log(data);
   }, [data]);
 
   const handleVote = (index) => {
-    console.log(index);
+    // console.log(index);
   };
 
   const getPercentage = (votes) => {
@@ -35,7 +34,7 @@ export default function PollView({
   const header = data ? title : i18n.t('Be the first one to add one!');
 
   return (
-    <View style={style}>
+    <View style={[styles.pollContainer, style]}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <View>
           <Headline
@@ -89,5 +88,13 @@ const styles = StyleSheet.create({
     borderColor: COLORS.neutral[100],
     height: 35,
     width: 35,
+  },
+  pollContainer: {
+    paddingVertical: 20,
+    paddingHorizontal: PADDING.s,
+    borderRadius: 14,
+    borderColor: COLORS.neutral[100],
+    borderWidth: 1,
+    backgroundColor: COLORS.shades[0],
   },
 });

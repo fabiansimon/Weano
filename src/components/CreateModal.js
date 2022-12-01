@@ -1,11 +1,14 @@
 import {
   View, StyleSheet, Modal,
 } from 'react-native';
-import React, { useRef, useState, useEffect } from 'react';
+import React, {
+  useRef, useState, useEffect, useCallback,
+} from 'react';
 import Icon from 'react-native-vector-icons/Entypo';
 import PagerView from 'react-native-pager-view';
 import Contacts from 'react-native-contacts';
 import { useMutation } from '@apollo/client';
+import { debounce } from 'lodash';
 import i18n from '../utils/i18n';
 import Headline from './typography/Headline';
 import COLORS from '../constants/Theme';
@@ -21,6 +24,7 @@ import ADD_TRIP from '../mutations/addTrip';
 import CalendarModal from './CalendarModal';
 import ContactsModal from './ContactsModal';
 import Body from './typography/Body';
+import httpService from '../utils/httpService';
 
 export default function CreateModal({ isVisible, onRequestClose }) {
   const [startDate, setStartDate] = useState(new Date());
@@ -75,6 +79,22 @@ export default function CreateModal({ isVisible, onRequestClose }) {
       return [...prev];
     });
   };
+
+  const handleLocationInput = (val) => {
+    console.log('hello');
+    setLocation(val);
+    delayedSearch(val);
+  };
+
+  const handleLocationQuery = async () => {
+    console.log('CALLED');
+    httpService.getLocationFromQuery('Vienna').then((res) => console.log(res));
+  };
+
+  const delayedSearch = useCallback(
+    debounce((val) => handleLocationQuery(val), 1000),
+    [],
+  );
 
   const getDateValue = () => {
     let start = '--';
@@ -175,9 +195,14 @@ export default function CreateModal({ isVisible, onRequestClose }) {
       <TextField
         style={{ marginTop: 18, marginBottom: 10 }}
         value={location || null}
-        onChangeText={(val) => setLocation(val)}
+        onChangeText={(val) => handleLocationInput(val)}
         placeholder={i18n.t('Paris, France 🇫🇷')}
         onDelete={() => setLocation('')}
+      />
+      <Headline
+        type={1}
+        // onPress={(val) => handleLocationInput(val)}
+        text="SEARCH"
       />
       <PopUpModal
         isVisible={popUpVisible}

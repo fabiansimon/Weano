@@ -1,29 +1,33 @@
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import React from 'react';
 import Headline from './typography/Headline';
-import Divider from './Divider';
-import COLORS from '../constants/Theme';
 
 export default function ListItem({
-  style, title, trailing, children, omitPadding,
+  style, title, trailing, children, omitPadding, onPress,
 }) {
   return (
-    <>
-      <View style={[style, { paddingVertical: 12, paddingHorizontal: !omitPadding && 20, marginBottom: 50 }]}>
-        <View style={{
-          flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20, paddingHorizontal: omitPadding && 20,
-        }}
-        >
-          <Headline
-            type={3}
-            text={title}
-          />
-          {trailing}
-        </View>
-        {children}
+    <Pressable
+      onPress={onPress}
+      style={[style, {
+        paddingVertical: 12,
+        paddingHorizontal: !omitPadding && 20,
+        marginBottom: 50,
+      }]}
+    >
+      <View style={{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 20,
+        paddingHorizontal: omitPadding && 20,
+      }}
+      >
+        <Headline
+          type={3}
+          text={title}
+        />
+        {trailing}
       </View>
-      {/* <Divider color={COLORS.shades[0]} /> */}
-      {/* <View style={{ backgroundColor: COLORS.neutral[50], height: 20 }} /> */}
-    </>
+      {children}
+    </Pressable>
   );
 }

@@ -1,10 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import 'react-native-get-random-values';
 import moment from 'moment';
-import {
-  MAPBOX_TOKEN,
-  // eslint-disable-next-line import/no-unresolved
-} from '@env';
+
 import { Alert } from 'react-native';
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import Toast from 'react-native-toast-message';
@@ -164,31 +161,5 @@ export default class Utils {
         text2: i18n.t('Image successfully saved on your device'),
       });
     }, 1000);
-  }
-
-  /**
-     * Convert LatLon to Location
-     * @param {Array} latlon - Latitude & Longitude
-     * @return {String} Location as String
-     */
-  static async getLocationFromCoordinates(latlon) {
-    // eslint-disable-next-line no-undef
-    const geocodingClient = mbxGeocoding({
-      accessToken: MAPBOX_TOKEN,
-    });
-
-    geocodingClient.reverseGeocode({
-      query: latlon,
-    })
-      .send()
-      .then((response) => {
-        // const match = response.body.features[4].place_name;
-        const match = response.body.features;
-        console.log(match);
-        return match;
-      }).catch((e) => {
-        console.error(e);
-      })
-      .finally(() => 'INVALID_REQUEST');
   }
 }

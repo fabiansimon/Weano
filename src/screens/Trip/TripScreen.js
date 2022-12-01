@@ -36,6 +36,7 @@ import userStore from '../../stores/UserStore';
 import UPDATE_TRIP from '../../mutations/updateTrip';
 import httpService from '../../utils/httpService';
 import InputModal from '../../components/InputModal';
+import PollCarousel from '../../components/Polls/PollCarousel';
 
 const mockData = {
   title: 'Graduation Trip 2022 🎓',
@@ -376,13 +377,12 @@ export default function TripScreen({ route }) {
         text={i18n.t('see all')}
         color={COLORS.neutral[500]}
       />,
-      // content: <ChecklistContainer
-      //   data={tripData.tasks}
-      //   onPress={(val, index, type) => updateTasks(val, index, type)}
-      //   onLayout={(e) => {
-      //     console.log(`Checklist: ${e.nativeEvent.layout.y}`);
-      //   }}
-      // />,
+      omitPadding: true,
+      onPress: () => navigation.navigate(ROUTES.pollScreen),
+      content: <PollCarousel
+        style={{ marginHorizontal: PADDING.m, maxHeight: 300 }}
+        data={data?.polls}
+      />,
       yPos: 0,
     },
     {
@@ -546,6 +546,7 @@ export default function TripScreen({ route }) {
     <View style={styles.mainContainer}>
       {contentItems.map((item) => (
         <ListItem
+          onPress={item.onPress}
           omitPadding={item.omitPadding}
           title={item.title}
           trailing={item.trailing}

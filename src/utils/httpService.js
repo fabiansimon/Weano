@@ -2,18 +2,18 @@ import 'react-native-get-random-values';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { v4 as uuidv4 } from 'uuid';
 import {
-  BASE_URL, ACCESS_KEY_ID, SECRET_ACCESS_KEY, S3_BUCKET,
+  BASE_URL, ACCESS_KEY_ID, SECRET_ACCESS_KEY, S3_BUCKET, MAPBOX_TOKEN,
   // eslint-disable-next-line import/no-unresolved
 } from '@env';
 import { S3 } from 'aws-sdk';
 import { decode } from 'base64-arraybuffer';
 import { readFile } from 'react-native-fs';
 
-const baseUrl = 'http://143.198.241.91:4000';
+const serverUrl = 'http://143.198.241.91:4000';
 
 async function getVerificationCode(phoneNumber) {
   return new Promise((resolve, reject) => {
-    fetch(`${baseUrl}/verify/${phoneNumber}`, {
+    fetch(`${serverUrl}/verify/${phoneNumber}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -32,7 +32,7 @@ async function getVerificationCode(phoneNumber) {
 
 async function checkVerificationCode(phoneNumber, code) {
   return new Promise((resolve, reject) => {
-    fetch(`${baseUrl}/check/${phoneNumber}/${code}`, {
+    fetch(`${serverUrl}/check/${phoneNumber}/${code}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -73,8 +73,38 @@ async function uploadToS3(image) {
   }).promise();
 }
 
+async function getLocationFromQuery(input) {
+  const baseUrl = 'https://api.mapbox.com/geocoding/v5/mapbox.places/';
+  const query = input.trim();
+  const limit = 1;
+
+  if (query.length < 1) {
+    return;
+  }
+
+  console.log('APIII');
+
+  const queryUrl = `${baseUrl}${query}.json?limit=${limit}&types=place%2Ccountry&access_token=${MAPBOX_TOKEN}`;
+  return new Promise((resolve, reject) => {
+    fetch(queryUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+}
+
 export default {
   uploadToS3,
   getVerificationCode,
   checkVerificationCode,
+  getLocationFromQuery,
 };

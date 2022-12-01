@@ -80,14 +80,12 @@ export default function PollScreen() {
             renderItem={({ item }) => {
               const onPress = user.id === item.creatorId ? () => console.log('hello') : null;
               return (
-                <View style={styles.pollContainer}>
-                  <PollView
-                    onPress={onPress}
-                    data={item}
-                    title={item.title}
-                    subtitle={Utils.getDateFromTimestamp(item.createdAt / 1000, 'DD.MM.YYYY • HH:mm')}
-                  />
-                </View>
+                <PollView
+                  onPress={onPress}
+                  data={item}
+                  title={item.title}
+                  subtitle={Utils.getDateFromTimestamp(item.createdAt / 1000, 'DD.MM.YYYY • HH:mm')}
+                />
               );
             }}
           />
@@ -117,13 +115,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: PADDING.s,
     paddingTop: 15,
     paddingBottom: 120,
-  },
-  pollContainer: {
-    paddingVertical: 20,
-    paddingHorizontal: PADDING.s,
-    borderRadius: 14,
-    borderColor: COLORS.neutral[100],
-    borderWidth: 1,
-    backgroundColor: COLORS.shades[0],
   },
 });

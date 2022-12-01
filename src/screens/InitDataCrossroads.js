@@ -31,7 +31,6 @@ export default function InitDataCrossroads() {
   const handleNavigation = () => {
     setTimeout(() => {
       // no deep linked route && no active trip && authenticated
-      console.log(requestedRoute);
       if (requestedRoute != null) {
         navigation.navigate(requestedRoute.screen, requestedRoute.params || null);
         return;
@@ -70,7 +69,6 @@ export default function InitDataCrossroads() {
     const { activeTrip, recapTrip, userData } = res;
 
     if (activeTrip) {
-      console.log(activeTrip);
       setActiveTrip(activeTrip);
 
       if (requestedRoute == null) {
