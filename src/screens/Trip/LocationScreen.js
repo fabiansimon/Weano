@@ -9,22 +9,24 @@ import HybridHeader from '../../components/HybridHeader';
 import INFORMATION from '../../constants/Information';
 // import PollView from '../../components/Polls/PollView';
 // import AddSuggestionModal from '../../components/Trip/AddSuggestionModal';
-// import HighlightContainer from '../../components/Trip/HighlightContainer';
 import BoardingPassModal from '../../components/Trip/BoardingPassModal';
 import activeTripStore from '../../stores/ActiveTripStore';
 import SetupContainer from '../../components/Trip/SetupContainer';
 import InputModal from '../../components/InputModal';
 import UPDATE_TRIP from '../../mutations/updateTrip';
+import HighlightContainer from '../../components/Trip/HighlightContainer';
 
 export default function LocationScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
   const { location, id } = activeTripStore((state) => state.activeTrip);
+
   const [updateTrip, { error }] = useMutation(UPDATE_TRIP);
+  const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
 
   const [isBoardingPassVisible, setBoardingPassVisible] = useState(false);
   const [inputVisible, setInputVisible] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-  const [pollData, setPollData] = useState(null);
+  // const [isVisible, setIsVisible] = useState(false);
+  // const [pollData, setPollData] = useState(null);
 
   useEffect(() => {
     if (error) {
@@ -50,6 +52,14 @@ export default function LocationScreen() {
 
     const { location: latlon, string: placeName } = input;
 
+    const oldLocation = location;
+    updateActiveTrip({
+      location: {
+        placeName,
+        latlon,
+      },
+    });
+
     await updateTrip({
       variables: {
         trip: {
@@ -69,6 +79,7 @@ export default function LocationScreen() {
         });
       }, 500);
     }).catch((e) => {
+      updateActiveTrip({ location: oldLocation });
       setTimeout(() => {
         Toast.show({
           type: 'error',
@@ -110,11 +121,13 @@ export default function LocationScreen() {
         setPollData={setPollData}
       /> */}
 
-      {/* <HighlightContainer
+      {location && (
+      <HighlightContainer
         onPress={() => setBoardingPassVisible(true)}
         description={i18n.t('Location')}
         text={location.placeName}
-      /> */}
+      />
+      )}
 
       <InputModal
         isVisible={inputVisible}

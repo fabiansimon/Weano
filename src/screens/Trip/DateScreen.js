@@ -31,7 +31,9 @@ export default function DateScreen() {
     return date;
   });
   const [calendarVisible, setCalendarVisible] = useState(false);
+
   const [updateTrip, { error }] = useMutation(UPDATE_TRIP);
+  const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
 
   const { dateRange, id } = activeTripStore((state) => state.activeTrip);
 
@@ -86,9 +88,14 @@ export default function DateScreen() {
 
   const handleDateUpdate = async () => {
     setTimeout(async () => {
-      console.log(endDate);
-      console.log(startDate);
-      console.log(id);
+      const oldDateRange = dateRange;
+      updateActiveTrip({
+        dateRange: {
+          endDate,
+          startDate,
+        },
+      });
+
       await updateTrip({
         variables: {
           trip: {
@@ -108,6 +115,7 @@ export default function DateScreen() {
           });
         }, 500);
       }).catch((e) => {
+        updateActiveTrip({ dateRange: oldDateRange });
         setTimeout(() => {
           Toast.show({
             type: 'error',
@@ -117,7 +125,7 @@ export default function DateScreen() {
         }, 500);
         console.log(e);
       });
-    }, [200]);
+    }, 300);
   };
 
   const AvailbleExplanation = () => (
@@ -178,11 +186,13 @@ export default function DateScreen() {
         onRequestClose={() => setIsVisible(false)}
       />
 
-      {/* <HighlightContainer
+      {dateRange && (
+      <HighlightContainer
         onPress={() => setBoardingPassVisible(true)}
         description={i18n.t('Date')}
         text={Utils.getDateRange(dateRange)}
-      /> */}
+      />
+      )}
 
       <BoardingPassModal
         isVisible={isBoardingPassVisible}

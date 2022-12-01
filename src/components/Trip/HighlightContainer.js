@@ -1,4 +1,6 @@
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import {
+  StyleSheet, View, TouchableOpacity, Dimensions,
+} from 'react-native';
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
@@ -31,6 +33,8 @@ export default function HighlightContainer({
                 type={2}
                 text={text}
                 color={COLORS.shades[0]}
+                numberOfLines={1}
+                ellipsizeMode="tail"
                 style={{ alignSelf: 'flex-start' }}
               />
             </View>
