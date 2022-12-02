@@ -174,7 +174,7 @@ export default function MainScreen() {
       },
       {
         title: i18n.t('Successful Trips ✈️'),
-        onPress: () => console.log('0'),
+        onPress: () => navigation.navigate(ROUTES.timelineScreen),
         style: styles.basicChip,
         fontColor: COLORS.neutral[900],
         isShown: true,

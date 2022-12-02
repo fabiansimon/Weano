@@ -14,7 +14,6 @@ import FAButton from '../../components/FAButton';
 import AddPollModal from '../../components/Trip/AddPollModal';
 import ADD_POLL from '../../mutations/addPoll';
 import userStore from '../../stores/UserStore';
-import Body from '../../components/typography/Body';
 import Headline from '../../components/typography/Headline';
 
 export default function PollScreen() {

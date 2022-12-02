@@ -31,6 +31,7 @@ import InvitationScreen from './src/screens/InvitationScreen';
 import userStore from './src/stores/UserStore';
 import AsyncStorageDAO from './src/utils/AsyncStorageDAO';
 import PollScreen from './src/screens/Trip/PollScreen';
+import TimelineScreen from './src/screens/TimelineScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -114,6 +115,7 @@ export default function App() {
             <Stack.Screen name={ROUTES.memoriesScreen} component={MemoriesScreen} />
             <Stack.Screen name={ROUTES.cameraScreen} component={CameraScreen} />
             <Stack.Screen name={ROUTES.pollScreen} component={PollScreen} />
+            <Stack.Screen name={ROUTES.timelineScreen} component={TimelineScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </ApolloProvider>

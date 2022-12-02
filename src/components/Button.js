@@ -58,6 +58,7 @@ export default function Button({
 const styles = StyleSheet.create({
   container: {
     height: 50,
+    maxHeight: 50,
     minWidth: 50,
     borderWidth: 0.5,
     flexDirection: 'row',
