@@ -101,18 +101,27 @@ export default function TimelineScreen() {
   }, [error, data]);
 
   const getItem = (item) => {
-    const user = 'Fabian';
     // eslint-disable-next-line no-underscore-dangle
     const isImage = item.__typename === 'Image';
-    const title = isImage ? `${user} ${i18n.t('uploaded a photo 📸')}` : `${user} ${i18n.t('added an expense 💰')}`;
+    const title = isImage ? `${i18n.t('Uploaded photo 📸')}` : `${i18n.t('Added expense 💰')}`;
 
     return (
       <View style={{
         flexDirection: 'row', alignItems: 'center', width: '100%',
       }}
       >
-        <View style={{ borderLeftColor: COLORS.neutral[100], borderLeftWidth: 1, height: '100%' }} />
-        <View style={{ borderTopColor: COLORS.neutral[100], borderTopWidth: 1, width: 20 }} />
+        <View style={{
+          borderLeftColor: COLORS.neutral[100],
+          borderLeftWidth: 1,
+          height: '100%',
+        }}
+        />
+        <View style={{
+          borderTopColor: COLORS.neutral[100],
+          borderTopWidth: 1,
+          width: 20,
+        }}
+        />
         <Pressable style={styles.tile}>
           {isImage ? (
             <Image
@@ -123,25 +132,32 @@ export default function TimelineScreen() {
             />
           ) : (
             <View style={{
-              width: 36, marginRight: 10, alignItems: 'center', justifyContent: 'center',
+              marginRight: 10, justifyContent: 'center',
             }}
             >
               <Headline
-                type={1}
-                text={item.currency}
-                color={COLORS.warning[500]}
+                type={3}
+                text={`${item.amount}${item.currency}`}
+                // color={COLORS.warning[500]}
+              />
+              <Body
+                type={2}
+                text={item.title}
+                color={COLORS.neutral[300]}
               />
             </View>
           )}
-          <View style={{ justifyContent: 'center' }}>
-            <Headline
-              type={4}
+          <View style={{ justifyContent: 'center', flex: 1 }}>
+            <Body
+              style={{ textAlign: 'right' }}
+              type={1}
               isDense
               color={COLORS.shades[100]}
               text={title}
             />
             <Body
               type={2}
+              style={{ textAlign: 'right' }}
               color={COLORS.neutral[300]}
               text={Utils.getDateFromTimestamp(item.createdAt / 1000, 'MMM DD YYYY • HH:mm')}
             />
