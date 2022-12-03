@@ -15,6 +15,8 @@ const activeTripStore = create((set) => ({
       dateRange: data.dateRange || null,
       images: data.images || null,
       polls: data.polls || null,
+      mutualTasks: data.mutualTasks || null,
+      privateTasks: data.privateTasks || null,
     },
   })),
   updateActiveTrip: (data) => set((state) => ({
@@ -30,6 +32,8 @@ const activeTripStore = create((set) => ({
       dateRange: data.dateRange || state.activeTrip.dateRange,
       images: data.images || state.activeTrip.images,
       polls: data.polls || state.activeTrip.polls,
+      mutualTasks: data.mutualTasks || state.activeTrip.mutualTasks,
+      privateTasks: data.privateTasks || state.activeTrip.privateTasks,
     },
   })),
 }));

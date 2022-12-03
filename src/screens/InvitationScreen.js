@@ -114,6 +114,7 @@ export default function InvitationScreen({ route }) {
       />
       <ScrollView
         horizontal
+        showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingRight: 30 }}
         style={{
           flexDirection: 'row',
@@ -127,23 +128,23 @@ export default function InvitationScreen({ route }) {
           <Icon
             name="location-pin"
             color={COLORS.neutral[300]}
-            size={20}
+            size={18}
           />
-          <Headline
-            type={4}
-            style={{ marginLeft: 4 }}
+          <Body
+            type={1}
+            style={{ marginLeft: 2 }}
             color={COLORS.neutral[300]}
-            text={tripData?.location || i18n.t('No location yet')}
+            text={tripData?.location?.placeName || i18n.t('No location yet')}
           />
         </View>
         <View style={{ marginLeft: 12, flexDirection: 'row', alignItems: 'center' }}>
           <AntIcon
             name="calendar"
-            size={20}
+            size={18}
             color={COLORS.neutral[300]}
           />
-          <Headline
-            type={4}
+          <Body
+            type={1}
             style={{ marginLeft: 8 }}
             color={COLORS.neutral[300]}
             text={tripData?.dateRange?.startDate ? getDateRange() : i18n.t('No date yet')}
@@ -221,7 +222,7 @@ export default function InvitationScreen({ route }) {
 const styles = StyleSheet.create({
   inviteContainer: {
     marginTop: 20,
-    marginHorizontal: PADDING.xl,
+    marginHorizontal: PADDING.l,
     justifyContent: 'space-between',
     flex: 1,
   },

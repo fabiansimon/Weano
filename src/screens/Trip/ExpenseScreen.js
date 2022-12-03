@@ -19,29 +19,26 @@ import AddExpenseModal from '../../components/Trip/AddExpenseModal';
 import ADD_EXPENSE from '../../mutations/addExpense';
 import Body from '../../components/typography/Body';
 import userStore from '../../stores/UserStore';
+import activeTripStore from '../../stores/ActiveTripStore';
 
-export default function ExpenseScreen({ route }) {
-  const { expenses, tripId } = route.params;
-
-  const user = userStore((state) => state.user);
+export default function ExpenseScreen() {
+  const { expenses, activeMembers: users, id: tripId } = activeTripStore((state) => state.activeTrip);
+  const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
+  const { id } = userStore((state) => state.user);
 
   const scrollY = useRef(new Animated.Value(0)).current;
 
   const [addExpense, { loading, error }] = useMutation(ADD_EXPENSE);
 
   const [showTotal, setShowTotal] = useState(true);
-  const [expenseData, setExpenseData] = useState([]);
+
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [myData, setMyData] = useState([]);
 
   useEffect(() => {
-    setExpenseData(expenses);
-  }, []);
-
-  useEffect(() => {
-    extractMyData(expenseData);
-  }, [expenseData]);
+    extractMyData(expenses);
+  }, [expenses]);
 
   useEffect(() => {
     if (error) {
@@ -56,49 +53,16 @@ export default function ExpenseScreen({ route }) {
   }, [error]);
 
   const extractMyData = (data) => {
-    setMyData(data.filter((expense) => expense.creatorId === user.id));
+    setMyData(data.filter((expense) => expense.creatorId === id));
   };
 
   const getTotal = () => {
     let amount = 0;
-    expenseData.forEach((expense) => {
+    expenses.forEach((expense) => {
       amount += expense.amount;
     });
     return amount;
   };
-
-  const users = [
-    {
-      name: 'Fabian Simon',
-      id: user.id,
-      uri: 'https://i.pravatar.cc/300',
-      status: true,
-    },
-    {
-      name: 'Julia Stefan',
-      id: 'julia stefan',
-      uri: 'https://i.pravatar.cc/300',
-      status: false,
-    },
-    {
-      name: 'Matthias Betonmisha',
-      id: 'matthias betonmisha',
-      uri: 'https://i.pravatar.cc/300',
-      status: false,
-    },
-    {
-      name: 'Didi Chovookkaran',
-      id: 'didi chovookkaran',
-      uri: 'https://i.pravatar.cc/300',
-      status: false,
-    },
-    {
-      name: 'Alexander Wieser',
-      id: 'alexander wieser',
-      uri: 'https://i.pravatar.cc/300',
-      status: false,
-    },
-  ];
 
   const handleAddExpense = async (data) => {
     setIsLoading(true);
@@ -107,6 +71,17 @@ export default function ExpenseScreen({ route }) {
     const { title } = data;
     amount = amount.replaceAll(',', '.');
     amount = parseFloat(amount);
+
+    const newExpense = {
+      amount,
+      createdAt: Date.now(),
+      creatorId: id,
+      currency: '$',
+      title,
+    };
+
+    const oldExpenses = expenses;
+    updateActiveTrip({ expenses: [...expenses, newExpense] });
 
     await addExpense({
       variables: {
@@ -122,6 +97,7 @@ export default function ExpenseScreen({ route }) {
         text1: i18n.t('Whoops!'),
         text2: e.message,
       });
+      updateActiveTrip({ expenses: oldExpenses });
       console.log(`ERROR: ${e.message}`);
     });
     setIsLoading(false);
@@ -195,7 +171,7 @@ export default function ExpenseScreen({ route }) {
           />
           <ExpensesContainer
             style={{ marginTop: 30 }}
-            data={expenseData}
+            data={expenses}
             users={users}
           />
           <View style={styles.summaryContainer}>
@@ -210,7 +186,7 @@ export default function ExpenseScreen({ route }) {
               )}
               style={{ paddingTop: 20 }}
               contentContainerStyle={{ paddingBottom: 20 }}
-              data={showTotal ? expenseData : myData}
+              data={showTotal ? expenses : myData}
               renderItem={({ item }) => getExpenseTile(item)}
               // eslint-disable-next-line react/no-unstable-nested-components
               ItemSeparatorComponent={() => (

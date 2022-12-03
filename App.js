@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import {
-  AppRegistry, Linking, LogBox, StatusBar,
+  AppRegistry, LogBox, StatusBar,
 } from 'react-native';
 import {
   ApolloClient, InMemoryCache, ApolloProvider,
@@ -118,7 +118,6 @@ export default function App() {
             <Stack.Screen name={ROUTES.pollScreen} component={PollScreen} />
             <Stack.Screen name={ROUTES.timelineScreen} component={TimelineScreen} />
             <Stack.Screen name={ROUTES.myAccountScreen} component={MyAccountScreen} />
-
           </Stack.Navigator>
         </NavigationContainer>
       </ApolloProvider>

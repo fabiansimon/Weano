@@ -1,12 +1,18 @@
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, Pressable } from 'react-native';
 import React from 'react';
 import COLORS, { RADIUS } from '../../constants/Theme';
 
-export default function TripListContainer({ style, children, onLayout }) {
+export default function TripListContainer({
+  style, children, onLayout, ...rest
+}) {
   return (
-    <View onLayout={onLayout} style={[styles.container, style]}>
+    <Pressable
+      {...rest}
+      onLayout={onLayout}
+      style={[styles.container, style]}
+    >
       {children}
-    </View>
+    </Pressable>
   );
 }
 

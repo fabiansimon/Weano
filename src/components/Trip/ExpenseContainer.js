@@ -6,10 +6,12 @@ import { useNavigation } from '@react-navigation/native';
 import COLORS, { PADDING } from '../../constants/Theme';
 import ExpenseIndividualCard from './ExpenseIndividualCard';
 import ROUTES from '../../constants/Routes';
+import activeTripStore from '../../stores/ActiveTripStore';
 
 export default function ExpensesContainer({
-  style, data, users, tileBackground = COLORS.neutral[50],
+  style, tileBackground = COLORS.neutral[50],
 }) {
+  const { expenses: data, activeMembers: users } = activeTripStore((state) => state.activeTrip);
   const navigation = useNavigation();
 
   const extractIndividualData = (user) => {

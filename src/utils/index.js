@@ -5,6 +5,7 @@ import { Alert } from 'react-native';
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import Toast from 'react-native-toast-message';
 import i18n from './i18n';
+import activeTripStore from '../stores/ActiveTripStore';
 
 export default class Utils {
   /**
@@ -177,5 +178,16 @@ export default class Utils {
         text2: i18n.t('Image successfully saved on your device'),
       });
     }, 1000);
+  }
+
+  /**
+     * Convert MonthInt to a Month String
+     * @param {image} image - image to download
+     */
+  static convertIdToUser(id) {
+    const { activeMembers } = activeTripStore((state) => state.activeTrip);
+    const { firstName, lastName } = activeMembers.find((member) => member.id === id);
+
+    return `${firstName} ${lastName}` || '';
   }
 }

@@ -12,7 +12,7 @@ export default function ExpenseTile({ style, data, user }) {
         <Headline
           type={3}
           color={COLORS.neutral[300]}
-          text={user?.name[0]}
+          text={user?.firstName[0]}
         />
       </View>
       <View style={{
@@ -29,7 +29,7 @@ export default function ExpenseTile({ style, data, user }) {
           <Body
             type={2}
             color={COLORS.neutral[300]}
-            text={user?.name}
+            text={`${user?.firstName} ${user?.lastName}`}
           />
         </View>
         <View>

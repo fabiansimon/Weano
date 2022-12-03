@@ -1,10 +1,12 @@
 import {
   View, StyleSheet, ScrollView, Dimensions, FlatList,
 } from 'react-native';
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Animated from 'react-native-reanimated';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useMutation } from '@apollo/client';
+import Toast from 'react-native-toast-message';
 import COLORS, { PADDING } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Divider from '../../components/Divider';
@@ -15,48 +17,30 @@ import CheckboxTile from '../../components/Trip/CheckboxTile';
 import Button from '../../components/Button';
 import AddTaskModal from '../../components/Trip/AddTaskModal';
 import Body from '../../components/typography/Body';
+import activeTripStore from '../../stores/ActiveTripStore';
+import ADD_TASK from '../../mutations/addTask';
+import userStore from '../../stores/UserStore';
 
 export default function ChecklistScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
+  const { mutualTasks, privateTasks, id: tripId } = activeTripStore((state) => state.activeTrip);
+  const [addTask, { loading, error }] = useMutation(ADD_TASK);
+  const { id: userId } = userStore((state) => state.user);
+  const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
+
   const [isVisible, setIsVisible] = useState(false);
-  const [mutualTasks, setMutualTasks] = useState([]);
-  const [privateTasks, setPrivateTasks] = useState([]);
-  const mockTasks = {
-    privateTasks: [
-      {
-        title: 'Bring towels',
-        isDone: false,
-        id: 0,
-      },
-      {
-        title: 'Get passport renewed',
-        isDone: false,
-        id: 1,
-      },
-    ],
-    mutualTasks: [
-      {
-        title: 'Bring speakers 🎧',
-        isDone: false,
-        assignee: 'Julia Chovo',
-      },
-      {
-        title: 'Check Clubscene 🎉',
-        isDone: false,
-        assignee: 'Clembo',
-      },
-      {
-        title: 'Pay for Airbnb',
-        isDone: false,
-        assignee: 'Jennelie',
-      },
-    ],
-  };
 
   useEffect(() => {
-    setMutualTasks(mockTasks.mutualTasks);
-    setPrivateTasks(mockTasks.privateTasks);
-  }, []);
+    if (error) {
+      setTimeout(() => {
+        Toast.show({
+          type: 'error',
+          text1: i18n.t('Whoops!'),
+          text2: error.message,
+        });
+      }, 500);
+    }
+  }, [error]);
 
   const taskCount = (isDone) => {
     // eslint-disable-next-line no-unsafe-optional-chaining
@@ -64,22 +48,56 @@ export default function ChecklistScreen() {
     return length || 0;
   };
 
-  const handleInput = (data) => {
+  const handleInput = async (data) => {
+    let oldPrivateTasks;
+    let oldMutualTasks;
     setIsVisible(false);
     const isPrivate = data.type === 'PRIVATE';
 
-    const task = {
-      title: data.task,
-      isDone: false,
-      assignee: isPrivate ? `${data.assignee.firstName} ${data.assignee.lastName}` : null,
-    };
-
     if (isPrivate) {
-      setPrivateTasks([...privateTasks, task]);
+      oldPrivateTasks = privateTasks;
+      const newTask = {
+        creatorId: userId,
+        isDone: false,
+        title: data.task,
+      };
+      updateActiveTrip({ privateTasks: [...privateTasks, newTask] });
+    } else {
+      oldMutualTasks = mutualTasks;
+      const newTask = {
+        assignee: data.assignee.id,
+        creatorId: userId,
+        isDone: false,
+        title: data.task,
+      };
+      updateActiveTrip({ mutualTasks: [...mutualTasks, newTask] });
     }
-    if (!isPrivate) {
-      setMutualTasks([...mutualTasks, task]);
-    }
+
+    await addTask({
+      variables: {
+        task: isPrivate ? {
+          title: data.task,
+          tripId,
+          isPrivate: true,
+        } : {
+          title: data.task,
+          tripId,
+          assignee: data.assignee.id,
+        },
+      },
+    }).catch((e) => {
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('Whoops!'),
+        text2: e.message,
+      });
+      if (isPrivate) {
+        updateActiveTrip({ privateTasks: oldPrivateTasks });
+      } else {
+        updateActiveTrip({ mutualTasks: oldMutualTasks });
+      }
+      console.log(`ERROR: ${e.message}`);
+    });
   };
 
   const headerChips = (
@@ -135,7 +153,10 @@ export default function ChecklistScreen() {
           style={{ marginTop: 30 }}
         >
           <View style={{
-            justifyContent: 'flex-start', borderRightColor: COLORS.neutral[100], borderRightWidth: 1, width: Dimensions.get('window').width * 0.75,
+            justifyContent: 'flex-start',
+            borderRightColor: COLORS.neutral[100],
+            borderRightWidth: 1,
+            width: Dimensions.get('window').width * 0.75,
           }}
           >
             <Headline

@@ -23,6 +23,7 @@ import LOGIN_USER from '../mutations/loginUser';
 import AsyncStorageDAO from '../utils/AsyncStorageDAO';
 import httpService from '../utils/httpService';
 import userStore from '../stores/UserStore';
+import JOIN_TRIP from '../mutations/joinTrip';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
@@ -31,6 +32,7 @@ export default function AuthModal({
 }) {
   const [registerUser, { registerError }] = useMutation(REGISTER_USER);
   const [loginUser, { loginError }] = useMutation(LOGIN_USER);
+  const [joinTrip, { joinError }] = useMutation(JOIN_TRIP);
 
   const updateUserData = userStore((state) => state.updateUserData);
 
@@ -45,21 +47,14 @@ export default function AuthModal({
   const isLogin = !registerData;
 
   useEffect(() => {
-    if (registerError) {
+    if (loginError || registerError || joinError) {
       Toast.show({
         type: 'error',
         text1: i18n.t('Whoops!'),
-        text2: registerError.message,
+        text2: loginError.message || registerError.message || joinError.message,
       });
     }
-    if (loginError) {
-      Toast.show({
-        type: 'error',
-        text1: i18n.t('Whoops!'),
-        text2: loginError.message,
-      });
-    }
-  }, [loginError, registerError]);
+  }, [loginError, registerError, joinError]);
 
   useEffect(() => {
     if (code.length === 4) {
@@ -70,6 +65,20 @@ export default function AuthModal({
       handleLogin();
     }
   }, [code]);
+
+  const handleJoinTrip = async () => {
+    await joinTrip({
+      variables: {
+        tripId: joinTripId,
+      },
+    }).catch((e) => {
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('Whoops!'),
+        text2: e.message,
+      });
+    });
+  };
 
   const requestCode = async () => {
     setIsLoading(true);
@@ -133,8 +142,19 @@ export default function AuthModal({
       asyncStorageDAO.setAccessToken(res.data.registerUser);
       asyncStorageDAO.setIsAuth(true);
       updateUserData({ authToken: res.data.registerUser });
-      navigation.navigate(ROUTES.initDataCrossroads);
-      onRequestClose();
+
+      // NOT WORKING ATM
+      if (joinTripId) {
+        setTimeout(() => {
+          handleJoinTrip().then(() => {
+            navigation.navigate(ROUTES.initDataCrossroads);
+            onRequestClose();
+          });
+        }, 500);
+      } else {
+        navigation.navigate(ROUTES.initDataCrossroads);
+        onRequestClose();
+      }
     });
   };
 
@@ -164,8 +184,19 @@ export default function AuthModal({
         asyncStorageDAO.setAccessToken(res.data.loginUser);
         asyncStorageDAO.setIsAuth(true);
         updateUserData({ authToken: res.data.loginUser });
-        navigation.navigate(ROUTES.initDataCrossroads);
-        onRequestClose();
+
+        // NOT WORKING ATM
+        if (joinTripId) {
+          setTimeout(() => {
+            handleJoinTrip().then(() => {
+              navigation.navigate(ROUTES.initDataCrossroads);
+              onRequestClose();
+            });
+          }, 1000);
+        } else {
+          navigation.navigate(ROUTES.initDataCrossroads);
+          onRequestClose();
+        }
       });
   };
 

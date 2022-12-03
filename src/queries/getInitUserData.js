@@ -67,6 +67,17 @@ const GET_INIT_USER_DATA = gql`
                     amount
                     currency
                 }
+                mutualTasks {
+                    creatorId
+                    assignee
+                    title
+                    isDone
+                }
+                privateTasks {
+                    creatorId
+                    title
+                    isDone
+                }
                 polls {
                     creatorId
                     title

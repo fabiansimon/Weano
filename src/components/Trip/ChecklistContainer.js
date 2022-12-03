@@ -6,13 +6,15 @@ import i18n from '../../utils/i18n';
 import Divider from '../Divider';
 import Switch from '../Switch';
 import CheckboxTile from './CheckboxTile';
+import activeTripStore from '../../stores/ActiveTripStore';
 
 export default function ChecklistContainer({
-  data, onPress, onLayout, sender,
+  onPress, onLayout, sender,
 }) {
+  const { mutualTasks, privateTasks } = activeTripStore((state) => state.activeTrip);
   const [isPrivate, setIsPrivate] = useState(false);
 
-  const getChecklistItem = (item, index, type) => (
+  const getChecklistItem = (item) => (
     <View
       onLayout={onLayout}
       style={{
@@ -20,12 +22,18 @@ export default function ChecklistContainer({
         marginHorizontal: 25,
       }}
     >
-      <CheckboxTile item={item} onPress={(isChecked) => onPress(isChecked, index, type)} />
+      <CheckboxTile
+        disabled
+        disableLabel={isPrivate}
+        item={item}
+      />
     </View>
   );
 
   return (
-    <TripListContainer>
+    <TripListContainer
+      onPress={onPress}
+    >
       <View style={{
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -40,8 +48,8 @@ export default function ChecklistContainer({
         {!sender && <Switch bool={isPrivate} onPress={() => setIsPrivate(!isPrivate)} />}
       </View>
       <Divider top={12} />
-      {isPrivate ? data.privateTasks && data.privateTasks.map((item, index) => getChecklistItem(item, index, 'PRIVATE'))
-        : data.mutualTasks && data.mutualTasks.map((item, index) => getChecklistItem(item, index, 'MUTUAL'))}
+      {isPrivate ? privateTasks && privateTasks.map((item) => getChecklistItem(item))
+        : mutualTasks && mutualTasks.map((item) => getChecklistItem(item))}
     </TripListContainer>
   );
 }

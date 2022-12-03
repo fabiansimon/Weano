@@ -5,14 +5,16 @@ import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import Headline from '../typography/Headline';
 import COLORS from '../../constants/Theme';
 import Body from '../typography/Body';
+import Utils from '../../utils';
 
 export default function CheckboxTile({
-  style, item, disableLabel, onPress,
+  style, item, disableLabel, onPress, disabled = false,
 }) {
   return (
     <BouncyCheckbox
       size={22}
       style={style}
+      disabled={disabled}
       textComponent={(
         <View style={{ marginLeft: 8 }}>
           <View>
@@ -21,7 +23,7 @@ export default function CheckboxTile({
               <Icon color={item.isDone ? COLORS.success[700] : COLORS.neutral[300]} name="person" />
               <Body
                 type={2}
-                text={item.assignee}
+                text={Utils.convertIdToUser(item.assignee)}
                 color={item.isDone ? COLORS.success[700] : COLORS.neutral[300]}
                 style={{ marginLeft: 4 }}
               />

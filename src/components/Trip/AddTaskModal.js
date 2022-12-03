@@ -11,49 +11,25 @@ import Body from '../typography/Body';
 import Avatar from '../Avatar';
 import Subtitle from '../typography/Subtitle';
 import Utils from '../../utils';
+import activeTripStore from '../../stores/ActiveTripStore';
 
 export default function AddTaskModal({
   isVisible, onRequestClose, onPress,
 }) {
+  const { activeMembers: users } = activeTripStore((state) => state.activeTrip);
   const [isPrivate, setIsPrivate] = useState(true);
   const [task, setTask] = useState('');
   const [showModal, setShowModal] = useState(isVisible);
   const [assigneIndex, setAssigneIndex] = useState(0);
-  const [assigneeData, setAssigneeData] = useState([]);
   const animatedBottom = useRef(new Animated.Value(900)).current;
   const translateY = useRef(new Animated.Value(0)).current;
   const duration = 300;
 
-  const mockPersonalData = {
-    firstName: 'Blabla',
-    lastName: 'Etc',
-    uri: 'https://i.pravatar.cc/300',
-  };
-
-  const mockInvitees = [
-    {
-      firstName: 'Fabian',
-      lastName: 'Simon',
-      uri: 'https://i.pravatar.cc/300',
-    },
-    {
-      firstName: 'Julia',
-      lastName: 'Stefan',
-      uri: 'https://i.pravatar.cc/300',
-    },
-    {
-      firstName: 'Matthias',
-      lastName: 'Misha',
-      uri: 'https://i.pravatar.cc/300',
-    },
-  ];
-
   useEffect(() => {
-    setAssigneeData([mockPersonalData, ...mockInvitees]);
     setIsPrivate(true);
     setAssigneIndex(0);
     toggleModal();
-  }, [isVisible]);
+  }, [isVisible, users]);
 
   useEffect(() => {
     toggleExpand();
@@ -101,7 +77,7 @@ export default function AddTaskModal({
     }
 
     const taskData = {
-      assignee: assigneeData[assigneIndex],
+      assignee: users[assigneIndex],
       task,
       type: isPrivate ? 'PRIVATE' : 'MUTUAL',
     };
@@ -169,7 +145,7 @@ export default function AddTaskModal({
         style={{ marginLeft: PADDING.xl, marginBottom: 12 }}
       />
       <ScrollView horizontal style={{ paddingLeft: PADDING.m }}>
-        {assigneeData.map((invitee, index) => {
+        {users.map((invitee, index) => {
           const isActive = assigneIndex === index;
           return (
             <TouchableOpacity
@@ -195,8 +171,8 @@ export default function AddTaskModal({
               </View>
               <Body
                 type={2}
-                text={index === 0 ? i18n.t('You') : invitee.firstName}
-                style={{ fontWeight: isActive ? '500' : '400' }}
+                text={invitee.firstName}
+                style={{ fontWeight: isActive ? '500' : '400', marginTop: 4 }}
                 color={isActive ? COLORS.shades[100] : COLORS.neutral[300]}
               />
             </TouchableOpacity>

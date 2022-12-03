@@ -9,7 +9,10 @@ const GET_INVITATION_TRIP_DATA = gql`
                 startDate
                 endDate
             }
-            location
+            location {
+                placeName
+                latlon
+            }
             hostName
         }
     }

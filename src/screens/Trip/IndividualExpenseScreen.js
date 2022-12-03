@@ -25,7 +25,7 @@ export default function IndividualExpenseScreen({ route }) {
   return (
     <View style={styles.container}>
       <HybridHeader
-        title={`${data.user.name.split(' ')[0]}'s ${i18n.t('Expenses')}`}
+        title={`${data.user.firstName}'s ${i18n.t('Expenses')}`}
         scrollY={scrollY}
         info={INFORMATION.dateScreen}
       >

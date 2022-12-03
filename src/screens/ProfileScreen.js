@@ -139,7 +139,7 @@ export default function ProfileScreen() {
       async () => {
         await asyncStorageDAO.clearAccessToken();
         updateUserState({ authToken: '' });
-        navigation.navigate(ROUTES.initDataCrossroads);
+        navigation.navigate(ROUTES.signUpScreen);
       },
     );
   };

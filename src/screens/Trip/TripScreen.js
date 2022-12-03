@@ -1,6 +1,7 @@
 import {
   View, StyleSheet, Image, Dimensions, TouchableOpacity,
 } from 'react-native';
+import * as Animatable from 'react-native-animatable';
 import Toast from 'react-native-toast-message';
 import React, { useRef, useState, useEffect } from 'react';
 import Animated from 'react-native-reanimated';
@@ -32,123 +33,10 @@ import StatusContainer from '../../components/Trip/StatusContainer';
 import ExpensesContainer from '../../components/Trip/ExpenseContainer';
 import FAButton from '../../components/FAButton';
 import activeTripStore from '../../stores/ActiveTripStore';
-import userStore from '../../stores/UserStore';
 import UPDATE_TRIP from '../../mutations/updateTrip';
 import httpService from '../../utils/httpService';
 import InputModal from '../../components/InputModal';
 import PollCarousel from '../../components/Polls/PollCarousel';
-
-const mockData = {
-  title: 'Graduation Trip 2022 🎓',
-  description: 'Paris for a week as a graduate. Nothing better than that! 😎',
-  dateRange: {
-    startDate: 1656865380,
-    endDate: 1658074980,
-  },
-  latlon: [48.864716, 2.349014],
-  images: [],
-  invitees: [
-    {
-      name: 'Fabian Simon',
-      id: 'fabian simon',
-      uri: 'https://i.pravatar.cc/300',
-      status: true,
-    },
-    {
-      name: 'Julia Stefan',
-      id: 'julia stefan',
-      uri: 'https://i.pravatar.cc/300',
-      status: false,
-    },
-    {
-      name: 'Matthias Betonmisha',
-      id: 'matthias betonmisha',
-      uri: 'https://i.pravatar.cc/300',
-      status: false,
-    },
-    {
-      name: 'Didi Chovookkaran',
-      id: 'didi chovookkaran',
-      uri: 'https://i.pravatar.cc/300',
-      status: false,
-    },
-    {
-      name: 'Alexander Wieser',
-      id: 'alexander wieser',
-      uri: 'https://i.pravatar.cc/300',
-      status: false,
-    },
-  ],
-  accomodations: [
-    {
-      title: 'Villa El Salvador',
-      description: 'Beautiful Villa with direct access to the ocean. Parties are not allowed. Dogs must be like Rocky',
-      info: {
-        accomodates: 12,
-        price: 1222,
-      },
-      dateRange: {
-        startDate: 1656865380,
-        endDate: 1658074980,
-      },
-    },
-    {
-      title: 'Villa Da Salvador',
-      description: 'Crazy ting',
-      info: {
-        accomodates: 10,
-        price: 1999,
-      },
-      dateRange: {
-        startDate: 1656865380,
-        endDate: 1658074980,
-      },
-    },
-    {
-      title: 'Nauheimergasse',
-      description: 'Beautiful Villa with direct access to the ocean. Parties are not allowed. Dogs must be like Rocky',
-      info: {
-        accomodates: 12,
-        price: 1222,
-      },
-      dateRange: {
-        startDate: 1656865380,
-        endDate: 1658074980,
-      },
-    },
-  ],
-  tasks: {
-    privateTasks: [
-      {
-        title: 'Bring towels',
-        isDone: false,
-        id: 0,
-      },
-      {
-        title: 'Get passport renewed',
-        isDone: false,
-        id: 1,
-      },
-    ],
-    mutualTasks: [
-      {
-        title: 'Bring speakers 🎧',
-        isDone: false,
-        assignee: 'Julia Chovo',
-      },
-      {
-        title: 'Check Clubscene 🎉',
-        isDone: false,
-        assignee: 'Clembo',
-      },
-      {
-        title: 'Pay for Airbnb',
-        isDone: false,
-        assignee: 'Jennelie',
-      },
-    ],
-  },
-};
 
 export default function TripScreen({ route }) {
   const { isActive = false } = route.params;
@@ -158,14 +46,11 @@ export default function TripScreen({ route }) {
   const activeTrip = activeTripStore((state) => state.activeTrip);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
 
-  const user = userStore((state) => state.user);
-
   const scrollY = useRef(new Animated.Value(0)).current;
   const scrollRef = useRef();
 
   const [currentTab, setCurrentTab] = useState(0);
   const [inputOpen, setInputOpen] = useState(0);
-  const [tripData, setTripData] = useState(mockData);
   const addImageRef = useRef();
 
   const navigation = useNavigation();
@@ -239,7 +124,11 @@ export default function TripScreen({ route }) {
         },
       }).catch((e) => {
         updateActiveTrip({ thumbnailUri: oldUri });
-        console.log(e);
+        Toast.show({
+          type: 'error',
+          text1: i18n.t('Whoops!'),
+          text2: e.message,
+        });
       });
     } catch (e) {
       Toast.show({
@@ -275,44 +164,17 @@ export default function TripScreen({ route }) {
       },
     }).catch((e) => {
       updateActiveTrip({ description: oldDescription });
-      console.log(e);
+      setTimeout(() => {
+        Toast.show({
+          type: 'error',
+          text1: i18n.t('Whoops!'),
+          text2: e.message,
+        });
+      }, 500);
     });
 
     setInputOpen(false);
   };
-
-  const users = [
-    {
-      name: 'Fabian Simon',
-      id: user.id,
-      uri: 'https://i.pravatar.cc/300',
-      status: true,
-    },
-    {
-      name: 'Julia Stefan',
-      id: 'julia stefan',
-      uri: 'https://i.pravatar.cc/300',
-      status: false,
-    },
-    {
-      name: 'Matthias Betonmisha',
-      id: 'matthias betonmisha',
-      uri: 'https://i.pravatar.cc/300',
-      status: false,
-    },
-    {
-      name: 'Didi Chovookkaran',
-      id: 'didi chovookkaran',
-      uri: 'https://i.pravatar.cc/300',
-      status: false,
-    },
-    {
-      name: 'Alexander Wieser',
-      id: 'alexander wieser',
-      uri: 'https://i.pravatar.cc/300',
-      status: false,
-    },
-  ];
 
   const statusData = [
     {
@@ -331,32 +193,6 @@ export default function TripScreen({ route }) {
       route: ROUTES.checklistScreen,
     },
   ];
-
-  const updateTasks = (val, index, type) => {
-    if (type === 'PRIVATE') {
-      const updatedTasks = tripData.tasks.privateTasks;
-      updatedTasks[index].isDone = val;
-      setTripData((prev) => ({
-        ...prev,
-        tasks: {
-          privateTasks: updatedTasks,
-          mutualTasks: prev.tasks.mutualTasks,
-        },
-      }));
-    }
-
-    if (type === 'MUTUAL') {
-      const updatedTasks = tripData.tasks.mutualTasks;
-      updatedTasks[index].isDone = val;
-      setTripData((prev) => ({
-        ...prev,
-        tasks: {
-          privateTasks: prev.tasks.privateTasks,
-          mutualTasks: updatedTasks,
-        },
-      }));
-    }
-  };
 
   const contentItems = [
     // {
@@ -401,8 +237,7 @@ export default function TripScreen({ route }) {
         color={COLORS.neutral[500]}
       />,
       content: <ChecklistContainer
-        data={tripData.tasks}
-        onPress={(val, index, type) => updateTasks(val, index, type)}
+        onPress={() => navigation.navigate(ROUTES.checklistScreen)}
         onLayout={(e) => {
           console.log(`Checklist: ${e.nativeEvent.layout.y}`);
         }}
@@ -418,8 +253,6 @@ export default function TripScreen({ route }) {
         color={COLORS.neutral[500]}
       />,
       content: <ExpensesContainer
-        data={data?.expenses}
-        users={users}
         tileBackground={COLORS.shades[0]}
         onLayout={(e) => {
           console.log(`Invitees: ${e.nativeEvent.layout.y}`);
@@ -510,12 +343,14 @@ export default function TripScreen({ route }) {
             type={3}
             text={i18n.t('Status')}
           />
-          <Headline
-            type={4}
-            text={isActive ? i18n.t('• live') : i18n.t('21 days left')}
-            style={{ fontWeight: '600', fontSize: 16 }}
-            color={isActive ? COLORS.error[900] : COLORS.primary[700]}
-          />
+          <Animatable.View animation="pulse" iterationCount="infinite">
+            <Headline
+              type={4}
+              text={isActive ? i18n.t('• live') : i18n.t('21 days left')}
+              style={{ fontWeight: '600', fontSize: 16 }}
+              color={isActive ? COLORS.error[900] : COLORS.primary[700]}
+            />
+          </Animatable.View>
         </View>
         <ScrollView horizontal style={{ paddingHorizontal: PADDING.l, paddingTop: 14, paddingBottom: 6 }}>
           {statusData.map((item) => (
@@ -554,7 +389,7 @@ export default function TripScreen({ route }) {
   );
 
   return (
-    !tripData
+    !data
       ? <Headline text="Loading..." />
       : (
         <View style={{ backgroundColor: COLORS.shades[0], flex: 1 }}>
@@ -566,7 +401,6 @@ export default function TripScreen({ route }) {
             <TripHeader
               title={data.title}
               subtitle={`${Utils.getDateRange(data?.dateRange)}`}
-              invitees={tripData.invitees}
               items={contentItems}
               onPress={(index) => handleTabPress(index)}
               currentTab={currentTab}
