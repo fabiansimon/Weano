@@ -10,6 +10,7 @@ import i18n from '../../utils/i18n';
 import Body from '../typography/Body';
 import Avatar from '../Avatar';
 import Subtitle from '../typography/Subtitle';
+import Utils from '../../utils';
 
 export default function AddTaskModal({
   isVisible, onRequestClose, onPress,
@@ -176,17 +177,27 @@ export default function AddTaskModal({
               activeOpacity={0.9}
               style={{ alignItems: 'center', width: 70 }}
             >
-              <Avatar
-                disabled
-                uri={invitee.uri}
-                style={{ marginBottom: 6, borderColor: isActive ? COLORS.primary[700] : COLORS.neutral[300] }}
-                borderWidth={isActive ? 2 : 0}
-              />
+              <View>
+                <Avatar
+                  size={50}
+                  disabled
+                  uri={invitee.uri}
+                />
+                {isActive && (
+                <View style={styles.avatarOverlay}>
+                  <Icon
+                    name="checkmark-circle-outline"
+                    size={26}
+                    color={COLORS.shades[0]}
+                  />
+                </View>
+                )}
+              </View>
               <Body
                 type={2}
                 text={index === 0 ? i18n.t('You') : invitee.firstName}
                 style={{ fontWeight: isActive ? '500' : '400' }}
-                color={isActive ? COLORS.primary[700] : COLORS.neutral[300]}
+                color={isActive ? COLORS.shades[100] : COLORS.neutral[300]}
               />
             </TouchableOpacity>
           );
@@ -283,5 +294,15 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: RADIUS.l,
     backgroundColor: COLORS.shades[0],
     paddingBottom: 120,
+  },
+  avatarOverlay: {
+    position: 'absolute',
+    backgroundColor: Utils.addAlpha(COLORS.shades[100], 0.5),
+    borderRadius: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 50,
+    width: 50,
+    flex: 1,
   },
 });
