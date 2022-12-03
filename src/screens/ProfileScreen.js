@@ -16,7 +16,6 @@ import Headline from '../components/typography/Headline';
 import Body from '../components/typography/Body';
 import AsyncStorageDAO from '../utils/AsyncStorageDAO';
 import ROUTES from '../constants/Routes';
-import DELETE_USER from '../mutations/deleteUserAccount';
 import Utils from '../utils';
 import userStore from '../stores/UserStore';
 import httpService from '../utils/httpService';
@@ -27,7 +26,6 @@ const asyncStorageDAO = new AsyncStorageDAO();
 export default function ProfileScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
   const [updateUser, { error }] = useMutation(UPDATE_USER);
-  const [deleteUser] = useMutation(DELETE_USER);
   const user = userStore((state) => state.user);
   const updateUserState = userStore((state) => state.updateUserData);
 
@@ -65,7 +63,7 @@ export default function ProfileScreen() {
   const profileLinks = [
     {
       title: i18n.t('My Account'),
-      onPress: () => console.log('tapped'),
+      onPress: () => navigation.navigate(ROUTES.myAccountScreen),
       icon: <IonIcon
         name="person-circle-outline"
         size={22}
@@ -141,19 +139,6 @@ export default function ProfileScreen() {
       async () => {
         await asyncStorageDAO.clearAccessToken();
         updateUserState({ authToken: '' });
-        navigation.navigate(ROUTES.initDataCrossroads);
-      },
-    );
-  };
-
-  const handleDeleteAccount = () => {
-    Utils.showConfirmationAlert(
-      i18n.t('Delete Account'),
-      i18n.t('Are you sure you want to delete your Account?'),
-      i18n.t('Delete'),
-      async () => {
-        deleteUser();
-        await asyncStorageDAO.clearAccessToken();
         navigation.navigate(ROUTES.initDataCrossroads);
       },
     );
@@ -238,24 +223,7 @@ export default function ProfileScreen() {
           <Header />
           <StatsContainer />
           {profileLinks.map((link, index) => <ListTile item={link} index={index} />)}
-          <TouchableOpacity
-            onPress={handleDeleteAccount}
-            style={{
-              flexDirection: 'row', alignItems: 'center', marginTop: 28, width: '95%',
-            }}
-          >
-            <IonIcon
-              name="ios-trash-outline"
-              color={COLORS.error[900]}
-              size={22}
-            />
-            <Headline
-              style={{ marginLeft: 8 }}
-              color={COLORS.error[900]}
-              text={i18n.t('Delete Account')}
-              type={4}
-            />
-          </TouchableOpacity>
+
         </View>
       </HybridHeader>
     </View>

@@ -16,7 +16,7 @@ import i18n from '../utils/i18n';
 import Divider from './Divider';
 
 export default function InputModal({
-  isVisible, onRequestClose, placeholder, onPress, geoMatching = false,
+  isVisible, onRequestClose, placeholder, onPress, geoMatching = false, ...rest
 }) {
   const [showModal, setShowModal] = useState(isVisible);
   const [input, setInput] = useState('');
@@ -175,6 +175,7 @@ export default function InputModal({
             )}
             <View style={styles.innerContainer}>
               <TextInput
+                {...rest}
                 autoFocus
                 value={input}
                 onChangeText={(val) => handleChangeText(val)}

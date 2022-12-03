@@ -11,6 +11,7 @@ import TextField from '../../components/TextField';
 import AuthModal from '../../components/AuthModal';
 import KeyboardView from '../../components/KeyboardView';
 import Button from '../../components/Button';
+import REGEX from '../../constants/Regex';
 
 export default function SignUpScreen({ invitationId }) {
   const errorColors = {
@@ -46,10 +47,6 @@ export default function SignUpScreen({ invitationId }) {
     },
   );
 
-  // eslint-disable-next-line no-useless-escape
-  const nameReg = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
-  const emailReg = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
   useEffect(() => {
     checkForErrors();
   }, [firstName, lastName, email]);
@@ -64,7 +61,7 @@ export default function SignUpScreen({ invitationId }) {
           color: errorColors.neutral,
         },
       }));
-    } else if (nameReg.test(firstName.trim())) {
+    } else if (REGEX.name.test(firstName.trim())) {
       setErrorChecks((prev) => ({
         ...prev,
         firstName: {
@@ -92,7 +89,7 @@ export default function SignUpScreen({ invitationId }) {
           color: errorColors.neutral,
         },
       }));
-    } else if (nameReg.test(lastName.trim())) {
+    } else if (REGEX.name.test(lastName.trim())) {
       setErrorChecks((prev) => ({
         ...prev,
         lastName: {
@@ -120,7 +117,7 @@ export default function SignUpScreen({ invitationId }) {
           color: errorColors.neutral,
         },
       }));
-    } else if (!email.toLowerCase().match(emailReg)) {
+    } else if (!email.toLowerCase().match(REGEX.email)) {
       setErrorChecks((prev) => ({
         ...prev,
         email: {

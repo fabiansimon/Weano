@@ -19,6 +19,7 @@ const ROUTES = {
   invitationScreen: 'invitationScreen',
   pollScreen: 'pollScreen',
   timelineScreen: 'timelineScreen',
+  myAccountScreen: 'myAccountScreen',
 };
 
 export default ROUTES;

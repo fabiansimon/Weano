@@ -6,6 +6,7 @@ import Headline from './typography/Headline';
 import COLORS, { PADDING } from '../constants/Theme';
 import PopUpModal from './PopUpModal';
 import i18n from '../utils/i18n';
+import Body from './typography/Body';
 
 export default function BasicHeader({
   style, title, subtitle, trailing, children, info,
@@ -33,8 +34,8 @@ export default function BasicHeader({
         </View>
         {trailing || <View width={55} />}
         {subtitle && (
-          <Headline
-            type={4}
+          <Body
+            type={1}
             text={subtitle}
             color={COLORS.neutral[300]}
           />
