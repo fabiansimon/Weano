@@ -128,7 +128,7 @@ export default function TextField({
           onPressIn={onPress || null}
           editable={!disabled}
           keyboardType={keyboardType}
-          onFocus={() => focusable && setFocused(true)}
+          // onFocus={() => focusable && setFocused(true)}
           style={styles.textInput}
           value={value || null}
           onChangeText={(val) => handleChangeText(val)}

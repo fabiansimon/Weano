@@ -14,6 +14,7 @@ import recapTripStore from '../stores/RecapTripStore';
 import userStore from '../stores/UserStore';
 import COLORS from '../constants/Theme';
 import AsyncStorageDAO from '../utils/AsyncStorageDAO';
+import tripsStore from '../stores/TripsStore';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
@@ -23,6 +24,7 @@ export default function InitDataCrossroads() {
   const [requestedRoute, setRequestedRoute] = useState(null);
   const { authToken } = userStore((state) => state.user);
   const setActiveTrip = activeTripStore((state) => state.setActiveTrip);
+  const setTrips = tripsStore((state) => state.setTrips);
   const setRecapTrip = recapTripStore((state) => state.setRecapTrip);
   const updateUserData = userStore((state) => state.updateUserData);
 
@@ -66,7 +68,14 @@ export default function InitDataCrossroads() {
   const populateState = () => {
     setInit(true);
     const res = data.getUserInitData;
-    const { activeTrip, recapTrip, userData } = res;
+    const {
+      activeTrip, recapTrip, userData, trips,
+    } = res;
+
+    if (trips) {
+      console.log(trips);
+      setTrips(trips);
+    }
 
     if (activeTrip) {
       setActiveTrip(activeTrip);

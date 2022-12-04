@@ -9,13 +9,16 @@ import Button from '../Button';
 import ContinentChip from './ContinentChip';
 import CONTINENTS_DATA from '../../constants/Continents';
 import SearchModal from '../Search/SearchModal';
-import TextField from '../TextField';
+import userStore from '../../stores/UserStore';
+import Body from '../typography/Body';
 
-export default function CountriesVisited() {
+export default function CountriesVisited({ showUpcoming, upcomingTrips, recentTrips }) {
   const [selectedContinent, setSelectedContinent] = useState('worldwide');
   const [searchVisible, setSearchVisible] = useState(false);
-
+  const { firstName } = userStore((state) => state.user);
   const continentData = CONTINENTS_DATA;
+
+  const title = !showUpcoming ? `${i18n.t("You've completed")} ${recentTrips?.length} ${i18n.t('Trips')}` : `${i18n.t("You've planned")} ${upcomingTrips?.length} ${i18n.t('Trips')}`;
 
   return (
     <View style={{ flex: 1 }}>
@@ -23,17 +26,20 @@ export default function CountriesVisited() {
       <View style={styles.container}>
         <View style={styles.header}>
           <View style={{ flexDirection: 'column' }}>
-            <View style={{ flexDirection: 'row', marginBottom: 4 }}>
+            <View style={{ flexDirection: 'row', marginBottom: 2 }}>
               <Headline
-                type={2}
+                type={3}
                 style={{ fontWeight: '400', marginRight: 4 }}
                 text={i18n.t('Hey')}
               />
-              <Headline type={2} text="Fabian" />
+              <Headline
+                type={3}
+                text={firstName}
+              />
             </View>
-            <Headline
-              type={4}
-              text={`${i18n.t("You've visited 23 countries 🌍")}`}
+            <Body
+              type={1}
+              text={title}
             />
           </View>
           <Button

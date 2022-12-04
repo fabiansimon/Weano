@@ -1,6 +1,5 @@
 import { View, StyleSheet } from 'react-native';
 import React, { useState } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Entypo';
 import Headline from './typography/Headline';
 import COLORS, { PADDING } from '../constants/Theme';
@@ -15,7 +14,6 @@ export default function BasicHeader({
 
   return (
     <View style={[styles.container, style, { paddingBottom: children ? 14 : 14 }]}>
-      <SafeAreaView />
       <View style={styles.heading}>
         <View style={[styles.titleContainer, { marginBottom: children && 16 }]}>
           <Headline

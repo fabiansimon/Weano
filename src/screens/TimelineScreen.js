@@ -132,7 +132,7 @@ export default function TimelineScreen() {
             />
           ) : (
             <View style={{
-              marginRight: 10, justifyContent: 'center',
+              marginRight: 10, justifyContent: 'center', maxWidth: 110,
             }}
             >
               <Headline
@@ -147,7 +147,10 @@ export default function TimelineScreen() {
               />
             </View>
           )}
-          <View style={{ justifyContent: 'center', flex: 1 }}>
+          <View style={{
+            justifyContent: 'space-between', flex: 1,
+          }}
+          >
             <Body
               style={{ textAlign: 'right' }}
               type={1}
@@ -235,5 +238,6 @@ const styles = StyleSheet.create({
     minHeight: 68,
     flex: 1,
     flexDirection: 'row',
+    alignItems: 'flex-start',
   },
 });
