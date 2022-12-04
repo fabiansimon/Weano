@@ -24,8 +24,8 @@ export default function InitDataCrossroads() {
   const [requestedRoute, setRequestedRoute] = useState(null);
   const { authToken } = userStore((state) => state.user);
   const setActiveTrip = activeTripStore((state) => state.setActiveTrip);
-  const setTrips = tripsStore((state) => state.setTrips);
   const setRecapTrip = recapTripStore((state) => state.setRecapTrip);
+  const setTrips = tripsStore((state) => state.setTrips);
   const updateUserData = userStore((state) => state.updateUserData);
 
   const navigation = useNavigation();
@@ -73,7 +73,6 @@ export default function InitDataCrossroads() {
     } = res;
 
     if (trips) {
-      console.log(trips);
       setTrips(trips);
     }
 

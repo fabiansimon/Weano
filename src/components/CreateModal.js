@@ -95,8 +95,8 @@ export default function CreateModal({ isVisible, onRequestClose }) {
   const getDateValue = () => {
     let start = '--';
     let end = '--';
-    start = startDate && Utils.getDateFromTimestamp(startDate, 'MMM Do');
-    end = endDate && Utils.getDateFromTimestamp(endDate, 'MMM Do YY');
+    start = startDate && Utils.getDateFromTimestamp(startDate, 'Do.MM YY');
+    end = endDate && Utils.getDateFromTimestamp(endDate, 'DD.MM YY');
 
     return `${start} - ${end}`;
   };

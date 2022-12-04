@@ -3,7 +3,7 @@ import React from 'react';
 import COLORS from '../../constants/Theme';
 
 export default function Body({
-  type, style, text, color, onPress,
+  type, style, text, color, onPress, ...rest
 }) {
   const fontSize = type === 2 ? 14 : 16;
   const lineHeight = type === 2 ? 19 : 22;
@@ -13,6 +13,7 @@ export default function Body({
 
   return (
     <Text
+      {...rest}
       onPress={onPress}
       suppressHighlighting
       style={[{

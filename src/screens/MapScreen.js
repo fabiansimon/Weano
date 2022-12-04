@@ -82,7 +82,10 @@ export default function MapScreen() {
 
   return (
     <View style={styles.container}>
-      <MapboxGL.MapView style={styles.map}>
+      <MapboxGL.MapView
+        rotateEnabled={false}
+        style={styles.map}
+      >
         {(showUpcoming && upcomingTrips) && upcomingTrips.map((trip) => renderTripPins(trip))}
         {(!showUpcoming && recentTrips) && recentTrips.map((trip) => renderTripPins(trip))}
       </MapboxGL.MapView>

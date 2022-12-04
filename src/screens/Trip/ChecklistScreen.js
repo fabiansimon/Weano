@@ -24,7 +24,7 @@ import userStore from '../../stores/UserStore';
 export default function ChecklistScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
   const { mutualTasks, privateTasks, id: tripId } = activeTripStore((state) => state.activeTrip);
-  const [addTask, { loading, error }] = useMutation(ADD_TASK);
+  const [addTask, { error }] = useMutation(ADD_TASK);
   const { id: userId } = userStore((state) => state.user);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
 

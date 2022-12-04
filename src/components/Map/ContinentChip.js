@@ -1,6 +1,5 @@
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import React from 'react';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import Headline from '../typography/Headline';
 import COLORS from '../../constants/Theme';
 import Subtitle from '../typography/Subtitle';
@@ -14,10 +13,9 @@ export default function ContinentChip({
   const borderColor = isActive ? 'transparent' : COLORS.neutral[100];
 
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={onPress}
       style={[styles.container, style, { backgroundColor, borderColor }]}
-      activeOpacity={0.6}
     >
       <View style={[styles.iconContainer, { backgroundColor: iconBg }]}>
         <Subtitle
@@ -30,7 +28,7 @@ export default function ContinentChip({
         text={data.name}
         color={color}
       />
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 

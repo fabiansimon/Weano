@@ -31,6 +31,7 @@ export default function MemoriesScreen({ route }) {
     },
   });
 
+  const [images, setImages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const gridRef = useRef();
 
@@ -43,6 +44,11 @@ export default function MemoriesScreen({ route }) {
   const maxAngle = 8;
 
   useEffect(() => {
+    if (data) {
+      const { getImagesFromTrip: imageData } = data;
+      setImages(imageData);
+    }
+
     if (error) {
       Toast.show({
         type: 'error',
@@ -52,309 +58,6 @@ export default function MemoriesScreen({ route }) {
       setIsLoading(false);
     }
   }, [data, error]);
-
-  // const images = [
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  //   {
-  //     uri: 'https://picsum.photos/320/580',
-  //   },
-  // ];
 
   const numColumns = Math.round(Math.sqrt(user.images.length));
 
@@ -437,7 +140,7 @@ export default function MemoriesScreen({ route }) {
             type={1}
             style={[{ fontWeight: '500', marginTop: -2 }, shadow]}
             color={COLORS.shades[0]}
-            text={user.images.length}
+            text={images && images?.length}
           />
           <View style={{ marginLeft: 12 }}>
             <Headline
@@ -510,7 +213,7 @@ export default function MemoriesScreen({ route }) {
           style={gAnimated}
           onScrollBeginDrag={() => headerOpacity.value = withSpring(0)}
           onScrollEndDrag={() => headerOpacity.value = withSpring(1)}
-          data={data?.getImagesFromTrip}
+          data={images || null}
           numColumns={numColumns}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ padding: 60 }}

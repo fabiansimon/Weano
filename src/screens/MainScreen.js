@@ -1,9 +1,13 @@
 import {
+  Dimensions,
+  FlatList,
+  Image,
   Pressable,
   ScrollView, StyleSheet, View,
 } from 'react-native';
 import React, {
   useRef, useState,
+  useEffect,
 } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -23,110 +27,29 @@ import userStore from '../stores/UserStore';
 import Body from '../components/typography/Body';
 import Utils from '../utils';
 import Avatar from '../components/Avatar';
+import tripsStore from '../stores/TripsStore';
+import activeTripStore from '../stores/ActiveTripStore';
+import Suitcase3D from '../../assets/images/suitcase_3d.png';
 
 export default function MainScreen() {
   const user = userStore((state) => state.user);
+  const { id: activeTripId } = activeTripStore((state) => state.activeTrip);
   const [createVisible, setCreateVisible] = useState(false);
   const [searchVisible, setSearchVisible] = useState(false);
   const scrollY = useRef(new Animated.Value(0)).current;
+  const trips = tripsStore((state) => state.trips);
+  const [upcomingTrips, setUpcomingTrips] = useState(false);
+  const [recentTrips, setRecentTrips] = useState(false);
+
+  const now = Date.now() / 1000;
+  const { width } = Dimensions.get('window');
+
+  useEffect(() => {
+    setUpcomingTrips(trips.filter((trip) => trip.dateRange.startDate > now && trip.dateRange.endDate > now));
+    setRecentTrips(trips.filter((trip) => trip.dateRange.startDate < now && trip.dateRange.endDate < now));
+  }, [trips]);
 
   const navigation = useNavigation();
-
-  const mockTrips = [
-    {
-      title: 'Graduation Trip 2022 🎓',
-      description: 'Paris for a week with as a graduate. Nothing better than that! 😎',
-      dateRange: {
-        startDate: 1656865380,
-        endDate: 1658074980,
-      },
-      latlon: [48.864716, 2.349014],
-      images: ['https://picsum.photos/315/150', 'https://picsum.photos/150', 'https://picsum.photos/150', 'https://picsum.photos/150', 'https://picsum.photos/150', 'https://picsum.photos/150'],
-      invitees: [
-        {
-          name: 'Fabian Simon',
-          uri: 'https://i.pravatar.cc/300',
-        },
-        {
-          name: 'Julia Stefan',
-          uri: 'https://i.pravatar.cc/300',
-        },
-        {
-          name: 'Matthias Betonmisha',
-          uri: 'https://i.pravatar.cc/300',
-        },
-      ],
-    },
-    {
-      title: 'Paris with mon Amie 🇫🇷',
-      dateRange: {
-        startDate: 1656865380,
-        endDate: 1658074980,
-      },
-      latlon: [48.864716, 2.349014],
-      images: ['https://picsum.photos/315/150', 'https://picsum.photos/150', 'https://picsum.photos/150', 'https://picsum.photos/150', 'https://picsum.photos/150', 'https://picsum.photos/150'],
-      invitees: [
-        {
-          name: 'Fabian Simon',
-          uri: 'https://i.pravatar.cc/300',
-        },
-        {
-          name: 'Julia Stefan',
-          uri: 'https://i.pravatar.cc/300',
-        },
-      ],
-    },
-    {
-      title: 'Solo thru the US 🤠',
-      dateRange: {
-        startDate: 1656865380,
-        endDate: 1658074980,
-      },
-      latlon: [48.864716, 2.349014],
-      invitees: [
-        {
-          name: 'Fabian Simon',
-          uri: 'https://i.pravatar.cc/300',
-        },
-        {
-          name: 'Julia Stefan',
-          uri: 'https://i.pravatar.cc/300',
-        },
-        {
-          name: 'Jonathan Witt',
-          uri: 'https://i.pravatar.cc/300',
-        },
-        {
-          name: 'Alexander Witt',
-          uri: 'https://i.pravatar.cc/300',
-        },
-      ],
-    },
-  ];
-
-  const mockPlannedTrips = [
-    {
-      title: 'Maturareise VBS Gang 🐕',
-      dateRange: {
-        startDate: 1656865380,
-        endDate: 1658074980,
-      },
-    },
-    {
-      title: 'Paris with mon Amie 🇫🇷',
-      dateRange: {
-        startDate: 1656865380,
-        endDate: 1658074980,
-      },
-    },
-    {
-      title: 'Solo thru the US 🤠',
-      dateRange: {
-        startDate: 1656865380,
-        endDate: 1658074980,
-      },
-    },
-  ];
 
   const HeaderSection = () => (
     <View style={{
@@ -170,7 +93,7 @@ export default function MainScreen() {
         onPress: () => navigation.navigate(ROUTES.tripScreen, { isActive: true }),
         fontColor: COLORS.error[900],
         style: styles.activeTripChip,
-        isShown: true,
+        isShown: activeTripId,
       },
       {
         title: i18n.t('Successful Trips ✈️'),
@@ -212,7 +135,7 @@ export default function MainScreen() {
   };
 
   return (
-    <View style={{ backgroundColor: COLORS.neutral[50] }}>
+    <View style={{ backgroundColor: COLORS.neutral[50], flex: 1 }}>
       <AnimatedHeader
         scrollY={scrollY}
         maxHeight={120}
@@ -251,7 +174,6 @@ export default function MainScreen() {
           </View>
           <ChipSelection />
           <RewindTile
-            onPress={() => navigation.navigate(ROUTES.memoriesScreen, { tripId: '6376718ec191f0760fc39543' })}
             style={{ marginHorizontal: PADDING.l, marginTop: 20 }}
           />
           <View>
@@ -260,50 +182,71 @@ export default function MainScreen() {
               text={i18n.t('Successful Trips ✈️')}
               style={{ marginLeft: PADDING.xl, marginTop: 25 }}
             />
-            <ScrollView
+
+            <FlatList
               horizontal
-              paddingHorizontal={PADDING.l}
-              paddingTop={20}
-              showsHorizontalScrollIndicator={false}
-            >
-              {mockTrips.map((trip, index) => (
-                <>
-                  <RecapCard
-                    key={trip.latlon}
-                    onPress={() => navigation.navigate(ROUTES.tripScreen, { isActive: false })}
-                    data={trip}
-                    style={{ marginRight: 20 }}
+              style={{ marginTop: 20, paddingHorizontal: PADDING.m }}
+              ListEmptyComponent={() => (
+                <View style={{ width: width * 0.9, alignItems: 'center' }}>
+                  <Image
+                    source={Suitcase3D}
+                    style={{ height: 200 }}
+                    resizeMode="contain"
                   />
-                  {index === mockTrips.length - 1 && <View style={{ width: 25 }} />}
-                </>
-              ))}
-            </ScrollView>
+                  <Body
+                    style={{ alignSelf: 'center', marginVertical: 10 }}
+                    type={1}
+                    text={i18n.t('No Trips to show 😢')}
+                    color={COLORS.neutral[300]}
+                  />
+                  <Pressable
+                    onPress={() => setCreateVisible(true)}
+                    style={styles.addtripButton}
+                  >
+                    <Body
+                      type={1}
+                      color={COLORS.shades[100]}
+                      text={i18n.t('Add trip')}
+                    />
+                  </Pressable>
+                </View>
+              )}
+              data={recentTrips}
+              ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+              renderItem={({ item }) => (
+                <RecapCard
+                  key={item.latlon}
+                  onPress={() => navigation.navigate(ROUTES.tripScreen, { isActive: false })}
+                  data={item}
+                  style={{ marginRight: 20 }}
+                />
+              )}
+            />
           </View>
+          {upcomingTrips && (
           <View style={[styles.carousel, { marginBottom: 110 }]}>
             <Headline
               type={3}
               text={i18n.t('Upcoming Trips ⏳')}
               style={{ marginLeft: PADDING.l, marginTop: 35 }}
             />
-            <ScrollView
+            <FlatList
               horizontal
-              paddingHorizontal={PADDING.l}
-              paddingTop={20}
-              showsHorizontalScrollIndicator={false}
-            >
-              {mockPlannedTrips.map((trip, index) => (
-                <>
-                  <RecapCard
-                    key={trip.latlon}
-                    data={trip}
-                    style={{ marginRight: 20 }}
-                    type="mini"
-                  />
-                  {index === mockTrips.length - 1 && <View style={{ width: 25 }} />}
-                </>
-              ))}
-            </ScrollView>
+              style={{ marginTop: 20, paddingHorizontal: PADDING.m }}
+              data={upcomingTrips}
+              ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+              renderItem={({ item }) => (
+                <RecapCard
+                  type="mini"
+                  key={item.latlon}
+                  onPress={() => navigation.navigate(ROUTES.tripScreen, { isActive: false })}
+                  data={item}
+                  style={{ marginRight: 20 }}
+                />
+              )}
+            />
           </View>
+          )}
         </SafeAreaView>
       </Animated.ScrollView>
       <View style={styles.bottom}>
@@ -362,7 +305,6 @@ const styles = StyleSheet.create({
     height: 110,
     width: '100%',
   },
-
   container: {
     marginTop: 20,
     flex: 1,
@@ -395,6 +337,14 @@ const styles = StyleSheet.create({
   basicChip: {
     borderRadius: 100,
     padding: 15,
+    backgroundColor: COLORS.shades[0],
+    borderWidth: 1,
+    borderColor: COLORS.neutral[100],
+  },
+  addtripButton: {
+    borderRadius: 100,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
     backgroundColor: COLORS.shades[0],
     borderWidth: 1,
     borderColor: COLORS.neutral[100],

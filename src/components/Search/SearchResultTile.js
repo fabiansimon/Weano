@@ -1,26 +1,27 @@
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import React from 'react';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Entypo';
 import Headline from '../typography/Headline';
-import COLORS from '../../constants/Theme';
+import COLORS, { RADIUS } from '../../constants/Theme';
 import Body from '../typography/Body';
+import Utils from '../../utils';
 
-export default function SearchResultTile({ style, data }) {
+export default function SearchResultTile({ style, data, onPress }) {
+  const { title, location, dateRange } = data;
   return (
-    <TouchableOpacity
-      activeOpacity={0.5}
+    <Pressable
+      onPress={onPress}
       style={[styles.container, style]}
     >
       <View>
         <Headline
           type={4}
-          text={data.title}
+          text={title}
         />
         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
           <Body
             type={1}
-            text="Paris, France • 26.12.2022"
+            text={`${location.placeName} ${location.placeName.length < 20 ? `• ${Utils.getDateFromTimestamp(dateRange.endDate, 'MM.YYYY')}` : ''}`}
             color={COLORS.neutral[300]}
           />
         </View>
@@ -32,7 +33,7 @@ export default function SearchResultTile({ style, data }) {
           color={COLORS.neutral[300]}
         />
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 
@@ -41,6 +42,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    backgroundColor: COLORS.shades[0],
+    minHeight: 72,
+    borderRadius: RADIUS.s,
+    borderWidth: 1,
+    borderColor: COLORS.neutral[100],
+    padding: 15,
   },
   chevronContainer: {
     borderRadius: 100,

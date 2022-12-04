@@ -1,52 +1,64 @@
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  Pressable, StyleSheet, View,
+} from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Foundation';
+import * as Animatable from 'react-native-animatable';
+import { useNavigation } from '@react-navigation/native';
 import COLORS, { RADIUS } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Body from '../typography/Body';
+import Headline from '../typography/Headline';
+import recapTripStore from '../../stores/RecapTripStore';
+import ROUTES from '../../constants/Routes';
 
-export default function RewindTile({ style, onPress }) {
-  const location = 'Pula, Croatia';
+export default function RewindTile({ style }) {
+  const { location, id: tripId } = recapTripStore((state) => state.recapTrip);
+
+  const navigation = useNavigation();
+
+  const AnimatablePressable = Animatable.createAnimatableComponent(Pressable);
+
+  if (!location) { return <View />; }
+
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      activeOpacity={0.9}
+    <AnimatablePressable
+      onPress={() => navigation.navigate(ROUTES.memoriesScreen, { tripId })}
+      animation="pulse"
+      iterationCount={4}
+      delay={2000}
       style={[styles.container, style]}
     >
-      <Icon
-        name="rewind"
-        size={26}
-        color={COLORS.shades[0]}
-        style={{ marginRight: 16 }}
-      />
-      <Body
-        type={1}
-        text={`${1} ${i18n.t('year ago')} `}
-        style={{ fontWeight: '500' }}
-        color={COLORS.shades[0]}
-      />
-      <Body
-        type={1}
-        text={i18n.t('you were in')}
-        color={COLORS.shades[0]}
-      />
-      <Body
-        type={1}
-        text={` ${location}`}
-        style={{ fontWeight: '500' }}
-        color={COLORS.shades[0]}
-      />
-    </TouchableOpacity>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Icon
+          name="rewind"
+          size={22}
+          color={COLORS.shades[0]}
+          style={{ marginRight: 8 }}
+        />
+        <Headline
+          type={3}
+          text={i18n.t('Rewind time')}
+          color={COLORS.shades[0]}
+        />
+      </View>
+      <View style={{ flexDirection: 'row', marginTop: 4, marginLeft: -4 }}>
+        <Body
+          type={1}
+          text={` ${location.placeName}`}
+          style={{ fontWeight: '500' }}
+          color={COLORS.shades[0]}
+        />
+      </View>
+    </AnimatablePressable>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 14,
-    borderRadius: RADIUS.m,
+    borderRadius: RADIUS.s,
     backgroundColor: COLORS.primary[700],
-    height: 52,
-    flexDirection: 'row',
-    alignItems: 'center',
+    paddingVertical: 10,
   },
 });

@@ -1,10 +1,9 @@
 import {
-  View, StyleSheet, Image, TouchableOpacity, Dimensions, ScrollView,
+  View, StyleSheet, Image, Dimensions, ScrollView, Pressable,
 } from 'react-native';
 import React, { useState } from 'react';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import Headline from './typography/Headline';
-import Avatar from './Avatar';
 import IconButton from './IconButton';
 import DaysContainer from './DaysContainer';
 import DefaultImage from '../../assets/images/default_trip.png';
@@ -19,13 +18,11 @@ export default function RecapCard({
   data, style, type = 'main', onPress,
 }) {
   const [isLiked, setIsLiked] = useState(false);
-  const getRVSP = () => '4 yes • 1 maybes • 2 no\'s';
-
-  const getLocation = () => 'Paris, France';
+  const { location, description, dateRange } = data;
 
   const getDateString = () => `${Utils.getDateFromTimestamp(data.dateRange.startDate, 'DD.MM.YYYY')} - ${Utils.getDateFromTimestamp(data.dateRange.endDate, 'DD.MM.YYYY')}`;
 
-  const getDetailContainer = (string) => (
+  const DetailContainer = ({ string }) => (
     <View style={styles.detailContainer}>
       <Subtitle
         type={1}
@@ -36,8 +33,7 @@ export default function RecapCard({
   );
 
   const getMiniCard = () => (
-    <TouchableOpacity
-      activeOpacity={0.9}
+    <Pressable
       style={[styles.miniContainer, styles.boxShadow, style]}
       onPress={onPress}
     >
@@ -52,18 +48,18 @@ export default function RecapCard({
         />
         <Body
           type={3}
-          text={getRVSP()}
+          numberOfLines={1}
+          text={`${description || location?.placeName || Utils.getDateFromTimestamp(dateRange?.startDate, 'MM YYYY')}`}
           color={COLORS.neutral[300]}
           isDense
         />
       </View>
       <DaysContainer dates={data.dateRange} />
-    </TouchableOpacity>
+    </Pressable>
   );
 
   const getMainCard = () => (
-    <TouchableOpacity
-      activeOpacity={0.9}
+    <Pressable
       style={[styles.container, styles.boxShadow, style]}
       onPress={onPress}
     >
@@ -82,8 +78,8 @@ export default function RecapCard({
           color={COLORS.neutral[300]}
         />
         <ScrollView horizontal style={{ marginTop: 15, marginBottom: 15 }}>
-          {getDetailContainer(getLocation())}
-          {getDetailContainer(getDateString())}
+          <DetailContainer string={data?.location?.placeName} />
+          <DetailContainer string={getDateString()} />
         </ScrollView>
         <Divider
           vertical={1}
@@ -112,7 +108,7 @@ export default function RecapCard({
           </View>
         </View>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 
   return (

@@ -1,22 +1,22 @@
-import { View, StyleSheet } from 'react-native';
+import {
+  View, StyleSheet, FlatList,
+} from 'react-native';
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
-import { ScrollView } from 'react-native-gesture-handler';
-import COLORS from '../../constants/Theme';
+import COLORS, { PADDING } from '../../constants/Theme';
 import Headline from '../typography/Headline';
 import i18n from '../../utils/i18n';
 import Button from '../Button';
-import ContinentChip from './ContinentChip';
-import CONTINENTS_DATA from '../../constants/Continents';
+// import CONTINENTS_DATA from '../../constants/Continents';
 import SearchModal from '../Search/SearchModal';
 import userStore from '../../stores/UserStore';
 import Body from '../typography/Body';
+import SearchResultTile from '../Search/SearchResultTile';
 
 export default function CountriesVisited({ showUpcoming, upcomingTrips, recentTrips }) {
-  const [selectedContinent, setSelectedContinent] = useState('worldwide');
   const [searchVisible, setSearchVisible] = useState(false);
   const { firstName } = userStore((state) => state.user);
-  const continentData = CONTINENTS_DATA;
+  // const continentData = CONTINENTS_DATA;
 
   const title = !showUpcoming ? `${i18n.t("You've completed")} ${recentTrips?.length} ${i18n.t('Trips')}` : `${i18n.t("You've planned")} ${upcomingTrips?.length} ${i18n.t('Trips')}`;
 
@@ -51,20 +51,20 @@ export default function CountriesVisited({ showUpcoming, upcomingTrips, recentTr
             color={COLORS.neutral[900]}
           />
         </View>
-        <ScrollView
-          horizontal
-          style={{ paddingHorizontal: 20, marginTop: 20 }}
-          showsHorizontalScrollIndicator={false}
-        >
-          {continentData.map((continent, index) => (
-            <ContinentChip
-              onTap={() => setSelectedContinent(continent.name.toLowerCase())}
-              isActive={selectedContinent.toLowerCase() === continent.name.toLowerCase()}
-              style={{ marginRight: index !== continentData.length - 1 ? 6 : 30 }}
-              data={continent}
+        <FlatList
+          style={{ marginTop: 20, paddingHorizontal: PADDING.m }}
+          ListEmptyComponent={() => (
+            <Body
+              style={{ alignSelf: 'center', marginTop: 10 }}
+              type={1}
+              text={i18n.t('No Trips to show 😢')}
+              color={COLORS.neutral[300]}
             />
-          ))}
-        </ScrollView>
+          )}
+          data={showUpcoming ? upcomingTrips : recentTrips}
+          ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+          renderItem={({ item }) => <SearchResultTile data={item} />}
+        />
       </View>
       <SearchModal isVisible={searchVisible} onRequestClose={() => setSearchVisible(false)} />
     </View>
@@ -74,7 +74,7 @@ export default function CountriesVisited({ showUpcoming, upcomingTrips, recentTr
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.shades[0],
+    backgroundColor: COLORS.neutral[50],
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
     shadowColor: COLORS.shades[100],

@@ -138,7 +138,6 @@ export default function TimelineScreen() {
               <Headline
                 type={3}
                 text={`${item.amount}${item.currency}`}
-                // color={COLORS.warning[500]}
               />
               <Body
                 type={2}
