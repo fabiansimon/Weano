@@ -32,19 +32,19 @@ export default function RewindTile({ style }) {
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Icon
           name="rewind"
-          size={22}
+          size={20}
           color={COLORS.shades[0]}
           style={{ marginRight: 8 }}
         />
         <Headline
-          type={3}
+          type={4}
           text={i18n.t('Rewind time')}
           color={COLORS.shades[0]}
         />
       </View>
       <View style={{ flexDirection: 'row', marginTop: 4, marginLeft: -4 }}>
         <Body
-          type={1}
+          type={2}
           text={` ${location.placeName}`}
           style={{ fontWeight: '500' }}
           color={COLORS.shades[0]}
