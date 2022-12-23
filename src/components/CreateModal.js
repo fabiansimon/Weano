@@ -24,8 +24,10 @@ import ADD_TRIP from '../mutations/addTrip';
 import CalendarModal from './CalendarModal';
 import ContactsModal from './ContactsModal';
 import Body from './typography/Body';
+import tripsStore from '../stores/TripsStore';
 
 export default function CreateModal({ isVisible, onRequestClose }) {
+  const addTripState = tripsStore((state) => state.addTrip);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(() => {
     const date = new Date();
@@ -153,6 +155,22 @@ export default function CreateModal({ isVisible, onRequestClose }) {
         text2: e.message,
       });
       console.log(`ERROR: ${e.message}`);
+    }).then((res) => {
+      addTripState({
+        id: res.data.createTrip,
+        thumbnailUri: null,
+        title: tripName,
+        description: null,
+        location: {
+          placeName,
+          latlon,
+        },
+        activeMembers: null,
+        dateRange: {
+          endDate,
+          startDate,
+        },
+      });
     });
 
     setTripName('');

@@ -26,6 +26,9 @@ const tripsStore = create((set) => ({
       },
     } : trip)),
   })),
+  addTrip: (trip) => set((state) => ({
+    trips: [...state.trips, trip],
+  })),
 }));
 
 export default tripsStore;

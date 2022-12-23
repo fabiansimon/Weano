@@ -3,16 +3,20 @@ import {
   FlatList,
   Image,
   Pressable,
+  RefreshControl,
   ScrollView, StyleSheet, View,
 } from 'react-native';
 import React, {
   useRef, useState,
   useEffect,
+  useCallback,
 } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/AntDesign';
+import { useLazyQuery } from '@apollo/client';
+import Toast from 'react-native-toast-message';
 import COLORS, { PADDING } from '../constants/Theme';
 import Headline from '../components/typography/Headline';
 import i18n from '../utils/i18n';
@@ -30,19 +34,42 @@ import Avatar from '../components/Avatar';
 import tripsStore from '../stores/TripsStore';
 import activeTripStore from '../stores/ActiveTripStore';
 import Suitcase3D from '../../assets/images/suitcase_3d.png';
+import GET_TRIPS_FOR_USER from '../queries/getTripsForUser';
 
 export default function MainScreen() {
+  const [getTripsForUser, { error, data }] = useLazyQuery(GET_TRIPS_FOR_USER);
   const user = userStore((state) => state.user);
   const { id: activeTripId } = activeTripStore((state) => state.activeTrip);
   const [createVisible, setCreateVisible] = useState(false);
   const [searchVisible, setSearchVisible] = useState(false);
   const scrollY = useRef(new Animated.Value(0)).current;
   const trips = tripsStore((state) => state.trips);
+  const setTrips = tripsStore((state) => state.setTrips);
   const [upcomingTrips, setUpcomingTrips] = useState(false);
   const [recentTrips, setRecentTrips] = useState(false);
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    getTripsForUser().then(() => setRefreshing(false));
+  }, []);
 
   const now = Date.now() / 1000;
   const { width } = Dimensions.get('window');
+
+  useEffect(() => {
+    if (data) {
+      setTrips(data.getTripsForUser);
+    }
+
+    if (error) {
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('Whoops!'),
+        text2: error.message,
+      });
+    }
+  }, [data, error]);
 
   useEffect(() => {
     setUpcomingTrips(trips.filter((trip) => trip.dateRange.startDate > now && trip.dateRange.endDate > now));
@@ -161,6 +188,12 @@ export default function MainScreen() {
         </View>
       </AnimatedHeader>
       <Animated.ScrollView
+        refreshControl={(
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        )}
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
         onScroll={Animated.event(
@@ -239,7 +272,7 @@ export default function MainScreen() {
                 <RecapCard
                   type="mini"
                   key={item.latlon}
-                  onPress={() => navigation.navigate(ROUTES.tripScreen, { isActive: false })}
+                  onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: item.id })}
                   data={item}
                   style={{ marginRight: 20 }}
                 />

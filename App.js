@@ -45,7 +45,7 @@ export default function App() {
   const client = new ApolloClient({
     uri: 'http://143.198.241.91:4000/graphql',
     cache: new InMemoryCache(),
-    headers: { Authorization: authToken || '' },
+    headers: { Authorization: authToken || null },
   });
 
   const checkAuth = async () => {
@@ -70,27 +70,20 @@ export default function App() {
         <NavigationContainer>
           <StatusBar barStyle="dark-content" />
           <Stack.Navigator screenOptions={{ headerShown: false }}>
-            {/* <Stack.Screen
-              name={ROUTES.invitationScreen}
-              component={InvitationScreen}
-              initialParams={{ tripId: '6376718ec191f076c0fc39543' }}
-              options={{ gestureEnabled: false }}
-            /> */}
             <Stack.Screen name={ROUTES.initDataCrossroads} component={InitDataCrossroads} />
-            <Stack.Screen
-              name={ROUTES.mainScreen}
-              component={MainScreen}
-              options={{ gestureEnabled: false }}
-            />
             <Stack.Screen
               name={ROUTES.signUpScreen}
               component={SignUpScreen}
               options={{ gestureEnabled: false }}
             />
             <Stack.Screen
+              name={ROUTES.mainScreen}
+              component={MainScreen}
+              options={{ gestureEnabled: false }}
+            />
+            <Stack.Screen
               name={ROUTES.invitationScreen}
               component={InvitationScreen}
-              initialParams={{ tripId: '63750ba1c902414671369460' }}
               options={{ gestureEnabled: false }}
             />
             <Stack.Screen

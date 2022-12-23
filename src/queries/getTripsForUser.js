@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
-const GET_TRIP_BY_ID = gql`
-    query GetTripById($tripId: String) {
-        getTripById(tripId: $tripId) {
+const GET_TRIPS_FOR_USER = gql`
+    query GetTripsForUser {
+        getTripsForUser {
             id
             thumbnailUri
             title
@@ -41,24 +41,13 @@ const GET_TRIP_BY_ID = gql`
                 createdAt
             }
             images
-            polls {
-                creatorId
-                title
-                description
-                createdAt
-                options {
-                    option
-                    votes
-                    creatorId
-                }
-            }
             mutualTasks {
                 assignee
                 creatorId
                 title
                 isDone
             }
-                privateTasks {
+            privateTasks {
                 assignee
                 creatorId
                 title
@@ -68,4 +57,4 @@ const GET_TRIP_BY_ID = gql`
     }
 `;
 
-export default GET_TRIP_BY_ID;
+export default GET_TRIPS_FOR_USER;

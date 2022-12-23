@@ -155,20 +155,21 @@ const styles = StyleSheet.create({
     right: PADDING.l,
     top: 65,
     height: 40,
-    borderRadius: RADIUS.s,
+    borderRadius: RADIUS.xl,
     backgroundColor: Utils.addAlpha('#FFFFFF', 0.1),
     borderWidth: 0.5,
     borderColor: COLORS.shades[0],
     position: 'absolute',
   },
   tab: {
+    width: 120,
     paddingHorizontal: 18,
     justifyContent: 'center',
     alignItems: 'center',
   },
   activeTab: {
     margin: -1,
-    borderRadius: 10,
+    borderRadius: RADIUS.xl,
     backgroundColor: COLORS.primary[700],
   },
 });

@@ -30,9 +30,9 @@ const asyncStorageDAO = new AsyncStorageDAO();
 export default function AuthModal({
   isVisible, onRequestClose, registerData, joinTripId,
 }) {
-  const [registerUser, { registerError }] = useMutation(REGISTER_USER);
-  const [loginUser, { loginError }] = useMutation(LOGIN_USER);
-  const [joinTrip, { joinError }] = useMutation(JOIN_TRIP);
+  const [registerUser, { error: registerError }] = useMutation(REGISTER_USER);
+  const [loginUser, { error: loginError }] = useMutation(LOGIN_USER);
+  const [joinTrip, { error: joinError }] = useMutation(JOIN_TRIP);
 
   const updateUserData = userStore((state) => state.updateUserData);
 
@@ -51,7 +51,7 @@ export default function AuthModal({
       Toast.show({
         type: 'error',
         text1: i18n.t('Whoops!'),
-        text2: loginError.message || registerError.message || joinError.message,
+        text2: loginError?.message || registerError?.message || joinError?.message,
       });
     }
   }, [loginError, registerError, joinError]);
@@ -179,6 +179,7 @@ export default function AuthModal({
         text1: i18n.t('Whoops!'),
         text2: e.message,
       });
+      console.log(e);
     })
       .then((res) => {
         asyncStorageDAO.setAccessToken(res.data.loginUser);

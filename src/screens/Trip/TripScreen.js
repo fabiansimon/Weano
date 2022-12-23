@@ -9,7 +9,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import ActionSheet from 'react-native-actionsheet';
 import { launchImageLibrary } from 'react-native-image-picker';
 import COLORS, { PADDING } from '../../constants/Theme';
@@ -37,14 +37,25 @@ import UPDATE_TRIP from '../../mutations/updateTrip';
 import httpService from '../../utils/httpService';
 import InputModal from '../../components/InputModal';
 import PollCarousel from '../../components/Polls/PollCarousel';
+import GET_TRIP_BY_ID from '../../queries/getTripById';
 
 export default function TripScreen({ route }) {
-  const { isActive = false } = route.params;
+  const { tripId } = route.params;
 
+  console.log(tripId);
+
+  const [getTripData, { error: fetchError, data: tripData }] = useLazyQuery(GET_TRIP_BY_ID, {
+    variables: {
+      tripId,
+    },
+  });
+
+  const isActive = false;
   const [updateTrip, { error }] = useMutation(UPDATE_TRIP);
 
   const activeTrip = activeTripStore((state) => state.activeTrip);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
+  const setActiveTrip = activeTripStore((state) => state.setActiveTrip);
 
   const scrollY = useRef(new Animated.Value(0)).current;
   const scrollRef = useRef();
@@ -57,16 +68,27 @@ export default function TripScreen({ route }) {
   const data = activeTrip;
 
   useEffect(() => {
-    if (error) {
+    if (error || fetchError) {
       setTimeout(() => {
         Toast.show({
           type: 'error',
           text1: i18n.t('Whoops!'),
-          text2: error.message,
+          text2: error?.message || fetchError?.message,
         });
       }, 500);
     }
-  }, [error]);
+
+    if (tripData) {
+      console.log(tripData.getTripById.expenses);
+      setActiveTrip(tripData.getTripById);
+    }
+  }, [error, fetchError, tripData]);
+
+  useEffect(() => {
+    // if (tripId !== activeTrip.id) {
+    getTripData();
+    // }
+  }, [tripId]);
 
   const handleTabPress = (index) => {
     setCurrentTab(index);
@@ -184,7 +206,7 @@ export default function TripScreen({ route }) {
     },
     {
       name: i18n.t('Date'),
-      isDone: data.dateRange?.startDate,
+      isDone: data?.dateRange?.startDate,
       route: ROUTES.dateScreen,
     },
     {
@@ -195,23 +217,6 @@ export default function TripScreen({ route }) {
   ];
 
   const contentItems = [
-    // {
-    //   title: i18n.t('Accomodations'),
-    //   trailing: <Headline
-    //     onPress={() => navigation.navigate(ROUTES.accomodationsScreen, { data: mockData.accomodations })}
-    //     type={4}
-    //     text={i18n.t('see all')}
-    //     color={COLORS.neutral[500]}
-    //   />,
-    //   omitPadding: true,
-    //   content: <AccomodationCarousel
-    //     data={mockData.accomodations}
-    //     onLayout={(e) => {
-    //       console.log(`Accomodations: ${e.nativeEvent.layout.y}`);
-    //     }}
-    //   />,
-    //   yPos: 0,
-    // },
     {
       title: i18n.t('Polls'),
       trailing: <Headline
@@ -222,10 +227,12 @@ export default function TripScreen({ route }) {
       />,
       omitPadding: true,
       onPress: () => navigation.navigate(ROUTES.pollScreen),
-      content: <PollCarousel
+      content: data?.polls && (
+      <PollCarousel
         style={{ marginHorizontal: PADDING.m, maxHeight: 300 }}
         data={data?.polls}
-      />,
+      />
+      ),
       yPos: 0,
     },
     {
@@ -300,7 +307,7 @@ export default function TripScreen({ route }) {
           >
             <Button
               isSecondary
-              text={data.location.placeName || i18n.t('Set location')}
+              text={data.location?.placeName || i18n.t('Set location')}
               fullWidth={false}
               icon="location-pin"
               onPress={() => navigation.push(ROUTES.locationScreen)}
