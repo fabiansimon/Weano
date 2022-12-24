@@ -41,7 +41,7 @@ export default function ChecklistContainer({
       }}
       >
         <Headline
-          type={3}
+          type={4}
           style={{ alignSelf: 'center' }}
           text={isPrivate ? i18n.t('Private list') : i18n.t('Mutual list')}
         />

@@ -109,7 +109,6 @@ export default function TripScreen({ route }) {
           },
         },
       }).catch((e) => {
-        console.log(e);
         setTimeout(() => {
           Toast.show({
             type: 'error',

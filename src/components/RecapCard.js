@@ -42,12 +42,13 @@ export default function RecapCard({
       }}
       >
         <Headline
-          type={3}
+          isDense
+          type={4}
           text={data.title}
           numberOfLines={1}
         />
         <Body
-          type={3}
+          type={2}
           numberOfLines={1}
           text={`${description || location?.placeName || Utils.getDateFromTimestamp(dateRange?.startDate, 'MM YYYY')}`}
           color={COLORS.neutral[300]}
@@ -147,7 +148,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: COLORS.neutral[100],
     aspectRatio: 3.7,
-    height: 85,
+    height: 75,
     padding: PADDING.s,
   },
   detailsContainer: {

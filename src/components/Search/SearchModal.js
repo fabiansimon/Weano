@@ -3,6 +3,7 @@ import {
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { useNavigation } from '@react-navigation/native';
 import COLORS, { PADDING } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Headline from '../typography/Headline';
@@ -11,8 +12,11 @@ import KeyboardView from '../KeyboardView';
 import tripsStore from '../../stores/TripsStore';
 import SearchResultTile from './SearchResultTile';
 import Body from '../typography/Body';
+import ROUTES from '../../constants/Routes';
 
 export default function LocationScreen({ isVisible, onRequestClose }) {
+  const navigation = useNavigation();
+
   const [term, setTerm] = useState('');
   const trips = tripsStore((state) => state.trips);
   const [data, setData] = useState(false);
@@ -37,6 +41,11 @@ export default function LocationScreen({ isVisible, onRequestClose }) {
 
   const handleSearchTerm = (val) => {
     setTerm(val);
+  };
+
+  const handleNavigation = (id) => {
+    onRequestClose();
+    navigation.navigate(ROUTES.tripScreen, { tripId: id });
   };
 
   return (
@@ -83,7 +92,13 @@ export default function LocationScreen({ isVisible, onRequestClose }) {
                   style={{ marginVertical: 10, marginLeft: 4 }}
                 />
               )}
-              renderItem={({ item }) => <SearchResultTile data={item} style={{ marginBottom: 10 }} />}
+              renderItem={({ item }) => (
+                <SearchResultTile
+                  onPress={() => handleNavigation(item.id)}
+                  data={item}
+                  style={{ marginBottom: 10 }}
+                />
+              )}
             />
             )}
             {term.length >= 1 && (
@@ -105,7 +120,13 @@ export default function LocationScreen({ isVisible, onRequestClose }) {
                   style={{ marginVertical: 10, marginLeft: 4 }}
                 />
               )}
-              renderItem={({ item }) => <SearchResultTile data={item} style={{ marginBottom: 10 }} />}
+              renderItem={({ item }) => (
+                <SearchResultTile
+                  onPress={() => handleNavigation(item.id)}
+                  data={item}
+                  style={{ marginBottom: 10 }}
+                />
+              )}
             />
             )}
           </ScrollView>
@@ -127,7 +148,6 @@ const styles = StyleSheet.create({
     paddingBottom: 36,
   },
   header: {
-    backgroundColor: COLORS.shades[0],
     paddingHorizontal: PADDING.s,
     alignItems: 'center',
     flexDirection: 'row',

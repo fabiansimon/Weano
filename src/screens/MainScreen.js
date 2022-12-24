@@ -51,7 +51,7 @@ export default function MainScreen() {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    getTripsForUser().then(() => setRefreshing(false));
+    getTripsForUser().then(() => setRefreshing(false)).catch(() => setRefreshing(false));
   }, []);
 
   const now = Date.now() / 1000;
@@ -265,6 +265,7 @@ export default function MainScreen() {
             />
             <FlatList
               horizontal
+              contentContainerStyle={{ paddingRight: PADDING.l }}
               style={{ marginTop: 20, paddingHorizontal: PADDING.m }}
               data={upcomingTrips}
               ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
@@ -274,7 +275,7 @@ export default function MainScreen() {
                   key={item.latlon}
                   onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: item.id })}
                   data={item}
-                  style={{ marginRight: 20 }}
+                  style={{ marginRight: 10 }}
                 />
               )}
             />

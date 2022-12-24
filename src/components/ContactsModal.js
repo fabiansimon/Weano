@@ -2,17 +2,24 @@ import {
   StyleSheet, FlatList, View, TouchableOpacity,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import React from 'react';
+import React, { useEffect } from 'react';
 import TitleModal from './TitleModal';
 import i18n from '../utils/i18n';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import Body from './typography/Body';
 import Avatar from './Avatar';
 import Headline from './typography/Headline';
+import FAButton from './FAButton';
+import Button from './Button';
 
 export default function ContactsModal({
   isVisible, onRequestClose, data, onPress,
 }) {
+  // useEffect(() => {
+  //   const invited = data?.filter((item) => item.isInvited);
+
+  // }, [data]);
+
   const getContactTile = (item, index) => {
     const { isInvited } = item;
     const fullName = `${item.givenName} ${item.familyName}`;
@@ -73,6 +80,11 @@ export default function ContactsModal({
         extraData={data}
         showsVerticalScrollIndicator={false}
         renderItem={({ item, index }) => getContactTile(item, index)}
+      />
+      <FAButton
+        string={i18n.t('Add')}
+        icon="add"
+        iconSize={28}
       />
     </TitleModal>
   );

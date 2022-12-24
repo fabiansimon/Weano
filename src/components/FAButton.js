@@ -4,9 +4,10 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import React from 'react';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
+import Headline from './typography/Headline';
 
 export default function FAButton({
-  style, onPress, icon, iconSize = 22,
+  style, onPress, icon, iconSize = 22, string,
 }) {
   return (
     <TouchableOpacity
@@ -14,6 +15,11 @@ export default function FAButton({
       style={[styles.fab, style]}
       onPress={onPress}
     >
+      <Headline
+        type={4}
+        color={COLORS.shades[0]}
+        text={string}
+      />
       <Icon
         name={icon}
         color={COLORS.shades[0]}
@@ -25,6 +31,7 @@ export default function FAButton({
 
 const styles = StyleSheet.create({
   fab: {
+    flexDirection: 'row',
     position: 'absolute',
     bottom: 50,
     right: PADDING.xl,

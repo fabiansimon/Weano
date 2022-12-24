@@ -1,10 +1,11 @@
 import { View, StyleSheet } from 'react-native';
 import React from 'react';
 import moment from 'moment';
-import COLORS from '../constants/Theme';
+import COLORS, { RADIUS } from '../constants/Theme';
 import Headline from './typography/Headline';
 import i18n from '../utils/i18n';
 import Utils from '../utils';
+import Body from './typography/Body';
 
 export default function DaysContainer({ style, dates }) {
   const getDayDifference = () => {
@@ -18,13 +19,15 @@ export default function DaysContainer({ style, dates }) {
   return (
     <View style={[styles.container, style]}>
       <Headline
-        type={2}
+        type={3}
         text={getDayDifference()}
         color={COLORS.shades[0]}
-        style={{ fontSize: 20, margin: -10 }}
+        isDense
+        style={{ marginBottom: -4 }}
       />
-      <Headline
-        type={4}
+      <Body
+        type={1}
+        isDense
         text={i18n.t('days')}
         color={COLORS.shades[0]}
       />
@@ -34,10 +37,9 @@ export default function DaysContainer({ style, dates }) {
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 10,
+    borderRadius: RADIUS.m,
     justifyContent: 'center',
     alignItems: 'center',
-    height: 65,
     width: 55,
     backgroundColor: COLORS.secondary[700],
   },
