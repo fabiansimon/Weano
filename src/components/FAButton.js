@@ -1,4 +1,5 @@
 import {
+  Pressable,
   StyleSheet, TouchableOpacity,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -10,9 +11,8 @@ export default function FAButton({
   style, onPress, icon, iconSize = 22, string,
 }) {
   return (
-    <TouchableOpacity
-      activeOpacity={0.9}
-      style={[styles.fab, style]}
+    <Pressable
+      style={[styles.fab, { paddingHorizontal: string ? PADDING.l : 0 }, style]}
       onPress={onPress}
     >
       <Headline
@@ -25,7 +25,7 @@ export default function FAButton({
         color={COLORS.shades[0]}
         size={iconSize}
       />
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 
@@ -34,9 +34,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     position: 'absolute',
     bottom: 50,
-    right: PADDING.xl,
+    right: PADDING.l,
     height: 55,
-    width: 55,
+    minWidth: 55,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: RADIUS.xl,

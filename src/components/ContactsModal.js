@@ -82,7 +82,8 @@ export default function ContactsModal({
         renderItem={({ item, index }) => getContactTile(item, index)}
       />
       <FAButton
-        string={i18n.t('Add')}
+        onPress={onRequestClose}
+        string={i18n.t('Done')}
         icon="add"
         iconSize={28}
       />

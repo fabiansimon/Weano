@@ -8,6 +8,7 @@ import MapboxGL from '@react-native-mapbox-gl/maps';
 import BottomSheet from '@gorhom/bottom-sheet';
 // eslint-disable-next-line import/no-unresolved
 import { MAPBOX_TOKEN } from '@env';
+import { useNavigation } from '@react-navigation/native';
 import BackButton from '../components/BackButton';
 import CountriesVisited from '../components/Map/CountriesVisited';
 import tripsStore from '../stores/TripsStore';
@@ -16,10 +17,13 @@ import DefaultImage from '../../assets/images/default_trip.png';
 import Body from '../components/typography/Body';
 import i18n from '../utils/i18n';
 import Utils from '../utils';
+import ROUTES from '../constants/Routes';
 
 MapboxGL.setAccessToken(MAPBOX_TOKEN);
 
 export default function MapScreen() {
+  const navigation = useNavigation();
+
   const snapPoints = useMemo(() => ['20%', '86%'], []);
   const sheetRef = useRef(null);
   const trips = tripsStore((state) => state.trips);
@@ -45,7 +49,10 @@ export default function MapScreen() {
       <MapboxGL.MarkerView
         coordinate={location.latlon}
       >
-        <View style={styles.imageContainer}>
+        <Pressable
+          onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: trip.id })}
+          style={styles.imageContainer}
+        >
           <Image
             source={source}
             style={{
@@ -53,7 +60,7 @@ export default function MapScreen() {
             }}
           />
           <View style={styles.pinShape} />
-        </View>
+        </Pressable>
       </MapboxGL.MarkerView>
     );
   };

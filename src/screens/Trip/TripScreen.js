@@ -1,5 +1,5 @@
 import {
-  View, StyleSheet, Image, Dimensions, TouchableOpacity,
+  View, StyleSheet, Image, Dimensions, TouchableOpacity, Pressable,
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import Toast from 'react-native-toast-message';
@@ -9,7 +9,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import ActionSheet from 'react-native-actionsheet';
 import { launchImageLibrary } from 'react-native-image-picker';
 import COLORS, { PADDING } from '../../constants/Theme';
@@ -41,9 +41,6 @@ import GET_TRIP_BY_ID from '../../queries/getTripById';
 
 export default function TripScreen({ route }) {
   const { tripId } = route.params;
-
-  console.log(tripId);
-
   const [getTripData, { error: fetchError, data: tripData }] = useLazyQuery(GET_TRIP_BY_ID, {
     variables: {
       tripId,
@@ -67,6 +64,10 @@ export default function TripScreen({ route }) {
   const navigation = useNavigation();
   const data = activeTrip;
 
+  const { width } = Dimensions.get('window');
+
+  const IMAGE_HEIGHT = 240;
+
   useEffect(() => {
     if (error || fetchError) {
       setTimeout(() => {
@@ -79,15 +80,14 @@ export default function TripScreen({ route }) {
     }
 
     if (tripData) {
-      console.log(tripData.getTripById.expenses);
       setActiveTrip(tripData.getTripById);
     }
   }, [error, fetchError, tripData]);
 
   useEffect(() => {
-    // if (tripId !== activeTrip.id) {
-    getTripData();
-    // }
+    if (tripId !== activeTrip.id) {
+      getTripData();
+    }
   }, [tripId]);
 
   const handleTabPress = (index) => {
@@ -284,102 +284,96 @@ export default function TripScreen({ route }) {
     },
   ];
 
-  const getTopContent = () => (
-    <>
-      <TouchableOpacity
-        style={{ height: 240 }}
-        onPress={() => addImageRef.current?.show()}
-      />
-      <View style={styles.bodyContainer}>
-        <View style={{ paddingHorizontal: PADDING.l }}>
-          <Headline type={2} text={data.title} />
-          <ScrollView
-            horizontal
-            contentContainerStyle={{ paddingRight: 30 }}
-            style={{
-              flexDirection: 'row',
-              marginTop: 12,
-              marginHorizontal: -PADDING.l,
-              paddingLeft: PADDING.m,
+  const TopContent = () => (
+    <View style={styles.bodyContainer}>
+      <View style={{ paddingHorizontal: PADDING.l }}>
+        <Headline type={2} text={data.title} />
+        <ScrollView
+          horizontal
+          contentContainerStyle={{ paddingRight: 30 }}
+          style={{
+            flexDirection: 'row',
+            marginTop: 12,
+            marginHorizontal: -PADDING.l,
+            paddingLeft: PADDING.m,
 
-            }}
-          >
-            <Button
-              isSecondary
-              text={data.location?.placeName || i18n.t('Set location')}
-              fullWidth={false}
-              icon="location-pin"
-              onPress={() => navigation.push(ROUTES.locationScreen)}
-              backgroundColor={COLORS.shades[0]}
-              textColor={COLORS.shades[100]}
-              style={data.location ? styles.infoTile : styles.infoButton}
-            />
-            <Button
-              isSecondary
-              text={data.dateRange?.startDate ? Utils.getDateRange(data.dateRange) : i18n.t('Find date')}
-              fullWidth={false}
-              icon={<AntIcon name="calendar" size={22} />}
-              onPress={() => navigation.push(ROUTES.dateScreen)}
-              backgroundColor={COLORS.shades[0]}
-              textColor={COLORS.shades[100]}
-              style={[data.dateRange?.startDate ? styles.infoTile : styles.infoButton, { marginLeft: 14 }]}
-            />
-          </ScrollView>
-          <TouchableOpacity
-            style={{ flexDirection: 'row', marginTop: 16, alignItems: 'center' }}
-            onPress={() => setInputOpen(true)}
-          >
-            {!data.description && (
+          }}
+        >
+          <Button
+            isSecondary
+            text={data.location?.placeName || i18n.t('Set location')}
+            fullWidth={false}
+            icon="location-pin"
+            onPress={() => navigation.push(ROUTES.locationScreen)}
+            backgroundColor={COLORS.shades[0]}
+            textColor={COLORS.shades[100]}
+            style={data.location ? styles.infoTile : styles.infoButton}
+          />
+          <Button
+            isSecondary
+            text={data.dateRange?.startDate ? Utils.getDateRange(data.dateRange) : i18n.t('Find date')}
+            fullWidth={false}
+            icon={<AntIcon name="calendar" size={22} />}
+            onPress={() => navigation.push(ROUTES.dateScreen)}
+            backgroundColor={COLORS.shades[0]}
+            textColor={COLORS.shades[100]}
+            style={[data.dateRange?.startDate ? styles.infoTile : styles.infoButton, { marginLeft: 14 }]}
+          />
+        </ScrollView>
+        <TouchableOpacity
+          style={{ flexDirection: 'row', marginTop: 16, alignItems: 'center' }}
+          onPress={() => setInputOpen(true)}
+        >
+          {!data.description && (
             <Icon
               size={16}
               color={COLORS.neutral[300]}
               name="pencil-sharp"
             />
-            )}
-            <Body
-              type={1}
-              text={data.description || i18n.t('Add a description to the trip 😎')}
-              style={{ marginLeft: 4, color: COLORS.neutral[300] }}
-            />
-          </TouchableOpacity>
-        </View>
-        <Divider vertical={20} />
-        <View style={styles.statusContainer}>
-          <Headline
-            type={3}
-            text={i18n.t('Status')}
+          )}
+          <Body
+            type={1}
+            text={data.description || i18n.t('Add a description to the trip 😎')}
+            style={{ marginLeft: 4, color: COLORS.neutral[300] }}
           />
-          <Animatable.View animation="pulse" iterationCount="infinite">
-            <Headline
-              type={4}
-              text={isActive ? i18n.t('• live') : i18n.t('21 days left')}
-              style={{ fontWeight: '600', fontSize: 16 }}
-              color={isActive ? COLORS.error[900] : COLORS.primary[700]}
-            />
-          </Animatable.View>
-        </View>
-        <ScrollView horizontal style={{ paddingHorizontal: PADDING.l, paddingTop: 14, paddingBottom: 6 }}>
-          {statusData.map((item) => (
-            <StatusContainer
-              style={{ marginRight: 10 }}
-              data={item}
-              onPress={() => navigation.navigate(item.route)}
-            />
-          ))}
-        </ScrollView>
-        <Divider top={18} />
-        <TabBar
-          style={{ marginBottom: 10 }}
-          items={contentItems}
-          currentTab={currentTab}
-          onPress={(index) => handleTabPress(index)}
-        />
-        <Divider omitPadding />
+        </TouchableOpacity>
       </View>
-    </>
+      <Divider vertical={20} />
+      <View style={styles.statusContainer}>
+        <Headline
+          type={3}
+          text={i18n.t('Status')}
+        />
+        <Animatable.View animation="pulse" iterationCount="infinite">
+          <Headline
+            type={4}
+            text={isActive ? i18n.t('• live') : i18n.t('21 days left')}
+            style={{ fontWeight: '600', fontSize: 16 }}
+            color={isActive ? COLORS.error[900] : COLORS.primary[700]}
+          />
+        </Animatable.View>
+      </View>
+      <ScrollView horizontal style={{ paddingHorizontal: PADDING.l, paddingTop: 14, paddingBottom: 6 }}>
+        {statusData.map((item) => (
+          <StatusContainer
+            style={{ marginRight: 10 }}
+            data={item}
+            onPress={() => navigation.navigate(item.route)}
+          />
+        ))}
+      </ScrollView>
+      <Divider top={18} />
+      <TabBar
+        style={{ marginBottom: 10 }}
+        items={contentItems}
+        currentTab={currentTab}
+        onPress={(index) => handleTabPress(index)}
+      />
+      <Divider omitPadding />
+    </View>
   );
 
-  const getMainContent = () => (
+  const MainContent = () => (
     <View style={styles.mainContainer}>
       {contentItems.map((item) => (
         <ListItem
@@ -392,6 +386,48 @@ export default function TripScreen({ route }) {
         </ListItem>
       ))}
     </View>
+  );
+
+  const HeaderImage = () => (
+    <Animated.View style={{
+      backgroundColor: COLORS.shades[100],
+      position: 'absolute',
+      zIndex: 0,
+      height: IMAGE_HEIGHT,
+      width,
+      transform: [{
+        translateY: scrollY.interpolate({
+          inputRange: [-IMAGE_HEIGHT, 0, IMAGE_HEIGHT],
+          outputRange: [IMAGE_HEIGHT / 2, 0, -IMAGE_HEIGHT / 3],
+        }),
+        scale: scrollY.interpolate({
+          inputRange: [-IMAGE_HEIGHT, 0, IMAGE_HEIGHT],
+          outputRange: [2, 1, 1],
+        }),
+      }],
+    }}
+    >
+      <Image
+        style={styles.image}
+        resizeMode={data.thumbnailUri ? 'center' : 'cover'}
+        source={data.thumbnailUri ? { uri: data.thumbnailUri } : DefaultImage}
+        blurRadius={!data.thumbnailUri ? 10 : 0}
+      />
+      {!data.thumbnailUri && (
+      <View style={styles.addImage}>
+        <Headline
+          type={3}
+          text={i18n.t('Add Trip Image')}
+          color={COLORS.shades[0]}
+        />
+        <Icon
+          name="image"
+          size={32}
+          color={COLORS.shades[0]}
+        />
+      </View>
+      )}
+    </Animated.View>
   );
 
   return (
@@ -412,28 +448,7 @@ export default function TripScreen({ route }) {
               currentTab={currentTab}
             />
           </AnimatedHeader>
-          <View style={styles.imageContainer}>
-            <Image
-              style={styles.image}
-              resizeMode={data.thumbnailUri ? 'center' : 'cover'}
-              source={data.thumbnailUri ? { uri: data.thumbnailUri } : DefaultImage}
-              blurRadius={!data.thumbnailUri ? 10 : 0}
-            />
-            {!data.thumbnailUri && (
-            <View style={styles.addImage}>
-              <Headline
-                type={3}
-                text={i18n.t('Add Trip Image')}
-                color={COLORS.shades[0]}
-              />
-              <Icon
-                name="image"
-                size={32}
-                color={COLORS.shades[0]}
-              />
-            </View>
-            )}
-          </View>
+          <HeaderImage />
           <Animated.ScrollView
             ref={scrollRef}
             showsVerticalScrollIndicator={false}
@@ -443,9 +458,9 @@ export default function TripScreen({ route }) {
               { useNativeDriver: true },
             )}
           >
-            {getTopContent()}
-            <View style={{ backgroundColor: COLORS.neutral[50], height: 0 }} />
-            {getMainContent()}
+            <Pressable style={{ height: IMAGE_HEIGHT }} onPress={() => addImageRef.current?.show()} />
+            <TopContent />
+            <MainContent />
           </Animated.ScrollView>
           <BackButton
             onPress={() => navigation.navigate(ROUTES.mainScreen)}
@@ -478,9 +493,9 @@ export default function TripScreen({ route }) {
 const styles = StyleSheet.create({
   addImage: {
     position: 'absolute',
-    justifyContent: 'center',
     height: '100%',
     width: '100%',
+    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.2)',
   },
@@ -491,6 +506,7 @@ const styles = StyleSheet.create({
     index: 10,
   },
   bodyContainer: {
+    top: -20,
     zIndex: 100,
     paddingTop: 16,
     backgroundColor: COLORS.shades[0],
@@ -498,7 +514,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 24,
     shadowColor: COLORS.neutral[700],
     shadowRadius: 10,
-    shadowOpacity: 0.02,
+    shadowOpacity: 0.1,
   },
   buttonContainer: {
     borderTopEndRadius: 20,
@@ -520,13 +536,11 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   image: {
-    resizeMode: 'stretch',
-    height: 290,
-    width: Dimensions.get('window').width,
-  },
-  imageContainer: {
     position: 'absolute',
-    top: 0,
+    zIndex: 0,
+    resizeMode: 'stretch',
+    height: 240,
+    width: Dimensions.get('window').width,
   },
   infoButton: {
     borderColor: COLORS.neutral[300],
@@ -541,6 +555,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   mainContainer: {
+    zIndex: 2,
     flex: 1,
     paddingVertical: 20,
     backgroundColor: COLORS.neutral[50],
