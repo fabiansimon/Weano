@@ -215,7 +215,7 @@ export default function AuthModal({
     <TitleModal
       isVisible={isVisible}
       onRequestClose={onRequestClose}
-      title={isLogin ? i18n.t('Log in') : i18n.t('Authenticate')}
+      title={isLogin ? i18n.t('Log innnn') : i18n.t('Authenticate')}
     >
       <KeyboardView
         ignoreTouch

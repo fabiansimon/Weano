@@ -1,36 +1,14 @@
 import gql from 'graphql-tag';
 
-const GET_TRIP_BY_ID = gql`
+const GET_TIMELINE_DATA = gql`
     query GetTripById($tripId: String) {
         getTripById(tripId: $tripId) {
-            id
-            thumbnailUri
-            title
-            description
-            location {
-                placeName
-                latlon
-            }
-            invitees {
-                phoneNumber
-                status
-            }
-            activeMembers {
-                id
-                phoneNumber
-                avatarUri
-                email
-                firstName
-                lastName
-                trips
-                expenses {
-                    expense
-                    trip
-                }
-            }
-            dateRange {
-                startDate
-                endDate
+            images {
+                author
+                createdAt
+                description
+                title
+                uri
             }
             expenses {
                 creatorId
@@ -66,4 +44,4 @@ const GET_TRIP_BY_ID = gql`
     }
 `;
 
-export default GET_TRIP_BY_ID;
+export default GET_TIMELINE_DATA;

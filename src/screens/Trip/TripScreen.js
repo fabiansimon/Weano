@@ -295,6 +295,7 @@ export default function TripScreen({ route }) {
         <Headline type={2} text={data.title} />
         <ScrollView
           horizontal
+          showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ paddingRight: 30 }}
           style={{
             flexDirection: 'row',

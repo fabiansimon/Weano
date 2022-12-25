@@ -111,7 +111,6 @@ const GET_INIT_USER_DATA = gql`
                     startDate
                     endDate
                 }
-                images
             }
             recapTrip {
                 id

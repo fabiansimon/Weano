@@ -45,7 +45,7 @@ export default function App() {
   const client = new ApolloClient({
     uri: 'http://143.198.241.91:4000/graphql',
     cache: new InMemoryCache(),
-    headers: { Authorization: authToken || null },
+    headers: { Authorization: authToken || '' },
   });
 
   const checkAuth = async () => {

@@ -5,7 +5,9 @@ import { useNavigation } from '@react-navigation/native';
 import Button from './Button';
 import COLORS from '../constants/Theme';
 
-export default function BackButton({ style, isClear = false, onPress }) {
+export default function BackButton({
+  style, isClear = false, onPress, iconColor,
+}) {
   const navigation = useNavigation();
 
   return (
@@ -14,6 +16,7 @@ export default function BackButton({ style, isClear = false, onPress }) {
         suppressHighlighting
         name="arrowleft"
         size={26}
+        color={iconColor}
         style={{ zIndex: 9999 }}
         onPress={() => (onPress ? onPress() : navigation.goBack())}
       />

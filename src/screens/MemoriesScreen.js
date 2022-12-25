@@ -1,5 +1,5 @@
 import {
-  FlatList, Share, StyleSheet, View, TouchableOpacity, StatusBar, Image, Pressable, Dimensions,
+  FlatList, StyleSheet, View, TouchableOpacity, StatusBar, Image, Pressable, Dimensions,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
 import EntIcon from 'react-native-vector-icons/Entypo';
@@ -22,6 +22,8 @@ import Body from '../components/typography/Body';
 import userStore from '../stores/UserStore';
 import GET_IMAGES_FROM_TRIP from '../queries/getImagesFromTrip';
 import StoryModal from '../components/StoryModal';
+import JourneyIcon from '../../assets/icons/journey_icon.svg';
+import ROUTES from '../constants/Routes';
 
 export default function MemoriesScreen({ route }) {
   const { tripId } = route.params;
@@ -143,19 +145,31 @@ export default function MemoriesScreen({ route }) {
     );
   };
 
-  const PlayButton = () => (
-    <Pressable
-      onPress={() => setStoryVisible(true)}
-      activeOpacity={0.5}
-      style={styles.fab}
+  const Buttons = () => (
+    <View style={{
+      flexDirection: 'row', position: 'absolute', right: PADDING.l, bottom: 50,
+    }}
     >
-      <EntIcon
-        name="controller-play"
-        size={30}
-        style={{ marginRight: -3 }}
-        color={COLORS.shades[100]}
-      />
-    </Pressable>
+      <Pressable
+        onPress={() => navigation.navigate(ROUTES.timelineScreen, { tripId })}
+        activeOpacity={0.5}
+        style={styles.fabSecondary}
+      >
+        <JourneyIcon height={35} />
+      </Pressable>
+      <Pressable
+        onPress={() => setStoryVisible(true)}
+        activeOpacity={0.5}
+        style={styles.fab}
+      >
+        <EntIcon
+          name="controller-play"
+          size={30}
+          style={{ marginRight: -3 }}
+          color={COLORS.shades[100]}
+        />
+      </Pressable>
+    </View>
   );
 
   const getImageTile = (image, index) => {
@@ -207,7 +221,7 @@ export default function MemoriesScreen({ route }) {
               renderItem={({ item, index }) => getImageTile(item, index)}
             />
           </PinchGestureHandler>
-          <PlayButton />
+          <Buttons />
           {(loading || error) && (
           <View style={styles.loading}>
             <View style={{ justifyContent: 'center', alignItems: 'center', top: '40%' }}>
@@ -250,9 +264,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   fab: {
-    position: 'absolute',
-    bottom: 40,
-    right: 20,
     borderRadius: RADIUS.xl,
     height: 50,
     width: 50,
@@ -260,6 +271,20 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowColor: COLORS.shades[100],
     backgroundColor: COLORS.shades[0],
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  fabSecondary: {
+    borderRadius: RADIUS.xl,
+    height: 50,
+    width: 50,
+    marginRight: 10,
+    shadowOffset: {},
+    shadowOpacity: 0.05,
+    borderWidth: 1,
+    shadowColor: COLORS.shades[100],
+    borderColor: COLORS.neutral[700],
+    backgroundColor: COLORS.neutral[900],
     alignItems: 'center',
     justifyContent: 'center',
   },

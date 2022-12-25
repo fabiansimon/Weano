@@ -10,16 +10,16 @@ import i18n from '../utils/i18n';
 import HybridHeader from '../components/HybridHeader';
 import INFORMATION from '../constants/Information';
 import activeTripStore from '../stores/ActiveTripStore';
-import GET_TRIP_BY_ID from '../queries/getTripById';
 import Utils from '../utils';
 import Headline from '../components/typography/Headline';
 import Body from '../components/typography/Body';
+import GET_TIMELINE_DATA from '../queries/getTimelineData';
 
 export default function TimelineScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
   const { id: tripId } = activeTripStore((state) => state.activeTrip);
   const [timelineData, setTimelineData] = useState([]);
-  const { error, data } = useQuery(GET_TRIP_BY_ID, {
+  const { error, data } = useQuery(GET_TIMELINE_DATA, {
     variables: {
       tripId,
     },
@@ -44,7 +44,10 @@ export default function TimelineScreen() {
 
   const setData = (d) => {
     const { expenses, images } = d;
-    const generalArr = [...expenses, ...images];
+    console.log(images);
+    const expenseData = expenses || [];
+    const imageData = images || [];
+    const generalArr = [...expenseData, ...imageData];
     generalArr.sort((a, b) => a.createdAt - b.createdAt);
 
     setTimelineData(sortArr(generalArr));
@@ -96,6 +99,7 @@ export default function TimelineScreen() {
           text1: i18n.t('Whoops!'),
           text2: error.message,
         });
+        console.log(error.message);
       }, 500);
     }
   }, [error, data]);
@@ -191,10 +195,10 @@ export default function TimelineScreen() {
                 }}
               >
                 <Headline
-                  type={3}
+                  type={4}
                   style={{ alignSelf: 'center' }}
                   color={COLORS.neutral[700]}
-                  text={i18n.t('No recent reservations yet')}
+                  text={i18n.t('No entries yet 😢')}
                 />
               </View>
               )}
