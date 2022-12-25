@@ -50,7 +50,7 @@ export default function MapScreen() {
         coordinate={location.latlon}
       >
         <Pressable
-          onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: trip.id })}
+          onPress={() => navigation.navigate(ROUTES.memoriesScreen, { tripId: trip.id })}
           style={styles.imageContainer}
         >
           <Image
@@ -72,14 +72,14 @@ export default function MapScreen() {
     >
       <View style={[styles.tab, showUpcoming ? styles.activeTab : {}]}>
         <Body
-          color={COLORS.shades[0]}
+          color={!showUpcoming ? COLORS.primary[700] : COLORS.shades[0]}
           type={2}
           text={`${i18n.t('Upcoming')} (${upcomingTrips?.length})`}
         />
       </View>
       <View style={[styles.tab, !showUpcoming ? styles.activeTab : {}]}>
         <Body
-          color={COLORS.shades[0]}
+          color={showUpcoming ? COLORS.primary[700] : COLORS.shades[0]}
           type={2}
           text={`${i18n.t('Finished')} (${recentTrips?.length})`}
         />
@@ -163,9 +163,9 @@ const styles = StyleSheet.create({
     top: 65,
     height: 40,
     borderRadius: RADIUS.xl,
-    backgroundColor: Utils.addAlpha('#FFFFFF', 0.1),
-    borderWidth: 0.5,
-    borderColor: COLORS.shades[0],
+    backgroundColor: Utils.addAlpha(COLORS.primary[900], 0.2),
+    borderWidth: 1,
+    borderColor: COLORS.primary[700],
     position: 'absolute',
   },
   tab: {

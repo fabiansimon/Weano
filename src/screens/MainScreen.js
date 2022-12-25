@@ -190,6 +190,7 @@ export default function MainScreen() {
       <Animated.ScrollView
         refreshControl={(
           <RefreshControl
+            progressViewOffset={50}
             refreshing={refreshing}
             onRefresh={onRefresh}
           />

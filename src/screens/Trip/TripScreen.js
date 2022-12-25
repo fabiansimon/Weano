@@ -1,9 +1,11 @@
 import {
-  View, StyleSheet, Image, Dimensions, TouchableOpacity, Pressable,
+  View, StyleSheet, Image, Dimensions, TouchableOpacity, Pressable, RefreshControl,
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import Toast from 'react-native-toast-message';
-import React, { useRef, useState, useEffect } from 'react';
+import React, {
+  useRef, useState, useEffect, useCallback,
+} from 'react';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
@@ -27,7 +29,6 @@ import ListItem from '../../components/ListItem';
 import InviteeContainer from '../../components/Trip/InviteeContainer';
 import TabBar from '../../components/Trip/TabBar';
 import ChecklistContainer from '../../components/Trip/ChecklistContainer';
-// import AccomodationCarousel from '../../components/Trip/AccomodationCarousel';
 import ROUTES from '../../constants/Routes';
 import StatusContainer from '../../components/Trip/StatusContainer';
 import ExpensesContainer from '../../components/Trip/ExpenseContainer';
@@ -49,16 +50,15 @@ export default function TripScreen({ route }) {
 
   const isActive = false;
   const [updateTrip, { error }] = useMutation(UPDATE_TRIP);
-
   const activeTrip = activeTripStore((state) => state.activeTrip);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
   const setActiveTrip = activeTripStore((state) => state.setActiveTrip);
-
   const scrollY = useRef(new Animated.Value(0)).current;
   const scrollRef = useRef();
-
   const [currentTab, setCurrentTab] = useState(0);
   const [inputOpen, setInputOpen] = useState(0);
+  const [refreshing, setRefreshing] = React.useState(false);
+
   const addImageRef = useRef();
 
   const navigation = useNavigation();
@@ -67,6 +67,11 @@ export default function TripScreen({ route }) {
   const { width } = Dimensions.get('window');
 
   const IMAGE_HEIGHT = 240;
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    getTripData().then(() => setRefreshing(false)).catch(() => setRefreshing(false));
+  }, []);
 
   useEffect(() => {
     if (error || fetchError) {
@@ -442,6 +447,7 @@ export default function TripScreen({ route }) {
           >
             <TripHeader
               title={data.title}
+              id={data.id}
               subtitle={`${Utils.getDateRange(data?.dateRange)}`}
               items={contentItems}
               onPress={(index) => handleTabPress(index)}
@@ -450,6 +456,13 @@ export default function TripScreen({ route }) {
           </AnimatedHeader>
           <HeaderImage />
           <Animated.ScrollView
+            refreshControl={(
+              <RefreshControl
+                progressViewOffset={50}
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+              />
+          )}
             ref={scrollRef}
             showsVerticalScrollIndicator={false}
             scrollEventThrottle={16}
@@ -467,6 +480,22 @@ export default function TripScreen({ route }) {
             style={{
               position: 'absolute', top: 47, left: 20, zIndex: 10,
             }}
+          />
+          <Button
+            isSecondary
+            style={{
+              position: 'absolute', top: 47, right: 20, zIndex: 10,
+            }}
+            onPress={() => navigation.navigate(ROUTES.memoriesScreen, { tripId: data.id })}
+            icon={(
+              <Icon
+                name="image"
+                color={COLORS.neutral[700]}
+                size={22}
+              />
+            )}
+            fullWidth={false}
+            color={COLORS.neutral[900]}
           />
           <FAButton
             icon="chatbox-ellipses"
@@ -549,8 +578,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   infoTile: {
+    borderColor: COLORS.neutral[100],
+    borderWidth: 1,
     height: 40,
-    borderWidth: 0,
     backgroundColor: COLORS.neutral[50],
     paddingHorizontal: 12,
   },

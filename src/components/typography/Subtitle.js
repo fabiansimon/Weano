@@ -14,7 +14,12 @@ export default function Subtitle({
   return (
     <Text
       style={[{
-        fontSize, fontWeight, fontFamily, lineHeight, color: textColor, letterSpacing: -1,
+        fontSize,
+        fontWeight,
+        fontFamily,
+        lineHeight,
+        color: textColor,
+        letterSpacing: -1,
       }, style]}
     >
       {text}

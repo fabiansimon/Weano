@@ -1,5 +1,5 @@
 import {
-  FlatList, Share, StyleSheet, View, TouchableOpacity, StatusBar, Image,
+  FlatList, Share, StyleSheet, View, TouchableOpacity, StatusBar, Image, Pressable, Dimensions,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
 import EntIcon from 'react-native-vector-icons/Entypo';
@@ -17,9 +17,11 @@ import i18n from '../utils/i18n';
 import Subtitle from '../components/typography/Subtitle';
 import ImageContainer from '../components/Trip/ImageContainer';
 import LoadingGif from '../../assets/images/loading.gif';
+import Camera3D from '../../assets/images/camera_3d.png';
 import Body from '../components/typography/Body';
 import userStore from '../stores/UserStore';
 import GET_IMAGES_FROM_TRIP from '../queries/getImagesFromTrip';
+import StoryModal from '../components/StoryModal';
 
 export default function MemoriesScreen({ route }) {
   const { tripId } = route.params;
@@ -30,15 +32,15 @@ export default function MemoriesScreen({ route }) {
       tripId,
     },
   });
-
   const [images, setImages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [storyVisible, setStoryVisible] = useState(false);
   const gridRef = useRef();
-
   const scale = useSharedValue(1);
   const headerOpacity = useSharedValue(1);
-
   const user = userStore((state) => state.user);
+
+  const { width } = Dimensions.get('window');
 
   let loadingIndex = 0;
   const maxAngle = 8;
@@ -55,22 +57,12 @@ export default function MemoriesScreen({ route }) {
         text1: i18n.t('Whoops!'),
         text2: error.message,
       });
+      console.log(error.message);
       setIsLoading(false);
     }
   }, [data, error]);
 
   const numColumns = Math.round(Math.sqrt(user.images.length));
-
-  // const checkLoadingStatus = () => {
-  //   setTimeout(() => {
-  //     if (loadingIndex >= user.images.length) {
-  //       setIsLoading(false);
-  //       return;
-  //     }
-  //     checkLoadingStatus();
-  //   }, 2000);
-  // };
-  // checkLoadingStatus();
 
   const pinchHandler = useAnimatedGestureHandler({
     onActive: (event) => {
@@ -89,30 +81,6 @@ export default function MemoriesScreen({ route }) {
   const hAnimated = useAnimatedStyle(() => ({
     opacity: headerOpacity.value,
   }));
-
-  const onShare = async () => {
-    try {
-      const result = await Share.share({
-        message:
-              'React Native | A framework for building native apps using React',
-      });
-      if (result.action === Share.sharedAction) {
-        if (result.activityType) {
-          // shared with activity type of result.activityType
-        } else {
-          // shared
-        }
-      } else if (result.action === Share.dismissedAction) {
-        // dismissed
-      }
-    } catch (e) {
-      Toast.show({
-        type: 'error',
-        text1: i18n.t('Whoops!'),
-        text2: e.message,
-      });
-    }
-  };
 
   const getRandomAngle = () => `${(Math.random() * maxAngle) - (maxAngle / 2)}deg`;
   const Header = () => {
@@ -161,7 +129,6 @@ export default function MemoriesScreen({ route }) {
         {!isLoading && (
         <TouchableOpacity
           activeOpacity={0.9}
-          onPress={onShare}
           style={styles.roundButton}
         >
           <Icon
@@ -177,7 +144,8 @@ export default function MemoriesScreen({ route }) {
   };
 
   const PlayButton = () => (
-    <TouchableOpacity
+    <Pressable
+      onPress={() => setStoryVisible(true)}
       activeOpacity={0.5}
       style={styles.fab}
     >
@@ -187,7 +155,7 @@ export default function MemoriesScreen({ route }) {
         style={{ marginRight: -3 }}
         color={COLORS.shades[100]}
       />
-    </TouchableOpacity>
+    </Pressable>
   );
 
   const getImageTile = (image, index) => {
@@ -202,49 +170,74 @@ export default function MemoriesScreen({ route }) {
     );
   };
 
+  const EmptyDataSet = () => (
+    <View style={{ width: width * 0.9, alignItems: 'center' }}>
+      <Image
+        source={Camera3D}
+        style={{ height: 140 }}
+        resizeMode="contain"
+      />
+      <Body
+        style={{ alignSelf: 'center', marginVertical: 10 }}
+        type={1}
+        text={i18n.t('No Memories added yet 😢')}
+        color={COLORS.neutral[300]}
+      />
+    </View>
+  );
+
   const AnimatedFlatlist = Animated.createAnimatedComponent(FlatList);
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
-      <PinchGestureHandler onGestureEvent={pinchHandler}>
-        <AnimatedFlatlist
-          ref={gridRef}
-          style={gAnimated}
-          onScrollBeginDrag={() => headerOpacity.value = withSpring(0)}
-          onScrollEndDrag={() => headerOpacity.value = withSpring(1)}
-          data={images || null}
-          numColumns={numColumns}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ padding: 60 }}
-          showsHorizontalScrollIndicator={false}
-          renderItem={({ item, index }) => getImageTile(item, index)}
-        />
-      </PinchGestureHandler>
-      <PlayButton />
-      {(loading || error) && (
-        <View style={styles.loading}>
-          <View style={{ justifyContent: 'center', alignItems: 'center', top: '40%' }}>
-            <Image
-              source={LoadingGif}
-              resizeMode="center"
-              style={styles.gif}
+      {images.length > 0 ? (
+        <>
+          <PinchGestureHandler onGestureEvent={pinchHandler}>
+            <AnimatedFlatlist
+              ref={gridRef}
+              style={gAnimated}
+              onScrollBeginDrag={() => headerOpacity.value = withSpring(0)}
+              onScrollEndDrag={() => headerOpacity.value = withSpring(1)}
+              data={images || null}
+              numColumns={numColumns}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ padding: 60 }}
+              showsHorizontalScrollIndicator={false}
+              renderItem={({ item, index }) => getImageTile(item, index)}
             />
-            <Headline
-              type={4}
-              color={COLORS.shades[0]}
-              text={i18n.t('Fetching your memories')}
-            />
-            <Body
-              style={{ marginTop: 4 }}
-              type={2}
-              color={COLORS.neutral[500]}
-              text={i18n.t('Just give us a second...')}
-            />
+          </PinchGestureHandler>
+          <PlayButton />
+          {(loading || error) && (
+          <View style={styles.loading}>
+            <View style={{ justifyContent: 'center', alignItems: 'center', top: '40%' }}>
+              <Image
+                source={LoadingGif}
+                resizeMode="center"
+                style={styles.gif}
+              />
+              <Headline
+                type={4}
+                color={COLORS.shades[0]}
+                text={i18n.t('Fetching your memories')}
+              />
+              <Body
+                style={{ marginTop: 4 }}
+                type={2}
+                color={COLORS.neutral[500]}
+                text={i18n.t('Just give us a second...')}
+              />
+            </View>
           </View>
-        </View>
-      )}
+          )}
+        </>
+      ) : <EmptyDataSet />}
       <Header />
+      <StoryModal
+        data={images}
+        onRequestClose={() => setStoryVisible(false)}
+        isVisible={storyVisible}
+      />
     </View>
   );
 }

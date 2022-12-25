@@ -20,7 +20,7 @@ export default function SearchResultTile({ style, data, onPress }) {
         />
         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
           <Body
-            type={1}
+            type={2}
             text={`${location.placeName} ${location.placeName.length < 20 ? `• ${Utils.getDateFromTimestamp(dateRange.endDate, 'MM.YYYY')}` : ''}`}
             color={COLORS.neutral[300]}
           />

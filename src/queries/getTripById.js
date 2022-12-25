@@ -40,7 +40,6 @@ const GET_TRIP_BY_ID = gql`
                 currency
                 createdAt
             }
-            images
             polls {
                 creatorId
                 title

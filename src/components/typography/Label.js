@@ -13,7 +13,12 @@ export default function Label({
 
   return (
     <Text style={[{
-      fontSize, fontWeight, fontFamily, lineHeight, color: textColor, letterSpacing: -1,
+      fontSize,
+      fontWeight,
+      fontFamily,
+      lineHeight,
+      color: textColor,
+      letterSpacing: -1,
     }, style]}
     >
       {text}

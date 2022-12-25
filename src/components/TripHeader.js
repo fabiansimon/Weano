@@ -1,13 +1,11 @@
 import { View, StyleSheet } from 'react-native';
 import React from 'react';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
-import Ionicon from 'react-native-vector-icons/Ionicons';
 import Headline from './typography/Headline';
 import COLORS from '../constants/Theme';
 import Body from './typography/Body';
 import TabBar from './Trip/TabBar';
 import Divider from './Divider';
-import Button from './Button';
 
 export default function TripHeader({
   style, title, subtitle, items, currentTab, onPress,
@@ -36,13 +34,7 @@ export default function TripHeader({
             />
           </View>
         </View>
-        <Button
-          isSecondary
-          style={styles.moreButton}
-          icon={<Ionicon name="ios-chatbubbles-outline" size={22} />}
-          fullWidth={false}
-          color={COLORS.neutral[900]}
-        />
+        <View style={{ width: 50, height: 55 }} />
       </View>
       <View>
         <Divider bottom={8} />
@@ -58,9 +50,6 @@ export default function TripHeader({
 }
 
 const styles = StyleSheet.create({
-  moreButton: {
-    marginTop: 7,
-  },
   container: {
     marginTop: 40,
   },

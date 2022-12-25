@@ -17,7 +17,12 @@ export default function Body({
       onPress={onPress}
       suppressHighlighting
       style={[{
-        fontSize, fontWeight, fontFamily, lineHeight, color: textColor, letterSpacing: -1,
+        fontSize,
+        fontWeight,
+        fontFamily,
+        lineHeight,
+        color: textColor,
+        letterSpacing: -1,
       }, style]}
     >
       {text}
