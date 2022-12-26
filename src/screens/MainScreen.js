@@ -219,6 +219,7 @@ export default function MainScreen() {
 
             <FlatList
               horizontal
+              showsHorizontalScrollIndicator={false}
               style={{ marginTop: 20, paddingHorizontal: PADDING.m }}
               ListEmptyComponent={() => (
                 <View style={{ width: width * 0.9, alignItems: 'center' }}>
@@ -266,6 +267,7 @@ export default function MainScreen() {
             />
             <FlatList
               horizontal
+              showsHorizontalScrollIndicator={false}
               contentContainerStyle={{ paddingRight: PADDING.l }}
               style={{ marginTop: 20, paddingHorizontal: PADDING.m }}
               data={upcomingTrips}
