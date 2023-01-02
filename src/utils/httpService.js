@@ -2,7 +2,7 @@ import 'react-native-get-random-values';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { v4 as uuidv4 } from 'uuid';
 import {
-  BASE_URL, ACCESS_KEY_ID, SECRET_ACCESS_KEY, S3_BUCKET, MAPBOX_TOKEN,
+  ACCESS_KEY_ID, SECRET_ACCESS_KEY, S3_BUCKET, MAPBOX_TOKEN,
   // eslint-disable-next-line import/no-unresolved
 } from '@env';
 import { S3 } from 'aws-sdk';
@@ -10,6 +10,24 @@ import { decode } from 'base64-arraybuffer';
 import { readFile } from 'react-native-fs';
 
 const serverUrl = 'http://143.198.241.91:4000';
+
+async function sendInvitations(invitees, tripId) {
+  return new Promise((resolve, reject) => {
+    fetch(`${serverUrl}/invite/${invitees}/${tripId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        resolve(res);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+}
 
 async function getVerificationCode(phoneNumber) {
   return new Promise((resolve, reject) => {
@@ -24,7 +42,6 @@ async function getVerificationCode(phoneNumber) {
         resolve(res);
       })
       .catch((err) => {
-        console.log(`errpr${BASE_URL}`);
         reject(err);
       });
   });
@@ -101,6 +118,7 @@ async function getLocationFromQuery(input) {
 }
 
 export default {
+  sendInvitations,
   uploadToS3,
   getVerificationCode,
   checkVerificationCode,

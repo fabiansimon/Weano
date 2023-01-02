@@ -1,5 +1,5 @@
 import { View, StyleSheet, FlatList } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Animated from 'react-native-reanimated';
 import COLORS, { PADDING } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
@@ -12,26 +12,30 @@ import Avatar from '../../components/Avatar';
 import Utils from '../../utils';
 import RoleChip from '../../components/RoleChip';
 import Body from '../../components/typography/Body';
+import FAButton from '../../components/FAButton';
+import InputModal from '../../components/InputModal';
+import activeTripStore from '../../stores/ActiveTripStore';
+import httpService from '../../utils/httpService';
 
-export default function InviteeScreen({ route }) {
-  const { data } = route.params;
-  const [sortedData, setSortedData] = useState({});
+export default function InviteeScreen() {
+  const { invitees, hostId } = activeTripStore((state) => state.activeTrip);
+  const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
+  const [inputVisible, setInputVisible] = useState(false);
 
-  const sortInvitees = () => {
-    const accepted = data && data.filter((invitee) => invitee.status === 'ACCEPTED');
-    const pending = data && data.filter((invitee) => invitee.status === 'PENDING');
-    const declined = data && data.filter((invitee) => invitee.status === 'DECLINED');
+  const handleInvitations = async (invites) => {
+    console.log(invites);
+    // await httpService.sendInvitations()
+    // const newInvitees = invites.map((email) => ({
+    //   status: 'PENDING',
+    //   phoneNumber: email,
+    // }));
 
-    setSortedData({
-      accepted,
-      pending,
-      declined,
-    });
+    // updateActiveTrip({ invitees: invitees.concat(newInvitees) });
   };
 
-  useEffect(() => {
-    sortInvitees();
-  }, [data]);
+  const accepted = invitees && invitees.filter((invitee) => invitee.status === 'ACCEPTED');
+  const pending = invitees && invitees.filter((invitee) => invitee.status === 'PENDING');
+  const declined = invitees && invitees.filter((invitee) => invitee.status === 'DECLINED');
 
   const scrollY = useRef(new Animated.Value(0)).current;
 
@@ -44,17 +48,17 @@ export default function InviteeScreen({ route }) {
         style={{ marginRight: 10 }}
       />
       <View style={{ marginRight: 'auto' }}>
-        <Headline
-          type={4}
+        <Body
+          type={1}
           text={item.phoneNumber}
         />
         <Subtitle
           type={2}
           color={COLORS.neutral[300]}
-          text={`${i18n.t('member since')} ${Utils.getDateFromTimestamp(data.memberSince, 'DD.MM.YYYY')}`}
+          text={`${i18n.t('member since')} ${Utils.getDateFromTimestamp(invitees.memberSince, 'DD.MM.YYYY')}`}
         />
       </View>
-      <RoleChip isHost={data.isHost} />
+      <RoleChip isHost={item.id === hostId} />
     </View>
 
   );
@@ -69,8 +73,8 @@ export default function InviteeScreen({ route }) {
         <View style={{ marginHorizontal: PADDING.l }}>
           <Headline
             style={{ marginTop: 10 }}
-            type={3}
-            text={`${i18n.t('Accepted')} (${sortedData.accepted ? sortedData.accepted.length : 0})`}
+            type={4}
+            text={`${i18n.t('Accepted')} (${accepted ? accepted.length : 0})`}
           />
           <FlatList
             ListEmptyComponent={(
@@ -80,7 +84,7 @@ export default function InviteeScreen({ route }) {
                 color={COLORS.neutral[300]}
               />
             )}
-            data={sortedData.accepted}
+            data={accepted}
             renderItem={(item) => getTile(item)}
           />
           <Divider
@@ -88,8 +92,8 @@ export default function InviteeScreen({ route }) {
             color={COLORS.neutral[50]}
           />
           <Headline
-            type={3}
-            text={`${i18n.t('Pending')} (${sortedData.pending ? sortedData.pending.length : 0})`}
+            type={4}
+            text={`${i18n.t('Pending')} (${pending ? pending.length : 0})`}
           />
           <FlatList
             ListEmptyComponent={(
@@ -99,7 +103,7 @@ export default function InviteeScreen({ route }) {
                 color={COLORS.neutral[300]}
               />
             )}
-            data={sortedData.pending}
+            data={pending}
             renderItem={(item) => getTile(item)}
           />
           <Divider
@@ -107,8 +111,8 @@ export default function InviteeScreen({ route }) {
             color={COLORS.neutral[50]}
           />
           <Headline
-            type={3}
-            text={`${i18n.t('Declined')} (${sortedData.declined ? sortedData.declined.length : 0})`}
+            type={4}
+            text={`${i18n.t('Declined')} (${declined ? declined.length : 0})`}
           />
           <FlatList
             ListEmptyComponent={(
@@ -119,11 +123,27 @@ export default function InviteeScreen({ route }) {
               />
             )}
             contentContainerStyle={{ paddingBottom: 60 }}
-            data={sortedData.declined}
+            data={declined}
             renderItem={(item) => getTile(item)}
           />
         </View>
       </HybridHeader>
+      <FAButton
+        icon="add"
+        iconSize={28}
+        onPress={() => setInputVisible(true)}
+      />
+      <InputModal
+        isVisible={inputVisible}
+        keyboardType="email-address"
+        autoCorrect={false}
+        autoCapitalize={false}
+        emailInput
+        placeholder={i18n.t('Invite friends')}
+        onRequestClose={() => setInputVisible(false)}
+        onPress={(input) => handleInvitations(input)}
+        autoClose
+      />
     </View>
   );
 }

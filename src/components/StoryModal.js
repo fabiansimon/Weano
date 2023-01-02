@@ -157,6 +157,7 @@ export default function StoryModal({ data, isVisible, onRequestClose }) {
   return (
     <Modal
       animationType="slide"
+      presentationStyle="overFullScreen"
       visible={isVisible}
       useNativeDriver
       collapsable

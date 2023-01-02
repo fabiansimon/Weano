@@ -4,22 +4,27 @@ import {
 import React, {
   useEffect, useRef, useState, useCallback,
 } from 'react';
+import Toast from 'react-native-toast-message';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import EntIcon from 'react-native-vector-icons/Entypo';
 import { debounce } from 'lodash';
 import { FlatList } from 'react-native-gesture-handler';
+import AntIcon from 'react-native-vector-icons/AntDesign';
 import KeyboardView from './KeyboardView';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import httpService from '../utils/httpService';
 import Body from './typography/Body';
 import i18n from '../utils/i18n';
 import Divider from './Divider';
+import toastConfig from '../constants/ToastConfig';
+import REGEX from '../constants/Regex';
 
 export default function InputModal({
-  isVisible, onRequestClose, placeholder, onPress, geoMatching = false, ...rest
+  isVisible, onRequestClose, placeholder, onPress, geoMatching = false, emailInput, autoClose, ...rest
 }) {
   const [showModal, setShowModal] = useState(isVisible);
   const [input, setInput] = useState('');
+  const [emailValues, setEmailValues] = useState([]);
   const animatedBottom = useRef(new Animated.Value(900)).current;
   const duration = 300;
 
@@ -63,20 +68,46 @@ export default function InputModal({
     setSuggestionsLoading(false);
   };
 
-  const handleOnPress = () => {
-    if (geoMatching) {
-      onPress(suggestion);
+  const handleAdding = () => {
+    const val = input.trim().toLowerCase();
+
+    if (val.match(REGEX.email)) {
+      setInput('');
+      setEmailValues((prev) => [...prev, input]);
     } else {
-      onPress(input);
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('Whoops!'),
+        text2: i18n.t('Not an email '),
+      });
+    }
+  };
+
+  const handleOnPress = () => {
+    if (emailInput) {
+      onPress(emailValues);
+      clearData();
+      return;
     }
 
+    if (geoMatching) {
+      onPress(suggestion);
+      clearData();
+      return;
+    }
+
+    onPress(input);
     clearData();
   };
 
   const clearData = () => {
+    if (autoClose) {
+      onRequestClose();
+    }
     setInput('');
     setSuggestion(null);
     setSuggestionData(null);
+    setEmailValues([]);
   };
 
   useEffect(() => {
@@ -122,6 +153,28 @@ export default function InputModal({
         text={item.string}
       />
     </Pressable>
+  );
+
+  const MultipleValuesContainer = () => (
+    <View style={styles.wrapContainer}>
+      {emailValues.map((value, index) => (
+        <View style={styles.chip}>
+          <Body
+            type={1}
+            color={COLORS.neutral[900]}
+            text={value}
+          />
+          <AntIcon
+            name="closecircle"
+            color={COLORS.neutral[300]}
+            size={18}
+            style={{ marginLeft: 6 }}
+            onPress={() => setEmailValues((prev) => prev.filter((_, i) => index !== i))}
+            suppressHighlighting
+          />
+        </View>
+      ))}
+    </View>
   );
 
   return (
@@ -173,6 +226,7 @@ export default function InputModal({
                 )}
             </View>
             )}
+            {emailInput && emailValues.length > 0 && <MultipleValuesContainer />}
             <View style={styles.innerContainer}>
               <TextInput
                 {...rest}
@@ -183,7 +237,20 @@ export default function InputModal({
                 placeholderTextColor={COLORS.neutral[100]}
                 placeholder={placeholder}
               />
-              {input.length >= 1 && (
+              {(emailInput && input.length >= 1) && (
+              <TouchableOpacity
+                onPress={handleAdding}
+                activeOpacity={0.9}
+                style={styles.secondaryButton}
+              >
+                <Icon
+                  color={COLORS.neutral[500]}
+                  name="plus"
+                  size={20}
+                />
+              </TouchableOpacity>
+              )}
+              {((emailInput && emailValues.length > 0) || (!emailInput && input.length >= 1)) && (
               <TouchableOpacity
                 onPress={handleOnPress}
                 activeOpacity={0.9}
@@ -191,8 +258,8 @@ export default function InputModal({
               >
                 <Icon
                   color={COLORS.shades[0]}
-                  name="plus"
-                  size={22}
+                  name="check"
+                  size={20}
                 />
               </TouchableOpacity>
               )}
@@ -200,6 +267,7 @@ export default function InputModal({
           </Animated.View>
         </KeyboardView>
       </TouchableOpacity>
+      <Toast config={toastConfig} />
     </Modal>
   );
 }
@@ -218,9 +286,21 @@ const styles = StyleSheet.create({
   button: {
     borderRadius: 100,
     backgroundColor: COLORS.primary[700],
-    width: 40,
-    height: 40,
+    width: 35,
+    height: 35,
+    marginLeft: 6,
     marginBottom: -20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  secondaryButton: {
+    borderRadius: 100,
+    backgroundColor: COLORS.neutral[50],
+    width: 35,
+    height: 35,
+    marginBottom: -20,
+    borderWidth: 0.5,
+    borderColor: COLORS.neutral[100],
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -230,7 +310,7 @@ const styles = StyleSheet.create({
     letterSpacing: -1,
     fontFamily: 'WorkSans-Regular',
     color: COLORS.shades[100],
-    fontSize: 20,
+    fontSize: 18,
   },
   innerContainer: {
     paddingHorizontal: PADDING.l,
@@ -261,5 +341,31 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingVertical: 10,
     paddingHorizontal: PADDING.m,
+  },
+  wrapContainer: {
+    bottom: -20,
+    padding: 20,
+    paddingTop: 8,
+    backgroundColor: COLORS.shades[0],
+    shadowColor: COLORS.neutral[500],
+    borderRadius: RADIUS.s,
+    borderWidth: 1,
+    borderColor: COLORS.neutral[100],
+    shadowOpacity: 0.05,
+    shadowOffset: {
+      y: 0,
+      x: 0,
+    },
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  chip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 6,
+    marginTop: PADDING.s,
+    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.neutral[100],
+    padding: 7,
   },
 });

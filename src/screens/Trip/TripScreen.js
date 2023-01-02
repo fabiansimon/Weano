@@ -274,7 +274,7 @@ export default function TripScreen({ route }) {
     {
       title: i18n.t('Invitees'),
       trailing: <Headline
-        onPress={() => navigation.navigate(ROUTES.inviteeScreen, { data: data?.invitees || {} })}
+        onPress={() => navigation.navigate(ROUTES.inviteeScreen)}
         type={4}
         text={i18n.t('see all')}
         color={COLORS.neutral[500]}

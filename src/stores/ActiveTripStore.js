@@ -5,6 +5,7 @@ const activeTripStore = create((set) => ({
   setActiveTrip: (data) => set(() => ({
     activeTrip: {
       id: data.id || null,
+      hostId: data.hostId || null,
       thumbnailUri: data.thumbnailUri || null,
       title: data.title || null,
       description: data.description || null,
@@ -22,6 +23,7 @@ const activeTripStore = create((set) => ({
   updateActiveTrip: (data) => set((state) => ({
     activeTrip: {
       id: data.id || state.activeTrip.id,
+      hostId: data.hostId || state.activeTrip.hostId,
       thumbnailUri: data.thumbnailUri || state.activeTrip.thumbnailUri,
       title: data.title || state.activeTrip.title,
       description: data.description || state.activeTrip.description,

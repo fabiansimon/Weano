@@ -4,6 +4,7 @@ const GET_TRIP_BY_ID = gql`
     query GetTripById($tripId: String) {
         getTripById(tripId: $tripId) {
             id
+            hostId
             thumbnailUri
             title
             description
