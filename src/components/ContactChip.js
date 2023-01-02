@@ -14,15 +14,17 @@ export default function ContactChip({
       disabled={!onPress}
     >
       <Headline
+        numberOfLines={1}
+        ellipsizeMode="tail"
         type={3}
         text={string}
         color={COLORS.primary[500]}
+        style={{ marginRight: 12, maxWidth: '90%' }}
       />
       <Icon
         name="closecircle"
         color={COLORS.primary[500]}
         size={22}
-        style={{ marginLeft: 12 }}
         onPress={onDelete}
         suppressHighlighting
       />
@@ -32,9 +34,10 @@ export default function ContactChip({
 
 const styles = StyleSheet.create({
   container: {
+    paddingHorizontal: 12,
+    maxWidth: '90%',
     height: 55,
     maxHeight: 55,
-    paddingHorizontal: 16,
     borderRadius: 100,
     borderWidth: 2,
     flexDirection: 'row',

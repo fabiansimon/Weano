@@ -13,8 +13,10 @@ const GET_TRIP_BY_ID = gql`
                 latlon
             }
             invitees {
-                phoneNumber
+                email
                 status
+                firstName
+                lastName
             }
             activeMembers {
                 id

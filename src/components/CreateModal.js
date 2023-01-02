@@ -6,7 +6,6 @@ import React, {
 } from 'react';
 import Icon from 'react-native-vector-icons/Entypo';
 import PagerView from 'react-native-pager-view';
-import Contacts from 'react-native-contacts';
 import { useMutation } from '@apollo/client';
 import Toast from 'react-native-toast-message';
 import i18n from '../utils/i18n';
@@ -22,9 +21,9 @@ import PageIndicator from './PageIndicator';
 import BackButton from './BackButton';
 import ADD_TRIP from '../mutations/addTrip';
 import CalendarModal from './CalendarModal';
-import ContactsModal from './ContactsModal';
 import Body from './typography/Body';
 import tripsStore from '../stores/TripsStore';
+import InputModal from './InputModal';
 
 export default function CreateModal({ isVisible, onRequestClose }) {
   const addTripState = tripsStore((state) => state.addTrip);
@@ -43,12 +42,12 @@ export default function CreateModal({ isVisible, onRequestClose }) {
   const [tripName, setTripName] = useState([]);
 
   // MODALS
-  const [contactsVisible, setContactsVisible] = useState(false);
+  const [inputVisible, setInputVisible] = useState(false);
   const [calendarVisible, setCalendarVisible] = useState(false);
   const [popUpVisible, setPopUpVisible] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
   const pageRef = useRef(null);
-  const [contacts, setContacts] = useState([]);
+  const [invitees, setInvitees] = useState([]);
 
   useEffect(() => {
     if (error) {
@@ -59,40 +58,6 @@ export default function CreateModal({ isVisible, onRequestClose }) {
       });
     }
   }, [error]);
-
-  useEffect(() => {
-    getContacts();
-  }, []);
-
-  const getContacts = () => {
-    setContacts([]);
-
-    Contacts.getAll().then((c) => {
-      c.forEach((contact) => {
-        setContacts((prev) => [...prev, {
-          ...contact,
-          isInvited: false,
-        }]);
-      });
-    });
-  };
-
-  const handleInvite = (index) => {
-    setContacts((prev) => {
-      // eslint-disable-next-line no-param-reassign
-      prev[index].isInvited = !prev[index].isInvited;
-      return [...prev];
-    });
-  };
-  const handleDeselection = (invitee) => {
-    setContacts((prev) => {
-      const index = prev.findIndex((item) => item.recordID === invitee.recordID);
-
-      // eslint-disable-next-line no-param-reassign
-      prev[index].isInvited = false;
-      return [...prev];
-    });
-  };
 
   const getDateValue = () => {
     let start = '--';
@@ -120,18 +85,8 @@ export default function CreateModal({ isVisible, onRequestClose }) {
   };
 
   const handleData = async () => {
-    const invitees = [];
-    const invited = contacts?.filter((item) => item.isInvited);
-
-    invited.forEach((invitee) => {
-      invitees.push({
-        fullName: `${invitee.givenName} ${invitee.familyName}`,
-        phoneNumber: invitee.phoneNumbers[0].number,
-        status: 'PENDING',
-      });
-    });
-
     const { placeName, latlon } = location;
+    console.log(invitees);
 
     await addTrip({
       variables: {
@@ -180,7 +135,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
     });
     setStartDate();
     setEndDate();
-    setContacts();
+    setInvitees([]);
     onRequestClose();
     setPageIndex(0);
   };
@@ -249,29 +204,25 @@ export default function CreateModal({ isVisible, onRequestClose }) {
     </View>
   );
 
-  const getInviteContent = () => {
-    const invitees = contacts?.filter((item) => item.isInvited);
-
-    return (
-      <View style={styles.wrapContainer}>
-        {!invitees || invitees?.length < 1 ? (
-          <Body
-            type={2}
-            style={{ textAlign: 'center', flex: 1 }}
-            color={COLORS.neutral[300]}
-            text={i18n.t('No one invited yet, Start inviting people!')}
-          />
-        ) : invitees.map((invitee) => (
-          <ContactChip
-            key={invitee.givenName}
-            style={{ marginBottom: 10, marginRight: 10 }}
-            string={`${invitee.givenName} ${invitee.familyName}`}
-            onDelete={() => handleDeselection(invitee)}
-          />
-        ))}
-      </View>
-    );
-  };
+  const getInviteContent = () => (
+    <View style={styles.wrapContainer}>
+      {!invitees || invitees?.length < 1 ? (
+        <Body
+          type={2}
+          style={{ textAlign: 'center', flex: 1 }}
+          color={COLORS.neutral[300]}
+          text={i18n.t('No one invited yet, Start inviting people!')}
+        />
+      ) : invitees.map((email, index) => (
+        <ContactChip
+          key={email}
+          style={{ marginBottom: 10, marginRight: 10 }}
+          string={email}
+          onDelete={() => setInvitees((prev) => prev.filter((_, i) => index !== i))}
+        />
+      ))}
+    </View>
+  );
 
   const getTitleContent = () => (
     <TextField
@@ -298,7 +249,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
         text={i18n.t('Add more')}
         color={COLORS.primary[700]}
         style={{ textDecorationLine: 'underline' }}
-        onPress={() => setContactsVisible(true)}
+        onPress={() => setInputVisible(true)}
       />,
       content: getInviteContent(),
     },
@@ -394,11 +345,16 @@ export default function CreateModal({ isVisible, onRequestClose }) {
           </View>
         </View>
       </KeyboardView>
-      <ContactsModal
-        isVisible={contactsVisible}
-        onRequestClose={() => setContactsVisible(false)}
-        data={contacts}
-        onPress={(index) => handleInvite(index)}
+      <InputModal
+        isVisible={inputVisible}
+        keyboardType="email-address"
+        autoCorrect={false}
+        autoCapitalize={false}
+        emailInput
+        placeholder={i18n.t('Invite friends')}
+        onRequestClose={() => setInputVisible(false)}
+        onPress={(input) => setInvitees((prev) => prev.concat(input))}
+        autoClose
       />
     </Modal>
   );

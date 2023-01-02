@@ -32,10 +32,6 @@ const GET_INIT_USER_DATA = gql`
                     createdAt
                     currency
                 }
-                invitees {
-                    phoneNumber
-                    status
-                }
                 activeMembers {
                     id
                     phoneNumber
@@ -103,10 +99,6 @@ const GET_INIT_USER_DATA = gql`
                         trip
                     }
                 }
-                invitees {
-                    phoneNumber
-                    status
-                }
                 dateRange {
                     startDate
                     endDate
@@ -139,10 +131,6 @@ const GET_INIT_USER_DATA = gql`
                     expense
                     trip
                     }
-                }
-                invitees {
-                    phoneNumber
-                    status
                 }
                 dateRange {
                     startDate

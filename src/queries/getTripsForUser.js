@@ -11,10 +11,6 @@ const GET_TRIPS_FOR_USER = gql`
                 placeName
                 latlon
             }
-            invitees {
-                phoneNumber
-                status
-            }
             activeMembers {
                 id
                 phoneNumber

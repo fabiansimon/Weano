@@ -260,11 +260,13 @@ export default function MainScreen() {
           </View>
           {upcomingTrips && (
           <View style={[styles.carousel, { marginBottom: 110 }]}>
+            {upcomingTrips.length > 0 && (
             <Headline
               type={3}
               text={i18n.t('Upcoming Trips ⏳')}
               style={{ marginLeft: PADDING.l, marginTop: 35 }}
             />
+            )}
             <FlatList
               horizontal
               showsHorizontalScrollIndicator={false}

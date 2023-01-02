@@ -1,6 +1,8 @@
 import { View, StyleSheet, FlatList } from 'react-native';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import Animated from 'react-native-reanimated';
+import Toast from 'react-native-toast-message';
+import { useMutation } from '@apollo/client';
 import COLORS, { PADDING } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Divider from '../../components/Divider';
@@ -16,21 +18,72 @@ import FAButton from '../../components/FAButton';
 import InputModal from '../../components/InputModal';
 import activeTripStore from '../../stores/ActiveTripStore';
 import httpService from '../../utils/httpService';
+import ADD_INVITEES from '../../mutations/addInvitees';
 
 export default function InviteeScreen() {
-  const { invitees, hostId } = activeTripStore((state) => state.activeTrip);
+  const { invitees, hostId, id } = activeTripStore((state) => state.activeTrip);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
   const [inputVisible, setInputVisible] = useState(false);
+  const [addInvitees, { loading, error }] = useMutation(ADD_INVITEES);
+
+  useEffect(() => {
+    if (error) {
+      setTimeout(() => {
+        Toast.show({
+          type: 'error',
+          text1: i18n.t('Whoops!'),
+          text2: error.message,
+        });
+      }, 500);
+    }
+  }, [error]);
 
   const handleInvitations = async (invites) => {
-    console.log(invites);
-    // await httpService.sendInvitations()
-    // const newInvitees = invites.map((email) => ({
-    //   status: 'PENDING',
-    //   phoneNumber: email,
-    // }));
+    if (invites.length <= 0) {
+      return;
+    }
 
-    // updateActiveTrip({ invitees: invitees.concat(newInvitees) });
+    const param = invites.toString().replace(',', '&');
+
+    const oldData = invitees;
+    const newInvitees = invites.map((email) => ({
+      status: 'PENDING',
+      email,
+    }));
+    updateActiveTrip({ invitees: invitees.concat(newInvitees) });
+
+    await httpService.sendInvitations(param, id)
+      .then(() => {
+        Toast.show({
+          type: 'success',
+          text1: i18n.t('Invitations sent!'),
+          text2: i18n.t('The invites where successful sent to their emails!'),
+        });
+      }).then(async () => {
+        await addInvitees({
+          variables: {
+            data: {
+              emails: invites,
+              tripId: id,
+            },
+          },
+        }).catch((e) => {
+          Toast.show({
+            type: 'error',
+            text1: i18n.t('Whoops!'),
+            text2: e.message,
+          });
+          updateActiveTrip({ invitees: oldData });
+        });
+      })
+      .catch((err) => {
+        Toast.show({
+          type: 'error',
+          text1: i18n.t('Whoops!'),
+          text2: err.message,
+        });
+        updateActiveTrip({ invitees: oldData });
+      });
   };
 
   const accepted = invitees && invitees.filter((invitee) => invitee.status === 'ACCEPTED');
@@ -50,7 +103,7 @@ export default function InviteeScreen() {
       <View style={{ marginRight: 'auto' }}>
         <Body
           type={1}
-          text={item.phoneNumber}
+          text={item.email}
         />
         <Subtitle
           type={2}
