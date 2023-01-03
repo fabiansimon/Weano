@@ -2,6 +2,7 @@ import {
   View, StyleSheet, Image, Dimensions, ScrollView, Pressable,
 } from 'react-native';
 import React, { useState } from 'react';
+import FastImage from 'react-native-fast-image';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import Headline from './typography/Headline';
 import IconButton from './IconButton';
@@ -65,7 +66,7 @@ export default function RecapCard({
       onPress={onPress}
     >
       <View>
-        <Image
+        <FastImage
           source={data.images ? { uri: data.images[0] } : DefaultImage}
           style={styles.image}
         />

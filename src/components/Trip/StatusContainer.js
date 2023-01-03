@@ -2,6 +2,7 @@ import {
   Image, StyleSheet, TouchableOpacity,
 } from 'react-native';
 import React from 'react';
+import FastImage from 'react-native-fast-image';
 import COLORS, { RADIUS } from '../../constants/Theme';
 import StatusDoneIcon from '../../../assets/icons/status_check.png';
 import StatusNotDoneIcon from '../../../assets/icons/status_check_false.png';
@@ -14,7 +15,7 @@ export default function StatusContainer({ style, data, onPress }) {
       onPress={onPress}
       style={[styles.container, style]}
     >
-      <Image
+      <FastImage
         source={data.isDone ? StatusDoneIcon : StatusNotDoneIcon}
         style={{
           height: 30, width: 30, marginBottom: 10, marginTop: 6,

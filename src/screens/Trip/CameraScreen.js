@@ -3,6 +3,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
+  Image,
 } from 'react-native';
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
@@ -22,6 +23,8 @@ import i18n from '../../utils/i18n';
 import Button from '../../components/Button';
 import Utils from '../../utils';
 import ImageModal from '../../components/ImageModal';
+import Body from '../../components/typography/Body';
+import Camera3D from '../../../assets/images/camera_access_3d.png';
 
 let camera;
 export default function CameraScreen({ route }) {
@@ -100,14 +103,22 @@ export default function CameraScreen({ route }) {
   }
 
   if (!permission.granted) {
-    // Camera permissions are not granted yet
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Headline
-          type={4}
+      <View style={styles.noPermission}>
+        <Body
+          type={1}
+          color={COLORS.shades[0]}
+          style={{ textAlign: 'center', width: '60%' }}
           text="We need your permission to show the camera"
         />
+        <Image
+          source={Camera3D}
+          resizeMode="contain"
+          style={{ height: '10%' }}
+        />
         <Button
+          style={{ width: '60%' }}
+          fullWidth
           onPress={requestPermission}
           text="grant permission"
         />
@@ -399,5 +410,12 @@ const styles = StyleSheet.create({
     backgroundColor: Utils.addAlpha(COLORS.shades[100], 0.5),
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  noPermission: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: PADDING.m,
+    backgroundColor: COLORS.neutral[900],
   },
 });

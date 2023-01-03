@@ -2,6 +2,7 @@ import {
   StyleSheet, Image, TouchableOpacity,
 } from 'react-native';
 import React from 'react';
+import FastImage from 'react-native-fast-image';
 import COLORS from '../constants/Theme';
 import DefaultAvatar from '../../assets/images/default_avatar.png';
 import Headline from './typography/Headline';
@@ -29,7 +30,7 @@ export default function Avatar({
         />
       )}
       {!text && (
-        <Image
+        <FastImage
           source={{ uri }}
           style={{ height, width }}
         />

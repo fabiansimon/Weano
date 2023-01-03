@@ -3,10 +3,11 @@ import React from 'react';
 import COLORS, { RADIUS } from '../../constants/Theme';
 
 export default function TripListContainer({
-  style, children, onLayout, ...rest
+  style, children, onLayout, onPress, ...rest
 }) {
   return (
     <Pressable
+      onPress={onPress}
       {...rest}
       onLayout={onLayout}
       style={[styles.container, style]}

@@ -6,7 +6,7 @@ import i18n from '../../utils/i18n';
 import Divider from '../Divider';
 import TripListContainer from './TripListContainer';
 
-export default function InviteeContainer({ onLayout, data }) {
+export default function InviteeContainer({ onLayout, data, onPress }) {
   const [sortedData, setSortedData] = useState({});
 
   const sortInvitees = () => {
@@ -26,7 +26,7 @@ export default function InviteeContainer({ onLayout, data }) {
   }, [data]);
 
   return (
-    <TripListContainer onLayout={onLayout}>
+    <TripListContainer onPress={onPress} onLayout={onLayout}>
       <View style={styles.headerRow}>
         <Headline
           type={4}

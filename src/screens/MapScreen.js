@@ -9,6 +9,7 @@ import BottomSheet from '@gorhom/bottom-sheet';
 // eslint-disable-next-line import/no-unresolved
 import { MAPBOX_TOKEN } from '@env';
 import { useNavigation } from '@react-navigation/native';
+import FastImage from 'react-native-fast-image';
 import BackButton from '../components/BackButton';
 import CountriesVisited from '../components/Map/CountriesVisited';
 import tripsStore from '../stores/TripsStore';
@@ -53,7 +54,7 @@ export default function MapScreen() {
           onPress={() => navigation.navigate(ROUTES.memoriesScreen, { tripId: trip.id })}
           style={styles.imageContainer}
         >
-          <Image
+          <FastImage
             source={source}
             style={{
               height: ICON_HEIGHT, width: ICON_WIDTH, borderRadius: RADIUS.s, zIndex: 100,

@@ -14,6 +14,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import ActionSheet from 'react-native-actionsheet';
 import { launchImageLibrary } from 'react-native-image-picker';
+import FastImage from 'react-native-fast-image';
 import COLORS, { PADDING } from '../../constants/Theme';
 import AnimatedHeader from '../../components/AnimatedHeader';
 import Headline from '../../components/typography/Headline';
@@ -280,6 +281,7 @@ export default function TripScreen({ route }) {
         color={COLORS.neutral[500]}
       />,
       content: <InviteeContainer
+        onPress={() => navigation.navigate(ROUTES.inviteeScreen)}
         data={data?.invitees}
         onLayout={(e) => {
           console.log(`Invitees: ${e.nativeEvent.layout.y}`);
@@ -413,13 +415,13 @@ export default function TripScreen({ route }) {
       }],
     }}
     >
+
       <Image
         style={styles.image}
-        resizeMode={data.thumbnailUri ? 'center' : 'cover'}
-        source={data.thumbnailUri ? { uri: data.thumbnailUri } : DefaultImage}
-        blurRadius={!data.thumbnailUri ? 10 : 0}
+        resizeMode="cover"
+        source={DefaultImage}
+        blurRadius={10}
       />
-      {!data.thumbnailUri && (
       <View style={styles.addImage}>
         <Headline
           type={3}
@@ -432,6 +434,12 @@ export default function TripScreen({ route }) {
           color={COLORS.shades[0]}
         />
       </View>
+      {data.thumbnailUri && (
+      <FastImage
+        style={styles.image}
+        resizeMode="center"
+        source={{ uri: data.thumbnailUri }}
+      />
       )}
     </Animated.View>
   );
@@ -567,6 +575,7 @@ const styles = StyleSheet.create({
   },
   image: {
     position: 'absolute',
+    backgroundColor: COLORS.neutral[700],
     zIndex: 0,
     resizeMode: 'stretch',
     height: 240,

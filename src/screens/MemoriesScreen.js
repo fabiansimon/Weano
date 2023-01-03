@@ -37,6 +37,7 @@ export default function MemoriesScreen({ route }) {
   const [images, setImages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [storyVisible, setStoryVisible] = useState(false);
+  const [initalIndex, setInitalIndex] = useState(0);
   const gridRef = useRef();
   const scale = useSharedValue(1);
   const headerOpacity = useSharedValue(1);
@@ -45,7 +46,7 @@ export default function MemoriesScreen({ route }) {
   const { width } = Dimensions.get('window');
 
   let loadingIndex = 0;
-  const maxAngle = 8;
+  const maxAngle = 5;
 
   useEffect(() => {
     if (data) {
@@ -59,7 +60,6 @@ export default function MemoriesScreen({ route }) {
         text1: i18n.t('Whoops!'),
         text2: error.message,
       });
-      console.log(error.message);
       setIsLoading(false);
     }
   }, [data, error]);
@@ -177,6 +177,10 @@ export default function MemoriesScreen({ route }) {
 
     return (
       <ImageContainer
+        onPress={() => {
+          setInitalIndex(index);
+          setStoryVisible(true);
+        }}
         onLoadEnd={() => loadingIndex += 1}
         style={[{ marginLeft: isLeft ? 0 : 40, marginTop: 40, transform: [{ rotate: getRandomAngle() }] }]}
         uri={image.uri}
@@ -248,6 +252,7 @@ export default function MemoriesScreen({ route }) {
       ) : <EmptyDataSet />}
       <Header />
       <StoryModal
+        initalIndex={initalIndex}
         data={images}
         onRequestClose={() => setStoryVisible(false)}
         isVisible={storyVisible}

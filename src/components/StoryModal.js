@@ -1,14 +1,14 @@
 import {
   Modal,
   StyleSheet,
-  ImageBackground,
   View,
   Dimensions,
   Pressable,
   Share,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
+import FastImage from 'react-native-fast-image';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import BackButton from './BackButton';
 import Utils from '../utils';
@@ -16,9 +16,15 @@ import i18n from '../utils/i18n';
 import Body from './typography/Body';
 import Avatar from './Avatar';
 
-export default function StoryModal({ data, isVisible, onRequestClose }) {
+export default function StoryModal({
+  data, isVisible, onRequestClose, initalIndex = 0,
+}) {
   const [imageIndex, setImageIndex] = useState(0);
   const { width, height } = Dimensions.get('window');
+
+  useEffect(() => {
+    setImageIndex(initalIndex);
+  }, [initalIndex]);
 
   const handleShare = async () => {
     Share.share({
@@ -70,30 +76,13 @@ export default function StoryModal({ data, isVisible, onRequestClose }) {
     const { firstName, lastName, avatarUri } = author;
     return (
       <View style={{ width, height, backgroundColor: COLORS.neutral[900] }}>
-        <ImageBackground
+        <FastImage
           source={{ uri }}
           style={{
             width,
-            height: '94%',
+            height: Dimensions.get('window').height,
           }}
         />
-        <View style={{
-          position: 'absolute', height: '88%', width, flexDirection: 'row',
-        }}
-        >
-          <Pressable
-            onPress={() => setImageIndex((index) => (index !== 0 ? index - 1 : 0))}
-            style={{
-              flex: 1,
-            }}
-          />
-          <Pressable
-            onPress={() => setImageIndex((index) => (index !== data.length - 1 ? index + 1 : data.length - 1))}
-            style={{
-              flex: 1,
-            }}
-          />
-        </View>
         <View style={styles.infoContainer}>
           <View>
             <Body
@@ -132,6 +121,24 @@ export default function StoryModal({ data, isVisible, onRequestClose }) {
             />
           </View>
         </View>
+        <View style={{
+          position: 'absolute', height: '100%', width, flexDirection: 'row',
+        }}
+        >
+          <Pressable
+            onPress={() => setImageIndex((index) => (index !== 0 ? index - 1 : 0))}
+            style={{
+              flex: 1,
+            }}
+          />
+          <Pressable
+            onPress={() => setImageIndex((index) => (index !== data.length - 1 ? index + 1 : data.length - 1))}
+            style={{
+              flex: 1,
+            }}
+          />
+        </View>
+
       </View>
     );
   };
@@ -185,6 +192,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: PADDING.l,
-    bottom: 32,
+    paddingBottom: 50,
+    position: 'absolute',
+    width: Dimensions.get('window').width,
+    bottom: 0,
   },
 });

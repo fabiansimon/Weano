@@ -6,6 +6,7 @@ import {
 import React, { useRef, useState } from 'react';
 import PagerView from 'react-native-pager-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import FastImage from 'react-native-fast-image';
 import Headline from '../../components/typography/Headline';
 import Body from '../../components/typography/Body';
 import COLORS from '../../constants/Theme';
@@ -53,7 +54,7 @@ export default function IntroScreen() {
 
   const renderItem = (data, index) => (
     <View key={index}>
-      <Image
+      <FastImage
         source={data.image}
         style={styles.imageContainer}
         resizeMode="stretch"

@@ -1,16 +1,20 @@
 import {
-  Image, StyleSheet, TouchableOpacity,
+  StyleSheet, TouchableOpacity,
 } from 'react-native';
 import React from 'react';
+import FastImage from 'react-native-fast-image';
 import { RADIUS } from '../../constants/Theme';
 
-export default function ImageContainer({ style, uri, onLoadEnd }) {
+export default function ImageContainer({
+  style, uri, onLoadEnd, onPress,
+}) {
   return (
     <TouchableOpacity
+      onPress={onPress}
       activeOpacity={0.5}
       style={[styles.container, style]}
     >
-      <Image
+      <FastImage
         onLoadEnd={onLoadEnd}
         source={{ uri }}
         resizeMode="cover"

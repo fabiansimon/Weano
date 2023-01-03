@@ -5,6 +5,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import Animated from 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
 import { useQuery } from '@apollo/client';
+import FastImage from 'react-native-fast-image';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import i18n from '../utils/i18n';
 import HybridHeader from '../components/HybridHeader';
@@ -128,7 +129,7 @@ export default function TimelineScreen() {
         />
         <Pressable style={styles.tile}>
           {isImage ? (
-            <Image
+            <FastImage
               style={{
                 height: 45, width: 36, borderRadius: 4, marginRight: 10,
               }}
