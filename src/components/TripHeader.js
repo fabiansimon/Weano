@@ -18,7 +18,7 @@ export default function TripHeader({
           <Headline
             type={4}
             text={title}
-            style={{ fontWeight: '600' }}
+            style={{ fontWeight: '600', textAlign: 'center' }}
           />
           <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
             <EntypoIcon

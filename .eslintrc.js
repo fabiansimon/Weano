@@ -29,5 +29,6 @@ module.exports = {
     'react/no-unstable-nested-components': 'off',
     'react/function-component-definition': 'off',
     'no-return-assign': 'off',
+    'no-underscore-dangle': 'off',
   },
 };

@@ -45,27 +45,10 @@ export default function ImageModal({
   }, [error]);
 
   const handleShare = async () => {
-    try {
-      const result = await Share.share({
-        message:
-              'React Native | A framework for building native apps using React',
-      });
-      if (result.action === Share.sharedAction) {
-        if (result.activityType) {
-          // shared with activity type of result.activityType
-        } else {
-          // shared
-        }
-      } else if (result.action === Share.dismissedAction) {
-        // dismissed
-      }
-    } catch (e) {
-      Toast.show({
-        type: 'error',
-        text1: i18n.t('Whoops!'),
-        text2: e.message,
-      });
-    }
+    Share.share({
+      message:
+            'React Native | A framework for building native apps using React',
+    });
   };
 
   const handlePublish = async () => {

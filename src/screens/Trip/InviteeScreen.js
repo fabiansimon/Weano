@@ -1,9 +1,12 @@
-import { View, StyleSheet, FlatList } from 'react-native';
+import {
+  View, StyleSheet, FlatList, Pressable, Share,
+} from 'react-native';
 import React, { useRef, useState, useEffect } from 'react';
 import Animated from 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
 import { useMutation } from '@apollo/client';
-import COLORS, { PADDING } from '../../constants/Theme';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Divider from '../../components/Divider';
 import HybridHeader from '../../components/HybridHeader';
@@ -19,12 +22,31 @@ import InputModal from '../../components/InputModal';
 import activeTripStore from '../../stores/ActiveTripStore';
 import httpService from '../../utils/httpService';
 import ADD_INVITEES from '../../mutations/addInvitees';
+import FilterModal from '../../components/FilterModal';
+import REMOVE_INVITEE from '../../mutations/removeInvitee';
 
 export default function InviteeScreen() {
   const { invitees, hostId, id } = activeTripStore((state) => state.activeTrip);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
   const [inputVisible, setInputVisible] = useState(false);
-  const [addInvitees, { loading, error }] = useMutation(ADD_INVITEES);
+  const [userSelected, setUserSelected] = useState(null);
+  const [addInvitees, { error }] = useMutation(ADD_INVITEES);
+  const [removeInvitee] = useMutation(REMOVE_INVITEE);
+
+  const options = {
+    title: userSelected,
+    options: [
+      {
+        name: 'Resend Invite',
+        value: 'resendInvite',
+      },
+      {
+        name: 'Remove User',
+        value: 'removeUser',
+        deleteAction: true,
+      },
+    ],
+  };
 
   useEffect(() => {
     if (error) {
@@ -37,6 +59,12 @@ export default function InviteeScreen() {
       }, 500);
     }
   }, [error]);
+
+  const handleShare = () => {
+    Share.share({
+      message: `Hey, you've been invited to join our trip! Just click on this link and you will be able to participate: https://aynoapp:/invitation/${id}`,
+    });
+  };
 
   const handleInvitations = async (invites) => {
     if (invites.length <= 0) {
@@ -86,6 +114,47 @@ export default function InviteeScreen() {
       });
   };
 
+  const handleInput = async (operation, user) => {
+    if (operation === 'resendInvite') {
+      await httpService.sendInvitations(user, id)
+        .then(() => {
+          Toast.show({
+            type: 'success',
+            text1: i18n.t('Invitations sent!'),
+            text2: i18n.t('The invite was successful sent to their email!'),
+          });
+        })
+        .catch((err) => {
+          Toast.show({
+            type: 'error',
+            text1: i18n.t('Whoops!'),
+            text2: err.message,
+          });
+        });
+    }
+
+    if (operation === 'removeUser') {
+      const oldInvitees = invitees;
+
+      updateActiveTrip({ invitees: invitees.filter((invitee) => invitee.email !== user) });
+      await removeInvitee({
+        variables: {
+          data: {
+            email: user,
+            tripId: id,
+          },
+        },
+      }).catch((e) => {
+        Toast.show({
+          type: 'error',
+          text1: i18n.t('Whoops!'),
+          text2: e.message,
+        });
+        updateActiveTrip({ invitees: oldInvitees });
+      });
+    }
+  };
+
   const accepted = invitees && invitees.filter((invitee) => invitee.status === 'ACCEPTED');
   const pending = invitees && invitees.filter((invitee) => invitee.status === 'PENDING');
   const declined = invitees && invitees.filter((invitee) => invitee.status === 'DECLINED');
@@ -93,8 +162,10 @@ export default function InviteeScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
 
   const getTile = ({ item }) => (
-
-    <View style={styles.tile}>
+    <Pressable
+      onPress={() => item.status === 'PENDING' && setUserSelected(item.email)}
+      style={styles.tile}
+    >
       <Avatar
         uri={item.uri}
         size={40}
@@ -112,8 +183,29 @@ export default function InviteeScreen() {
         />
       </View>
       <RoleChip isHost={item.id === hostId} />
-    </View>
+    </Pressable>
+  );
 
+  const ShareLinkButton = () => (
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: PADDING.s }}>
+      <View style={{ flex: 1 }} />
+      <Pressable
+        onPress={handleShare}
+        style={styles.shareButton}
+      >
+        <Body
+          type={1}
+          color={COLORS.shades[0]}
+          text={i18n.t('invite friends via link')}
+        />
+        <Icon
+          style={{ marginLeft: 8 }}
+          name="ios-share"
+          color={COLORS.shades[0]}
+          size={18}
+        />
+      </Pressable>
+    </View>
   );
 
   return (
@@ -138,7 +230,7 @@ export default function InviteeScreen() {
               />
             )}
             data={accepted}
-            renderItem={(item) => getTile(item)}
+            renderItem={(item, index) => getTile(item, index)}
           />
           <Divider
             vertical={24}
@@ -157,7 +249,7 @@ export default function InviteeScreen() {
               />
             )}
             data={pending}
-            renderItem={(item) => getTile(item)}
+            renderItem={(item, index) => getTile(item, index)}
           />
           <Divider
             vertical={24}
@@ -177,7 +269,7 @@ export default function InviteeScreen() {
             )}
             contentContainerStyle={{ paddingBottom: 60 }}
             data={declined}
-            renderItem={(item) => getTile(item)}
+            renderItem={(item, index) => getTile(item, index)}
           />
         </View>
       </HybridHeader>
@@ -187,6 +279,9 @@ export default function InviteeScreen() {
         onPress={() => setInputVisible(true)}
       />
       <InputModal
+        topContent={(
+          <ShareLinkButton />
+        )}
         isVisible={inputVisible}
         keyboardType="email-address"
         autoCorrect={false}
@@ -196,6 +291,12 @@ export default function InviteeScreen() {
         onRequestClose={() => setInputVisible(false)}
         onPress={(input) => handleInvitations(input)}
         autoClose
+      />
+      <FilterModal
+        isVisible={userSelected !== null}
+        onRequestClose={() => setUserSelected(null)}
+        data={options}
+        onPress={(m) => handleInput(m.value, userSelected)}
       />
     </View>
   );
@@ -211,5 +312,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  shareButton: {
+    flexDirection: 'row',
+    marginBottom: 10,
+    paddingHorizontal: 16,
+    height: 35,
+    alignItems: 'center',
+    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.secondary[700],
+    padding: 8,
   },
 });

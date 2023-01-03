@@ -3,6 +3,7 @@ import {
 } from 'react-native';
 import React, {
   useEffect, useRef, useState, useCallback,
+  Children,
 } from 'react';
 import Toast from 'react-native-toast-message';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -20,7 +21,7 @@ import toastConfig from '../constants/ToastConfig';
 import REGEX from '../constants/Regex';
 
 export default function InputModal({
-  isVisible, onRequestClose, placeholder, onPress, geoMatching = false, emailInput, autoClose, ...rest
+  isVisible, onRequestClose, placeholder, onPress, geoMatching = false, topContent, emailInput, autoClose, ...rest
 }) {
   const [showModal, setShowModal] = useState(isVisible);
   const [input, setInput] = useState('');
@@ -227,6 +228,7 @@ export default function InputModal({
             </View>
             )}
             {emailInput && emailValues.length > 0 && <MultipleValuesContainer />}
+            {topContent && !emailValues.length > 0 && !suggestionData && topContent}
             <View style={styles.innerContainer}>
               <TextInput
                 {...rest}
@@ -234,7 +236,7 @@ export default function InputModal({
                 value={input}
                 onChangeText={(val) => handleChangeText(val)}
                 style={styles.textInput}
-                placeholderTextColor={COLORS.neutral[100]}
+                placeholderTextColor={COLORS.neutral[300]}
                 placeholder={placeholder}
               />
               {(emailInput && input.length >= 1) && (
@@ -345,6 +347,7 @@ const styles = StyleSheet.create({
   wrapContainer: {
     bottom: -20,
     padding: 20,
+    paddingHorizontal: 10,
     paddingTop: 8,
     backgroundColor: COLORS.shades[0],
     shadowColor: COLORS.neutral[500],
@@ -366,6 +369,7 @@ const styles = StyleSheet.create({
     marginTop: PADDING.s,
     borderRadius: RADIUS.xl,
     backgroundColor: COLORS.neutral[100],
-    padding: 7,
+    paddingVertical: 7,
+    paddingHorizontal: 9,
   },
 });

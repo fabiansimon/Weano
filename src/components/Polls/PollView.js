@@ -54,7 +54,7 @@ export default function PollView({
           style={styles.addIcon}
         >
           <Icon
-            name="plus"
+            name="delete-outline"
             size={20}
             color={COLORS.neutral[700]}
           />

@@ -36,6 +36,7 @@ const GET_TRIP_BY_ID = gql`
                 endDate
             }
             expenses {
+                _id
                 creatorId
                 title
                 amount
@@ -43,6 +44,7 @@ const GET_TRIP_BY_ID = gql`
                 createdAt
             }
             polls {
+                _id
                 creatorId
                 title
                 description
@@ -54,12 +56,14 @@ const GET_TRIP_BY_ID = gql`
                 }
             }
             mutualTasks {
+                _id
                 assignee
                 creatorId
                 title
                 isDone
             }
-                privateTasks {
+            privateTasks {
+                _id
                 assignee
                 creatorId
                 title

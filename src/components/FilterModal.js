@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Headline from './typography/Headline';
 import COLORS from '../constants/Theme';
+import Body from './typography/Body';
 
 export default function FilterModal({
   isVisible, onRequestClose, data, onPress, selectedIndex,
@@ -52,7 +53,7 @@ export default function FilterModal({
       >
         <Animated.View style={[styles.modalContainer, { transform: [{ translateY: animatedBottom }] }]}>
           <View style={styles.modalHeader}>
-            <Headline type={2} text={data.title} />
+            <Headline type={3} text={data.title} />
           </View>
           <ScrollView contentContainerStyle={{ paddingBottom: 0 }}>
             {data.options.map((option, index) => (
@@ -65,8 +66,12 @@ export default function FilterModal({
                   }, 350);
                 }}
               >
-                <Headline type={4} text={option.name} />
-                {selectedIndex === index && <MaterialIcon name="check" size={20} />}
+                <Body
+                  type={1}
+                  color={option.deleteAction ? COLORS.error[900] : COLORS.shades[100]}
+                  text={option.name}
+                />
+                {selectedIndex && selectedIndex === index && <MaterialIcon name="check" size={20} />}
               </TouchableOpacity>
             ))}
             <View style={{ height: 150 }} />
@@ -98,7 +103,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   tile: {
-    height: 55,
+    height: 50,
     paddingHorizontal: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',

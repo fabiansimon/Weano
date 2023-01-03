@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
-import Toast from 'react-native-toast-message';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import BackButton from './BackButton';
 import Utils from '../utils';
@@ -22,27 +21,10 @@ export default function StoryModal({ data, isVisible, onRequestClose }) {
   const { width, height } = Dimensions.get('window');
 
   const handleShare = async () => {
-    try {
-      const result = await Share.share({
-        message:
-              'React Native | A framework for building native apps using React',
-      });
-      if (result.action === Share.sharedAction) {
-        if (result.activityType) {
-          // shared with activity type of result.activityType
-        } else {
-          // shared
-        }
-      } else if (result.action === Share.dismissedAction) {
-        // dismissed
-      }
-    } catch (e) {
-      Toast.show({
-        type: 'error',
-        text1: i18n.t('Whoops!'),
-        text2: e.message,
-      });
-    }
+    Share.share({
+      message:
+            'React Native | A framework for building native apps using React',
+    });
   };
 
   const ProgressHeader = () => (
