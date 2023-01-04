@@ -219,13 +219,14 @@ export default function MainScreen() {
 
             <FlatList
               horizontal
+              scrollEnabled={recentTrips.length > 0}
               showsHorizontalScrollIndicator={false}
               style={{ marginTop: 20, paddingHorizontal: PADDING.m }}
               ListEmptyComponent={() => (
                 <View style={{ width: width * 0.9, alignItems: 'center' }}>
                   <Image
                     source={Suitcase3D}
-                    style={{ height: 200 }}
+                    style={{ height: 150 }}
                     resizeMode="contain"
                   />
                   <Body

@@ -26,10 +26,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>aynoapp</string>
+			<string>weano</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>aynoapp</string>
+				<string>weano</string>
 			</array>
 		</dict>
 	</array>
@@ -51,7 +51,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Allow $(PRODUCT_NAME) to use the camera</string>
 	<key>NSContactsUsageDescription</key>
-	<string>We need to access your contacts, so you're able to add them to the trip</string>
+	<string>We need to access your contacts, so you&apos;re able to add them to the trip</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>We need to access your location</string>
 	<key>NSMicrophoneUsageDescription</key>
@@ -100,6 +100,10 @@
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
+	</array>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>

@@ -742,6 +742,8 @@
 				ENABLE_BITCODE = NO;
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = travelio_project/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Weano;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -754,8 +756,12 @@
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.fabiansimon.travelio;
 				PRODUCT_NAME = travelio_project;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -770,6 +776,8 @@
 				DEVELOPMENT_TEAM = STU7JVLU85;
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = travelio_project/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Weano;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -782,7 +790,11 @@
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = com.fabiansimon.travelio;
 				PRODUCT_NAME = travelio_project;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;

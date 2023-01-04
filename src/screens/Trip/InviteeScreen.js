@@ -6,6 +6,7 @@ import Animated from 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
 import { useMutation } from '@apollo/client';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import Clipboard from '@react-native-clipboard/clipboard';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Divider from '../../components/Divider';
@@ -62,7 +63,15 @@ export default function InviteeScreen() {
 
   const handleShare = () => {
     Share.share({
-      message: `Hey, you've been invited to join our trip! Just click on this link and you will be able to participate: https://aynoapp:/invitation/${id}`,
+      message: `Hey! You've been invited to join a trip! Click the link below to join! http://143.198.241.91:4000/redirect/invitation/${id}`,
+    });
+  };
+  const copyLink = () => {
+    Clipboard.setString(`http://143.198.241.91:4000/redirect/invitation/${id}`);
+    Toast.show({
+      type: 'success',
+      text1: i18n.t('Copied!'),
+      text2: i18n.t('You can now send it to your friends'),
     });
   };
 
@@ -188,7 +197,6 @@ export default function InviteeScreen() {
 
   const ShareLinkButton = () => (
     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: PADDING.s }}>
-      <View style={{ flex: 1 }} />
       <Pressable
         onPress={handleShare}
         style={styles.shareButton}
@@ -196,12 +204,28 @@ export default function InviteeScreen() {
         <Body
           type={1}
           color={COLORS.shades[0]}
-          text={i18n.t('invite friends via link')}
+          text={i18n.t('Send friends invitation')}
         />
         <Icon
           style={{ marginLeft: 8 }}
           name="ios-share"
           color={COLORS.shades[0]}
+          size={18}
+        />
+      </Pressable>
+      <Pressable
+        onPress={copyLink}
+        style={styles.copyButton}
+      >
+        <Body
+          type={1}
+          color={COLORS.shades[100]}
+          text={i18n.t('Copy link')}
+        />
+        <Icon
+          style={{ marginLeft: 8 }}
+          name="content-copy"
+          color={COLORS.shades[100]}
           size={18}
         />
       </Pressable>
@@ -314,13 +338,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   shareButton: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: COLORS.secondary[900],
     flexDirection: 'row',
     marginBottom: 10,
     paddingHorizontal: 16,
-    height: 35,
     alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8,
     borderRadius: RADIUS.xl,
     backgroundColor: COLORS.secondary[700],
-    padding: 8,
+    paddingVertical: 6,
+  },
+  copyButton: {
+    borderWidth: 1,
+    borderColor: COLORS.neutral[100],
+    flexDirection: 'row',
+    marginBottom: 10,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.shades[0],
+    paddingVertical: 6,
   },
 });
