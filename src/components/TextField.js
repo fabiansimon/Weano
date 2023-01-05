@@ -22,7 +22,6 @@ export default function TextField({
   onDelete,
   placeholder,
   keyboardType,
-  focusable = true,
   showTrailingIcon = true,
   icon,
   onPress,
@@ -33,7 +32,6 @@ export default function TextField({
   onSuggestionPress,
   ...rest
 }) {
-  const [focused, setFocused] = useState(false);
   const [suggestionData, setSuggestionData] = useState(null);
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
 
@@ -106,7 +104,7 @@ export default function TextField({
     <>
       <TouchableOpacity
         activeOpacity={0.9}
-        style={[styles.container, focused ? styles.activeContainer : styles.inactiveContainer, style]}
+        style={[styles.container, styles.inactiveContainer, style]}
         onPress={onPress}
         disabled={!onPress}
       >

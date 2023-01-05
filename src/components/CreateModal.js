@@ -24,6 +24,7 @@ import CalendarModal from './CalendarModal';
 import Body from './typography/Body';
 import tripsStore from '../stores/TripsStore';
 import InputModal from './InputModal';
+import httpService from '../utils/httpService';
 
 export default function CreateModal({ isVisible, onRequestClose }) {
   const addTripState = tripsStore((state) => state.addTrip);
@@ -86,7 +87,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
 
   const handleData = async () => {
     const { placeName, latlon } = location;
-    console.log(invitees);
+    const param = invitees.toString().replace(',', '&');
 
     await addTrip({
       variables: {
@@ -111,8 +112,10 @@ export default function CreateModal({ isVisible, onRequestClose }) {
       });
       console.log(`ERROR: ${e.message}`);
     }).then((res) => {
+      const id = res.data.createTrip;
+      httpService.sendInvitations(param, id);
       addTripState({
-        id: res.data.createTrip,
+        id,
         thumbnailUri: null,
         title: tripName,
         description: null,

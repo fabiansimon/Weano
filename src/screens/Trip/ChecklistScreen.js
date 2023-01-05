@@ -1,5 +1,5 @@
 import {
-  View, StyleSheet, ScrollView, Dimensions, FlatList,
+  View, StyleSheet, ScrollView, FlatList,
 } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import Animated from 'react-native-reanimated';
@@ -7,6 +7,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useMutation } from '@apollo/client';
 import Toast from 'react-native-toast-message';
+import Icon from 'react-native-vector-icons/AntDesign';
 import COLORS, { PADDING } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Divider from '../../components/Divider';
@@ -20,15 +21,35 @@ import Body from '../../components/typography/Body';
 import activeTripStore from '../../stores/ActiveTripStore';
 import ADD_TASK from '../../mutations/addTask';
 import userStore from '../../stores/UserStore';
+import FilterModal from '../../components/FilterModal';
+import Utils from '../../utils';
+import DELETE_TASK from '../../mutations/deleteTask';
 
 export default function ChecklistScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
   const { mutualTasks, privateTasks, id: tripId } = activeTripStore((state) => state.activeTrip);
+
   const [addTask, { error }] = useMutation(ADD_TASK);
+  const [deleteTask, { error: deleteError }] = useMutation(DELETE_TASK);
+
   const { id: userId } = userStore((state) => state.user);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
+  const [filterOption, setFilterOption] = useState(0);
+  const [taskSelected, setSelectedTask] = useState(null);
 
   const [isVisible, setIsVisible] = useState(false);
+  const emptyString = filterOption === 0 ? i18n.t('No task added yet') : filterOption === 1 ? i18n.t('No done tasks') : i18n.t('No open tasks');
+
+  const inputOptions = {
+    title: `${i18n.t('Task')}: ${taskSelected?.title}`,
+    options: [
+      {
+        name: 'Delete Task',
+        value: 'deleteTask',
+        deleteAction: true,
+      },
+    ],
+  };
 
   useEffect(() => {
     if (error) {
@@ -48,7 +69,60 @@ export default function ChecklistScreen() {
     return length || 0;
   };
 
-  const handleInput = async (data) => {
+  const handleInput = (operation, task) => {
+    if (operation === 'deleteTask') {
+      Utils.showConfirmationAlert(
+        i18n.t('Delete Task'),
+        i18n.t('Are you sure you want to delete your task?'),
+        i18n.t('Yes'),
+        async () => {
+          const { _id, isPrivate } = task;
+
+          const oldPrivateTasks = privateTasks;
+          const oldMutualTasks = mutualTasks;
+
+          if (isPrivate) {
+            updateActiveTrip({ privateTasks: privateTasks.filter((p) => p._id !== _id) });
+          } else {
+            updateActiveTrip({ mutualTasks: mutualTasks.filter((p) => p._id !== _id) });
+          }
+
+          await deleteTask({
+            variables: {
+              data: {
+                id: _id,
+                tripId,
+                isPrivate,
+              },
+            },
+          })
+            .then(() => {
+              Toast.show({
+                type: 'success',
+                text1: i18n.t('Whooray!'),
+                text2: i18n.t('Poll was succeessfully deleted!'),
+              });
+            })
+            .catch((e) => {
+              Toast.show({
+                type: 'error',
+                text1: i18n.t('Whoops!'),
+                text2: e.message,
+              });
+
+              if (isPrivate) {
+                updateActiveTrip({ privateTasks: oldPrivateTasks });
+              } else {
+                updateActiveTrip({ mutualTasks: oldMutualTasks });
+              }
+              console.log(`ERROR: ${e.message}`);
+            });
+        },
+      );
+    }
+  };
+
+  const handleChange = async (data) => {
     let oldPrivateTasks;
     let oldMutualTasks;
     setIsVisible(false);
@@ -100,42 +174,74 @@ export default function ChecklistScreen() {
     });
   };
 
-  const headerChips = (
+  const HeaderChips = () => (
     <View style={{ flexDirection: 'row', paddingHorizontal: PADDING.m, marginTop: 20 }}>
-      <TouchableOpacity
-        activeOpacity={0.9}
-        style={[styles.chipContainer, { backgroundColor: COLORS.success[500] }]}
-      >
-        <Headline
-          type={4}
-          text={i18n.t('Done')}
-          color={COLORS.shades[0]}
-        />
-        <View style={[styles.innerCircle, { backgroundColor: COLORS.success[700] }]}>
+      {filterOption !== 2 && (
+        <TouchableOpacity
+          onPress={() => setFilterOption((prev) => (prev === 1 ? 0 : 1))}
+          activeOpacity={0.9}
+          style={[styles.chipContainer, { backgroundColor: COLORS.success[500] }]}
+        >
           <Headline
             type={4}
-            text={taskCount(true)}
+            text={i18n.t('Done')}
             color={COLORS.shades[0]}
           />
-        </View>
-      </TouchableOpacity>
+          {filterOption !== 1
+            ? (
+              <View style={[styles.innerCircle, { backgroundColor: COLORS.success[700] }]}>
+                <Headline
+                  type={4}
+                  text={taskCount(true)}
+                  color={COLORS.shades[0]}
+                />
+              </View>
+            )
+            : (
+              <Icon
+                name="closecircle"
+                color={COLORS.shades[0]}
+                size={18}
+                style={{ marginLeft: 20, marginRight: 4 }}
+                onPress={() => setFilterOption(0)}
+                suppressHighlighting
+              />
+            )}
+        </TouchableOpacity>
+      )}
+      {filterOption !== 1 && (
       <TouchableOpacity
+        onPress={() => setFilterOption((prev) => (prev === 2 ? 0 : 2))}
         activeOpacity={0.9}
-        style={[styles.chipContainer, { backgroundColor: COLORS.error[500], marginLeft: 10 }]}
+        style={[styles.chipContainer, { backgroundColor: COLORS.error[500], marginLeft: filterOption !== 2 ? 10 : 0 }]}
       >
         <Headline
           type={4}
           text={i18n.t('Open')}
           color={COLORS.shades[0]}
         />
-        <View style={[styles.innerCircle, { backgroundColor: COLORS.error[700] }]}>
-          <Headline
-            type={4}
-            text={taskCount(false)}
-            color={COLORS.shades[0]}
-          />
-        </View>
+        {filterOption !== 2
+          ? (
+            <View style={[styles.innerCircle, { backgroundColor: COLORS.error[700] }]}>
+              <Headline
+                type={4}
+                text={taskCount(false)}
+                color={COLORS.shades[0]}
+              />
+            </View>
+          )
+          : (
+            <Icon
+              name="closecircle"
+              color={COLORS.shades[0]}
+              size={18}
+              style={{ marginLeft: 20, marginRight: 4 }}
+              onPress={() => setFilterOption(0)}
+              suppressHighlighting
+            />
+          )}
       </TouchableOpacity>
+      )}
     </View>
   );
 
@@ -146,68 +252,72 @@ export default function ChecklistScreen() {
         scrollY={scrollY}
         info={INFORMATION.dateScreen}
       >
-        {headerChips}
+        <HeaderChips />
         <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
           style={{ marginTop: 30 }}
         >
           <View style={{
-            justifyContent: 'flex-start',
-            borderRightColor: COLORS.neutral[100],
-            borderRightWidth: 1,
-            width: Dimensions.get('window').width * 0.75,
+            marginHorizontal: PADDING.l,
           }}
           >
             <Headline
               type={3}
-              style={{ marginLeft: PADDING.l }}
               text={i18n.t('Mutual list')}
             />
-            <Divider top={12} style={{ flex: 1, marginLeft: PADDING.l }} />
+            <Divider top={12} />
             <FlatList
-              style={{ paddingLeft: PADDING.l }}
               scrollEnabled={false}
-              data={mutualTasks}
+              data={filterOption === 0 ? mutualTasks : filterOption === 1
+                ? mutualTasks.filter((task) => task.isDone)
+                : mutualTasks.filter((task) => !task.isDone)}
               ListEmptyComponent={() => (
                 <Body
                   style={{ alignSelf: 'center', marginTop: 10 }}
                   type={1}
-                  text={i18n.t('No task added yet')}
+                  text={emptyString}
                   color={COLORS.neutral[300]}
                 />
               )}
               renderItem={({ item }) => (
                 <CheckboxTile
-                  style={{ marginVertical: 10, marginRight: 30 }}
+                  onMorePress={() => setSelectedTask({
+                    ...item,
+                    isPrivate: false,
+                  })}
+                  style={{ marginVertical: 10, paddingLeft: 5 }}
                   item={item}
                   onPress={(isChecked) => console.log(isChecked)}
                 />
               )}
             />
           </View>
-          <View style={{ justifyContent: 'flex-start', width: Dimensions.get('window').width * 0.75, marginRight: 40 }}>
+          <View style={{ marginTop: 20, marginHorizontal: PADDING.l }}>
             <Headline
               type={3}
               text={i18n.t('Private list')}
-              style={{ marginLeft: 16 }}
             />
             <Divider top={12} />
             <FlatList
-              style={{ paddingLeft: PADDING.l }}
               scrollEnabled={false}
-              data={privateTasks}
+              data={filterOption === 0 ? privateTasks : filterOption === 1
+                ? privateTasks.filter((task) => task.isDone)
+                : privateTasks.filter((task) => !task.isDone)}
               ListEmptyComponent={() => (
                 <Body
                   style={{ alignSelf: 'center', marginTop: 10 }}
                   type={1}
-                  text={i18n.t('No task added yet')}
+                  text={emptyString}
                   color={COLORS.neutral[300]}
                 />
               )}
               renderItem={({ item }) => (
                 <CheckboxTile
-                  style={{ marginVertical: 10, marginRight: 30 }}
+                  onMorePress={() => setSelectedTask({
+                    ...item,
+                    isPrivate: true,
+                  })}
+                  style={{ marginVertical: 10, paddingLeft: 5 }}
                   item={item}
                   disableLabel
                   onPress={(isChecked) => console.log(isChecked)}
@@ -229,7 +339,13 @@ export default function ChecklistScreen() {
       <AddTaskModal
         isVisible={isVisible}
         onRequestClose={() => setIsVisible(false)}
-        onPress={(data) => handleInput(data)}
+        onPress={(data) => handleChange(data)}
+      />
+      <FilterModal
+        isVisible={taskSelected !== null}
+        onRequestClose={() => setSelectedTask(null)}
+        data={inputOptions}
+        onPress={(m) => handleInput(m.value, taskSelected)}
       />
     </View>
   );

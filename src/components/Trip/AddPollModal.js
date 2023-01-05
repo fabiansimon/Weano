@@ -26,12 +26,10 @@ export default function AddPollModal({
       value: '',
     },
     {
-      title: i18n.t('Choice'),
       placeholder: i18n.t('Type your choice here'),
       value: '',
     },
     {
-      title: i18n.t('Choice'),
       placeholder: i18n.t('Type your choice here'),
       value: '',
     },
@@ -44,7 +42,6 @@ export default function AddPollModal({
   const addRow = () => {
     setInputFields((prev) => [...prev,
       {
-        title: i18n.t(i18n.t('Choice')),
         placeholder: i18n.t('Type your choice here'),
         value: '',
       },
@@ -55,46 +52,51 @@ export default function AddPollModal({
     setInputFields((prev) => prev.filter((_, index) => index !== i));
   };
 
-  const getInputRow = (field, index) => (
-    <View style={{ marginBottom: 10 }}>
-      <Body
-        type={2}
-        style={{ marginBottom: 10 }}
-        text={field.title}
-        color={COLORS.neutral[500]}
-      />
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <TextField
-          value={field.value || null}
-          onChangeText={(val) => setInputFields((prev) => {
-            const newArr = prev;
-            newArr[index].value = val;
-            return newArr;
-          })}
-          showTrailingIcon={false}
-          placeholder={field.placeholder}
-          style={{
-            backgroundColor: COLORS.neutral[50],
-            borderColor: COLORS.neutral[100],
-            borderWidth: 1,
-            marginBottom: 10,
-            flex: 1,
-          }}
-        />
-        {index !== 0 && (
-        <AntIcon
-          onPress={() => deleteRow(index)}
-          name="close"
-          suppressHighlighting
-          color={COLORS.neutral[300]}
-          size={20}
-          style={{ marginBottom: 6, marginLeft: 8 }}
+  const getInputRow = (field, index) => {
+    const { title, placeholder, value } = field;
+    return (
+      <View style={{ marginBottom: 10 }}>
+        {title && (
+        <Body
+          type={2}
+          style={{ marginBottom: 10 }}
+          text={title}
+          color={COLORS.neutral[500]}
         />
         )}
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <TextField
+            value={value || null}
+            onChangeText={(val) => setInputFields((prev) => {
+              const newArr = prev;
+              newArr[index].value = val;
+              return newArr;
+            })}
+            showTrailingIcon={false}
+            placeholder={placeholder}
+            style={{
+              backgroundColor: COLORS.neutral[50],
+              borderColor: COLORS.neutral[100],
+              borderWidth: 1,
+              marginBottom: 10,
+              flex: 1,
+            }}
+          />
+          {index !== 0 && (
+          <AntIcon
+            onPress={() => deleteRow(index)}
+            name="close"
+            suppressHighlighting
+            color={COLORS.neutral[300]}
+            size={20}
+            style={{ marginBottom: 6, marginLeft: 8 }}
+          />
+          )}
+        </View>
+        {index === 0 && <Divider />}
       </View>
-      {index === 0 && <Divider />}
-    </View>
-  );
+    );
+  };
 
   return (
     <TitleModal
@@ -114,8 +116,8 @@ export default function AddPollModal({
               onPress={addRow}
               style={styles.addButton}
             >
-              <Headline
-                type={4}
+              <Body
+                type={1}
                 text={i18n.t('Add choice')}
                 color={COLORS.primary[700]}
               />

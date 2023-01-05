@@ -2,7 +2,7 @@ import {
   FlatList, Pressable, StyleSheet, View,
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/Feather';
 import PollTile from './PollTile';
 import Headline from '../typography/Headline';
 import Body from '../typography/Body';
@@ -54,7 +54,7 @@ export default function PollView({
           style={styles.addIcon}
         >
           <Icon
-            name="delete-outline"
+            name="more-vertical"
             size={20}
             color={COLORS.neutral[700]}
           />

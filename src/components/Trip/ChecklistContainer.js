@@ -7,6 +7,8 @@ import Divider from '../Divider';
 import Switch from '../Switch';
 import CheckboxTile from './CheckboxTile';
 import activeTripStore from '../../stores/ActiveTripStore';
+import Body from '../typography/Body';
+import COLORS from '../../constants/Theme';
 
 export default function ChecklistContainer({
   onPress, onLayout, sender,
@@ -14,7 +16,7 @@ export default function ChecklistContainer({
   const { mutualTasks, privateTasks } = activeTripStore((state) => state.activeTrip);
   const [isPrivate, setIsPrivate] = useState(false);
 
-  const getChecklistItem = (item) => (
+  const ChecklistItem = ({ item }) => (
     <View
       onLayout={onLayout}
       style={{
@@ -48,8 +50,25 @@ export default function ChecklistContainer({
         {!sender && <Switch bool={isPrivate} onPress={() => setIsPrivate(!isPrivate)} />}
       </View>
       <Divider top={12} />
-      {isPrivate ? privateTasks && privateTasks.map((item) => getChecklistItem(item))
-        : mutualTasks && mutualTasks.map((item) => getChecklistItem(item))}
+      {isPrivate ? privateTasks?.length > 0
+        ? privateTasks?.map((item) => <ChecklistItem item={item} />)
+        : (
+          <Body
+            color={COLORS.neutral[300]}
+            type={1}
+            text={i18n.t('No private tasks yet')}
+            style={{ alignSelf: 'center' }}
+          />
+        ) : mutualTasks?.length > 0
+        ? mutualTasks?.map((item) => <ChecklistItem item={item} />)
+        : (
+          <Body
+            color={COLORS.neutral[300]}
+            type={1}
+            text={i18n.t('No mutual tasks yet')}
+            style={{ alignSelf: 'center' }}
+          />
+        )}
     </TripListContainer>
   );
 }

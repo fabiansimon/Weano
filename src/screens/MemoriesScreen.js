@@ -6,7 +6,8 @@ import EntIcon from 'react-native-vector-icons/Entypo';
 import React, { useRef, useState, useEffect } from 'react';
 import { PinchGestureHandler } from 'react-native-gesture-handler';
 import Animated, {
-  useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withSpring, withTiming,
+  SensorType,
+  useAnimatedGestureHandler, useAnimatedSensor, useAnimatedStyle, useSharedValue, withSpring, withTiming,
 } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import { useQuery } from '@apollo/client';
@@ -34,6 +35,7 @@ export default function MemoriesScreen({ route }) {
       tripId,
     },
   });
+
   const [images, setImages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [storyVisible, setStoryVisible] = useState(false);
@@ -42,11 +44,21 @@ export default function MemoriesScreen({ route }) {
   const scale = useSharedValue(1);
   const headerOpacity = useSharedValue(1);
   const user = userStore((state) => state.user);
+  const animatedSensor = useAnimatedSensor(SensorType.ROTATION, {
+    interval: 100,
+  });
+  const animatedStyle = useAnimatedStyle(() => {
+    const { pitch, yaw } = animatedSensor.sensor.value;
+    const yawValue = 20 * (yaw < 0 ? 2.5 * Number(yaw.toFixed(2)) : Number(yaw.toFixed(2)));
+    const pitchValue = 50 * pitch.toFixed(2);
+    return {
+      transform: [{ translateX: pitchValue }, { translateY: yawValue }],
+    };
+  });
 
   const { width } = Dimensions.get('window');
 
   let loadingIndex = 0;
-  const maxAngle = 5;
 
   useEffect(() => {
     if (data) {
@@ -84,7 +96,6 @@ export default function MemoriesScreen({ route }) {
     opacity: headerOpacity.value,
   }));
 
-  const getRandomAngle = () => `${(Math.random() * maxAngle) - (maxAngle / 2)}deg`;
   const Header = () => {
     const shadow = {
       shadowOpacity: 1,
@@ -182,7 +193,7 @@ export default function MemoriesScreen({ route }) {
           setStoryVisible(true);
         }}
         onLoadEnd={() => loadingIndex += 1}
-        style={[{ marginLeft: isLeft ? 0 : 40, marginTop: 40, transform: [{ rotate: getRandomAngle() }] }]}
+        style={{ marginLeft: isLeft ? 0 : 40, marginTop: 40 }}
         uri={image.uri}
       />
     );
@@ -214,7 +225,7 @@ export default function MemoriesScreen({ route }) {
           <PinchGestureHandler onGestureEvent={pinchHandler}>
             <AnimatedFlatlist
               ref={gridRef}
-              style={gAnimated}
+              style={[gAnimated, animatedStyle]}
               onScrollBeginDrag={() => headerOpacity.value = withSpring(0)}
               onScrollEndDrag={() => headerOpacity.value = withSpring(1)}
               data={images || null}

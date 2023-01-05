@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 const DELETE_POLL = gql`
-    mutation DeleteTask($data: DeleteInput!) {
+    mutation DeletePoll($data: DeleteInput!) {
         deletePoll(data: $data)
     }  
 `;

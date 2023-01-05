@@ -3,6 +3,7 @@ import {
 } from 'react-native';
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
+import { useNavigation } from '@react-navigation/native';
 import COLORS, { PADDING } from '../../constants/Theme';
 import Headline from '../typography/Headline';
 import i18n from '../../utils/i18n';
@@ -12,8 +13,11 @@ import SearchModal from '../Search/SearchModal';
 import userStore from '../../stores/UserStore';
 import Body from '../typography/Body';
 import SearchResultTile from '../Search/SearchResultTile';
+import ROUTES from '../../constants/Routes';
 
 export default function CountriesVisited({ showUpcoming, upcomingTrips, recentTrips }) {
+  const navigation = useNavigation();
+
   const [searchVisible, setSearchVisible] = useState(false);
   const { firstName } = userStore((state) => state.user);
   // const continentData = CONTINENTS_DATA;
@@ -63,10 +67,18 @@ export default function CountriesVisited({ showUpcoming, upcomingTrips, recentTr
           )}
           data={showUpcoming ? upcomingTrips : recentTrips}
           ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-          renderItem={({ item }) => <SearchResultTile data={item} />}
+          renderItem={({ item }) => (
+            <SearchResultTile
+              onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: item.id })}
+              data={item}
+            />
+          )}
         />
       </View>
-      <SearchModal isVisible={searchVisible} onRequestClose={() => setSearchVisible(false)} />
+      <SearchModal
+        isVisible={searchVisible}
+        onRequestClose={() => setSearchVisible(false)}
+      />
     </View>
   );
 }
