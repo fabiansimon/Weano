@@ -2,7 +2,7 @@ import React, {
   useMemo, useRef, useState, useEffect,
 } from 'react';
 import {
-  Image, Pressable, StyleSheet, View,
+  Pressable, StyleSheet, View,
 } from 'react-native';
 import MapboxGL from '@react-native-mapbox-gl/maps';
 import BottomSheet from '@gorhom/bottom-sheet';
@@ -133,6 +133,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   map: {
+    backgroundColor: 'red',
     flex: 1,
   },
   pinShape: {

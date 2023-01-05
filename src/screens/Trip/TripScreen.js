@@ -40,10 +40,11 @@ import httpService from '../../utils/httpService';
 import InputModal from '../../components/InputModal';
 import PollCarousel from '../../components/Polls/PollCarousel';
 import GET_TRIP_BY_ID from '../../queries/getTripById';
+import TripScreenSkeleton from './TripScreenSkeleton';
 
 export default function TripScreen({ route }) {
   const { tripId } = route.params;
-  const [getTripData, { error: fetchError, data: tripData }] = useLazyQuery(GET_TRIP_BY_ID, {
+  const [getTripData, { error: fetchError, data: tripData, loading }] = useLazyQuery(GET_TRIP_BY_ID, {
     variables: {
       tripId,
     },
@@ -64,6 +65,7 @@ export default function TripScreen({ route }) {
 
   const navigation = useNavigation();
   const data = activeTrip;
+  const inactive = !data || loading;
 
   const { width } = Dimensions.get('window');
 
@@ -294,7 +296,7 @@ export default function TripScreen({ route }) {
   const TopContent = () => (
     <View style={styles.bodyContainer}>
       <View style={{ paddingHorizontal: PADDING.l }}>
-        <Headline type={2} text={data.title} />
+        <Headline type={2} text={data?.title} />
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -309,30 +311,30 @@ export default function TripScreen({ route }) {
         >
           <Button
             isSecondary
-            text={data.location?.placeName || i18n.t('Set location')}
+            text={data?.location?.placeName || i18n.t('Set location')}
             fullWidth={false}
             icon="location-pin"
             onPress={() => navigation.push(ROUTES.locationScreen)}
             backgroundColor={COLORS.shades[0]}
             textColor={COLORS.shades[100]}
-            style={data.location ? styles.infoTile : styles.infoButton}
+            style={data?.location ? styles.infoTile : styles.infoButton}
           />
           <Button
             isSecondary
-            text={data.dateRange?.startDate ? Utils.getDateRange(data.dateRange) : i18n.t('Find date')}
+            text={data?.dateRange?.startDate ? Utils.getDateRange(data.dateRange) : i18n.t('Find date')}
             fullWidth={false}
             icon={<AntIcon name="calendar" size={22} />}
             onPress={() => navigation.push(ROUTES.dateScreen)}
             backgroundColor={COLORS.shades[0]}
             textColor={COLORS.shades[100]}
-            style={[data.dateRange?.startDate ? styles.infoTile : styles.infoButton, { marginLeft: 14 }]}
+            style={[data?.dateRange?.startDate ? styles.infoTile : styles.infoButton, { marginLeft: 14 }]}
           />
         </ScrollView>
         <TouchableOpacity
           style={{ flexDirection: 'row', marginTop: 16, alignItems: 'center' }}
           onPress={() => setInputOpen(true)}
         >
-          {!data.description && (
+          {!data?.description && (
             <Icon
               size={16}
               color={COLORS.neutral[300]}
@@ -341,7 +343,7 @@ export default function TripScreen({ route }) {
           )}
           <Body
             type={1}
-            text={data.description || i18n.t('Add a description to the trip 😎')}
+            text={data?.description || i18n.t('Add a description to the trip 😎')}
             style={{ marginLeft: 4, color: COLORS.neutral[300] }}
           />
         </TouchableOpacity>
@@ -422,6 +424,7 @@ export default function TripScreen({ route }) {
         source={DefaultImage}
         blurRadius={10}
       />
+      {!inactive && (
       <View style={styles.addImage}>
         <Headline
           type={3}
@@ -434,7 +437,8 @@ export default function TripScreen({ route }) {
           color={COLORS.shades[0]}
         />
       </View>
-      {data.thumbnailUri && (
+      )}
+      {data?.thumbnailUri && (
       <FastImage
         style={styles.image}
         resizeMode="center"
@@ -445,86 +449,85 @@ export default function TripScreen({ route }) {
   );
 
   return (
-    !data
-      ? <Headline text="Loading..." />
-      : (
-        <View style={{ backgroundColor: COLORS.shades[0], flex: 1 }}>
-          <AnimatedHeader
-            style={{ height: 170 }}
-            maxHeight={380}
-            scrollY={scrollY}
-          >
-            <TripHeader
-              title={data.title}
-              id={data.id}
-              subtitle={`${Utils.getDateRange(data?.dateRange)}`}
-              items={contentItems}
-              onPress={(index) => handleTabPress(index)}
-              currentTab={currentTab}
-            />
-          </AnimatedHeader>
-          <HeaderImage />
-          <Animated.ScrollView
-            refreshControl={(
-              <RefreshControl
-                progressViewOffset={50}
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-              />
+
+    <View style={{ backgroundColor: COLORS.shades[0], flex: 1 }}>
+      <AnimatedHeader
+        style={{ height: 170 }}
+        maxHeight={380}
+        scrollY={scrollY}
+      >
+        <TripHeader
+          title={!inactive ? data?.title : i18n.t('Loading...')}
+          id={data?.id}
+          subtitle={`${Utils.getDateRange(data?.dateRange)}`}
+          items={contentItems}
+          onPress={(index) => handleTabPress(index)}
+          currentTab={currentTab}
+        />
+      </AnimatedHeader>
+      <HeaderImage />
+      <Animated.ScrollView
+        refreshControl={(
+          <RefreshControl
+            enabled={data}
+            progressViewOffset={50}
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
           )}
-            ref={scrollRef}
-            showsVerticalScrollIndicator={false}
-            scrollEventThrottle={16}
-            onScroll={Animated.event(
-              [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-              { useNativeDriver: true },
+        ref={scrollRef}
+        showsVerticalScrollIndicator={false}
+        scrollEventThrottle={16}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: true },
+        )}
+      >
+        <Pressable style={{ height: IMAGE_HEIGHT }} onPress={() => (data ? addImageRef.current?.show() : null)} />
+        {inactive && <View style={[styles.bodyContainer, { paddingHorizontal: PADDING.m, marginBottom: 60 }]}><TripScreenSkeleton /></View>}
+        {!inactive && <TopContent />}
+        {!inactive && <MainContent />}
+      </Animated.ScrollView>
+      <BackButton
+        onPress={() => navigation.navigate(ROUTES.mainScreen)}
+        style={{
+          position: 'absolute', top: 47, left: 20, zIndex: 10,
+        }}
+      />
+      <Button
+        isSecondary
+        style={{
+          position: 'absolute', top: 47, right: 20, zIndex: 10,
+        }}
+        onPress={() => (data ? navigation.navigate(ROUTES.memoriesScreen, { tripId: data.id }) : null)}
+        icon={(
+          <Icon
+            name="image"
+            color={COLORS.neutral[700]}
+            size={22}
+          />
             )}
-          >
-            <Pressable style={{ height: IMAGE_HEIGHT }} onPress={() => addImageRef.current?.show()} />
-            <TopContent />
-            <MainContent />
-          </Animated.ScrollView>
-          <BackButton
-            onPress={() => navigation.navigate(ROUTES.mainScreen)}
-            style={{
-              position: 'absolute', top: 47, left: 20, zIndex: 10,
-            }}
-          />
-          <Button
-            isSecondary
-            style={{
-              position: 'absolute', top: 47, right: 20, zIndex: 10,
-            }}
-            onPress={() => navigation.navigate(ROUTES.memoriesScreen, { tripId: data.id })}
-            icon={(
-              <Icon
-                name="image"
-                color={COLORS.neutral[700]}
-                size={22}
-              />
-            )}
-            fullWidth={false}
-            color={COLORS.neutral[900]}
-          />
-          <FAButton
-            icon="chatbox-ellipses"
-            onPress={() => navigation.push(ROUTES.chatScreen)}
-          />
-          <ActionSheet
-            ref={addImageRef}
-            title={i18n.t('Choose an option')}
-            options={['Cancel', i18n.t('Choose from Camera Roll'), i18n.t('Reset image')]}
-            cancelButtonIndex={0}
-            onPress={(index) => handleAddImage(index)}
-          />
-          <InputModal
-            isVisible={inputOpen}
-            placeholder={i18n.t('Enter description')}
-            onRequestClose={() => setInputOpen(false)}
-            onPress={(description) => updateDescription(description)}
-          />
-        </View>
-      )
+        fullWidth={false}
+        color={COLORS.neutral[900]}
+      />
+      <FAButton
+        icon="chatbox-ellipses"
+        onPress={() => navigation.push(ROUTES.chatScreen)}
+      />
+      <ActionSheet
+        ref={addImageRef}
+        title={i18n.t('Choose an option')}
+        options={['Cancel', i18n.t('Choose from Camera Roll'), i18n.t('Reset image')]}
+        cancelButtonIndex={0}
+        onPress={(index) => handleAddImage(index)}
+      />
+      <InputModal
+        isVisible={inputOpen}
+        placeholder={i18n.t('Enter description')}
+        onRequestClose={() => setInputOpen(false)}
+        onPress={(description) => updateDescription(description)}
+      />
+    </View>
   );
 }
 

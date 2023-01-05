@@ -19,7 +19,7 @@ export default function BasicHeader({
       <View style={styles.heading}>
         <View style={[styles.titleContainer, { marginBottom: children && 16 }]}>
           <Headline
-            type={2}
+            type={3}
             text={title}
           />
           {info && (

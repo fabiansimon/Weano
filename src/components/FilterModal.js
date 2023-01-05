@@ -4,7 +4,7 @@ import {
 import React, { useEffect, useRef, useState } from 'react';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Headline from './typography/Headline';
-import COLORS from '../constants/Theme';
+import COLORS, { RADIUS } from '../constants/Theme';
 import Body from './typography/Body';
 
 export default function FilterModal({
@@ -84,11 +84,12 @@ export default function FilterModal({
 
 const styles = StyleSheet.create({
   modalContainer: {
-    maxHeight: '90%',
+    maxHeight: '95%',
     marginTop: 'auto',
-    backgroundColor: 'white',
-    borderTopEndRadius: 20,
-    borderTopStartRadius: 20,
+    marginBottom: 20,
+    backgroundColor: COLORS.shades[0],
+    borderTopEndRadius: RADIUS.m,
+    borderTopStartRadius: RADIUS.m,
     shadowOffset: {
       height: -10,
     },

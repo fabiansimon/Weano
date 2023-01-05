@@ -7,6 +7,7 @@ import i18n from '../../utils/i18n';
 import COLORS, { RADIUS } from '../../constants/Theme';
 import Button from '../Button';
 import AvailabilityTile from './AvailabilityTile';
+import Body from '../typography/Body';
 
 export default function AvailabilityModal({ isVisible, onRequestClose, data }) {
   const [isAvailable, setIsAvailable] = useState(false);
@@ -32,8 +33,8 @@ export default function AvailabilityModal({ isVisible, onRequestClose, data }) {
             activeOpacity={0.8}
             style={[styles.innerTab, isAvailable && styles.activeTab, { borderTopLeftRadius: isAvailable && 6, borderBottomLeftRadius: isAvailable && 6 }]}
           >
-            <Headline
-              type={4}
+            <Body
+              type={1}
               color={isAvailable ? COLORS.shades[0] : COLORS.primary[700]}
               text={i18n.t('Available')}
             />
@@ -43,8 +44,8 @@ export default function AvailabilityModal({ isVisible, onRequestClose, data }) {
             activeOpacity={0.8}
             style={[styles.innerTab, !isAvailable && styles.activeTab, { borderTopRightRadius: !isAvailable && 6, borderBottomRightRadius: !isAvailable && 6 }]}
           >
-            <Headline
-              type={4}
+            <Body
+              type={1}
               color={!isAvailable ? COLORS.shades[0] : COLORS.primary[700]}
               text={i18n.t('Unavailable')}
             />
@@ -101,7 +102,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 20,
-    height: 40,
+    height: 36,
     justifyContent: 'space-between',
     borderRadius: RADIUS.s,
     backgroundColor: COLORS.shades[0],

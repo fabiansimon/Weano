@@ -13,6 +13,7 @@ export default function SetupContainer({
   style, onPress, type = 'location',
 }) {
   const source = type === 'location' ? Location3D : Calendar3D;
+  const title = type === 'location' ? i18n.t('Set destination') : i18n.t('Set date');
 
   return (
     <Pressable
@@ -23,7 +24,7 @@ export default function SetupContainer({
         <Headline
           type={3}
           isDense
-          text={i18n.t('Set destination')}
+          text={title}
           color={COLORS.shades[0]}
         />
         <Subtitle

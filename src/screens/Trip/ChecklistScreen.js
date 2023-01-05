@@ -24,6 +24,7 @@ import userStore from '../../stores/UserStore';
 import FilterModal from '../../components/FilterModal';
 import Utils from '../../utils';
 import DELETE_TASK from '../../mutations/deleteTask';
+import FAButton from '../../components/FAButton';
 
 export default function ChecklistScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -328,14 +329,7 @@ export default function ChecklistScreen() {
         </ScrollView>
 
       </HybridHeader>
-      <SafeAreaView style={{ position: 'absolute', bottom: 0, width: '100%' }}>
-        <Button
-          style={{ marginHorizontal: PADDING.l }}
-          text={i18n.t('Add Task')}
-          onPress={() => setIsVisible(true)}
-          fullWidth
-        />
-      </SafeAreaView>
+
       <AddTaskModal
         isVisible={isVisible}
         onRequestClose={() => setIsVisible(false)}
@@ -346,6 +340,11 @@ export default function ChecklistScreen() {
         onRequestClose={() => setSelectedTask(null)}
         data={inputOptions}
         onPress={(m) => handleInput(m.value, taskSelected)}
+      />
+      <FAButton
+        icon="add"
+        iconSize={28}
+        onPress={() => setIsVisible(true)}
       />
     </View>
   );

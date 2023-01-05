@@ -15,7 +15,7 @@ export default function BackButton({
       <Icon
         suppressHighlighting
         name="arrowleft"
-        size={26}
+        size={22}
         color={iconColor}
         style={{ zIndex: 9999 }}
         onPress={() => (onPress ? onPress() : navigation.goBack())}

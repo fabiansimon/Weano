@@ -1,20 +1,31 @@
-import { View, StyleSheet } from 'react-native';
+import {
+  View, StyleSheet, Dimensions, Pressable,
+} from 'react-native';
 import React, { useState, useRef, useEffect } from 'react';
 import Animated from 'react-native-reanimated';
+// eslint-disable-next-line import/no-unresolved
+import { MAPBOX_TOKEN } from '@env';
 import Toast from 'react-native-toast-message';
 import { useMutation } from '@apollo/client';
-import COLORS, { PADDING } from '../../constants/Theme';
+import MapboxGL from '@react-native-mapbox-gl/maps';
+import Icon from 'react-native-vector-icons/Entypo';
+import FeatherIcon from 'react-native-vector-icons/Feather';
+import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import HybridHeader from '../../components/HybridHeader';
 import INFORMATION from '../../constants/Information';
 // import PollView from '../../components/Polls/PollView';
 // import AddSuggestionModal from '../../components/Trip/AddSuggestionModal';
+// import HighlightContainer from '../../components/Trip/HighlightContainer';
 import BoardingPassModal from '../../components/Trip/BoardingPassModal';
 import activeTripStore from '../../stores/ActiveTripStore';
 import SetupContainer from '../../components/Trip/SetupContainer';
 import InputModal from '../../components/InputModal';
 import UPDATE_TRIP from '../../mutations/updateTrip';
-import HighlightContainer from '../../components/Trip/HighlightContainer';
+import Headline from '../../components/typography/Headline';
+import Body from '../../components/typography/Body';
+
+MapboxGL.setAccessToken(MAPBOX_TOKEN);
 
 export default function LocationScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -25,6 +36,8 @@ export default function LocationScreen() {
 
   const [isBoardingPassVisible, setBoardingPassVisible] = useState(false);
   const [inputVisible, setInputVisible] = useState(false);
+
+  const camera = useRef();
   // const [isVisible, setIsVisible] = useState(false);
   // const [pollData, setPollData] = useState(null);
 
@@ -93,6 +106,79 @@ export default function LocationScreen() {
     setInputVisible(false);
   };
 
+  const isLiked = !true;
+
+  const LocationContainer = () => (
+    <View>
+      <View style={styles.locationContainer}>
+        <View>
+          <Headline
+            type={4}
+            text={i18n.t('Current destination')}
+            color={COLORS.neutral[300]}
+          />
+          <Pressable
+            onPress={() => setInputVisible(true)}
+            style={{ flexDirection: 'row', alignItems: 'center' }}
+          >
+            <Headline
+              type={3}
+              style={{ marginTop: 4 }}
+              text={location.placeName}
+            />
+            <View style={styles.editButton}>
+              <FeatherIcon
+                name="edit"
+                color={COLORS.neutral[300]}
+              />
+            </View>
+          </Pressable>
+        </View>
+        <View style={isLiked ? styles.isLiked : styles.isNotLiked}>
+          <Body
+            type={2}
+            text="👍🏻"
+            color={COLORS.shades[0]}
+          />
+          <Headline
+            type={4}
+            text="4"
+            style={{ marginLeft: 4, marginTop: -2 }}
+            color={isLiked ? COLORS.shades[0] : COLORS.shades[100]}
+          />
+        </View>
+      </View>
+      <View style={styles.mapContainer}>
+        <MapboxGL.MapView
+          scrollEnabled={false}
+          logoEnabled={false}
+          zoomEnabled={false}
+          pitchEnabled={false}
+          compassEnabled={false}
+          rotateEnabled={false}
+          style={styles.map}
+        >
+          <MapboxGL.Camera
+            zoomLevel={4}
+            animated={false}
+            ref={camera}
+            centerCoordinate={location.latlon}
+          />
+          <MapboxGL.MarkerView
+            coordinate={location.latlon}
+          >
+            <Icon
+              name="location-pin"
+              size={40}
+              color={COLORS.secondary[700]}
+            />
+          </MapboxGL.MarkerView>
+        </MapboxGL.MapView>
+      </View>
+    </View>
+
+  );
+
   return (
     <View style={styles.container}>
       <HybridHeader
@@ -101,11 +187,14 @@ export default function LocationScreen() {
         info={INFORMATION.dateScreen}
       >
         <View style={styles.innerContainer}>
-          <SetupContainer
-            onPress={() => setInputVisible(true)}
-            type="location"
-            style={{ marginBottom: 10 }}
-          />
+          {!location ? (
+            <SetupContainer
+              onPress={() => setInputVisible(true)}
+              type="location"
+              style={{ marginBottom: 10 }}
+            />
+          ) : <LocationContainer />}
+
           {/* <PollView
             data={pollData}
             title={i18n.t('Destination options')}
@@ -121,13 +210,13 @@ export default function LocationScreen() {
         setPollData={setPollData}
       /> */}
 
-      {location && (
+      {/* {location && (
       <HighlightContainer
         onPress={() => setBoardingPassVisible(true)}
         description={i18n.t('Location')}
         text={location.placeName}
       />
-      )}
+      )} */}
 
       <InputModal
         isVisible={inputVisible}
@@ -149,7 +238,7 @@ export default function LocationScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.neutral[50],
+    backgroundColor: COLORS.shades[0],
   },
   innerContainer: {
     paddingHorizontal: PADDING.s,
@@ -163,5 +252,60 @@ const styles = StyleSheet.create({
     borderColor: COLORS.neutral[100],
     borderWidth: 1,
     backgroundColor: COLORS.shades[0],
+  },
+  isLiked: {
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    alignItems: 'center',
+    paddingVertical: 6,
+    backgroundColor: COLORS.primary[700],
+    borderRadius: RADIUS.xl,
+    height: 32,
+  },
+  isNotLiked: {
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    alignItems: 'center',
+    paddingVertical: 6,
+    borderWidth: 1,
+    borderColor: COLORS.neutral[100],
+    borderRadius: RADIUS.xl,
+    height: 32,
+  },
+  map: {
+    height: Dimensions.get('window').height * 0.3,
+    width: '100%',
+    flex: 1,
+  },
+  locationContainer: {
+    marginHorizontal: PADDING.s,
+    marginTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+  },
+  mapContainer: {
+    marginTop: 20,
+    marginHorizontal: 4,
+    borderRadius: RADIUS.m,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: COLORS.neutral[100],
+    shadowColor: COLORS.shades[100],
+    shadowOffset: {
+      height: 10,
+    },
+    shadowRadius: 10,
+    shadowOpacity: 0.08,
+  },
+  editButton: {
+    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.neutral[100],
+    width: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 6,
+    marginTop: 4,
   },
 });

@@ -24,13 +24,13 @@ export default function HighlightContainer({
             style={[styles.tile, style]}
           >
             <View>
-              <Headline
-                type={4}
+              <Body
+                type={1}
                 text={description}
                 color={COLORS.shades[0]}
               />
               <Headline
-                type={2}
+                type={3}
                 text={text}
                 color={COLORS.shades[0]}
                 numberOfLines={1}
@@ -100,6 +100,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   bottomContainer: {
+    borderRadius: RADIUS.m,
     paddingTop: 6,
     width: '100%',
     paddingHorizontal: PADDING.m,

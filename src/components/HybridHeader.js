@@ -27,7 +27,7 @@ export default function HybridHeader({
           <View style={styles.title}>
             <Headline
               style={{ textAlign: 'center' }}
-              type={2}
+              type={3}
               text={title}
             />
           </View>
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     zIndex: 9999,
     left: 20,
-    top: 20,
+    top: 22,
   },
   title: {
     zIndex: 10,
