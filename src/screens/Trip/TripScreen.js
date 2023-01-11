@@ -88,6 +88,7 @@ export default function TripScreen({ route }) {
     }
 
     if (tripData) {
+      console.log(tripData.getTripById.polls[0]?.options);
       setActiveTrip(tripData.getTripById);
     }
   }, [error, fetchError, tripData]);
@@ -311,7 +312,7 @@ export default function TripScreen({ route }) {
         >
           <Button
             isSecondary
-            text={data?.location?.placeName || i18n.t('Set location')}
+            text={data?.location?.placeName.split(', ')[0] || i18n.t('Set location')}
             fullWidth={false}
             icon="location-pin"
             onPress={() => navigation.push(ROUTES.locationScreen)}

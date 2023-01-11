@@ -70,7 +70,6 @@ export default function App() {
         <NavigationContainer>
           <StatusBar barStyle="dark-content" />
           <Stack.Navigator screenOptions={{ headerShown: false }}>
-
             <Stack.Screen name={ROUTES.initDataCrossroads} component={InitDataCrossroads} />
             <Stack.Screen
               name={ROUTES.signUpScreen}

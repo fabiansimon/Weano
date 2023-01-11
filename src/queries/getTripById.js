@@ -53,6 +53,7 @@ const GET_TRIP_BY_ID = gql`
                     option
                     votes
                     creatorId
+                    id
                 }
             }
             mutualTasks {

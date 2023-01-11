@@ -1,13 +1,16 @@
 import {
   View, StyleSheet, ScrollView, FlatList,
 } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+  useEffect, useRef, useState, useCallback,
+} from 'react';
 import Animated from 'react-native-reanimated';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { useMutation } from '@apollo/client';
 import Toast from 'react-native-toast-message';
 import Icon from 'react-native-vector-icons/AntDesign';
+import { debounce } from 'lodash';
 import COLORS, { PADDING } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Divider from '../../components/Divider';
@@ -15,7 +18,6 @@ import HybridHeader from '../../components/HybridHeader';
 import INFORMATION from '../../constants/Information';
 import Headline from '../../components/typography/Headline';
 import CheckboxTile from '../../components/Trip/CheckboxTile';
-import Button from '../../components/Button';
 import AddTaskModal from '../../components/Trip/AddTaskModal';
 import Body from '../../components/typography/Body';
 import activeTripStore from '../../stores/ActiveTripStore';
@@ -25,13 +27,15 @@ import FilterModal from '../../components/FilterModal';
 import Utils from '../../utils';
 import DELETE_TASK from '../../mutations/deleteTask';
 import FAButton from '../../components/FAButton';
+import UPDATE_TASK from '../../mutations/updateTask';
 
 export default function ChecklistScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
   const { mutualTasks, privateTasks, id: tripId } = activeTripStore((state) => state.activeTrip);
 
   const [addTask, { error }] = useMutation(ADD_TASK);
-  const [deleteTask, { error: deleteError }] = useMutation(DELETE_TASK);
+  const [deleteTask] = useMutation(DELETE_TASK);
+  const [updateTask] = useMutation(UPDATE_TASK);
 
   const { id: userId } = userStore((state) => state.user);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
@@ -175,6 +179,32 @@ export default function ChecklistScreen() {
     });
   };
 
+  // const delayedUpdate = useCallback(
+  //   debounce((isDone, item) => handleUpdate(isDone, item), 250),
+  //   [],
+  // );
+
+  const handleUpdate = async (isDone, item) => {
+    const { _id: taskId } = item;
+
+    await updateTask({
+      variables: {
+        data: {
+          isDone,
+          taskId,
+        },
+      },
+    }).catch((e) => {
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('Whoops!'),
+        text2: e.message,
+      });
+      // updateActiveTrip({ mutualTasks: oldMutualTasks });
+      console.log(`ERROR: ${e.message}`);
+    });
+  };
+
   const HeaderChips = () => (
     <View style={{ flexDirection: 'row', paddingHorizontal: PADDING.m, marginTop: 20 }}>
       {filterOption !== 2 && (
@@ -288,7 +318,7 @@ export default function ChecklistScreen() {
                   })}
                   style={{ marginVertical: 10, paddingLeft: 5 }}
                   item={item}
-                  onPress={(isChecked) => console.log(isChecked)}
+                  onPress={(isChecked) => handleUpdate(isChecked, item)}
                 />
               )}
             />
@@ -321,15 +351,13 @@ export default function ChecklistScreen() {
                   style={{ marginVertical: 10, paddingLeft: 5 }}
                   item={item}
                   disableLabel
-                  onPress={(isChecked) => console.log(isChecked)}
+                  onPress={(isChecked) => handleUpdate(isChecked, item)}
                 />
               )}
             />
           </View>
         </ScrollView>
-
       </HybridHeader>
-
       <AddTaskModal
         isVisible={isVisible}
         onRequestClose={() => setIsVisible(false)}

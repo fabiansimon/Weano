@@ -13,11 +13,14 @@ import Utils from '../../utils';
 export default function CheckboxTile({
   style, item, disableLabel, onPress, disabled = false, onMorePress,
 }) {
+  const { isDone, assignee, title } = item;
+
   return (
     <BouncyCheckbox
       size={22}
       style={style}
       disabled={disabled}
+      isChecked={isDone}
       textComponent={(
         <View style={{
           marginLeft: 8, flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
@@ -27,11 +30,11 @@ export default function CheckboxTile({
             <View>
               {!disableLabel && (
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Icon color={item.isDone ? COLORS.success[700] : COLORS.neutral[300]} name="person" />
+                  <Icon color={isDone ? COLORS.success[700] : COLORS.neutral[300]} name="person" />
                   <Body
                     type={2}
-                    text={Utils.convertIdToUser(item.assignee)}
-                    color={item.isDone ? COLORS.success[700] : COLORS.neutral[300]}
+                    text={Utils.convertIdToUser(assignee)}
+                    color={isDone ? COLORS.success[700] : COLORS.neutral[300]}
                     style={{ marginLeft: 4 }}
                   />
                 </View>
@@ -39,9 +42,9 @@ export default function CheckboxTile({
             </View>
             <Headline
               type={4}
-              text={item.title}
-              style={{ textDecorationLine: item.isDone ? 'line-through' : 'none' }}
-              color={item.isDone ? COLORS.success[700] : COLORS.shades[100]}
+              text={title}
+              style={{ textDecorationLine: isDone ? 'line-through' : 'none' }}
+              color={isDone ? COLORS.success[700] : COLORS.shades[100]}
             />
           </View>
           {onMorePress && (

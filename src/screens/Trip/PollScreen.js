@@ -63,8 +63,8 @@ export default function PollScreen() {
         async () => {
           const { _id } = poll;
 
-          const oldPolls = polls;
-          updateActiveTrip({ polls: polls.filter((p) => p._id !== _id) });
+          // const oldPolls = polls;
+          // updateActiveTrip({ polls: polls.filter((p) => p._id !== _id) });
 
           console.log(_id, tripId);
 
@@ -88,7 +88,7 @@ export default function PollScreen() {
                 text1: i18n.t('Whoops!'),
                 text2: e.message,
               });
-              updateActiveTrip({ polls: oldPolls });
+              // updateActiveTrip({ polls: oldPolls });
               console.log(`ERROR: ${e.message}`);
             });
         },

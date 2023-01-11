@@ -12,6 +12,8 @@ target 'travelio_project' do
 
   pod 'react-native-cameraroll', :path => '../node_modules/@react-native-camera-roll/camera-roll'
 
+  pod 'RNReactNativeHapticFeedback', :path => '../node_modules/react-native-haptic-feedback'
+
   post_integrate do |installer|
     begin
       expo_patch_react_imports!(installer)

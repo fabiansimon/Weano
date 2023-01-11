@@ -1,5 +1,6 @@
 import { ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Icon from 'react-native-vector-icons/Entypo';
 import COLORS, { RADIUS } from '../constants/Theme';
 import Headline from './typography/Headline';
@@ -15,6 +16,7 @@ export default function Button({
   icon,
   color,
   fullWidth = true,
+  disableHaptics = false,
   isLoading,
 }) {
   const flex = fullWidth ? 1 : 0;
@@ -32,13 +34,22 @@ export default function Button({
     <ActivityIndicator color={COLORS.shades[0]} />
   );
 
+  const options = {
+    enableVibrateFallback: true,
+    ignoreAndroidSystemSettings: true,
+  };
+
   return (
     <TouchableOpacity
       activeOpacity={0.9}
       style={[styles.container, {
         flex, backgroundColor: isSecondary ? COLORS.shades[0] : bg, borderColor, borderWidth,
       }, style]}
-      onPress={onPress}
+      onPress={() => {
+        onPress();
+        // eslint-disable-next-line no-unused-expressions
+        !disableHaptics && ReactNativeHapticFeedback.trigger('impactLight', options);
+      }}
       disabled={isDisabled}
     >
       {icon && !isLoading && getIcon()}
