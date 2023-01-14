@@ -169,11 +169,13 @@ export default function DateScreen() {
       >
 
         <View style={styles.innerContainer}>
+          {!dateRange && (
           <SetupContainer
             onPress={() => setCalendarVisible(true)}
             type="date"
             style={{ margin: PADDING.s }}
           />
+          )}
           <CalendarAvailabilityContainer
             onPress={() => setIsVisible(true)}
             style={{ marginBottom: 40 }}

@@ -3,7 +3,6 @@ import {
 } from 'react-native';
 import React, {
   useEffect, useRef, useState, useCallback,
-  Children,
 } from 'react';
 import Toast from 'react-native-toast-message';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';

@@ -12,6 +12,7 @@ const GET_INIT_USER_DATA = gql`
                 lastName
                 images
                 trips
+                pushToken
                 expenses {
                     expense
                     trip
@@ -83,6 +84,7 @@ const GET_INIT_USER_DATA = gql`
                         option
                         votes
                         creatorId
+                        id
                     }
                 }
                 activeMembers {

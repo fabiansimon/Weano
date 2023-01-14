@@ -25,6 +25,7 @@ import Utils from '../../utils';
 import ImageModal from '../../components/ImageModal';
 import Body from '../../components/typography/Body';
 import Camera3D from '../../../assets/images/camera_access_3d.png';
+import ROUTES from '../../constants/Routes';
 
 let camera;
 export default function CameraScreen({ route }) {
@@ -138,7 +139,7 @@ export default function CameraScreen({ route }) {
 
   const RoundedBackButton = () => (
     <TouchableOpacity
-      onPress={() => navigation.goBack()}
+      onPress={() => navigation.navigate(ROUTES.mainScreen)}
       activeOpacity={0.9}
       disabled={isRecording}
       style={[styles.roundButton, { opacity: isRecording && 0 }]}

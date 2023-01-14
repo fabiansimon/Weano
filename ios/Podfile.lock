@@ -18,6 +18,8 @@ PODS:
   - EXImageLoader (3.2.0):
     - ExpoModulesCore
     - React-Core
+  - EXNotifications (0.15.4):
+    - ExpoModulesCore
   - Expo (45.0.8):
     - ExpoModulesCore
   - ExpoImageManipulator (10.3.1):
@@ -430,6 +432,7 @@ DEPENDENCIES:
   - EXFileSystem (from `../node_modules/expo-file-system/ios`)
   - EXFont (from `../node_modules/expo-font/ios`)
   - EXImageLoader (from `../node_modules/expo-image-loader/ios`)
+  - EXNotifications (from `../node_modules/expo-notifications/ios`)
   - Expo (from `../node_modules/expo/ios`)
   - ExpoImageManipulator (from `../node_modules/expo-image-manipulator/ios`)
   - ExpoKeepAwake (from `../node_modules/expo-keep-awake/ios`)
@@ -517,6 +520,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-font/ios"
   EXImageLoader:
     :path: "../node_modules/expo-image-loader/ios"
+  EXNotifications:
+    :path: "../node_modules/expo-notifications/ios"
   Expo:
     :path: "../node_modules/expo/ios"
   ExpoImageManipulator:
@@ -637,6 +642,7 @@ SPEC CHECKSUMS:
   EXFileSystem: 2aa2d9289f84bca9532b9ccbd81504fa31eb1ded
   EXFont: 04235cc22e6fef86028feb67db452978dc6f240f
   EXImageLoader: b88e053d760f85a82405b1db2de4abf11978fc9f
+  EXNotifications: 297bb555bbd26fd7aa8ff3bf7e724d4d65f7e895
   Expo: 1133eaf0e12dc265ac82a256f3815401b7570f96
   ExpoImageManipulator: b55580bbc7b10099c7707949903e7176a8542ee8
   ExpoKeepAwake: c0c494b442ecd8122974c13b93ccfb57bd408e88
@@ -698,6 +704,6 @@ SPEC CHECKSUMS:
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   Yoga: 99652481fcd320aefa4a7ef90095b95acd181952
 
-PODFILE CHECKSUM: f588a0b54e16d6ff68644f167db3e26ab1e6ef16
+PODFILE CHECKSUM: 915b2ffcfb9fa4027d8c87f1a9c191eba2a772d1
 
 COCOAPODS: 1.11.3

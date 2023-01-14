@@ -12,6 +12,7 @@ const userStore = create((set) => ({
     images: [],
     phoneNumber: '',
     trips: [],
+    pushToken: '',
   },
   setUserData: (data) => set(() => ({
     user: {
@@ -24,6 +25,7 @@ const userStore = create((set) => ({
       images: data.images || null,
       phoneNumber: data.phoneNumber || null,
       trips: data.trips || null,
+      pushToken: data.pushToken || null,
     },
   })),
   updateUserData: (data) => set((state) => ({
@@ -38,6 +40,7 @@ const userStore = create((set) => ({
       images: data.images || state.user.images,
       phoneNumber: data.phoneNumber || state.user.phoneNumber,
       trips: data.trips || state.user.trips,
+      pushToken: data.pushToken || state.user.pushToken,
     },
   })),
 }));

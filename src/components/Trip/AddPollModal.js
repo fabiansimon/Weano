@@ -8,7 +8,6 @@ import TitleModal from '../TitleModal';
 import KeyboardView from '../KeyboardView';
 import Button from '../Button';
 import i18n from '../../utils/i18n';
-import Headline from '../typography/Headline';
 import COLORS, { PADDING } from '../../constants/Theme';
 import Body from '../typography/Body';
 import TextField from '../TextField';

@@ -63,6 +63,7 @@ export default function PollView({
       </View>
       <FlatList
         data={pollData.options}
+        scrollEnabled={false}
         renderItem={({ item, index }) => (
           <PollTile
             style={{ marginBottom: 16 }}

@@ -2,8 +2,9 @@ import {
   ActivityIndicator, Linking, Platform, View,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
+import * as Notifications from 'expo-notifications';
 import { useNavigation } from '@react-navigation/native';
-import { useLazyQuery } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import Toast from 'react-native-toast-message';
 import Headline from '../components/typography/Headline';
 import i18n from '../utils/i18n';
@@ -15,23 +16,74 @@ import userStore from '../stores/UserStore';
 import COLORS from '../constants/Theme';
 import AsyncStorageDAO from '../utils/AsyncStorageDAO';
 import tripsStore from '../stores/TripsStore';
+import { usePushNotificationContext } from '../providers/PushNotificationProvider';
+import UPDATE_USER from '../mutations/updateUser';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
 export default function InitDataCrossroads() {
   const [getInitData, { loading, error, data }] = useLazyQuery(GET_INIT_USER_DATA);
+  const [updateUser] = useMutation(UPDATE_USER);
   const [init, setInit] = useState(false);
   const [requestedRoute, setRequestedRoute] = useState(null);
-  const { authToken } = userStore((state) => state.user);
+  const { authToken, pushToken } = userStore((state) => state.user);
   const setActiveTrip = activeTripStore((state) => state.setActiveTrip);
   const setRecapTrip = recapTripStore((state) => state.setRecapTrip);
   const setTrips = tripsStore((state) => state.setTrips);
   const updateUserData = userStore((state) => state.updateUserData);
 
+  const { uploadId, cleanData } = usePushNotificationContext();
   const navigation = useNavigation();
+
+  const registerPushNotificationToken = async () => {
+    if (pushToken) {
+      return;
+    }
+
+    const { status: currentStatus } = Notifications.getPermissionsAsync();
+    let finalStatus = currentStatus;
+
+    if (currentStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+
+    if (finalStatus !== 'granted') {
+      return Toast.show({
+        type: 'error',
+        text1: i18n.t('Oh no!'),
+        text2: i18n.t('We need permission to remind you!'),
+      });
+    }
+
+    const token = (await Notifications.getExpoPushTokenAsync()).data;
+
+    if (!token) {
+      return;
+    }
+    const updatedUser = {};
+    updatedUser.pushToken = token;
+
+    try {
+      await updateUser({
+        variables: {
+          user: updatedUser,
+        },
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const handleNavigation = () => {
     setTimeout(() => {
+      if (uploadId) {
+        const tripId = uploadId;
+        cleanData();
+        navigation.navigate(ROUTES.cameraScreen, { tripId });
+        return;
+      }
+
       // no deep linked route && no active trip && authenticated
       if (requestedRoute != null) {
         navigation.navigate(requestedRoute.screen, requestedRoute.params || null);
@@ -50,12 +102,14 @@ export default function InitDataCrossroads() {
   const checkInitStatus = async () => {
     if (authToken) {
       getInitData();
+      registerPushNotificationToken();
       return;
     }
 
     const token = await asyncStorageDAO.getAccessToken();
     if (token) {
       updateUserData({ authToken: token });
+      registerPushNotificationToken();
       setTimeout(() => {
         getInitData();
       }, 500);
@@ -148,14 +202,6 @@ export default function InitDataCrossroads() {
       if (url.includes('invitation')) {
         setRequestedRoute({
           screen: ROUTES.invitationScreen,
-          params: { tripId },
-        });
-        return;
-      }
-
-      if (url.includes('upload-reminder')) {
-        setRequestedRoute({
-          screen: ROUTES.cameraScreen,
           params: { tripId },
         });
       }
