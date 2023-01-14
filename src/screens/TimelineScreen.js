@@ -1,11 +1,12 @@
 import {
-  View, StyleSheet, SectionList, Dimensions, Image, Pressable,
+  View, StyleSheet, SectionList, Dimensions, Pressable,
 } from 'react-native';
 import React, { useRef, useEffect, useState } from 'react';
 import Animated from 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
 import { useQuery } from '@apollo/client';
 import FastImage from 'react-native-fast-image';
+import { useNavigation } from '@react-navigation/native';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import i18n from '../utils/i18n';
 import HybridHeader from '../components/HybridHeader';
@@ -15,17 +16,20 @@ import Utils from '../utils';
 import Headline from '../components/typography/Headline';
 import Body from '../components/typography/Body';
 import GET_TIMELINE_DATA from '../queries/getTimelineData';
+import ROUTES from '../constants/Routes';
+import TimelineSkeleton from '../components/Trip/TimelineSkeleton';
 
 export default function TimelineScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
   const { id: tripId } = activeTripStore((state) => state.activeTrip);
   const [timelineData, setTimelineData] = useState([]);
-  const { error, data } = useQuery(GET_TIMELINE_DATA, {
+  const { error, data, loading } = useQuery(GET_TIMELINE_DATA, {
     variables: {
       tripId,
     },
   });
 
+  const navigation = useNavigation();
   const { height } = Dimensions.get('window');
 
   const months = [
@@ -45,7 +49,6 @@ export default function TimelineScreen() {
 
   const setData = (d) => {
     const { expenses, images } = d;
-    console.log(images);
     const expenseData = expenses || [];
     const imageData = images || [];
     const generalArr = [...expenseData, ...imageData];
@@ -127,7 +130,14 @@ export default function TimelineScreen() {
           width: 20,
         }}
         />
-        <Pressable style={styles.tile}>
+        <Pressable
+          onPress={() => {
+            const route = isImage ? ROUTES.memoriesScreen : ROUTES.expenseScreen;
+            const params = isImage ? { tripId } : null;
+            navigation.navigate(route, params);
+          }}
+          style={styles.tile}
+        >
           {isImage ? (
             <FastImage
               style={{
@@ -182,39 +192,41 @@ export default function TimelineScreen() {
         info={INFORMATION.dateScreen}
       >
         <View style={styles.innerContainer}>
-          <SectionList
-            style={{ marginHorizontal: 10 }}
-            stickySectionHeadersEnabled
-            showsVerticalScrollIndicator={false}
-            sections={timelineData}
-            ListEmptyComponent={(
-              <View
-                style={{
-                  flex: 1,
-                  height: height * 0.65,
-                  justifyContent: 'center',
-                }}
-              >
-                <Headline
-                  type={4}
-                  style={{ alignSelf: 'center' }}
-                  color={COLORS.neutral[700]}
-                  text={i18n.t('No entries yet 😢')}
-                />
-              </View>
+          {loading ? <TimelineSkeleton /> : (
+            <SectionList
+              style={{ marginHorizontal: 10 }}
+              stickySectionHeadersEnabled
+              showsVerticalScrollIndicator={false}
+              sections={timelineData}
+              ListEmptyComponent={(
+                <View
+                  style={{
+                    flex: 1,
+                    height: height * 0.65,
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Headline
+                    type={4}
+                    style={{ alignSelf: 'center' }}
+                    color={COLORS.neutral[700]}
+                    text={i18n.t('No entries yet 😢')}
+                  />
+                </View>
               )}
-            contentContainerStyle={{ paddingBottom: 150 }}
-            keyExtractor={(item, index) => item + index}
-            renderItem={({ item }) => getItem(item)}
-            renderSectionHeader={({ section: { title } }) => (
-              <Body
-                type={1}
-                color={COLORS.neutral[300]}
-                text={title}
-                style={{ marginVertical: 10 }}
-              />
-            )}
-          />
+              contentContainerStyle={{ paddingBottom: 150 }}
+              keyExtractor={(item, index) => item + index}
+              renderItem={({ item }) => getItem(item)}
+              renderSectionHeader={({ section: { title } }) => (
+                <Body
+                  type={1}
+                  color={COLORS.neutral[300]}
+                  text={title}
+                  style={{ marginVertical: 10 }}
+                />
+              )}
+            />
+          )}
         </View>
       </HybridHeader>
 

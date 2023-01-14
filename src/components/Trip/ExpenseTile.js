@@ -2,11 +2,13 @@ import { StyleSheet, View } from 'react-native';
 import React from 'react';
 import COLORS, { RADIUS } from '../../constants/Theme';
 import Headline from '../typography/Headline';
+
 import Body from '../typography/Body';
 import Utils from '../../utils';
 
 export default function ExpenseTile({ style, data, user }) {
   return (
+
     <View style={[styles.container, style]}>
       <View style={styles.initalContainer}>
         <Headline
@@ -52,7 +54,7 @@ export default function ExpenseTile({ style, data, user }) {
 
 const styles = StyleSheet.create({
   container: {
-    height: 40,
+    // height: 40,
     flexDirection: 'row',
   },
   initalContainer: {
