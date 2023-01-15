@@ -9,12 +9,9 @@ import COLORS, { RADIUS } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Body from '../typography/Body';
 import Headline from '../typography/Headline';
-import recapTripStore from '../../stores/RecapTripStore';
 import ROUTES from '../../constants/Routes';
 
-export default function RewindTile({ style }) {
-  const { location, id: tripId } = recapTripStore((state) => state.recapTrip);
-
+export default function RewindTile({ style, location, tripId }) {
   const navigation = useNavigation();
 
   const AnimatablePressable = Animatable.createAnimatableComponent(Pressable);
@@ -45,7 +42,7 @@ export default function RewindTile({ style }) {
       <View style={{ flexDirection: 'row', marginTop: 4, marginLeft: -4 }}>
         <Body
           type={2}
-          text={` ${location.placeName}`}
+          text={` ${location}`}
           style={{ fontWeight: '500' }}
           color={COLORS.shades[0]}
         />

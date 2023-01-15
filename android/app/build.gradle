@@ -262,10 +262,19 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
 
+    implementation project(':@react-native-camera-roll_camera-roll')
+
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+
+    // Mapbox
+    implementation "com.android.support:support-vector-drawable:${safeExtGet('supportLibVersion', '28.0.0')}"
+    implementation "com.android.support:support-annotations:${safeExtGet('supportLibVersion', '28.0.0')}"
+    implementation "com.android.support:appcompat-v7:${safeExtGet('supportLibVersion', '28.0.0')}"
+    implementation "com.squareup.okhttp3:okhttp:${safeExtGet('okhttpVersion', '4.9.0')}"
+    implementation "com.squareup.okhttp3:okhttp-urlconnection:${safeExtGet('okhttpVersion', '4.9.0')}"
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'

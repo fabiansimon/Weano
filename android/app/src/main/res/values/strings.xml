@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">travelio_project</string>
+    <string name="mapbox_access_token">pk.eyJ1IjoiZmFiaWFuc2ltb24iLCJhIjoiY2w0ZTVrcGRwMDBibDNicTlvYmpseTZlZiJ9.T1wNW4vWM25AYI1bm8-3ug</string>
 </resources>
