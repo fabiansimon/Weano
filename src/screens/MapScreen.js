@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   map: {
-    backgroundColor: 'red',
+    backgroundColor: COLORS.neutral[900],
     flex: 1,
   },
   pinShape: {

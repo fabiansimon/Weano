@@ -32,21 +32,17 @@ import Body from '../components/typography/Body';
 import Utils from '../utils';
 import Avatar from '../components/Avatar';
 import tripsStore from '../stores/TripsStore';
-import activeTripStore from '../stores/ActiveTripStore';
 import Suitcase3D from '../../assets/images/suitcase_3d.png';
 import GET_TRIPS_FOR_USER from '../queries/getTripsForUser';
 
 export default function MainScreen() {
   const [getTripsForUser, { error, data }] = useLazyQuery(GET_TRIPS_FOR_USER);
   const user = userStore((state) => state.user);
-  const { id: activeTripId } = activeTripStore((state) => state.activeTrip);
   const [createVisible, setCreateVisible] = useState(false);
   const [searchVisible, setSearchVisible] = useState(false);
   const scrollY = useRef(new Animated.Value(0)).current;
   const trips = tripsStore((state) => state.trips);
   const setTrips = tripsStore((state) => state.setTrips);
-  const [upcomingTrips, setUpcomingTrips] = useState(false);
-  const [recentTrips, setRecentTrips] = useState(false);
   const [refreshing, setRefreshing] = React.useState(false);
 
   const onRefresh = useCallback(() => {
@@ -55,6 +51,9 @@ export default function MainScreen() {
   }, []);
 
   const now = Date.now() / 1000;
+  let recapTimestamp = new Date();
+  recapTimestamp.setFullYear(recapTimestamp.getFullYear() - 1);
+  recapTimestamp = Date.parse(recapTimestamp) / 1000;
   const { width } = Dimensions.get('window');
 
   useEffect(() => {
@@ -71,10 +70,10 @@ export default function MainScreen() {
     }
   }, [data, error]);
 
-  useEffect(() => {
-    setUpcomingTrips(trips.filter((trip) => trip.dateRange.startDate > now && trip.dateRange.endDate > now));
-    setRecentTrips(trips.filter((trip) => trip.dateRange.startDate < now && trip.dateRange.endDate < now));
-  }, [trips]);
+  const upcomingTrips = trips.filter((trip) => trip.dateRange.startDate > now && trip.dateRange.endDate > now);
+  const recentTrips = trips.filter((trip) => trip.dateRange.startDate < now && trip.dateRange.endDate < now);
+  const activeTrip = trips.filter((trip) => trip.dateRange.startDate < now && trip.dateRange.endDate > now)[0];
+  const recapTrip = trips.filter((trip) => trip.dateRange.startDate < recapTimestamp && trip.dateRange.endDate < now)[0];
 
   const navigation = useNavigation();
 
@@ -117,14 +116,14 @@ export default function MainScreen() {
     const options = [
       {
         title: i18n.t('• Active trip 🏖'),
-        onPress: () => navigation.navigate(ROUTES.tripScreen, { isActive: true }),
+        onPress: () => navigation.navigate(ROUTES.tripScreen, { tripId: activeTrip.id }),
         fontColor: COLORS.error[900],
         style: styles.activeTripChip,
-        isShown: activeTripId,
+        isShown: activeTrip,
       },
       {
         title: i18n.t('Successful Trips ✈️'),
-        onPress: () => navigation.navigate(ROUTES.timelineScreen),
+        onPress: () => console.log('0'),
         style: styles.basicChip,
         fontColor: COLORS.neutral[900],
         isShown: true,
@@ -208,6 +207,8 @@ export default function MainScreen() {
           </View>
           <ChipSelection />
           <RewindTile
+            location={recapTrip?.location?.placeName}
+            tripId={recapTrip?.id}
             style={{ marginHorizontal: PADDING.l, marginTop: 20 }}
           />
           <View>

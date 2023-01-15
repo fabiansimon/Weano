@@ -3,7 +3,7 @@ import {
 } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
-import AntIcon from 'react-native-vector-icons/Feather';
+import FeatherIcon from 'react-native-vector-icons/Feather';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import Headline from '../typography/Headline';
 import COLORS from '../../constants/Theme';
@@ -52,7 +52,7 @@ export default function CheckboxTile({
             onPress={onMorePress}
             style={styles.addIcon}
           >
-            <AntIcon
+            <FeatherIcon
               name="more-vertical"
               size={20}
               color={COLORS.neutral[700]}

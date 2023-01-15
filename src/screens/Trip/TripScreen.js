@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
+import FeatherIcon from 'react-native-vector-icons/Feather';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -297,7 +298,18 @@ export default function TripScreen({ route }) {
   const TopContent = () => (
     <View style={styles.bodyContainer}>
       <View style={{ paddingHorizontal: PADDING.l }}>
-        <Headline type={2} text={data?.title} />
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Headline type={2} text={data?.title} />
+          <Pressable
+            style={styles.addIcon}
+          >
+            <FeatherIcon
+              name="more-vertical"
+              size={20}
+              color={COLORS.neutral[700]}
+            />
+          </Pressable>
+        </View>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -615,5 +627,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: PADDING.l,
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  addIcon: {
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+    height: 35,
+    width: 35,
   },
 });

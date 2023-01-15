@@ -1,12 +1,12 @@
 import {
-  ActivityIndicator, Linking, Platform, View,
+  Image, Linking, Platform, StyleSheet, View,
 } from 'react-native';
+import * as Animatable from 'react-native-animatable';
 import React, { useEffect, useState } from 'react';
 import * as Notifications from 'expo-notifications';
 import { useNavigation } from '@react-navigation/native';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import Toast from 'react-native-toast-message';
-import Headline from '../components/typography/Headline';
 import i18n from '../utils/i18n';
 import ROUTES from '../constants/Routes';
 import GET_INIT_USER_DATA from '../queries/getInitUserData';
@@ -18,6 +18,7 @@ import AsyncStorageDAO from '../utils/AsyncStorageDAO';
 import tripsStore from '../stores/TripsStore';
 import { usePushNotificationContext } from '../providers/PushNotificationProvider';
 import UPDATE_USER from '../mutations/updateUser';
+import Logo from '../../assets/images/logo_temp.png';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
@@ -113,7 +114,6 @@ export default function InitDataCrossroads() {
       setTimeout(() => {
         getInitData();
       }, 500);
-      return;
     }
 
     handleNavigation();
@@ -208,11 +208,27 @@ export default function InitDataCrossroads() {
     }
   };
 
+  const AnimatedImage = Animatable.createAnimatableComponent(Image);
+
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      {loading && <Headline type={3} text={i18n.t('Loading')} />}
-      {error && <Headline type={3} text="error" />}
-      <ActivityIndicator color={COLORS.shades[100]} />
+    <View style={styles.container}>
+      <AnimatedImage
+        animation="pulse"
+        easing="ease-out"
+        iterationCount="infinite"
+        source={Logo}
+        style={{ height: 200, width: 377 }}
+        resizeMode="center"
+      />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.primary[700],
+  },
+});

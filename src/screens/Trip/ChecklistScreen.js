@@ -2,7 +2,7 @@ import {
   View, StyleSheet, ScrollView, FlatList,
 } from 'react-native';
 import React, {
-  useEffect, useRef, useState, useCallback,
+  useEffect, useRef, useState,
 } from 'react';
 import Animated from 'react-native-reanimated';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -10,7 +10,6 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useMutation } from '@apollo/client';
 import Toast from 'react-native-toast-message';
 import Icon from 'react-native-vector-icons/AntDesign';
-import { debounce } from 'lodash';
 import COLORS, { PADDING } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Divider from '../../components/Divider';
