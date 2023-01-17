@@ -8,7 +8,9 @@ import Headline from '../typography/Headline';
 import COLORS, { RADIUS } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 
-export default function ExpenseIndividualCard({ style, data, onPress }) {
+export default function ExpenseIndividualCard({
+  style, data, onPress,
+}) {
   return (
     <TouchableOpacity
       activeOpacity={0.9}

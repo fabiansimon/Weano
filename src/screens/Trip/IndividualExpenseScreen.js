@@ -1,7 +1,7 @@
 import {
   View, StyleSheet, FlatList,
 } from 'react-native';
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import Animated from 'react-native-reanimated';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
@@ -10,13 +10,18 @@ import INFORMATION from '../../constants/Information';
 import Headline from '../../components/typography/Headline';
 import ExpenseTile from '../../components/Trip/ExpenseTile';
 import Divider from '../../components/Divider';
+import ExpenseDetailModal from '../../components/Trip/ExpenseDetailModal';
 
 export default function IndividualExpenseScreen({ route }) {
   const scrollY = useRef(new Animated.Value(0)).current;
-  const { data } = route.params;
-
+  const [selectedExpense, setSelectedExpense] = useState({ isVisible: false, data: null });
+  const { data, users } = route.params;
   const getExpenseTile = (expense) => (
     <ExpenseTile
+      onPress={() => setSelectedExpense({
+        isVisible: true,
+        data: expense,
+      })}
       data={expense}
       user={data.user}
     />
@@ -58,6 +63,15 @@ export default function IndividualExpenseScreen({ route }) {
           />
         </View>
       </HybridHeader>
+      <ExpenseDetailModal
+        isVisible={selectedExpense.isVisible}
+        onRequestClose={() => setSelectedExpense((prev) => ({
+          ...prev,
+          isVisible: false,
+        }))}
+        users={users}
+        data={selectedExpense.data}
+      />
     </View>
   );
 }

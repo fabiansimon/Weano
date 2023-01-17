@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import React from 'react';
 import COLORS, { RADIUS } from '../../constants/Theme';
 import Headline from '../typography/Headline';
@@ -6,10 +6,14 @@ import Headline from '../typography/Headline';
 import Body from '../typography/Body';
 import Utils from '../../utils';
 
-export default function ExpenseTile({ style, data, user }) {
+export default function ExpenseTile({
+  style, data, user, onPress,
+}) {
   return (
-
-    <View style={[styles.container, style]}>
+    <Pressable
+      onPress={onPress}
+      style={[styles.container, style]}
+    >
       <View style={styles.initalContainer}>
         <Headline
           type={3}
@@ -48,13 +52,12 @@ export default function ExpenseTile({ style, data, user }) {
           />
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    // height: 40,
     flexDirection: 'row',
   },
   initalContainer: {

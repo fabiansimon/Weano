@@ -23,7 +23,7 @@ import Logo from '../../assets/images/logo_temp.png';
 const asyncStorageDAO = new AsyncStorageDAO();
 
 export default function InitDataCrossroads() {
-  const [getInitData, { loading, error, data }] = useLazyQuery(GET_INIT_USER_DATA);
+  const [getInitData, { error, data }] = useLazyQuery(GET_INIT_USER_DATA);
   const [updateUser] = useMutation(UPDATE_USER);
   const [init, setInit] = useState(false);
   const [requestedRoute, setRequestedRoute] = useState(null);
@@ -208,14 +208,9 @@ export default function InitDataCrossroads() {
     }
   };
 
-  const AnimatedImage = Animatable.createAnimatableComponent(Image);
-
   return (
     <View style={styles.container}>
-      <AnimatedImage
-        animation="pulse"
-        easing="ease-out"
-        iterationCount="infinite"
+      <Image
         source={Logo}
         style={{ height: 200, width: 377 }}
         resizeMode="center"

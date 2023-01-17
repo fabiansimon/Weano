@@ -20,6 +20,7 @@ import ADD_EXPENSE from '../../mutations/addExpense';
 import Body from '../../components/typography/Body';
 import userStore from '../../stores/UserStore';
 import activeTripStore from '../../stores/ActiveTripStore';
+import ExpenseDetailModal from '../../components/Trip/ExpenseDetailModal';
 
 export default function ExpenseScreen() {
   const { expenses, activeMembers: users, id: tripId } = activeTripStore((state) => state.activeTrip);
@@ -31,7 +32,7 @@ export default function ExpenseScreen() {
   const [addExpense, { loading, error }] = useMutation(ADD_EXPENSE);
 
   const [showTotal, setShowTotal] = useState(true);
-
+  const [selectedExpense, setSelectedExpense] = useState({ isVisible: false, data: null });
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [myData, setMyData] = useState([]);
@@ -143,6 +144,10 @@ export default function ExpenseScreen() {
 
     return (
       <ExpenseTile
+        onPress={() => setSelectedExpense({
+          isVisible: true,
+          data: expense,
+        })}
         style={{ marginHorizontal: 15 }}
         data={expense}
         user={userData}
@@ -210,6 +215,15 @@ export default function ExpenseScreen() {
         onRequestClose={() => setShowModal(false)}
         onPress={(data) => handleAddExpense(data)}
         isLoading={isLoading || loading}
+      />
+      <ExpenseDetailModal
+        isVisible={selectedExpense.isVisible}
+        onRequestClose={() => setSelectedExpense((prev) => ({
+          ...prev,
+          isVisible: false,
+        }))}
+        users={users}
+        data={selectedExpense.data}
       />
     </View>
   );
