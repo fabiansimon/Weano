@@ -1,5 +1,5 @@
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import IonIcon from 'react-native-vector-icons/Ionicons';
@@ -20,6 +20,8 @@ import Utils from '../utils';
 import userStore from '../stores/UserStore';
 import httpService from '../utils/httpService';
 import UPDATE_USER from '../mutations/updateUser';
+import WebViewModal from '../components/WebViewModal';
+import META_DATA from '../constants/MetaData';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
@@ -28,6 +30,7 @@ export default function ProfileScreen() {
   const [updateUser, { error }] = useMutation(UPDATE_USER);
   const user = userStore((state) => state.user);
   const updateUserState = userStore((state) => state.updateUserData);
+  const [webVisible, setWebVisible] = useState(false);
 
   const navigation = useNavigation();
 
@@ -71,7 +74,7 @@ export default function ProfileScreen() {
     },
     {
       title: i18n.t('Privacy Policy'),
-      onPress: () => console.log('tapped'),
+      onPress: () => setWebVisible(true),
       icon: <IonIcon
         name="ios-hand-left-outline"
         size={22}
@@ -79,7 +82,7 @@ export default function ProfileScreen() {
     },
     {
       title: i18n.t('Contact us'),
-      onPress: () => console.log('tapped'),
+      onPress: () => Utils.openEmailApp(),
       icon: <IonIcon
         name="ios-mail-open-outline"
         size={22}
@@ -226,6 +229,12 @@ export default function ProfileScreen() {
 
         </View>
       </HybridHeader>
+      <WebViewModal
+        isVisible={webVisible}
+        onRequestClose={() => setWebVisible(false)}
+        url={META_DATA.privacyPolicyUrl}
+        title={i18n.t('Privacy Policy')}
+      />
     </View>
   );
 }

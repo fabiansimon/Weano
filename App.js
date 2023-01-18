@@ -37,7 +37,6 @@ import AsyncStorageDAO from './src/utils/AsyncStorageDAO';
 import PollScreen from './src/screens/Trip/PollScreen';
 import TimelineScreen from './src/screens/TimelineScreen';
 import MyAccountScreen from './src/screens/MyAccount';
-import i18n from './src/utils/i18n';
 import PushNotificationProvider from './src/providers/PushNotificationProvider';
 import META_DATA from './src/constants/MetaData';
 
@@ -102,7 +101,6 @@ export default function App() {
             ref={navigationRef}
           >
             <PushNotificationProvider>
-
               <StatusBar barStyle="dark-content" />
               <Stack.Navigator
                 screenOptions={{ headerShown: false }}

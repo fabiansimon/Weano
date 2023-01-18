@@ -1,11 +1,12 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import 'react-native-get-random-values';
 import moment from 'moment';
-import { Alert } from 'react-native';
+import { Alert, Linking } from 'react-native';
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import Toast from 'react-native-toast-message';
 import i18n from './i18n';
 import activeTripStore from '../stores/ActiveTripStore';
+import META_DATA from '../constants/MetaData';
 
 export default class Utils {
   /**
@@ -189,5 +190,22 @@ export default class Utils {
     const user = activeMembers.find((member) => member.id === id);
 
     return user;
+  }
+
+  /**
+     * Open Mail app with predefined email
+     * @param {String} email - email
+     */
+  static openEmailApp() {
+    const emailAddress = `mailto:${META_DATA.email}?cc=&subject=`;
+    Linking.canOpenURL(emailAddress)
+      .then((supported) => {
+        if (!supported) {
+          Alert.alert(i18n.t('Not available'));
+        } else {
+          return Linking.openURL(emailAddress);
+        }
+      })
+      .catch((err) => console.log(err));
   }
 }

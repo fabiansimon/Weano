@@ -17,7 +17,7 @@ export default function BackButton({
         name="arrowleft"
         size={22}
         color={iconColor}
-        style={{ zIndex: 9999 }}
+        style={[{ zIndex: 9999 }, style]}
         onPress={() => (onPress ? onPress() : navigation.goBack())}
       />
     )
