@@ -6,6 +6,7 @@ import Toast from 'react-native-toast-message';
 import React, {
   useRef, useState, useEffect, useCallback,
 } from 'react';
+import Clipboard from '@react-native-clipboard/clipboard';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import FeatherIcon from 'react-native-vector-icons/Feather';
@@ -42,6 +43,7 @@ import InputModal from '../../components/InputModal';
 import PollCarousel from '../../components/Polls/PollCarousel';
 import GET_TRIP_BY_ID from '../../queries/getTripById';
 import TripScreenSkeleton from './TripScreenSkeleton';
+import FilterModal from '../../components/FilterModal';
 
 export default function TripScreen({ route }) {
   const { tripId } = route.params;
@@ -59,7 +61,8 @@ export default function TripScreen({ route }) {
   const scrollY = useRef(new Animated.Value(0)).current;
   const scrollRef = useRef();
   const [currentTab, setCurrentTab] = useState(0);
-  const [inputOpen, setInputOpen] = useState(0);
+  const [optionsVisible, setOptionsVisible] = useState(false);
+  const [inputOpen, setInputOpen] = useState(null);
   const [refreshing, setRefreshing] = React.useState(false);
 
   const addImageRef = useRef();
@@ -72,6 +75,43 @@ export default function TripScreen({ route }) {
 
   const IMAGE_HEIGHT = 240;
 
+  const menuOptions = {
+    title: i18n.t('Trip options'),
+    options: [
+      {
+        name: 'Change title',
+        onPress: () => {
+          setTimeout(() => {
+            setInputOpen('title');
+          }, 300);
+        },
+      },
+      {
+        name: 'Change description',
+        onPress: () => {
+          setTimeout(() => {
+            setInputOpen('description');
+          }, 300);
+        },
+      },
+      {
+        name: 'Copy invite link',
+        onPress: () => {
+          Clipboard.setString(`http://143.198.241.91:4000/redirect/invitation/${tripId}`);
+          Toast.show({
+            type: 'success',
+            text1: i18n.t('Copied!'),
+            text2: i18n.t('You can now send it to your friends'),
+          });
+        },
+      },
+      {
+        name: 'Delete Trip',
+        onPress: () => console.log('deleteTrip'),
+        deleteAction: true,
+      },
+    ],
+  };
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     getTripData().then(() => setRefreshing(false)).catch(() => setRefreshing(false));
@@ -89,7 +129,6 @@ export default function TripScreen({ route }) {
     }
 
     if (tripData) {
-      console.log(tripData.getTripById.polls[0]?.options);
       setActiveTrip(tripData.getTripById);
     }
   }, [error, fetchError, tripData]);
@@ -204,7 +243,42 @@ export default function TripScreen({ route }) {
       }, 500);
     });
 
-    setInputOpen(false);
+    setInputOpen(null);
+  };
+  const updateTitle = async (title) => {
+    if (title.trim().length <= 0) {
+      setTimeout(() => {
+        Toast.show({
+          type: 'error',
+          text1: i18n.t('Whoops!'),
+          text2: i18n.t('Title is not valid'),
+        });
+      }, 500);
+      return;
+    }
+
+    const oldTitle = activeTrip.title;
+    updateActiveTrip({ title });
+
+    await updateTrip({
+      variables: {
+        trip: {
+          title,
+          tripId: data.id,
+        },
+      },
+    }).catch((e) => {
+      updateActiveTrip({ description: oldTitle });
+      setTimeout(() => {
+        Toast.show({
+          type: 'error',
+          text1: i18n.t('Whoops!'),
+          text2: e.message,
+        });
+      }, 500);
+    });
+
+    setInputOpen(null);
   };
 
   const statusData = [
@@ -238,7 +312,7 @@ export default function TripScreen({ route }) {
       onPress: () => navigation.navigate(ROUTES.pollScreen),
       content: data?.polls && (
       <PollCarousel
-        style={{ marginHorizontal: PADDING.m, maxHeight: 300 }}
+        style={{ marginHorizontal: PADDING.m, maxHeight: 220 }}
         data={data?.polls}
       />
       ),
@@ -301,6 +375,7 @@ export default function TripScreen({ route }) {
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <Headline type={2} text={data?.title} />
           <Pressable
+            onPress={() => setOptionsVisible(true)}
             style={styles.addIcon}
           >
             <FeatherIcon
@@ -345,7 +420,7 @@ export default function TripScreen({ route }) {
         </ScrollView>
         <TouchableOpacity
           style={{ flexDirection: 'row', marginTop: 16, alignItems: 'center' }}
-          onPress={() => setInputOpen(true)}
+          onPress={() => setInputOpen('description')}
         >
           {!data?.description && (
             <Icon
@@ -411,7 +486,7 @@ export default function TripScreen({ route }) {
     </View>
   );
 
-  const HeaderImage = () => (
+  const getHeaderImage = () => (
     <Animated.View style={{
       backgroundColor: COLORS.shades[100],
       position: 'absolute',
@@ -478,7 +553,7 @@ export default function TripScreen({ route }) {
           currentTab={currentTab}
         />
       </AnimatedHeader>
-      <HeaderImage />
+      {getHeaderImage()}
       <Animated.ScrollView
         refreshControl={(
           <RefreshControl
@@ -536,9 +611,15 @@ export default function TripScreen({ route }) {
       />
       <InputModal
         isVisible={inputOpen}
-        placeholder={i18n.t('Enter description')}
-        onRequestClose={() => setInputOpen(false)}
-        onPress={(description) => updateDescription(description)}
+        placeholder={inputOpen === 'description' ? i18n.t('Enter description') : i18n.t('Enter title')}
+        onRequestClose={() => setInputOpen(null)}
+        onPress={(string) => (inputOpen === 'description' ? updateDescription(string) : updateTitle(string))}
+      />
+      <FilterModal
+        isVisible={optionsVisible}
+        onRequestClose={() => setOptionsVisible(false)}
+        data={menuOptions}
+        onPress={(m) => m.onPress()}
       />
     </View>
   );

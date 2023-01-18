@@ -9,7 +9,7 @@ import COLORS, { RADIUS } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 
 export default function ExpenseIndividualCard({
-  style, data, onPress,
+  style, data, onPress, user,
 }) {
   return (
     <TouchableOpacity
@@ -19,6 +19,7 @@ export default function ExpenseIndividualCard({
     >
       <Avatar
         disabled
+        uri={user.avatarUri}
         size={35}
         style={{ alignSelf: 'center' }}
       />

@@ -8,6 +8,8 @@ import Headline from '../typography/Headline';
 import Body from '../typography/Body';
 import COLORS, { PADDING } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
+import Avatar from '../Avatar';
+import Utils from '../../utils';
 
 export default function PollView({
   style, data, title, subtitle, onPress,
@@ -35,7 +37,7 @@ export default function PollView({
 
   return (
     <View style={[styles.pollContainer, style]}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 5 }}>
         <View>
           <Headline
             type={4}
@@ -48,17 +50,23 @@ export default function PollView({
             style={{ marginBottom: 16, marginTop: 2 }}
           />
         </View>
-        {onPress && (
-        <Pressable
-          onPress={onPress}
-          style={styles.addIcon}
-        >
-          <Icon
-            name="more-vertical"
-            size={20}
-            color={COLORS.neutral[700]}
+        {onPress ? (
+          <Pressable
+            onPress={onPress}
+            style={styles.addIcon}
+          >
+            <Icon
+              name="more-vertical"
+              size={20}
+              color={COLORS.neutral[700]}
+            />
+          </Pressable>
+        ) : (
+          <Avatar
+            uri={Utils.convertIdToUser(data.creatorId)?.avatarUri}
+            disabled
+            size={35}
           />
-        </Pressable>
         )}
       </View>
       <FlatList

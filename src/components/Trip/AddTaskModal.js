@@ -157,7 +157,7 @@ export default function AddTaskModal({
                 <Avatar
                   size={50}
                   disabled
-                  uri={invitee.uri}
+                  uri={invitee.avatarUri}
                 />
                 {isActive && (
                 <View style={styles.avatarOverlay}>

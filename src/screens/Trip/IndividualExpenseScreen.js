@@ -16,6 +16,7 @@ export default function IndividualExpenseScreen({ route }) {
   const scrollY = useRef(new Animated.Value(0)).current;
   const [selectedExpense, setSelectedExpense] = useState({ isVisible: false, data: null });
   const { data, users } = route.params;
+
   const getExpenseTile = (expense) => (
     <ExpenseTile
       onPress={() => setSelectedExpense({

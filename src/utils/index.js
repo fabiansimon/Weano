@@ -186,8 +186,8 @@ export default class Utils {
      */
   static convertIdToUser(id) {
     const { activeMembers } = activeTripStore((state) => state.activeTrip);
-    const { firstName, lastName } = activeMembers.find((member) => member.id === id);
+    const user = activeMembers.find((member) => member.id === id);
 
-    return `${firstName} ${lastName}` || '';
+    return user;
   }
 }

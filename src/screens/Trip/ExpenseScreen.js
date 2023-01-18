@@ -21,6 +21,7 @@ import Body from '../../components/typography/Body';
 import userStore from '../../stores/UserStore';
 import activeTripStore from '../../stores/ActiveTripStore';
 import ExpenseDetailModal from '../../components/Trip/ExpenseDetailModal';
+import DELETE_EXPENSE from '../../mutations/deleteExpense';
 
 export default function ExpenseScreen() {
   const { expenses, activeMembers: users, id: tripId } = activeTripStore((state) => state.activeTrip);
@@ -30,6 +31,7 @@ export default function ExpenseScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
 
   const [addExpense, { loading, error }] = useMutation(ADD_EXPENSE);
+  const [deleteExpense] = useMutation(DELETE_EXPENSE);
 
   const [showTotal, setShowTotal] = useState(true);
   const [selectedExpense, setSelectedExpense] = useState({ isVisible: false, data: null });
@@ -105,6 +107,41 @@ export default function ExpenseScreen() {
     setShowModal(false);
   };
 
+  const handleDeletion = async (expense) => {
+    setSelectedExpense((prev) => ({ ...prev, isVisible: false }));
+
+    const { _id } = expense;
+
+    const oldExpenses = expenses;
+
+    updateActiveTrip({ expenses: expenses.filter((p) => p._id !== _id) });
+
+    await deleteExpense({
+      variables: {
+        data: {
+          id: _id,
+          tripId,
+        },
+      },
+    })
+      .then(() => {
+        Toast.show({
+          type: 'success',
+          text1: i18n.t('Whooray!'),
+          text2: i18n.t('Expense was succeessfully deleted!'),
+        });
+      })
+      .catch((e) => {
+        Toast.show({
+          type: 'error',
+          text1: i18n.t('Whoops!'),
+          text2: e.message,
+        });
+        updateActiveTrip({ expense: oldExpenses });
+        console.log(`ERROR: ${e.message}`);
+      });
+  };
+
   const getListHeader = () => (
     <View style={{
       flexDirection: 'row', marginTop: 16,
@@ -177,7 +214,6 @@ export default function ExpenseScreen() {
           <ExpensesContainer
             style={{ marginTop: 30 }}
             data={expenses}
-            users={users}
           />
           <View style={styles.summaryContainer}>
             {getListHeader()}
@@ -224,6 +260,7 @@ export default function ExpenseScreen() {
         }))}
         users={users}
         data={selectedExpense.data}
+        onDelete={(expense) => handleDeletion(expense)}
       />
     </View>
   );

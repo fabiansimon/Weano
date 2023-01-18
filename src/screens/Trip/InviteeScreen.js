@@ -25,6 +25,7 @@ import httpService from '../../utils/httpService';
 import ADD_INVITEES from '../../mutations/addInvitees';
 import FilterModal from '../../components/FilterModal';
 import REMOVE_INVITEE from '../../mutations/removeInvitee';
+import META_DATA from '../../constants/MetaData';
 
 export default function InviteeScreen() {
   const { invitees, hostId, id } = activeTripStore((state) => state.activeTrip);
@@ -63,11 +64,11 @@ export default function InviteeScreen() {
 
   const handleShare = () => {
     Share.share({
-      message: `Hey! You've been invited to join a trip! Click the link below to join! http://143.198.241.91:4000/redirect/invitation/${id}`,
+      message: `Hey! You've been invited to join a trip! Click the link below to join! ${META_DATA.baseUrl}/redirect/invitation/${id}`,
     });
   };
   const copyLink = () => {
-    Clipboard.setString(`http://143.198.241.91:4000/redirect/invitation/${id}`);
+    Clipboard.setString(`${META_DATA.baseUrl}/redirect/invitation/${id}`);
     Toast.show({
       type: 'success',
       text1: i18n.t('Copied!'),

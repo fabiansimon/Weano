@@ -8,12 +8,11 @@ import {
 import { S3 } from 'aws-sdk';
 import { decode } from 'base64-arraybuffer';
 import { readFile } from 'react-native-fs';
-
-const serverUrl = 'http://143.198.241.91:4000';
+import META_DATA from '../constants/MetaData';
 
 async function sendInvitations(invitees, tripId) {
   return new Promise((resolve, reject) => {
-    fetch(`${serverUrl}/invite/${invitees}/${tripId}`, {
+    fetch(`${META_DATA.baseUrl}/invite/${invitees}/${tripId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -31,7 +30,7 @@ async function sendInvitations(invitees, tripId) {
 
 async function getVerificationCode(phoneNumber) {
   return new Promise((resolve, reject) => {
-    fetch(`${serverUrl}/verify/${phoneNumber}`, {
+    fetch(`${META_DATA.baseUrl}/verify/${phoneNumber}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -49,7 +48,7 @@ async function getVerificationCode(phoneNumber) {
 
 async function checkVerificationCode(phoneNumber, code) {
   return new Promise((resolve, reject) => {
-    fetch(`${serverUrl}/check/${phoneNumber}/${code}`, {
+    fetch(`${META_DATA.baseUrl}/check/${phoneNumber}/${code}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

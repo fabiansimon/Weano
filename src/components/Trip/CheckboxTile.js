@@ -33,7 +33,7 @@ export default function CheckboxTile({
                   <Icon color={isDone ? COLORS.success[700] : COLORS.neutral[300]} name="person" />
                   <Body
                     type={2}
-                    text={Utils.convertIdToUser(assignee)}
+                    text={Utils.convertIdToUser(assignee)?.firstName}
                     color={isDone ? COLORS.success[700] : COLORS.neutral[300]}
                     style={{ marginLeft: 4 }}
                   />

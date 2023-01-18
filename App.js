@@ -39,6 +39,7 @@ import TimelineScreen from './src/screens/TimelineScreen';
 import MyAccountScreen from './src/screens/MyAccount';
 import i18n from './src/utils/i18n';
 import PushNotificationProvider from './src/providers/PushNotificationProvider';
+import META_DATA from './src/constants/MetaData';
 
 const Stack = createNativeStackNavigator();
 
@@ -51,7 +52,7 @@ export default function App() {
   const navigationRef = useRef();
 
   const client = new ApolloClient({
-    uri: 'http://143.198.241.91:4000/graphql',
+    uri: `${META_DATA.baseUrl}/graphql`,
     cache: new InMemoryCache(),
     headers: { Authorization: authToken || '' },
   });

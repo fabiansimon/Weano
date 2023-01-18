@@ -16,8 +16,10 @@ import Avatar from '../Avatar';
 import Subtitle from '../typography/Subtitle';
 import CalendarDateTile from './CalendarDateTile';
 import FilterModal from '../FilterModal';
+import activeTripStore from '../../stores/ActiveTripStore';
 
 export default function CalendarAvailabilityContainer({ style, onPress }) {
+  const { activeMembers } = activeTripStore((state) => state.activeTrip);
   const [monthVisible, setMonthVisible] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(9);
   const [daysOfMonth, setdaysOfMonth] = useState([]);
@@ -79,54 +81,54 @@ export default function CalendarAvailabilityContainer({ style, onPress }) {
     ],
   };
 
-  const mockData = [
-    {
-      name: 'Fabian',
-      available_dates: [
-        1659347334,
-        1659433734,
-        1659610134,
-        1659700134,
-        1659790134,
-        1661261227,
-        1665416143,
-      ],
-    },
-    {
-      name: 'Didi',
-      available_dates: [
-        1659347334,
-        1665416143,
-      ],
-    },
-    {
-      name: 'Julia',
-      available_dates: [
-        1659347334,
-        1665416143,
-      ],
-    },
-    {
-      name: 'René',
-      available_dates: [
-        165934733,
-        1659610134,
-        1659700134,
-        1659790134,
-        1665416143,
-      ],
-    },
-    {
-      name: 'Clembo',
-      available_dates: [
-        1659347334,
-        1659433734,
-        1659610134,
-        1659790134,
-        1665416143,
-      ],
-    },
-  ];
+  // const mockData = [
+  //   {
+  //     name: 'Fabian',
+  //     available_dates: [
+  //       1659347334,
+  //       1659433734,
+  //       1659610134,
+  //       1659700134,
+  //       1659790134,
+  //       1661261227,
+  //       1665416143,
+  //     ],
+  //   },
+  //   {
+  //     name: 'Didi',
+  //     available_dates: [
+  //       1659347334,
+  //       1665416143,
+  //     ],
+  //   },
+  //   {
+  //     name: 'Julia',
+  //     available_dates: [
+  //       1659347334,
+  //       1665416143,
+  //     ],
+  //   },
+  //   {
+  //     name: 'René',
+  //     available_dates: [
+  //       165934733,
+  //       1659610134,
+  //       1659700134,
+  //       1659790134,
+  //       1665416143,
+  //     ],
+  //   },
+  //   {
+  //     name: 'Clembo',
+  //     available_dates: [
+  //       1659347334,
+  //       1659433734,
+  //       1659610134,
+  //       1659790134,
+  //       1665416143,
+  //     ],
+  //   },
+  // ];
 
   useEffect(() => {
     getDaysOfMonth();
@@ -155,26 +157,30 @@ export default function CalendarAvailabilityContainer({ style, onPress }) {
   const getAvailabilites = (date) => {
     const day = date.dayData;
     let availableAmount = 0;
-    for (let i = 0; i < mockData.length; i += 1) {
-      const availabilites = mockData[i].available_dates;
-      for (let j = 0; j < availabilites.length; j += 1) {
-        if (day === Utils.getDateFromTimestamp(availabilites[j], dateFormat)) {
-          availableAmount += 1;
-          break;
+    for (let i = 0; i < activeMembers.length; i += 1) {
+      const availabilites = activeMembers[i].available_dates;
+      if (availabilites) {
+        for (let j = 0; j < availabilites.length; j += 1) {
+          if (day === Utils.getDateFromTimestamp(availabilites[j], dateFormat)) {
+            availableAmount += 1;
+            break;
+          }
         }
       }
     }
 
-    return availableAmount / mockData.length;
+    return availableAmount / activeMembers.length;
   };
 
   const isAvailable = (person, date) => {
     const currentDate = date.dayData;
 
-    for (let i = 0; i < person.available_dates.length; i += 1) {
-      const personDate = Utils.getDateFromTimestamp(person.available_dates[i], dateFormat);
-      if (personDate === currentDate) {
-        return true;
+    if (person.available_dates) {
+      for (let i = 0; i < person.available_dates.length; i += 1) {
+        const personDate = Utils.getDateFromTimestamp(person.available_dates[i], dateFormat);
+        if (personDate === currentDate) {
+          return true;
+        }
       }
     }
     return false;
@@ -191,7 +197,7 @@ export default function CalendarAvailabilityContainer({ style, onPress }) {
       <Avatar
         disabled
         size={35}
-        uri={'https://i.pravatar.cc/300'}
+        uri={person.avatarUri}
       />
       <Subtitle
         type={2}
@@ -219,7 +225,7 @@ export default function CalendarAvailabilityContainer({ style, onPress }) {
   );
 
   const getColumn = (index) => {
-    const person = mockData[index];
+    const person = activeMembers[index];
 
     return (
       <View style={styles.column}>
@@ -284,7 +290,7 @@ export default function CalendarAvailabilityContainer({ style, onPress }) {
         >
           <DateHeader />
           <Divider color={COLORS.neutral[50]} />
-          {mockData.map((_, index) => getColumn(index))}
+          {activeMembers.map((_, index) => getColumn(index))}
         </View>
       </ScrollView>
       <FilterModal
