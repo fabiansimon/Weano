@@ -1,19 +1,15 @@
 import {
   View, StyleSheet, FlatList, Pressable, Share,
 } from 'react-native';
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import Animated from 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
-import { useMutation } from '@apollo/client';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Clipboard from '@react-native-clipboard/clipboard';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
-import Divider from '../../components/Divider';
 import HybridHeader from '../../components/HybridHeader';
 import INFORMATION from '../../constants/Information';
-import Headline from '../../components/typography/Headline';
-import Subtitle from '../../components/typography/Subtitle';
 import Avatar from '../../components/Avatar';
 import Utils from '../../utils';
 import RoleChip from '../../components/RoleChip';
@@ -22,45 +18,31 @@ import FAButton from '../../components/FAButton';
 import InputModal from '../../components/InputModal';
 import activeTripStore from '../../stores/ActiveTripStore';
 import httpService from '../../utils/httpService';
-import ADD_INVITEES from '../../mutations/addInvitees';
 import FilterModal from '../../components/FilterModal';
-import REMOVE_INVITEE from '../../mutations/removeInvitee';
 import META_DATA from '../../constants/MetaData';
+import userManagement from '../../utils/userManagement';
+import ContactDetailModal from '../../components/ContactDetailModal';
 
 export default function InviteeScreen() {
-  const { invitees, hostId, id } = activeTripStore((state) => state.activeTrip);
-  const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
+  const { activeMembers, hostId, id } = activeTripStore((state) => state.activeTrip);
   const [inputVisible, setInputVisible] = useState(false);
   const [userSelected, setUserSelected] = useState(null);
-  const [addInvitees, { error }] = useMutation(ADD_INVITEES);
-  const [removeInvitee] = useMutation(REMOVE_INVITEE);
+  const [userData, setUserData] = useState(null);
+
+  const isHost = userManagement.isHost();
 
   const options = {
-    title: userSelected,
+    title: `${userSelected?.firstName} ${userSelected?.lastName}`,
     options: [
       {
-        name: 'Resend Invite',
-        value: 'resendInvite',
-      },
-      {
         name: 'Remove User',
-        value: 'removeUser',
-        deleteAction: true,
+        trailing: !isHost && <RoleChip isHost string={i18n.t('Must be host')} />,
+        notAvailable: !isHost,
+        onPress: () => console.log('removeUser'),
+        deleteAction: isHost,
       },
     ],
   };
-
-  useEffect(() => {
-    if (error) {
-      setTimeout(() => {
-        Toast.show({
-          type: 'error',
-          text1: i18n.t('Whoops!'),
-          text2: error.message,
-        });
-      }, 500);
-    }
-  }, [error]);
 
   const handleShare = () => {
     Share.share({
@@ -83,35 +65,12 @@ export default function InviteeScreen() {
 
     const param = invites.toString().replace(',', '&');
 
-    const oldData = invitees;
-    const newInvitees = invites.map((email) => ({
-      status: 'PENDING',
-      email,
-    }));
-    updateActiveTrip({ invitees: invitees.concat(newInvitees) });
-
     await httpService.sendInvitations(param, id)
       .then(() => {
         Toast.show({
           type: 'success',
           text1: i18n.t('Invitations sent!'),
           text2: i18n.t('The invites where successful sent to their emails!'),
-        });
-      }).then(async () => {
-        await addInvitees({
-          variables: {
-            data: {
-              emails: invites,
-              tripId: id,
-            },
-          },
-        }).catch((e) => {
-          Toast.show({
-            type: 'error',
-            text1: i18n.t('Whoops!'),
-            text2: e.message,
-          });
-          updateActiveTrip({ invitees: oldData });
         });
       })
       .catch((err) => {
@@ -120,81 +79,45 @@ export default function InviteeScreen() {
           text1: i18n.t('Whoops!'),
           text2: err.message,
         });
-        updateActiveTrip({ invitees: oldData });
       });
   };
 
   const handleInput = async (operation, user) => {
-    if (operation === 'resendInvite') {
-      await httpService.sendInvitations(user, id)
-        .then(() => {
-          Toast.show({
-            type: 'success',
-            text1: i18n.t('Invitations sent!'),
-            text2: i18n.t('The invite was successful sent to their email!'),
-          });
-        })
-        .catch((err) => {
-          Toast.show({
-            type: 'error',
-            text1: i18n.t('Whoops!'),
-            text2: err.message,
-          });
-        });
-    }
-
-    if (operation === 'removeUser') {
-      const oldInvitees = invitees;
-
-      updateActiveTrip({ invitees: invitees.filter((invitee) => invitee.email !== user) });
-      await removeInvitee({
-        variables: {
-          data: {
-            email: user,
-            tripId: id,
-          },
-        },
-      }).catch((e) => {
-        Toast.show({
-          type: 'error',
-          text1: i18n.t('Whoops!'),
-          text2: e.message,
-        });
-        updateActiveTrip({ invitees: oldInvitees });
-      });
-    }
   };
-
-  const accepted = invitees && invitees.filter((invitee) => invitee.status === 'ACCEPTED');
-  const pending = invitees && invitees.filter((invitee) => invitee.status === 'PENDING');
-  const declined = invitees && invitees.filter((invitee) => invitee.status === 'DECLINED');
 
   const scrollY = useRef(new Animated.Value(0)).current;
 
-  const getTile = ({ item }) => (
-    <Pressable
-      onPress={() => item.status === 'PENDING' && setUserSelected(item.email)}
-      style={styles.tile}
-    >
-      <Avatar
-        uri={item.uri}
-        size={40}
-        style={{ marginRight: 10 }}
-      />
-      <View style={{ marginRight: 'auto' }}>
-        <Body
-          type={1}
-          text={item.email}
+  const getTile = ({ item }) => {
+    const {
+      firstName, lastName, email, avatarUri,
+    } = item;
+    return (
+      <Pressable
+        onPress={() => setUserSelected(item)}
+        style={styles.tile}
+      >
+        <Avatar
+          onPress={() => setUserData(item)}
+          uri={avatarUri}
+          size={40}
+          style={{ marginRight: 10 }}
         />
-        <Subtitle
-          type={2}
-          color={COLORS.neutral[300]}
-          text={`${i18n.t('member since')} ${Utils.getDateFromTimestamp(invitees.memberSince, 'DD.MM.YYYY')}`}
-        />
-      </View>
-      <RoleChip isHost={item.id === hostId} />
-    </Pressable>
-  );
+        <View style={{ marginRight: 'auto' }}>
+          <Body
+            type={1}
+            color={COLORS.shades[100]}
+            text={`${firstName} ${lastName}`}
+          />
+          <Body
+            type={2}
+            color={COLORS.neutral[300]}
+            text={`${email}`}
+          />
+        </View>
+        <RoleChip isHost={item.id === hostId} />
+      </Pressable>
+    );
+  };
 
   const ShareLinkButton = () => (
     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: PADDING.s }}>
@@ -236,64 +159,21 @@ export default function InviteeScreen() {
   return (
     <View style={styles.container}>
       <HybridHeader
-        title={i18n.t('Invitees')}
+        title={i18n.t('Travelers')}
         scrollY={scrollY}
         info={INFORMATION.dateScreen}
       >
         <View style={{ marginHorizontal: PADDING.l }}>
-          <Headline
-            style={{ marginTop: 10 }}
-            type={4}
-            text={`${i18n.t('Accepted')} (${accepted ? accepted.length : 0})`}
-          />
           <FlatList
             ListEmptyComponent={(
               <Body
                 style={{ textAlign: 'center', marginTop: 18 }}
-                text={i18n.t('No one accepted yet')}
-                color={COLORS.neutral[300]}
-              />
-            )}
-            data={accepted}
-            renderItem={(item, index) => getTile(item, index)}
-          />
-          <Divider
-            vertical={24}
-            color={COLORS.neutral[50]}
-          />
-          <Headline
-            type={4}
-            text={`${i18n.t('Pending')} (${pending ? pending.length : 0})`}
-          />
-          <FlatList
-            ListEmptyComponent={(
-              <Body
-                style={{ textAlign: 'center', marginTop: 18 }}
-                text={i18n.t('No one is pending')}
-                color={COLORS.neutral[300]}
-              />
-            )}
-            data={pending}
-            renderItem={(item, index) => getTile(item, index)}
-          />
-          <Divider
-            vertical={24}
-            color={COLORS.neutral[50]}
-          />
-          <Headline
-            type={4}
-            text={`${i18n.t('Declined')} (${declined ? declined.length : 0})`}
-          />
-          <FlatList
-            ListEmptyComponent={(
-              <Body
-                style={{ textAlign: 'center', marginTop: 18 }}
-                text={i18n.t('No one declined yet')}
+                text={i18n.t('No active Members yet')}
                 color={COLORS.neutral[300]}
               />
             )}
             contentContainerStyle={{ paddingBottom: 60 }}
-            data={declined}
+            data={activeMembers}
             renderItem={(item, index) => getTile(item, index)}
           />
         </View>
@@ -322,6 +202,11 @@ export default function InviteeScreen() {
         onRequestClose={() => setUserSelected(null)}
         data={options}
         onPress={(m) => handleInput(m.value, userSelected)}
+      />
+      <ContactDetailModal
+        isVisible={userData !== null}
+        onRequestClose={() => setUserData(null)}
+        data={userData}
       />
     </View>
   );

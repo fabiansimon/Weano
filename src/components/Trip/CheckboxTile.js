@@ -8,12 +8,14 @@ import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import Headline from '../typography/Headline';
 import COLORS from '../../constants/Theme';
 import Body from '../typography/Body';
-import Utils from '../../utils';
+import userManagement from '../../utils/userManagement';
+import Avatar from '../Avatar';
 
 export default function CheckboxTile({
-  style, item, disableLabel, onPress, disabled = false, onMorePress,
+  style, item, disableLabel, onPress, disabled = false, onMorePress, showMorePress = true,
 }) {
   const { isDone, assignee, title } = item;
+  const user = userManagement.convertIdToUser(assignee);
 
   return (
     <BouncyCheckbox
@@ -33,7 +35,7 @@ export default function CheckboxTile({
                   <Icon color={isDone ? COLORS.success[700] : COLORS.neutral[300]} name="person" />
                   <Body
                     type={2}
-                    text={Utils.convertIdToUser(assignee)?.firstName}
+                    text={user?.firstName}
                     color={isDone ? COLORS.success[700] : COLORS.neutral[300]}
                     style={{ marginLeft: 4 }}
                   />
@@ -47,17 +49,23 @@ export default function CheckboxTile({
               color={isDone ? COLORS.success[700] : COLORS.shades[100]}
             />
           </View>
-          {onMorePress && (
-          <Pressable
-            onPress={onMorePress}
-            style={styles.addIcon}
-          >
-            <FeatherIcon
-              name="more-vertical"
-              size={20}
-              color={COLORS.neutral[700]}
+          {onMorePress && showMorePress ? (
+            <Pressable
+              onPress={onMorePress}
+              style={styles.addIcon}
+            >
+              <FeatherIcon
+                name="more-vertical"
+                size={20}
+                color={COLORS.neutral[700]}
+              />
+            </Pressable>
+          ) : (
+            <Avatar
+              disabled
+              size={35}
+              uri={user?.avatarUri}
             />
-          </Pressable>
           )}
         </View>
         )}

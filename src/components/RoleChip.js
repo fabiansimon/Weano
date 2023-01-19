@@ -4,7 +4,7 @@ import i18n from '../utils/i18n';
 import Subtitle from './typography/Subtitle';
 import COLORS from '../constants/Theme';
 
-export default function RoleChip({ style, isHost = false }) {
+export default function RoleChip({ style, isHost = false, string }) {
   const title = isHost ? i18n.t('Host') : i18n.t('Attendee');
   const backgroundColor = isHost ? COLORS.primary[700] : COLORS.secondary[700];
 
@@ -12,7 +12,7 @@ export default function RoleChip({ style, isHost = false }) {
     <View style={[styles.container, style, { backgroundColor }]}>
       <Subtitle
         type={1}
-        text={title}
+        text={string || title}
         color={COLORS.shades[0]}
       />
     </View>
@@ -21,7 +21,7 @@ export default function RoleChip({ style, isHost = false }) {
 
 const styles = StyleSheet.create({
   container: {
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
     justifyContent: 'center',
     borderColor: COLORS.shades[0],
     borderWidth: 1,

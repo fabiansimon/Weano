@@ -222,8 +222,8 @@ const styles = StyleSheet.create({
   modalContainer: {
     maxHeight: '90%',
     marginTop: 'auto',
-    borderTopEndRadius: 20,
-    borderTopStartRadius: 20,
+    borderTopEndRadius: RADIUS.s,
+    borderTopStartRadius: RADIUS.s,
     shadowOffset: {
       height: -10,
     },
@@ -266,8 +266,8 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   innerContainer: {
-    borderTopRightRadius: RADIUS.l,
-    borderTopLeftRadius: RADIUS.l,
+    borderTopRightRadius: RADIUS.s,
+    borderTopLeftRadius: RADIUS.s,
     backgroundColor: COLORS.shades[0],
     paddingBottom: 120,
   },

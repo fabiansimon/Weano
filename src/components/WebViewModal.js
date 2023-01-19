@@ -1,12 +1,10 @@
 import React from 'react';
 import {
-  StyleSheet, View, Modal, Platform, SafeAreaView,
+  StyleSheet, View, Modal, SafeAreaView,
 } from 'react-native';
 import WebView from 'react-native-webview';
 import COLORS, { PADDING } from '../constants/Theme';
-import i18n from '../utils/i18n';
 import BackButton from './BackButton';
-import BasicHeader from './BasicHeader';
 import Headline from './typography/Headline';
 
 const WebViewModal = ({

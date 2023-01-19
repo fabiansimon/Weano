@@ -59,19 +59,21 @@ export default function FilterModal({
             {data.options.map((option, index) => (
               <TouchableOpacity
                 style={styles.tile}
+                disabled={option.notAvailable}
                 onPress={() => {
                   onRequestClose();
                   setTimeout(() => {
-                    onPress(option);
+                    option.onPress(option);
                   }, 350);
                 }}
               >
                 <Body
                   type={1}
-                  color={option.deleteAction ? COLORS.error[900] : COLORS.shades[100]}
+                  color={option.deleteAction ? COLORS.error[900] : option.notAvailable ? COLORS.neutral[300] : COLORS.shades[100]}
                   text={option.name}
                 />
                 {selectedIndex && selectedIndex === index && <MaterialIcon name="check" size={20} />}
+                {option.trailing || null}
               </TouchableOpacity>
             ))}
             <View style={{ height: 150 }} />

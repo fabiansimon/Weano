@@ -17,7 +17,7 @@ import { useLazyQuery, useMutation } from '@apollo/client';
 import ActionSheet from 'react-native-actionsheet';
 import { launchImageLibrary } from 'react-native-image-picker';
 import FastImage from 'react-native-fast-image';
-import COLORS, { PADDING } from '../../constants/Theme';
+import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import AnimatedHeader from '../../components/AnimatedHeader';
 import Headline from '../../components/typography/Headline';
 import i18n from '../../utils/i18n';
@@ -44,6 +44,8 @@ import PollCarousel from '../../components/Polls/PollCarousel';
 import GET_TRIP_BY_ID from '../../queries/getTripById';
 import TripScreenSkeleton from './TripScreenSkeleton';
 import FilterModal from '../../components/FilterModal';
+import RoleChip from '../../components/RoleChip';
+import userManagement from '../../utils/userManagement';
 
 export default function TripScreen({ route }) {
   const { tripId } = route.params;
@@ -63,13 +65,15 @@ export default function TripScreen({ route }) {
   const [currentTab, setCurrentTab] = useState(0);
   const [optionsVisible, setOptionsVisible] = useState(false);
   const [inputOpen, setInputOpen] = useState(null);
-  const [refreshing, setRefreshing] = React.useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const addImageRef = useRef();
 
   const navigation = useNavigation();
   const data = activeTrip;
   const inactive = !data || loading;
+
+  const isHost = userManagement.isHost();
 
   const { width } = Dimensions.get('window');
 
@@ -80,6 +84,8 @@ export default function TripScreen({ route }) {
     options: [
       {
         name: 'Change title',
+        trailing: !isHost && <RoleChip isHost string={i18n.t('Must be host')} />,
+        notAvailable: !isHost,
         onPress: () => {
           setTimeout(() => {
             setInputOpen('title');
@@ -88,6 +94,8 @@ export default function TripScreen({ route }) {
       },
       {
         name: 'Change description',
+        trailing: !isHost && <RoleChip isHost string={i18n.t('Must be host')} />,
+        notAvailable: !isHost,
         onPress: () => {
           setTimeout(() => {
             setInputOpen('description');
@@ -107,8 +115,10 @@ export default function TripScreen({ route }) {
       },
       {
         name: 'Delete Trip',
+        trailing: !isHost && <RoleChip isHost string={i18n.t('Must be host')} />,
+        notAvailable: !isHost,
         onPress: () => console.log('deleteTrip'),
-        deleteAction: true,
+        deleteAction: isHost,
       },
     ],
   };
@@ -129,6 +139,7 @@ export default function TripScreen({ route }) {
     }
 
     if (tripData) {
+      // console.log(tripData);
       setActiveTrip(tripData.getTripById);
     }
   }, [error, fetchError, tripData]);
@@ -351,7 +362,7 @@ export default function TripScreen({ route }) {
       yPos: 0,
     },
     {
-      title: i18n.t('Invitees'),
+      title: i18n.t('Travelers'),
       trailing: <Headline
         onPress={() => navigation.navigate(ROUTES.inviteeScreen)}
         type={4}
@@ -370,105 +381,115 @@ export default function TripScreen({ route }) {
   ];
 
   const TopContent = () => (
-    <View style={styles.bodyContainer}>
-      <View style={{ paddingHorizontal: PADDING.l }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Headline type={2} text={data?.title} />
-          <Pressable
-            onPress={() => setOptionsVisible(true)}
-            style={styles.addIcon}
-          >
-            <FeatherIcon
-              name="more-vertical"
-              size={20}
-              color={COLORS.neutral[700]}
+    <>
+      <View style={styles.handler} />
+      <View style={styles.bodyContainer}>
+        <View style={{ paddingHorizontal: PADDING.l }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Headline
+              onPress={() => isHost && setInputOpen('title')}
+              type={2}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={{ flex: 1 }}
+              text={data?.title}
             />
-          </Pressable>
-        </View>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingRight: 30 }}
-          style={{
-            flexDirection: 'row',
-            marginTop: 12,
-            marginHorizontal: -PADDING.l,
-            paddingLeft: PADDING.m,
-
-          }}
-        >
-          <Button
-            isSecondary
-            text={data?.location?.placeName.split(', ')[0] || i18n.t('Set location')}
-            fullWidth={false}
-            icon="location-pin"
-            onPress={() => navigation.push(ROUTES.locationScreen)}
-            backgroundColor={COLORS.shades[0]}
-            textColor={COLORS.shades[100]}
-            style={data?.location ? styles.infoTile : styles.infoButton}
-          />
-          <Button
-            isSecondary
-            text={data?.dateRange?.startDate ? Utils.getDateRange(data.dateRange) : i18n.t('Find date')}
-            fullWidth={false}
-            icon={<AntIcon name="calendar" size={22} />}
-            onPress={() => navigation.push(ROUTES.dateScreen)}
-            backgroundColor={COLORS.shades[0]}
-            textColor={COLORS.shades[100]}
-            style={[data?.dateRange?.startDate ? styles.infoTile : styles.infoButton, { marginLeft: 14 }]}
-          />
-        </ScrollView>
-        <TouchableOpacity
-          style={{ flexDirection: 'row', marginTop: 16, alignItems: 'center' }}
-          onPress={() => setInputOpen('description')}
-        >
-          {!data?.description && (
+            <Pressable
+              onPress={() => setOptionsVisible(true)}
+              style={styles.addIcon}
+            >
+              <FeatherIcon
+                name="more-vertical"
+                size={20}
+                color={COLORS.neutral[700]}
+              />
+            </Pressable>
+          </View>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingRight: 30 }}
+            style={{
+              flexDirection: 'row',
+              marginTop: 12,
+              marginHorizontal: -PADDING.l,
+              paddingLeft: PADDING.m,
+            }}
+          >
+            <Button
+              isSecondary
+              text={data?.location?.placeName.split(', ')[0] || i18n.t('Set location')}
+              fullWidth={false}
+              icon="location-pin"
+              onPress={() => navigation.push(ROUTES.locationScreen)}
+              backgroundColor={COLORS.shades[0]}
+              textColor={COLORS.shades[100]}
+              style={data?.location ? styles.infoTile : styles.infoButton}
+            />
+            <Button
+              isSecondary
+              text={data?.dateRange?.startDate ? Utils.getDateRange(data.dateRange) : i18n.t('Find date')}
+              fullWidth={false}
+              icon={<AntIcon name="calendar" size={22} />}
+              onPress={() => navigation.push(ROUTES.dateScreen)}
+              backgroundColor={COLORS.shades[0]}
+              textColor={COLORS.shades[100]}
+              style={[data?.dateRange?.startDate ? styles.infoTile : styles.infoButton, { marginLeft: 14 }]}
+            />
+          </ScrollView>
+          <TouchableOpacity
+            style={{ flexDirection: 'row', marginTop: 16, alignItems: 'center' }}
+            onPress={() => isHost && setInputOpen('description')}
+          >
+            {!data?.description && (
             <Icon
               size={16}
               color={COLORS.neutral[300]}
               name="pencil-sharp"
             />
-          )}
-          <Body
-            type={1}
-            text={data?.description || i18n.t('Add a description to the trip 😎')}
-            style={{ marginLeft: 4, color: COLORS.neutral[300] }}
-          />
-        </TouchableOpacity>
-      </View>
-      <Divider vertical={20} />
-      <View style={styles.statusContainer}>
-        <Headline
-          type={3}
-          text={i18n.t('Status')}
-        />
-        <Animatable.View animation="pulse" iterationCount="infinite">
+            )}
+            <Body
+              type={1}
+              text={data?.description || i18n.t('Add a description to the trip 😎')}
+              style={{ marginLeft: 4, color: COLORS.neutral[300] }}
+            />
+          </TouchableOpacity>
+        </View>
+        <Divider vertical={20} />
+        <View style={styles.statusContainer}>
           <Headline
-            type={4}
-            text={isActive ? i18n.t('• live') : i18n.t('21 days left')}
-            style={{ fontWeight: '600', fontSize: 16 }}
-            color={isActive ? COLORS.error[900] : COLORS.primary[700]}
+            type={3}
+            text={i18n.t('Status')}
           />
-        </Animatable.View>
+          <Animatable.View animation="pulse" iterationCount="infinite">
+            <Headline
+              type={4}
+              text={isActive ? i18n.t('• live') : i18n.t('21 days left')}
+              style={{ fontWeight: '600', fontSize: 16 }}
+              color={isActive ? COLORS.error[900] : COLORS.primary[700]}
+            />
+          </Animatable.View>
+        </View>
+        <ScrollView horizontal style={{ paddingHorizontal: PADDING.l, paddingTop: 14, paddingBottom: 6 }}>
+          {statusData.map((item) => (
+            <StatusContainer
+              style={{ marginRight: 10 }}
+              data={item}
+              onPress={() => navigation.navigate(item.route)}
+            />
+          ))}
+        </ScrollView>
+        <Divider top={18} />
+        <TabBar
+          style={{ marginBottom: 10 }}
+          items={contentItems}
+          currentTab={currentTab}
+          onPress={(index) => handleTabPress(index)}
+        />
+        <Divider omitPadding />
       </View>
-      <ScrollView horizontal style={{ paddingHorizontal: PADDING.l, paddingTop: 14, paddingBottom: 6 }}>
-        {statusData.map((item) => (
-          <StatusContainer
-            style={{ marginRight: 10 }}
-            data={item}
-            onPress={() => navigation.navigate(item.route)}
-          />
-        ))}
-      </ScrollView>
-      <Divider top={18} />
-      <TabBar
-        style={{ marginBottom: 10 }}
-        items={contentItems}
-        currentTab={currentTab}
-        onPress={(index) => handleTabPress(index)}
-      />
-      <Divider omitPadding />
-    </View>
+
+    </>
   );
 
   const MainContent = () => (
@@ -598,10 +619,10 @@ export default function TripScreen({ route }) {
         fullWidth={false}
         color={COLORS.neutral[900]}
       />
-      <FAButton
+      {/* <FAButton
         icon="chatbox-ellipses"
         onPress={() => navigation.push(ROUTES.chatScreen)}
-      />
+      /> */}
       <ActionSheet
         ref={addImageRef}
         title={i18n.t('Choose an option')}
@@ -619,8 +640,8 @@ export default function TripScreen({ route }) {
         isVisible={optionsVisible}
         onRequestClose={() => setOptionsVisible(false)}
         data={menuOptions}
-        onPress={(m) => m.onPress()}
       />
+
     </View>
   );
 }
@@ -645,8 +666,8 @@ const styles = StyleSheet.create({
     zIndex: 100,
     paddingTop: 16,
     backgroundColor: COLORS.shades[0],
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    borderTopLeftRadius: RADIUS.s,
+    borderTopRightRadius: RADIUS.s,
     shadowColor: COLORS.neutral[700],
     shadowRadius: 10,
     shadowOpacity: 0.1,
@@ -710,9 +731,23 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   addIcon: {
-    alignItems: 'flex-end',
+    alignItems: 'center',
     justifyContent: 'center',
     height: 35,
     width: 35,
+    backgroundColor: COLORS.neutral[50],
+    borderRadius: RADIUS.xl,
+    borderWidth: 0.5,
+    borderColor: COLORS.neutral[100],
+  },
+  handler: {
+    height: 7,
+    width: 60,
+    borderRadius: 100,
+    alignSelf: 'center',
+    backgroundColor: COLORS.shades[0],
+    borderWidth: 1,
+    borderColor: COLORS.neutral[100],
+    top: -27,
   },
 });

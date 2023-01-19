@@ -50,6 +50,7 @@ function ContactDetailModal({
 
   const getRoundButton = (icon, string, onPress) => (
     <TouchableOpacity
+      activeOpacity={0.8}
       onPress={onPress}
       style={{ alignItems: 'center' }}
     >
@@ -100,23 +101,24 @@ function ContactDetailModal({
               style={{ position: 'absolute', top: 20, right: 20 }}
             />
             <Avatar
+              disabled
               size={70}
-              uri={data && data.imageUri}
+              uri={data && data.avatarUri}
               style={{ marginTop: -35 }}
               borderWidth={3}
             />
 
             <Headline
               type={3}
-              text={data && data.name}
+              text={data && `${data.firstName} ${data.lastName}`}
             />
             <Body
-              type={2}
-              text={data && data.phoneNr}
+              type={1}
+              text={data && data.phoneNumber}
               color={COLORS.neutral[300]}
             />
             <View style={styles.bottomRow}>
-              {getRoundButton('phone', i18n.t('Audio call'), () => Linking.openURL(`tel:${data && data.phoneNr}`))}
+              {getRoundButton('phone', i18n.t('Audio call'), () => Linking.openURL(`tel:${data && data.phoneNumber}`))}
               <View style={{ width: PADDING.m }} />
               {getRoundButton('save', i18n.t('Save Nr'))}
             </View>
@@ -142,9 +144,9 @@ const styles = StyleSheet.create({
     borderTopEndRadius: 20,
     borderTopStartRadius: 20,
     marginTop: 'auto',
-    padding: 20,
+    padding: PADDING.s,
     opacity: 1,
-    marginBottom: 20,
+    marginBottom: 30,
     paddingBottom: 100,
   },
   innerContainer: {

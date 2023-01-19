@@ -1,81 +1,77 @@
-import { View, StyleSheet } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import COLORS from '../../constants/Theme';
-import Headline from '../typography/Headline';
-import i18n from '../../utils/i18n';
-import Divider from '../Divider';
-import TripListContainer from './TripListContainer';
+import {
+  View, StyleSheet, ScrollView, FlatList, Pressable,
+} from 'react-native';
+import React from 'react';
+import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
+import activeTripStore from '../../stores/ActiveTripStore';
+import Avatar from '../Avatar';
+import Body from '../typography/Body';
+import RoleChip from '../RoleChip';
 
-export default function InviteeContainer({ onLayout, data, onPress }) {
-  const [sortedData, setSortedData] = useState({});
+export default function InviteeContainer({ onLayout, onPress }) {
+  const { activeMembers, hostId } = activeTripStore((state) => state.activeTrip);
 
-  const sortInvitees = () => {
-    const accepted = data && data.filter((invitee) => invitee.status === 'ACCEPTED');
-    const pending = data && data.filter((invitee) => invitee.status === 'PENDING');
-    const declined = data && data.filter((invitee) => invitee.status === 'DECLINED');
+  const getUserTile = (item) => {
+    const {
+      firstName, lastName, avatarUri, id, email,
+    } = item;
 
-    setSortedData({
-      accepted,
-      pending,
-      declined,
-    });
+    return (
+      <Pressable onPress={onPress} style={styles.tile}>
+        <Avatar
+          size={40}
+          disabled
+          uri={avatarUri}
+          style={{ marginRight: 10, marginLeft: -6 }}
+        />
+        <View>
+          <View style={{
+            flexDirection: 'row', justifyContent: 'space-between',
+          }}
+          >
+            <Body
+              type={1}
+              color={COLORS.shades[100]}
+              text={`${firstName} ${lastName}`}
+            />
+            <RoleChip
+              isHost={hostId === id}
+              style={{ top: -2, marginLeft: 10 }}
+            />
+          </View>
+          <Body
+            type={2}
+            color={COLORS.neutral[300]}
+            text={`${email}`}
+          />
+        </View>
+      </Pressable>
+    );
   };
-
-  useEffect(() => {
-    sortInvitees();
-  }, [data]);
-
   return (
-    <TripListContainer onPress={onPress} onLayout={onLayout}>
-      <View style={styles.headerRow}>
-        <Headline
-          type={4}
-          text={`👍 ${i18n.t('Yes')}`}
-          color={COLORS.neutral[700]}
-        />
-        <Headline
-          type={4}
-          text={`💭 ${i18n.t('Maybe')}`}
-          color={COLORS.neutral[700]}
-        />
-        <Headline
-          type={4}
-          text={`👎 ${i18n.t('No')}`}
-          color={COLORS.neutral[700]}
-        />
-      </View>
-      <Divider
-        top={15}
-        bottom={8}
-      />
-      <View style={styles.bottomRow}>
-        <Headline
-          type={2}
-          text={sortedData.accepted ? sortedData.accepted.length : 0}
-        />
-        <Headline
-          type={2}
-          text={sortedData.pending ? sortedData.pending.length : 0}
-        />
-        <Headline
-          type={2}
-          text={sortedData.declined ? sortedData.declined.length : 0}
-        />
-      </View>
-    </TripListContainer>
+    <View>
+      <ScrollView
+        horizontal
+        scrollEnabled
+        contentContainerStyle={{ paddingRight: 30 }}
+        style={{ marginHorizontal: -PADDING.l, paddingHorizontal: PADDING.l }}
+      >
+        {activeMembers && activeMembers.map((member) => getUserTile(member))}
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  headerRow: {
-    paddingHorizontal: 30,
+  tile: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  bottomRow: {
-    marginBottom: -6,
-    paddingHorizontal: 45,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: COLORS.shades[0],
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: RADIUS.m,
+    borderWidth: 1,
+    borderColor: COLORS.neutral[100],
+    marginRight: 10,
   },
 });

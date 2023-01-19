@@ -10,6 +10,7 @@ import COLORS, { PADDING } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Avatar from '../Avatar';
 import Utils from '../../utils';
+import userManagement from '../../utils/userManagement';
 
 export default function PollView({
   style, data, title, subtitle, onPress,
@@ -63,7 +64,7 @@ export default function PollView({
           </Pressable>
         ) : (
           <Avatar
-            uri={Utils.convertIdToUser(data.creatorId)?.avatarUri}
+            uri={userManagement.convertIdToUser(data.creatorId)?.avatarUri}
             disabled
             size={35}
           />

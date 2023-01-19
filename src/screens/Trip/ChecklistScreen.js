@@ -27,6 +27,7 @@ import Utils from '../../utils';
 import DELETE_TASK from '../../mutations/deleteTask';
 import FAButton from '../../components/FAButton';
 import UPDATE_TASK from '../../mutations/updateTask';
+import userManagement from '../../utils/userManagement';
 
 export default function ChecklistScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -49,7 +50,7 @@ export default function ChecklistScreen() {
     options: [
       {
         name: 'Delete Task',
-        value: 'deleteTask',
+        onPress: () => handleDelete(taskSelected),
         deleteAction: true,
       },
     ],
@@ -73,57 +74,47 @@ export default function ChecklistScreen() {
     return length || 0;
   };
 
-  const handleInput = (operation, task) => {
-    if (operation === 'deleteTask') {
-      Utils.showConfirmationAlert(
-        i18n.t('Delete Task'),
-        i18n.t('Are you sure you want to delete your task?'),
-        i18n.t('Yes'),
-        async () => {
-          const { _id, isPrivate } = task;
+  const handleDelete = (task) => {
+    Utils.showConfirmationAlert(
+      i18n.t('Delete Task'),
+      i18n.t('Are you sure you want to delete your task?'),
+      i18n.t('Yes'),
+      async () => {
+        const { _id, isPrivate } = task;
 
-          const oldPrivateTasks = privateTasks;
-          const oldMutualTasks = mutualTasks;
-
-          if (isPrivate) {
-            updateActiveTrip({ privateTasks: privateTasks.filter((p) => p._id !== _id) });
-          } else {
-            updateActiveTrip({ mutualTasks: mutualTasks.filter((p) => p._id !== _id) });
-          }
-
-          await deleteTask({
-            variables: {
-              data: {
-                id: _id,
-                tripId,
-                isPrivate,
-              },
+        await deleteTask({
+          variables: {
+            data: {
+              id: _id,
+              tripId,
+              isPrivate,
             },
-          })
-            .then(() => {
-              Toast.show({
-                type: 'success',
-                text1: i18n.t('Whooray!'),
-                text2: i18n.t('Poll was succeessfully deleted!'),
-              });
-            })
-            .catch((e) => {
-              Toast.show({
-                type: 'error',
-                text1: i18n.t('Whoops!'),
-                text2: e.message,
-              });
-
-              if (isPrivate) {
-                updateActiveTrip({ privateTasks: oldPrivateTasks });
-              } else {
-                updateActiveTrip({ mutualTasks: oldMutualTasks });
-              }
-              console.log(`ERROR: ${e.message}`);
+          },
+        })
+          .then(() => {
+            Toast.show({
+              type: 'success',
+              text1: i18n.t('Whooray!'),
+              text2: i18n.t('Poll was succeessfully deleted!'),
             });
-        },
-      );
-    }
+
+            if (isPrivate) {
+              updateActiveTrip({ privateTasks: privateTasks.filter((p) => p._id !== _id) });
+            } else {
+              updateActiveTrip({ mutualTasks: mutualTasks.filter((p) => p._id !== _id) });
+            }
+          })
+          .catch((e) => {
+            Toast.show({
+              type: 'error',
+              text1: i18n.t('Whoops!'),
+              text2: e.message,
+            });
+
+            console.log(`ERROR: ${e.message}`);
+          });
+      },
+    );
   };
 
   const handleChange = async (data) => {
@@ -131,25 +122,6 @@ export default function ChecklistScreen() {
     let oldMutualTasks;
     setIsVisible(false);
     const isPrivate = data.type === 'PRIVATE';
-
-    if (isPrivate) {
-      oldPrivateTasks = privateTasks;
-      const newTask = {
-        creatorId: userId,
-        isDone: false,
-        title: data.task,
-      };
-      updateActiveTrip({ privateTasks: [...privateTasks, newTask] });
-    } else {
-      oldMutualTasks = mutualTasks;
-      const newTask = {
-        assignee: data.assignee.id,
-        creatorId: userId,
-        isDone: false,
-        title: data.task,
-      };
-      updateActiveTrip({ mutualTasks: [...mutualTasks, newTask] });
-    }
 
     await addTask({
       variables: {
@@ -163,25 +135,44 @@ export default function ChecklistScreen() {
           assignee: data.assignee.id,
         },
       },
-    }).catch((e) => {
-      Toast.show({
-        type: 'error',
-        text1: i18n.t('Whoops!'),
-        text2: e.message,
+    })
+      .then((res) => {
+        const id = res.data.createTask;
+        if (isPrivate) {
+          oldPrivateTasks = privateTasks;
+          const newTask = {
+            creatorId: userId,
+            isDone: false,
+            title: data.task,
+            _id: id,
+          };
+          updateActiveTrip({ privateTasks: [...privateTasks, newTask] });
+        } else {
+          oldMutualTasks = mutualTasks;
+          const newTask = {
+            assignee: data.assignee.id,
+            creatorId: userId,
+            isDone: false,
+            title: data.task,
+            _id: id,
+          };
+          updateActiveTrip({ mutualTasks: [...mutualTasks, newTask] });
+        }
+      })
+      .catch((e) => {
+        Toast.show({
+          type: 'error',
+          text1: i18n.t('Whoops!'),
+          text2: e.message,
+        });
+        if (isPrivate) {
+          updateActiveTrip({ privateTasks: oldPrivateTasks });
+        } else {
+          updateActiveTrip({ mutualTasks: oldMutualTasks });
+        }
+        console.log(`ERROR: ${e.message}`);
       });
-      if (isPrivate) {
-        updateActiveTrip({ privateTasks: oldPrivateTasks });
-      } else {
-        updateActiveTrip({ mutualTasks: oldMutualTasks });
-      }
-      console.log(`ERROR: ${e.message}`);
-    });
   };
-
-  // const delayedUpdate = useCallback(
-  //   debounce((isDone, item) => handleUpdate(isDone, item), 250),
-  //   [],
-  // );
 
   const handleUpdate = async (isDone, item) => {
     const { _id: taskId } = item;
@@ -309,17 +300,25 @@ export default function ChecklistScreen() {
                   color={COLORS.neutral[300]}
                 />
               )}
-              renderItem={({ item }) => (
-                <CheckboxTile
-                  onMorePress={() => setSelectedTask({
-                    ...item,
-                    isPrivate: false,
-                  })}
-                  style={{ marginVertical: 10, paddingLeft: 5 }}
-                  item={item}
-                  onPress={(isChecked) => handleUpdate(isChecked, item)}
-                />
-              )}
+              renderItem={({ item }) => {
+                const { creatorId, assignee } = item;
+                const isCreator = creatorId === userId;
+                const isAssignee = assignee === userId;
+
+                return (
+                  <CheckboxTile
+                    onMorePress={() => setSelectedTask({
+                      ...item,
+                      isPrivate: false,
+                    })}
+                    disabled={!isAssignee}
+                    showMorePress={isCreator}
+                    style={{ marginVertical: 10, paddingLeft: 5 }}
+                    item={item}
+                    onPress={(isChecked) => handleUpdate(isChecked, item)}
+                  />
+                );
+              }}
             />
           </View>
           <View style={{ marginTop: 20, marginHorizontal: PADDING.l }}>
@@ -366,7 +365,6 @@ export default function ChecklistScreen() {
         isVisible={taskSelected !== null}
         onRequestClose={() => setSelectedTask(null)}
         data={inputOptions}
-        onPress={(m) => handleInput(m.value, taskSelected)}
       />
       <FAButton
         icon="add"

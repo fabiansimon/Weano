@@ -36,7 +36,7 @@ export default function PollScreen() {
     options: [
       {
         name: 'Delete Poll',
-        value: 'deletePoll',
+        onPress: () => handleDelete(pollSelected),
         deleteAction: true,
       },
     ],
@@ -54,46 +54,40 @@ export default function PollScreen() {
     }
   }, [error, deleteError]);
 
-  const handleInput = (operation, poll) => {
-    if (operation === 'deletePoll') {
-      Utils.showConfirmationAlert(
-        i18n.t('Delete Poll'),
-        i18n.t('Are you sure you want to delete your poll?'),
-        i18n.t('Yes'),
-        async () => {
-          const { _id } = poll;
+  const handleDelete = (poll) => {
+    Utils.showConfirmationAlert(
+      i18n.t('Delete Poll'),
+      i18n.t('Are you sure you want to delete your poll?'),
+      i18n.t('Yes'),
+      async () => {
+        const { _id } = poll;
 
-          // const oldPolls = polls;
-          // updateActiveTrip({ polls: polls.filter((p) => p._id !== _id) });
-
-          console.log(_id, tripId);
-
-          await deletePoll({
-            variables: {
-              data: {
-                id: _id,
-                tripId,
-              },
+        await deletePoll({
+          variables: {
+            data: {
+              id: _id,
+              tripId,
             },
-          }).then(() => {
+          },
+        }).then(() => {
+          Toast.show({
+            type: 'success',
+            text1: i18n.t('Whooray!'),
+            text2: i18n.t('Poll was succeessfully deleted!'),
+          });
+
+          updateActiveTrip({ polls: polls.filter((p) => p._id !== _id) });
+        })
+          .catch((e) => {
             Toast.show({
-              type: 'success',
-              text1: i18n.t('Whooray!'),
-              text2: i18n.t('Poll was succeessfully deleted!'),
+              type: 'error',
+              text1: i18n.t('Whoops!'),
+              text2: e.message,
             });
-          })
-            .catch((e) => {
-              Toast.show({
-                type: 'error',
-                text1: i18n.t('Whoops!'),
-                text2: e.message,
-              });
-              // updateActiveTrip({ polls: oldPolls });
-              console.log(`ERROR: ${e.message}`);
-            });
-        },
-      );
-    }
+            console.log(`ERROR: ${e.message}`);
+          });
+      },
+    );
   };
 
   const handleAddPoll = async (data) => {
@@ -109,16 +103,6 @@ export default function PollScreen() {
       return;
     }
 
-    const newPoll = {
-      createdAt: Date.now(),
-      creatorId: userId,
-      title,
-      options,
-    };
-
-    const oldPolls = polls;
-    updateActiveTrip({ polls: [...polls, newPoll] });
-
     setIsLoading(true);
 
     await addPoll({
@@ -131,10 +115,15 @@ export default function PollScreen() {
       },
     }).then((res) => {
       const id = res.data.createPoll;
-      const updatedPolls = polls;
-      updatedPolls[polls.length - 1]._id = id;
-      console.log(updatedPolls);
-      // updateActiveTrip({ polls: updatedPolls });
+
+      const newPoll = {
+        createdAt: Date.now(),
+        creatorId: userId,
+        title,
+        options,
+        _id: id,
+      };
+      updateActiveTrip({ polls: [...polls, newPoll] });
     })
       .catch((e) => {
         Toast.show({
@@ -142,7 +131,6 @@ export default function PollScreen() {
           text1: i18n.t('Whoops!'),
           text2: e.message,
         });
-        updateActiveTrip({ polls: oldPolls });
         console.log(`ERROR: ${e.message}`);
       });
     setIsLoading(false);
@@ -198,7 +186,6 @@ export default function PollScreen() {
         isVisible={pollSelected !== null}
         onRequestClose={() => setPollSelected(null)}
         data={inputOptions}
-        onPress={(m) => handleInput(m.value, pollSelected)}
       />
     </View>
   );

@@ -5,7 +5,7 @@ import { Alert, Linking } from 'react-native';
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import Toast from 'react-native-toast-message';
 import i18n from './i18n';
-import activeTripStore from '../stores/ActiveTripStore';
+
 import META_DATA from '../constants/MetaData';
 
 export default class Utils {
@@ -49,10 +49,10 @@ export default class Utils {
     if (!dateRange) {
       return 'N/A';
     }
-
     const { startDate, endDate } = dateRange;
-    const start = Utils.getDateFromTimestamp(startDate, endDate ? 'MM.DD' : 'MM.DD.YY');
-    const end = endDate ? Utils.getDateFromTimestamp(endDate, 'MM.DD.YY') : i18n.t('open');
+
+    const start = moment(new Date(startDate * 1000)).format('MM.DD.YY');
+    const end = moment(new Date(endDate * 1000)).format('MM.DD.YY');
 
     return `${start} - ${end}`;
   }
@@ -179,17 +179,6 @@ export default class Utils {
         text2: i18n.t('Image successfully saved on your device'),
       });
     }, 1000);
-  }
-
-  /**
-     * Convert MonthInt to a Month String
-     * @param {image} image - image to download
-     */
-  static convertIdToUser(id) {
-    const { activeMembers } = activeTripStore((state) => state.activeTrip);
-    const user = activeMembers.find((member) => member.id === id);
-
-    return user;
   }
 
   /**

@@ -1,5 +1,5 @@
 import {
-  View, StyleSheet, Dimensions, Pressable,
+  View, StyleSheet, Dimensions, Pressable, Image,
 } from 'react-native';
 import React, { useState, useRef, useEffect } from 'react';
 import Animated from 'react-native-reanimated';
@@ -23,7 +23,9 @@ import SetupContainer from '../../components/Trip/SetupContainer';
 import InputModal from '../../components/InputModal';
 import UPDATE_TRIP from '../../mutations/updateTrip';
 import Headline from '../../components/typography/Headline';
-import Body from '../../components/typography/Body';
+import RoleChip from '../../components/RoleChip';
+import userManagement from '../../utils/userManagement';
+import PinImage from '../../../assets/images/pin.png';
 
 MapboxGL.setAccessToken(MAPBOX_TOKEN);
 
@@ -36,6 +38,8 @@ export default function LocationScreen() {
 
   const [isBoardingPassVisible, setBoardingPassVisible] = useState(false);
   const [inputVisible, setInputVisible] = useState(false);
+
+  const isHost = userManagement.isHost();
 
   const camera = useRef();
   // const [isVisible, setIsVisible] = useState(false);
@@ -106,8 +110,6 @@ export default function LocationScreen() {
     setInputVisible(false);
   };
 
-  const isLiked = !true;
-
   const LocationContainer = () => (
     <View>
       <View style={styles.locationContainer}>
@@ -118,7 +120,7 @@ export default function LocationScreen() {
             color={COLORS.neutral[300]}
           />
           <Pressable
-            onPress={() => setInputVisible(true)}
+            onPress={() => isHost && setInputVisible(true)}
             style={{ flexDirection: 'row', alignItems: 'center' }}
           >
             <Headline
@@ -126,27 +128,21 @@ export default function LocationScreen() {
               style={{ marginTop: 4 }}
               text={location.placeName}
             />
-            <View style={styles.editButton}>
-              <FeatherIcon
-                name="edit"
-                color={COLORS.neutral[300]}
-              />
-            </View>
+            {isHost && (
+              <View style={styles.editButton}>
+                <FeatherIcon
+                  name="edit"
+                  color={COLORS.neutral[300]}
+                />
+              </View>
+            )}
           </Pressable>
         </View>
-        <View style={isLiked ? styles.isLiked : styles.isNotLiked}>
-          <Body
-            type={2}
-            text="👍🏻"
-            color={COLORS.shades[0]}
-          />
-          <Headline
-            type={4}
-            text="4"
-            style={{ marginLeft: 4, marginTop: -2 }}
-            color={isLiked ? COLORS.shades[0] : COLORS.shades[100]}
-          />
-        </View>
+        <RoleChip
+          string={i18n.t('Set by host')}
+          style={{ alignSelf: 'flex-start' }}
+          isHost
+        />
       </View>
       <View style={styles.mapContainer}>
         <MapboxGL.MapView
@@ -167,11 +163,7 @@ export default function LocationScreen() {
           <MapboxGL.MarkerView
             coordinate={location.latlon}
           >
-            <Icon
-              name="location-pin"
-              size={40}
-              color={COLORS.secondary[700]}
-            />
+            <Image source={PinImage} style={{ height: 40, width: 50 }} resizeMode="contain" />
           </MapboxGL.MarkerView>
         </MapboxGL.MapView>
       </View>
@@ -282,7 +274,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-end',
   },
   mapContainer: {
     marginTop: 20,
