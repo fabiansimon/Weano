@@ -15,8 +15,9 @@ import { useNavigation } from '@react-navigation/native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import ActionSheet from 'react-native-actionsheet';
-import { launchImageLibrary } from 'react-native-image-picker';
 import FastImage from 'react-native-fast-image';
+import moment from 'moment';
+import ImageCropPicker from 'react-native-image-crop-picker';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import AnimatedHeader from '../../components/AnimatedHeader';
 import Headline from '../../components/typography/Headline';
@@ -35,7 +36,7 @@ import ChecklistContainer from '../../components/Trip/ChecklistContainer';
 import ROUTES from '../../constants/Routes';
 import StatusContainer from '../../components/Trip/StatusContainer';
 import ExpensesContainer from '../../components/Trip/ExpenseContainer';
-import FAButton from '../../components/FAButton';
+// import FAButton from '../../components/FAButton';
 import activeTripStore from '../../stores/ActiveTripStore';
 import UPDATE_TRIP from '../../mutations/updateTrip';
 import httpService from '../../utils/httpService';
@@ -55,7 +56,9 @@ export default function TripScreen({ route }) {
     },
   });
 
-  const isActive = false;
+  const now = Date.now() / 1000;
+
+  const isActive = activeTrip?.dateRange.startDate < now && activeTrip?.dateRange.endDate > now;
   const [updateTrip, { error }] = useMutation(UPDATE_TRIP);
   const activeTrip = activeTripStore((state) => state.activeTrip);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
@@ -99,6 +102,16 @@ export default function TripScreen({ route }) {
         onPress: () => {
           setTimeout(() => {
             setInputOpen('description');
+          }, 300);
+        },
+      },
+      {
+        name: 'Change thumbnail',
+        trailing: !isHost && <RoleChip isHost string={i18n.t('Must be host')} />,
+        notAvailable: !isHost,
+        onPress: () => {
+          setTimeout(() => {
+            addImageRef.current?.show();
           }, 300);
         },
       },
@@ -156,19 +169,41 @@ export default function TripScreen({ route }) {
   };
 
   const handleAddImage = async (index) => {
+    const options = {
+      width: 400,
+      height: 300,
+      cropping: true,
+      compressImageQuality: 0.8,
+      mediaType: 'photo',
+      includeBase64: true,
+    };
     if (index === 0) {
       return;
     }
 
+    if (index === 1) {
+      ImageCropPicker.openPicker(options).then(async (image) => {
+        uploadImage(image);
+      });
+    }
+
     if (index === 2) {
-      await updateTrip({
-        variables: {
-          trip: {
-            thumbnailUri: '',
-            tripId: data.id,
-          },
+      ImageCropPicker.openCamera(options).then(async (image) => {
+        uploadImage(image);
+      });
+    }
+
+    await updateTrip({
+      variables: {
+        trip: {
+          thumbnailUri: '',
+          tripId: data.id,
         },
-      }).catch((e) => {
+      },
+    }).then(() => {
+      updateActiveTrip({ thumbnailUri: '' });
+    })
+      .catch((e) => {
         setTimeout(() => {
           Toast.show({
             type: 'error',
@@ -177,21 +212,11 @@ export default function TripScreen({ route }) {
           });
         }, 500);
       });
-      return;
-    }
+  };
 
-    const options = {
-      mediaType: 'photo',
-      presentationStyle: 'fullScreen',
-    };
-    const result = await launchImageLibrary(options);
-
-    if (result.didCancel) {
-      return;
-    }
-
+  const uploadImage = async (image) => {
     try {
-      const { Location } = await httpService.uploadToS3(result.assets[0]);
+      const { Location } = await httpService.uploadToS3(image.data);
 
       const oldUri = activeTrip.thumbnailUri;
       updateActiveTrip({ thumbnailUri: Location });
@@ -292,6 +317,17 @@ export default function TripScreen({ route }) {
     setInputOpen(null);
   };
 
+  const getDayDifference = () => {
+    // eslint-disable-next-line no-unsafe-optional-chaining
+    const toDate = moment(new Date(data?.dateRange?.startDate * 1000));
+    const fromDate = moment().startOf('day');
+
+    const difference = Math.round(moment.duration(toDate.diff(fromDate)).asDays());
+    if (difference < 0) {
+      return `${difference * -1} ${i18n.t('days ago')}`;
+    }
+    return `${i18n.t('In')} ${difference} ${i18n.t('days')}`;
+  };
   const statusData = [
     {
       name: i18n.t('Location'),
@@ -323,7 +359,7 @@ export default function TripScreen({ route }) {
       onPress: () => navigation.navigate(ROUTES.pollScreen),
       content: data?.polls && (
       <PollCarousel
-        style={{ marginHorizontal: PADDING.m, maxHeight: 220 }}
+        style={{ marginHorizontal: PADDING.l, maxHeight: 220 }}
         data={data?.polls}
       />
       ),
@@ -461,12 +497,16 @@ export default function TripScreen({ route }) {
             type={3}
             text={i18n.t('Status')}
           />
-          <Animatable.View animation="pulse" iterationCount="infinite">
+          <Animatable.View
+            style={[styles.dateDifferenceStyle, { backgroundColor: isActive ? COLORS.error[900] : COLORS.primary[700] }]}
+            animation="pulse"
+            iterationCount={isActive ? 'infinite' : 1}
+          >
             <Headline
               type={4}
-              text={isActive ? i18n.t('• live') : i18n.t('21 days left')}
+              text={isActive ? i18n.t('• live') : `${getDayDifference()}`}
               style={{ fontWeight: '600', fontSize: 16 }}
-              color={isActive ? COLORS.error[900] : COLORS.primary[700]}
+              color={COLORS.shades[0]}
             />
           </Animatable.View>
         </View>
@@ -626,7 +666,7 @@ export default function TripScreen({ route }) {
       <ActionSheet
         ref={addImageRef}
         title={i18n.t('Choose an option')}
-        options={['Cancel', i18n.t('Choose from Camera Roll'), i18n.t('Reset image')]}
+        options={['Cancel', i18n.t('Choose from Camera Roll'), i18n.t('Take a picture'), i18n.t('Reset image')]}
         cancelButtonIndex={0}
         onPress={(index) => handleAddImage(index)}
       />
@@ -749,5 +789,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.neutral[100],
     top: -27,
+  },
+  dateDifferenceStyle: {
+    borderRadius: 100,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    backgroundColor: COLORS.error[700],
   },
 });

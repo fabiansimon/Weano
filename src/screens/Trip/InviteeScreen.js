@@ -11,7 +11,6 @@ import i18n from '../../utils/i18n';
 import HybridHeader from '../../components/HybridHeader';
 import INFORMATION from '../../constants/Information';
 import Avatar from '../../components/Avatar';
-import Utils from '../../utils';
 import RoleChip from '../../components/RoleChip';
 import Body from '../../components/typography/Body';
 import FAButton from '../../components/FAButton';
@@ -21,13 +20,11 @@ import httpService from '../../utils/httpService';
 import FilterModal from '../../components/FilterModal';
 import META_DATA from '../../constants/MetaData';
 import userManagement from '../../utils/userManagement';
-import ContactDetailModal from '../../components/ContactDetailModal';
 
 export default function InviteeScreen() {
   const { activeMembers, hostId, id } = activeTripStore((state) => state.activeTrip);
   const [inputVisible, setInputVisible] = useState(false);
   const [userSelected, setUserSelected] = useState(null);
-  const [userData, setUserData] = useState(null);
 
   const isHost = userManagement.isHost();
 
@@ -82,14 +79,11 @@ export default function InviteeScreen() {
       });
   };
 
-  const handleInput = async (operation, user) => {
-  };
-
   const scrollY = useRef(new Animated.Value(0)).current;
 
   const getTile = ({ item }) => {
     const {
-      firstName, lastName, email, avatarUri,
+      firstName, lastName, email,
     } = item;
     return (
       <Pressable
@@ -97,8 +91,7 @@ export default function InviteeScreen() {
         style={styles.tile}
       >
         <Avatar
-          onPress={() => setUserData(item)}
-          uri={avatarUri}
+          data={item}
           size={40}
           style={{ marginRight: 10 }}
         />
@@ -201,12 +194,6 @@ export default function InviteeScreen() {
         isVisible={userSelected !== null}
         onRequestClose={() => setUserSelected(null)}
         data={options}
-        onPress={(m) => handleInput(m.value, userSelected)}
-      />
-      <ContactDetailModal
-        isVisible={userData !== null}
-        onRequestClose={() => setUserData(null)}
-        data={userData}
       />
     </View>
   );

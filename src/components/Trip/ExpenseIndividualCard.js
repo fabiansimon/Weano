@@ -19,7 +19,7 @@ export default function ExpenseIndividualCard({
     >
       <Avatar
         disabled
-        uri={user.avatarUri}
+        data={user}
         size={35}
         style={{ alignSelf: 'center' }}
       />

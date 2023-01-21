@@ -3,7 +3,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
-  Image,
 } from 'react-native';
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
@@ -17,6 +16,7 @@ import { Camera, CameraType, FlashMode } from 'expo-camera';
 import { manipulateAsync, FlipType } from 'expo-image-manipulator';
 import { PinchGestureHandler } from 'react-native-gesture-handler';
 import Video from 'react-native-video';
+import { BlurView } from '@react-native-community/blur';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import Headline from '../../components/typography/Headline';
 import i18n from '../../utils/i18n';
@@ -24,7 +24,6 @@ import Button from '../../components/Button';
 import Utils from '../../utils';
 import ImageModal from '../../components/ImageModal';
 import Body from '../../components/typography/Body';
-import Camera3D from '../../../assets/images/camera_access_3d.png';
 import ROUTES from '../../constants/Routes';
 
 let camera;
@@ -105,25 +104,28 @@ export default function CameraScreen({ route }) {
 
   if (!permission.granted) {
     return (
-      <View style={styles.noPermission}>
-        <Body
-          type={1}
-          color={COLORS.shades[0]}
-          style={{ textAlign: 'center', width: '60%' }}
-          text="We need your permission to show the camera"
-        />
-        <Image
-          source={Camera3D}
-          resizeMode="contain"
-          style={{ height: '10%' }}
-        />
+      <SafeAreaView style={styles.noPermission}>
+        <View>
+          <Headline
+            type={2}
+            style={{ marginRight: PADDING.xl }}
+            color={COLORS.shades[0]}
+            text={i18n.t('Please allow us to access your camera 📸')}
+          />
+          <Body
+            type={2}
+            color={COLORS.neutral[300]}
+            style={{ marginTop: 10, marginRight: 40 }}
+            text="Without it you won't be able to capture moments of your trip to revisit later."
+          />
+        </View>
         <Button
-          style={{ width: '60%' }}
+          style={{ width: '100%' }}
           fullWidth
           onPress={requestPermission}
-          text="grant permission"
+          text="Grant permission"
         />
-      </View>
+      </SafeAreaView>
     );
   }
 
@@ -200,8 +202,14 @@ export default function CameraScreen({ route }) {
           />
         </View>
         )}
+        <BlurView
+          style={styles.blurView}
+          blurType="dark"
+          blurAmount={4}
+          reducedTransparencyFallbackColor={COLORS.shades[0]}
+        />
 
-        <View style={[styles.recordUnit, { backgroundColor: isRecording ? 'transparent' : Utils.addAlpha(COLORS.shades[100], 0.4) }]}>
+        <View style={styles.recordUnit}>
           {!isRecording && (
           <TouchableOpacity
             activeOpacity={0.9}
@@ -414,9 +422,16 @@ const styles = StyleSheet.create({
   },
   noPermission: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: PADDING.m,
+    paddingVertical: 20,
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    paddingHorizontal: PADDING.l,
     backgroundColor: COLORS.neutral[900],
+  },
+  blurView: {
+    position: 'absolute',
+    width: '100%',
+    height: '75%',
+    bottom: 0,
   },
 });

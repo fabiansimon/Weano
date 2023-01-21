@@ -1,48 +1,64 @@
 import {
   StyleSheet, Image, TouchableOpacity,
 } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import FastImage from 'react-native-fast-image';
 import COLORS from '../constants/Theme';
 import DefaultAvatar from '../../assets/images/default_avatar.png';
 import Headline from './typography/Headline';
+// eslint-disable-next-line import/no-cycle
+import ContactDetailModal from './ContactDetailModal';
+import userStore from '../stores/UserStore';
 
 export default function Avatar({
-  style, size, uri, onPress, backgroundColor, text, borderWidth, disabled,
+  style, size, data, onPress, backgroundColor, borderWidth, disabled, isSelf = false,
 }) {
+  const user = userStore((state) => state.user);
+  const info = isSelf ? user : data;
+
+  const hasAvatar = info?.avatarUri !== '';
+
+  const [showDetails, setShowDetails] = useState(false);
   const height = size || 55;
   const width = size || 55;
-  const bg = backgroundColor || text ? COLORS.secondary[700] : COLORS.shades[0];
+  const bg = backgroundColor || !hasAvatar ? COLORS.neutral[300] : COLORS.shades[0];
   const bW = borderWidth || 1;
-
   return (
-    <TouchableOpacity
-      disabled={disabled}
-      style={[styles.container, style, {
-        height, width, backgroundColor: bg, borderWidth: bW,
-      }]}
-      onPress={onPress}
-    >
-      {!text && (
+    <>
+      <TouchableOpacity
+        disabled={disabled}
+        activeOpacity={0.8}
+        style={[styles.container, style, {
+          height, width, backgroundColor: bg, borderWidth: bW,
+        }]}
+        onPress={() => (onPress ? onPress() : setShowDetails(true))}
+      >
+        {hasAvatar && (
         <Image
           source={DefaultAvatar}
           style={{ height, width, position: 'absolute' }}
         />
-      )}
-      {!text && (
+        )}
+        {hasAvatar && (
         <FastImage
-          source={{ uri }}
+          source={{ uri: info?.avatarUri }}
           style={{ height, width }}
         />
-      )}
-      {text && (
+        )}
+        {!hasAvatar && (
         <Headline
           type={4}
-          text={text}
+          text={`${info?.firstName[0]}${info?.lastName[0]}`}
           color={COLORS.shades[0]}
         />
-      )}
-    </TouchableOpacity>
+        )}
+      </TouchableOpacity>
+      <ContactDetailModal
+        isVisible={showDetails}
+        onRequestClose={() => setShowDetails(false)}
+        data={data}
+      />
+    </>
   );
 }
 

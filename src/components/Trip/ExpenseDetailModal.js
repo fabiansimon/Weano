@@ -110,6 +110,7 @@ export default function ExpenseDetailModal({
         <Animated.View style={[styles.innerContainer, { transform: [{ scale: animatedScale }] }]}>
           <Avatar
             style={styles.avatar}
+            isSelf
             size={35}
           />
           <Headline
@@ -161,7 +162,7 @@ export default function ExpenseDetailModal({
                       <Avatar
                         size={35}
                         disabled
-                        uri={splitee?.uri}
+                        data={splitee}
                       />
                       {splitee.isIncluded && (
                       <View style={styles.avatarOverlay}>

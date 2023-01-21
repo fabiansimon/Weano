@@ -75,17 +75,6 @@ export default function ExpenseScreen() {
     amount = amount.replaceAll(',', '.');
     amount = parseFloat(amount);
 
-    const newExpense = {
-      amount,
-      createdAt: Date.now(),
-      creatorId: id,
-      currency: '$',
-      title,
-    };
-
-    const oldExpenses = expenses;
-    updateActiveTrip({ expenses: [...expenses, newExpense] });
-
     await addExpense({
       variables: {
         expense: {
@@ -94,15 +83,27 @@ export default function ExpenseScreen() {
           tripId,
         },
       },
-    }).catch((e) => {
-      Toast.show({
-        type: 'error',
-        text1: i18n.t('Whoops!'),
-        text2: e.message,
+    })
+      .then((res) => {
+        const expenseId = res.data.createExpense;
+        const newExpense = {
+          amount,
+          createdAt: Date.now(),
+          creatorId: id,
+          currency: '$',
+          title,
+          _id: expenseId,
+        };
+        updateActiveTrip({ expenses: [...expenses, newExpense] });
+      })
+      .catch((e) => {
+        Toast.show({
+          type: 'error',
+          text1: i18n.t('Whoops!'),
+          text2: e.message,
+        });
+        console.log(`ERROR: ${e.message}`);
       });
-      updateActiveTrip({ expenses: oldExpenses });
-      console.log(`ERROR: ${e.message}`);
-    });
     setIsLoading(false);
     setShowModal(false);
   };

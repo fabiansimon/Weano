@@ -1,5 +1,5 @@
 import React, {
-  useMemo, useRef, useState, useEffect,
+  useMemo, useRef, useState,
 } from 'react';
 import {
   Pressable, StyleSheet, View,
@@ -19,28 +19,47 @@ import Body from '../components/typography/Body';
 import i18n from '../utils/i18n';
 import Utils from '../utils';
 import ROUTES from '../constants/Routes';
+import SearchModal from '../components/Search/SearchModal';
 
 MapboxGL.setAccessToken(MAPBOX_TOKEN);
 
 export default function MapScreen() {
   const navigation = useNavigation();
 
-  const snapPoints = useMemo(() => ['20%', '86%'], []);
+  const snapPoints = useMemo(() => ['17%', '88%'], []);
   const sheetRef = useRef(null);
   const trips = tripsStore((state) => state.trips);
+  const [showSearch, setShowSearch] = useState(false);
   const [showUpcoming, setShowUpcoming] = useState(false);
-  const [upcomingTrips, setUpcomingTrips] = useState(false);
-  const [recentTrips, setRecentTrips] = useState(false);
+
+  const mapCamera = useRef();
 
   const ICON_WIDTH = 40;
   const ICON_HEIGHT = 50;
 
   const now = Date.now() / 1000;
 
-  useEffect(() => {
-    setUpcomingTrips(trips.filter((trip) => trip.dateRange.endDate > now));
-    setRecentTrips(trips.filter((trip) => trip.dateRange.endDate < now));
-  }, [trips]);
+  const handleSearch = (id) => {
+    sheetRef.current.snapToIndex(0);
+
+    if (!id) {
+      return;
+    }
+
+    const searchTrip = trips.filter((trip) => trip.id === id)[0];
+    const { location, dateRange } = searchTrip;
+
+    setShowUpcoming(dateRange.endDate > now);
+
+    mapCamera.current.setCamera({
+      centerCoordinate: location.latlon,
+      zoomLevel: 3,
+      animationDuration: 500,
+    });
+  };
+
+  const upcomingTrips = trips.filter((trip) => trip.dateRange.endDate > now);
+  const recentTrips = trips.filter((trip) => trip.dateRange.endDate < now);
 
   const renderTripPins = (trip) => {
     const { location, thumbnailUri: uri } = trip;
@@ -51,7 +70,7 @@ export default function MapScreen() {
         coordinate={location.latlon}
       >
         <Pressable
-          onPress={() => navigation.navigate(ROUTES.memoriesScreen, { tripId: trip.id })}
+          onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: trip.id })}
           style={styles.imageContainer}
         >
           <FastImage
@@ -75,14 +94,14 @@ export default function MapScreen() {
         <Body
           color={!showUpcoming ? COLORS.primary[700] : COLORS.shades[0]}
           type={2}
-          text={`${i18n.t('Upcoming')} (${upcomingTrips?.length})`}
+          text={`${i18n.t('Upcoming')} (${upcomingTrips?.length || '0'})`}
         />
       </View>
       <View style={[styles.tab, !showUpcoming ? styles.activeTab : {}]}>
         <Body
           color={showUpcoming ? COLORS.primary[700] : COLORS.shades[0]}
           type={2}
-          text={`${i18n.t('Finished')} (${recentTrips?.length})`}
+          text={`${i18n.t('Finished')} (${recentTrips?.length || '0'})`}
         />
       </View>
     </Pressable>
@@ -94,6 +113,11 @@ export default function MapScreen() {
         rotateEnabled={false}
         style={styles.map}
       >
+        <MapboxGL.Camera
+          animationMode="moveTo"
+          animated
+          ref={mapCamera}
+        />
         {(showUpcoming && upcomingTrips) && upcomingTrips.map((trip) => renderTripPins(trip))}
         {(!showUpcoming && recentTrips) && recentTrips.map((trip) => renderTripPins(trip))}
       </MapboxGL.MapView>
@@ -116,8 +140,15 @@ export default function MapScreen() {
           showUpcoming={showUpcoming}
           upcomingTrips={upcomingTrips}
           recentTrips={recentTrips}
+          onSearchPress={() => setShowSearch(true)}
+          onPress={(id) => handleSearch(id)}
         />
       </BottomSheet>
+      <SearchModal
+        isVisible={showSearch}
+        onRequestClose={() => setShowSearch(false)}
+        onPress={(id) => handleSearch(id)}
+      />
     </View>
   );
 }

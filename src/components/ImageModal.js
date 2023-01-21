@@ -21,6 +21,7 @@ import httpService from '../utils/httpService';
 import userStore from '../stores/UserStore';
 import toastConfig from '../constants/ToastConfig';
 import UPLOAD_TRIP_IMAGE from '../mutations/uploadTripImage';
+import LoadingModal from './LoadingModal';
 
 export default function ImageModal({
   style, image, isVisible, onRetake, onRequestClose, tripId,
@@ -134,7 +135,7 @@ export default function ImageModal({
         <Avatar
           disabled
           size={50}
-          uri={user?.avatarUri}
+          data={user}
         />
         <View style={{ marginLeft: 10 }}>
           <Headline
@@ -214,6 +215,7 @@ export default function ImageModal({
         )}
       </View>
       <Toast config={toastConfig} />
+      <LoadingModal isLoading={isLoading} />
     </Modal>
   );
 }

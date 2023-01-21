@@ -1,37 +1,51 @@
 import {
-  View, StyleSheet, Image, Dimensions, ScrollView, Pressable,
+  View, StyleSheet, Pressable,
 } from 'react-native';
-import React, { useState } from 'react';
+import Icon from 'react-native-vector-icons/Entypo';
+import React, { useEffect, useRef, useState } from 'react';
 import FastImage from 'react-native-fast-image';
+import { BlurView } from '@react-native-community/blur';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import Headline from './typography/Headline';
-import IconButton from './IconButton';
 import DaysContainer from './DaysContainer';
-import DefaultImage from '../../assets/images/default_trip.png';
 import Body from './typography/Body';
-import Subtitle from './typography/Subtitle';
 import Utils from '../utils';
-import Button from './Button';
 import i18n from '../utils/i18n';
-import Divider from './Divider';
 
 export default function RecapCard({
   data, style, type = 'main', onPress,
 }) {
-  const [isLiked, setIsLiked] = useState(false);
-  const { location, description, dateRange } = data;
+  const [totalImages, setTotalImages] = useState();
+  const [imageIndex, setImageIndex] = useState(0);
+  let timerRef = useRef();
 
-  const getDateString = () => `${Utils.getDateFromTimestamp(data.dateRange.startDate, 'DD.MM.YYYY')} - ${Utils.getDateFromTimestamp(data.dateRange.endDate, 'DD.MM.YYYY')}`;
+  const {
+    location, description, dateRange, title, thumbnailUri, images,
+  } = data;
 
-  const DetailContainer = ({ string }) => (
-    <View style={styles.detailContainer}>
-      <Subtitle
-        type={1}
-        text={string}
-        color={COLORS.neutral[500]}
-      />
-    </View>
-  );
+  const ROTATION_TIMER_SECONDS = 5;
+
+  useEffect(() => {
+    if (thumbnailUri !== '') {
+      setTotalImages([{ uri: thumbnailUri }, ...images]);
+    } else {
+      setTotalImages(images);
+    }
+  }, [images]);
+
+  useEffect(() => {
+    timerRef = setInterval(() => {
+      // eslint-disable-next-line no-param-reassign
+      setImageIndex((prev) => (prev === images.length - 1 ? 0 : prev += 1));
+      // console.log('called');
+    }, ROTATION_TIMER_SECONDS * 1000);
+
+    return () => {
+      clearInterval(timerRef);
+    };
+  }, []);
+
+  const getDateString = () => `${Utils.getDateFromTimestamp(data.dateRange.startDate, 'MMMM YYYY')}`;
 
   const getMiniCard = () => (
     <Pressable
@@ -45,7 +59,7 @@ export default function RecapCard({
         <Headline
           isDense
           type={4}
-          text={data.title}
+          text={data?.title}
           numberOfLines={1}
         />
         <Body
@@ -56,56 +70,70 @@ export default function RecapCard({
           isDense
         />
       </View>
-      <DaysContainer dates={data.dateRange} />
+      <DaysContainer dates={data?.dateRange} />
     </Pressable>
   );
 
   const getMainCard = () => (
     <Pressable
-      style={[styles.container, styles.boxShadow, style]}
       onPress={onPress}
+      style={styles.mainCard}
     >
-      <View>
-        <FastImage
-          source={data.images ? { uri: data.images[0] } : DefaultImage}
-          style={styles.image}
+      <FastImage
+        source={{ uri: totalImages ? totalImages[imageIndex].uri : thumbnailUri }}
+        resizeMode="contain"
+        style={{
+          weight: '100%',
+          height: '100%',
+          backgroundColor: COLORS.neutral[900],
+        }}
+      />
+      <BlurView
+        style={styles.blurView}
+        blurType="light"
+        blurAmount={5}
+        reducedTransparencyFallbackColor={COLORS.shades[0]}
+      />
+      <View style={styles.infoContainer}>
+        <Headline
+          style={{ marginLeft: 2 }}
+          type={3}
+          text={title}
+          color={COLORS.shades[0]}
         />
-      </View>
-      <View style={styles.detailsContainer}>
-        <Headline type={3} text={data.title} />
         <Body
-          style={{ marginVertical: 5, marginBottom: !data.description && 20 }}
           type={2}
-          text={data.description || i18n.t('No description available')}
-          color={COLORS.neutral[300]}
+          style={{ marginLeft: 2 }}
+          color={COLORS.shades[0]}
+          text={description || i18n.t('No description')}
         />
-        <ScrollView horizontal style={{ marginTop: 15, marginBottom: 15 }}>
-          <DetailContainer string={data?.location?.placeName} />
-          <DetailContainer string={getDateString()} />
-        </ScrollView>
-        <Divider
-          vertical={1}
-          color={COLORS.neutral[50]}
-          bottom={15}
-        />
-        <View style={styles.buttonContainer}>
-          <IconButton
-            style={{ backgroundColor: isLiked ? Utils.addAlpha(COLORS.secondary[50], 0.1) : 'transparent' }}
-            onPress={() => setIsLiked(!isLiked)}
-            icon={isLiked ? 'ios-heart-sharp' : 'ios-heart-outline'}
-            isActive={isLiked}
-          />
-          <View style={{ flexDirection: 'row' }}>
-            <Button
-              fullWidth={false}
-              isSecondary
-              text={i18n.t('Share')}
-              style={{ height: 45, width: 90, marginRight: 6 }}
+        <View style={{ flexDirection: 'row', marginTop: 8 }}>
+          <View style={styles.infoTile}>
+            <Icon
+              name="location-pin"
+              color={COLORS.shades[0]}
+              size={18}
+              style={{ marginRight: 4 }}
             />
-            <Button
-              fullWidth={false}
-              text={i18n.t('View')}
-              style={{ height: 45, width: 90 }}
+            <Body
+              type={2}
+              color={COLORS.shades[0]}
+              style={{ marginRight: 4 }}
+              text={location?.placeName.split(', ')[0]}
+            />
+          </View>
+          <View style={styles.infoTile}>
+            <Icon
+              name="calendar"
+              color={COLORS.shades[0]}
+              size={16}
+              style={{ marginRight: 4 }}
+            />
+            <Body
+              type={2}
+              style={{ marginRight: 4 }}
+              color={COLORS.shades[0]}
+              text={getDateString()}
             />
           </View>
         </View>
@@ -119,28 +147,18 @@ export default function RecapCard({
 }
 
 const styles = StyleSheet.create({
+  mainCard: {
+    borderWidth: 4,
+    borderColor: COLORS.shades[0],
+    aspectRatio: 3 / 4,
+    height: 370,
+    backgroundColor: COLORS.neutral[100],
+    borderRadius: RADIUS.l,
+    overflow: 'hidden',
+  },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-  },
-  container: {
-    width: Dimensions.get('window').width * 0.85,
-    borderRadius: 14,
-    borderColor: COLORS.neutral[100],
-    borderWidth: 0.5,
-    backgroundColor: COLORS.shades[0],
-    padding: PADDING.s,
-  },
-  detailContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    borderRadius: 14,
-    marginRight: 8,
-    height: 40,
-    borderWidth: 0.5,
-    borderColor: COLORS.neutral[100],
-    backgroundColor: COLORS.neutral[50],
-    padding: PADDING.s,
   },
   miniContainer: {
     flexDirection: 'row',
@@ -152,26 +170,29 @@ const styles = StyleSheet.create({
     height: 75,
     padding: PADDING.s,
   },
-  detailsContainer: {
-    paddingHorizontal: PADDING.s,
-    paddingVertical: PADDING.s,
-    justifyContent: 'space-between',
-    flex: 1,
+  blurView: {
+    position: 'absolute',
+    width: '96%',
+    height: '30%',
+    borderRadius: RADIUS.m,
+    alignSelf: 'center',
+    bottom: 6,
   },
-  inviteeContainer: {
+  infoContainer: {
+    position: 'absolute',
+    bottom: PADDING.m,
+    width: '50%',
+    marginLeft: PADDING.m,
+    flexWrap: 'wrap',
+  },
+  infoTile: {
+    borderRadius: RADIUS.l,
     alignItems: 'center',
     flexDirection: 'row',
-    backgroundColor: COLORS.neutral[50],
-    borderRadius: RADIUS.xl,
-    borderWidth: 0.5,
-    borderColor: COLORS.neutral[100],
-  },
-  image: {
-    borderWidth: 0.5,
-    borderColor: COLORS.neutral[100],
-    backgroundColor: COLORS.neutral[100],
-    borderRadius: RADIUS.s,
-    width: '100%',
-    height: 170,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    minHeight: 35,
+    marginRight: 6,
+    backgroundColor: Utils.addAlpha(COLORS.neutral[50], 0.2),
   },
 });

@@ -22,30 +22,18 @@ const GET_INIT_USER_DATA = gql`
                 id
                 thumbnailUri
                 title
+                description
                 location {
                     placeName
                     latlon
                 }
-                expenses {
-                    amount
-                    title
-                    creatorId
-                    createdAt
-                    currency
-                }
-                activeMembers {
-                    id
-                    phoneNumber
-                    avatarUri
-                    email
-                    firstName
-                    lastName
-                    images
-                    trips
-                }
                 dateRange {
                     startDate
                     endDate
+                }
+                images {
+                    _id
+                    uri
                 }
             }
             activeTrip {

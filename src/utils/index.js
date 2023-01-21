@@ -51,8 +51,8 @@ export default class Utils {
     }
     const { startDate, endDate } = dateRange;
 
-    const start = moment(new Date(startDate * 1000)).format('MM.DD.YY');
-    const end = moment(new Date(endDate * 1000)).format('MM.DD.YY');
+    const start = moment(new Date(startDate * 1000)).format('DD.MM.YY');
+    const end = moment(new Date(endDate * 1000)).format('DD.MM.YY');
 
     return `${start} - ${end}`;
   }
@@ -156,7 +156,7 @@ export default class Utils {
   }
 
   /**
-     * Convert MonthInt to a Month String
+     * Add Alpha to Color
      * @param {String} hex - Hex code
      * @param {Double} opacity - opacity from 0-1
      * @return {String} Color with opacity

@@ -92,7 +92,7 @@ export default function AddTaskModal({
           onPress={() => {
             setIsPrivate(true);
           }}
-          activeOpacity={0.5}
+          activeOpacity={0.8}
           style={isPrivate ? styles.activeButton : styles.inactiveButton}
         >
           <Icon
@@ -111,7 +111,7 @@ export default function AddTaskModal({
           onPress={() => {
             setIsPrivate(false);
           }}
-          activeOpacity={0.5}
+          activeOpacity={0.8}
           style={[!isPrivate ? styles.activeButton : styles.inactiveButton, { marginLeft: 6 }]}
         >
           <Icon
@@ -157,7 +157,7 @@ export default function AddTaskModal({
                 <Avatar
                   size={50}
                   disabled
-                  uri={invitee.avatarUri}
+                  data={invitee}
                 />
                 {isActive && (
                 <View style={styles.avatarOverlay}>

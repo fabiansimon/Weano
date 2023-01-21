@@ -1,26 +1,21 @@
 import {
   View, StyleSheet, FlatList,
 } from 'react-native';
-import React, { useState } from 'react';
+import React from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
-import { useNavigation } from '@react-navigation/native';
 import COLORS, { PADDING } from '../../constants/Theme';
 import Headline from '../typography/Headline';
 import i18n from '../../utils/i18n';
 import Button from '../Button';
 // import CONTINENTS_DATA from '../../constants/Continents';
-import SearchModal from '../Search/SearchModal';
 import userStore from '../../stores/UserStore';
 import Body from '../typography/Body';
 import SearchResultTile from '../Search/SearchResultTile';
-import ROUTES from '../../constants/Routes';
 
-export default function CountriesVisited({ showUpcoming, upcomingTrips, recentTrips }) {
-  const navigation = useNavigation();
-
-  const [searchVisible, setSearchVisible] = useState(false);
+export default function CountriesVisited({
+  showUpcoming, upcomingTrips, recentTrips, onSearchPress, onPress,
+}) {
   const { firstName } = userStore((state) => state.user);
-  // const continentData = CONTINENTS_DATA;
 
   const title = !showUpcoming ? `${i18n.t("You've completed")} ${recentTrips?.length} ${i18n.t('Trips')}` : `${i18n.t("You've planned")} ${upcomingTrips?.length} ${i18n.t('Trips')}`;
 
@@ -49,7 +44,7 @@ export default function CountriesVisited({ showUpcoming, upcomingTrips, recentTr
           <Button
             style={[styles.searchButton, styles.buttonShadow]}
             backgroundColor={COLORS.shades[0]}
-            onPress={() => setSearchVisible(true)}
+            onPress={onSearchPress}
             icon={<Icon name="search1" size={20} />}
             fullWidth={false}
             color={COLORS.neutral[900]}
@@ -69,16 +64,13 @@ export default function CountriesVisited({ showUpcoming, upcomingTrips, recentTr
           ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
           renderItem={({ item }) => (
             <SearchResultTile
-              onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: item.id })}
+              onPress={() => onPress(item.id)}
               data={item}
             />
           )}
         />
       </View>
-      <SearchModal
-        isVisible={searchVisible}
-        onRequestClose={() => setSearchVisible(false)}
-      />
+
     </View>
   );
 }

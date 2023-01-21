@@ -9,6 +9,7 @@ import {
 import React, { useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import FastImage from 'react-native-fast-image';
+import { BlurView } from '@react-native-community/blur';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import BackButton from './BackButton';
 import Utils from '../utils';
@@ -42,7 +43,7 @@ export default function StoryModal({
       <View style={styles.progressBar}>
         {data.map((_, index) => (
           <View style={{
-            height: 3, flex: 1, backgroundColor: index <= imageIndex ? COLORS.shades[0] : Utils.addAlpha('#ffffff', 0.1), marginLeft: index !== 0 ? 10 : 0, borderRadius: 10,
+            height: 3, flex: 1, backgroundColor: index <= imageIndex ? COLORS.shades[0] : Utils.addAlpha('#ffffff', 0.1), marginLeft: index !== 0 ? 4 : 0, borderRadius: 10,
           }}
           />
         ))}
@@ -73,7 +74,7 @@ export default function StoryModal({
     const {
       uri, title, description, author, createdAt,
     } = item;
-    const { firstName, lastName, avatarUri } = author;
+    const { firstName, lastName } = author;
     return (
       <View style={{ width, height, backgroundColor: COLORS.neutral[900] }}>
         <FastImage
@@ -82,6 +83,12 @@ export default function StoryModal({
             width,
             height: Dimensions.get('window').height,
           }}
+        />
+        <BlurView
+          style={styles.blurView}
+          blurType="dark"
+          blurAmount={4}
+          reducedTransparencyFallbackColor={COLORS.shades[0]}
         />
         <View style={styles.infoContainer}>
           <View>
@@ -117,7 +124,7 @@ export default function StoryModal({
               style={{ marginLeft: 10 }}
               disabled
               size={30}
-              uri={avatarUri}
+              data={author}
             />
           </View>
         </View>
@@ -195,6 +202,12 @@ const styles = StyleSheet.create({
     paddingBottom: 50,
     position: 'absolute',
     width: Dimensions.get('window').width,
+    bottom: 0,
+  },
+  blurView: {
+    position: 'absolute',
+    width: '100%',
+    height: '13%',
     bottom: 0,
   },
 });

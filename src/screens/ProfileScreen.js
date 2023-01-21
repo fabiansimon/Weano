@@ -1,12 +1,15 @@
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  View, StyleSheet, TouchableOpacity, Pressable,
+} from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { useMutation } from '@apollo/client';
-import { launchImageLibrary } from 'react-native-image-picker';
 import Toast from 'react-native-toast-message';
+import ImageCropPicker from 'react-native-image-crop-picker';
+import ActionSheet from 'react-native-actionsheet';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import i18n from '../utils/i18n';
 import HybridHeader from '../components/HybridHeader';
@@ -31,6 +34,8 @@ export default function ProfileScreen() {
   const user = userStore((state) => state.user);
   const updateUserState = userStore((state) => state.updateUserData);
   const [webVisible, setWebVisible] = useState(false);
+
+  const addImageRef = useRef();
 
   const navigation = useNavigation();
 
@@ -98,19 +103,56 @@ export default function ProfileScreen() {
     },
   ];
 
-  const handleAddImage = async () => {
+  const handleAddImage = async (index) => {
     const options = {
+      width: 300,
+      height: 300,
+      cropping: true,
+      compressImageQuality: 0.2,
       mediaType: 'photo',
-      presentationStyle: 'fullScreen',
+      includeBase64: true,
+      cropperCircleOverlay: true,
     };
-    const result = await launchImageLibrary(options);
 
-    if (result.didCancel) {
+    if (index === 0) {
       return;
     }
 
+    if (index === 1) {
+      ImageCropPicker.openPicker(options).then(async (image) => {
+        uploadImage(image);
+      });
+    }
+
+    if (index === 2) {
+      ImageCropPicker.openPicker(options).then(async (image) => {
+        uploadImage(image);
+      });
+    }
+
+    await updateUser({
+      variables: {
+        user: {
+          avatarUri: '',
+        },
+      },
+    }).then(() => {
+      updateUserState({ avatarUri: '' });
+    })
+      .catch((e) => {
+        setTimeout(() => {
+          Toast.show({
+            type: 'error',
+            text1: i18n.t('Whoops!'),
+            text2: e.message,
+          });
+        }, 500);
+      });
+  };
+
+  const uploadImage = async (image) => {
     try {
-      const { Location } = await httpService.uploadToS3(result.assets[0]);
+      const { Location } = await httpService.uploadToS3(image.data);
 
       const oldUri = user.thumbnailUri;
       updateUserState({ avatarUri: Location });
@@ -168,12 +210,12 @@ export default function ProfileScreen() {
   const Header = () => (
     <>
       <Avatar
-        onPress={handleAddImage}
-        uri={user?.avatarUri}
+        onPress={() => addImageRef.current?.show()}
+        isSelf
         size={85}
       />
-      <TouchableOpacity
-        onPress={handleAddImage}
+      <Pressable
+        onPress={() => addImageRef.current?.show()}
         activeOpacity={0.8}
         style={styles.editContainer}
       >
@@ -182,7 +224,7 @@ export default function ProfileScreen() {
           color={COLORS.neutral[300]}
           name="square-edit-outline"
         />
-      </TouchableOpacity>
+      </Pressable>
       <Headline
         type={2}
         text={`${user?.firstName} ${user?.lastName}`}
@@ -234,6 +276,13 @@ export default function ProfileScreen() {
         onRequestClose={() => setWebVisible(false)}
         url={META_DATA.privacyPolicyUrl}
         title={i18n.t('Privacy Policy')}
+      />
+      <ActionSheet
+        ref={addImageRef}
+        title={i18n.t('Choose an option')}
+        options={['Cancel', i18n.t('Choose from Camera Roll'), i18n.t('Take a picture'), i18n.t('Reset image')]}
+        cancelButtonIndex={0}
+        onPress={(index) => handleAddImage(index)}
       />
     </View>
   );

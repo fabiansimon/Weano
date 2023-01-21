@@ -64,7 +64,7 @@ export default function CheckboxTile({
             <Avatar
               disabled
               size={35}
-              uri={user?.avatarUri}
+              data={user}
             />
           )}
         </View>

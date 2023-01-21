@@ -18,6 +18,7 @@ import Body from '../components/typography/Body';
 import GET_TIMELINE_DATA from '../queries/getTimelineData';
 import ROUTES from '../constants/Routes';
 import TimelineSkeleton from '../components/Trip/TimelineSkeleton';
+import userManagement from '../utils/userManagement';
 
 export default function TimelineScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -109,9 +110,11 @@ export default function TimelineScreen() {
   }, [error, data]);
 
   const getItem = (item) => {
-    // eslint-disable-next-line no-underscore-dangle
+    const createdBy = item.author || item.creatorId;
+    const { firstName } = userManagement.convertIdToUser(createdBy);
+
     const isImage = item.__typename === 'Image';
-    const title = isImage ? `${i18n.t('Uploaded photo 📸')}` : `${i18n.t('Added expense 💰')}`;
+    const title = isImage ? `${firstName} ${i18n.t('uploaded photo 📸')}` : `${firstName} ${i18n.t('added expense 💰')}`;
 
     return (
       <View style={{
@@ -162,14 +165,13 @@ export default function TimelineScreen() {
             </View>
           )}
           <View style={{
-            justifyContent: 'space-between', flex: 1,
+            justifyContent: 'center', flex: 1,
           }}
           >
             <Body
               style={{ textAlign: 'right' }}
               type={1}
-              isDense
-              color={COLORS.shades[100]}
+              color={COLORS.neutral[900]}
               text={title}
             />
             <Body
@@ -214,7 +216,7 @@ export default function TimelineScreen() {
                   />
                 </View>
               )}
-              contentContainerStyle={{ paddingBottom: 150 }}
+              contentContainerStyle={{ paddingBottom: 80 }}
               keyExtractor={(item, index) => item + index}
               renderItem={({ item }) => getItem(item)}
               renderSectionHeader={({ section: { title } }) => (

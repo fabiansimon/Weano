@@ -1,9 +1,8 @@
 import {
   View, StyleSheet, Modal, SafeAreaView, Pressable, SectionList, ScrollView, FlatList,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useNavigation } from '@react-navigation/native';
 import COLORS, { PADDING } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Headline from '../typography/Headline';
@@ -12,40 +11,55 @@ import KeyboardView from '../KeyboardView';
 import tripsStore from '../../stores/TripsStore';
 import SearchResultTile from './SearchResultTile';
 import Body from '../typography/Body';
-import ROUTES from '../../constants/Routes';
+import REGEX from '../../constants/Regex';
 
-export default function LocationScreen({ isVisible, onRequestClose }) {
-  const navigation = useNavigation();
-
+export default function LocationScreen({ isVisible, onRequestClose, onPress }) {
   const [term, setTerm] = useState('');
   const trips = tripsStore((state) => state.trips);
-  const [data, setData] = useState(false);
   const [searchResult, setSearchResult] = useState([]);
 
   const now = Date.now() / 1000;
 
-  useEffect(() => {
-    setData(
-      [
-        {
-          title: i18n.t('Successful trips'),
-          data: trips.filter((trip) => trip.dateRange.startDate < now && trip.dateRange.endDate < now),
-        },
-        {
-          title: i18n.t('Upcoming trips'),
-          data: trips.filter((trip) => trip.dateRange.startDate > now && trip.dateRange.endDate > now),
-        },
-      ],
-    );
-  }, [trips]);
+  const data = [
+    {
+      title: i18n.t('Successful trips'),
+      data: trips.filter((trip) => trip.dateRange.startDate < now && trip.dateRange.endDate < now),
+    },
+    {
+      title: i18n.t('Upcoming trips'),
+      data: trips.filter((trip) => trip.dateRange.startDate > now && trip.dateRange.endDate > now),
+    },
+  ];
 
   const handleSearchTerm = (val) => {
     setTerm(val);
+    const formattedTerm = val.replace(REGEX.rawLetters, '').toLowerCase();
+
+    if (formattedTerm.length <= 0) {
+      return;
+    }
+
+    let results = [];
+    results = trips.filter((trip) => {
+      const formattedTrip = {
+        title: trip.title.replace(REGEX.rawLetters, '').toLowerCase(),
+        description: trip.description.replace(REGEX.rawLetters, '').toLowerCase(),
+        placeName: trip.location.placeName.replace(REGEX.rawLetters, '').toLowerCase(),
+      };
+
+      if (formattedTrip.title.includes(formattedTerm) || formattedTrip.description.includes(formattedTerm) || formattedTrip.placeName.includes(formattedTerm)) {
+        return trip;
+      }
+
+      return null;
+    });
+
+    setSearchResult(results);
   };
 
   const handleNavigation = (id) => {
     onRequestClose();
-    navigation.navigate(ROUTES.tripScreen, { tripId: id });
+    onPress(id);
   };
 
   return (
@@ -59,7 +73,11 @@ export default function LocationScreen({ isVisible, onRequestClose }) {
         <View style={styles.container}>
           <SafeAreaView style={styles.header}>
             <Pressable
-              onPress={onRequestClose}
+              onPress={() => {
+                setSearchResult([]);
+                setTerm('');
+                onRequestClose();
+              }}
               style={{
                 width: 50, height: 50, justifyContent: 'center', alignItems: 'center',
               }}
@@ -105,10 +123,11 @@ export default function LocationScreen({ isVisible, onRequestClose }) {
             <FlatList
               scrollEnabled={false}
               ListEmptyComponent={() => (
-                <Headline
-                  type={4}
+                <Body
+                  type={1}
                   color={COLORS.neutral[300]}
                   text={i18n.t('Sorry, there are no results')}
+                  style={{ textAlign: 'center', marginTop: 10 }}
                 />
               )}
               data={searchResult}

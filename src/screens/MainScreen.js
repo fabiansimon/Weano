@@ -34,6 +34,7 @@ import Avatar from '../components/Avatar';
 import tripsStore from '../stores/TripsStore';
 import Suitcase3D from '../../assets/images/suitcase_3d.png';
 import GET_TRIPS_FOR_USER from '../queries/getTripsForUser';
+import RecapCardMini from '../components/RecapCardMini';
 
 export default function MainScreen() {
   const [getTripsForUser, { error, data }] = useLazyQuery(GET_TRIPS_FOR_USER);
@@ -84,7 +85,7 @@ export default function MainScreen() {
     >
       <Avatar
         onPress={() => navigation.navigate(ROUTES.profileScreen)}
-        uri={user?.avatarUri}
+        isSelf
         size={45}
       />
       <View style={{ }}>
@@ -253,7 +254,7 @@ export default function MainScreen() {
               renderItem={({ item }) => (
                 <RecapCard
                   key={item.latlon}
-                  onPress={() => navigation.navigate(ROUTES.tripScreen, { isActive: false })}
+                  onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: item.id })}
                   data={item}
                   style={{ marginRight: 20 }}
                 />
@@ -277,8 +278,7 @@ export default function MainScreen() {
               data={upcomingTrips}
               ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
               renderItem={({ item }) => (
-                <RecapCard
-                  type="mini"
+                <RecapCardMini
                   key={item.latlon}
                   onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: item.id })}
                   data={item}
@@ -315,6 +315,7 @@ export default function MainScreen() {
       <SearchModal
         isVisible={searchVisible}
         onRequestClose={() => setSearchVisible(false)}
+        onPress={(id) => navigation.navigate(ROUTES.tripScreen, { tripId: id })}
       />
 
     </View>

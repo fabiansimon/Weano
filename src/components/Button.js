@@ -46,7 +46,8 @@ export default function Button({
         flex, backgroundColor: isSecondary ? COLORS.shades[0] : bg, borderColor, borderWidth,
       }, style]}
       onPress={() => {
-        onPress();
+        // eslint-disable-next-line no-unused-expressions
+        !isLoading && onPress();
         // eslint-disable-next-line no-unused-expressions
         !disableHaptics && ReactNativeHapticFeedback.trigger('impactLight', options);
       }}

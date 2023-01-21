@@ -11,43 +11,15 @@ const GET_TRIPS_FOR_USER = gql`
                 placeName
                 latlon
             }
-            activeMembers {
-                id
-                phoneNumber
-                avatarUri
-                email
-                firstName
-                lastName
-                images
-                trips
-                expenses {
-                    expense
-                    trip
-                }
-            }
             dateRange {
                 startDate
                 endDate
             }
-            expenses {
-                creatorId
+            images {
+                _id
+                description
                 title
-                amount
-                currency
-                createdAt
-            }
-            images
-            mutualTasks {
-                assignee
-                creatorId
-                title
-                isDone
-            }
-            privateTasks {
-                assignee
-                creatorId
-                title
-                isDone
+                uri
             }
         }
     }

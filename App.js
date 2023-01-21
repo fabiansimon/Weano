@@ -139,6 +139,7 @@ export default function App() {
             <Stack.Navigator
               screenOptions={{ headerShown: false }}
             >
+
               <Stack.Screen
                 name={ROUTES.initDataCrossroads}
                 initialParams={{ uploadReminder: null }}

@@ -7,7 +7,6 @@ import {
 } from '@env';
 import { S3 } from 'aws-sdk';
 import { decode } from 'base64-arraybuffer';
-import { readFile } from 'react-native-fs';
 import META_DATA from '../constants/MetaData';
 
 async function sendInvitations(invitees, tripId) {
@@ -75,9 +74,9 @@ async function uploadToS3(image) {
   });
 
   const type = 'image/jpeg';
-  const path = image.uri;
-  const base64 = await readFile(path, 'base64');
-  const arrayBuffer = decode(base64);
+  // const path = image.uri;
+  // const base64 = await readFile(path, 'base64');
+  const arrayBuffer = decode(image);
 
   // eslint-disable-next-line no-return-await
   return await bucket.upload({

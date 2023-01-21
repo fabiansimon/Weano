@@ -197,7 +197,7 @@ export default function CalendarAvailabilityContainer({ style, onPress }) {
       <Avatar
         disabled
         size={35}
-        uri={person.avatarUri}
+        data={person}
       />
       <Subtitle
         type={2}

@@ -9,6 +9,10 @@ import Body from './typography/Body';
 
 export default function DaysContainer({ style, dates }) {
   const getDayDifference = () => {
+    if (!dates) {
+      return;
+    }
+
     const toDate = moment(Utils.getDateFromTimestamp(dates.startDate));
     const fromDate = moment().startOf('day');
 

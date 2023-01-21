@@ -1,5 +1,5 @@
 import {
-  View, StyleSheet, ScrollView, FlatList, Pressable,
+  View, StyleSheet, ScrollView, Pressable,
 } from 'react-native';
 import React from 'react';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
@@ -8,12 +8,12 @@ import Avatar from '../Avatar';
 import Body from '../typography/Body';
 import RoleChip from '../RoleChip';
 
-export default function InviteeContainer({ onLayout, onPress }) {
+export default function InviteeContainer({ onPress }) {
   const { activeMembers, hostId } = activeTripStore((state) => state.activeTrip);
 
   const getUserTile = (item) => {
     const {
-      firstName, lastName, avatarUri, id, email,
+      firstName, lastName, id, email,
     } = item;
 
     return (
@@ -21,7 +21,7 @@ export default function InviteeContainer({ onLayout, onPress }) {
         <Avatar
           size={40}
           disabled
-          uri={avatarUri}
+          data={item}
           style={{ marginRight: 10, marginLeft: -6 }}
         />
         <View>
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: COLORS.shades[0],
-    paddingVertical: 10,
+    paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: RADIUS.m,
     borderWidth: 1,

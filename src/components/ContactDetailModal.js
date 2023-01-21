@@ -12,6 +12,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import EntIcon from 'react-native-vector-icons/Entypo';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import i18n from '../utils/i18n';
+// eslint-disable-next-line import/no-cycle
 import Avatar from './Avatar';
 import Body from './typography/Body';
 import Headline from './typography/Headline';
@@ -103,7 +104,7 @@ function ContactDetailModal({
             <Avatar
               disabled
               size={70}
-              uri={data && data.avatarUri}
+              data={data}
               style={{ marginTop: -35 }}
               borderWidth={3}
             />
