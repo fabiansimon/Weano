@@ -1,37 +1,23 @@
 import React, {
-  createContext, useContext, useState, useEffect,
+  createContext, useContext, useState,
 } from 'react';
-import * as Notifications from 'expo-notifications';
 
 const PushNotificationContext = createContext();
 
 const PushNotificationProvider = ({ children }) => {
-  const [uploadId, setUploadId] = useState(null);
+  const [pushNotificationData, setPushNotificationData] = useState(null);
 
-  const lastNotificationResponse = Notifications.useLastNotificationResponse();
+  const updatePushNotificationData = (data) => {
+    setPushNotificationData(data);
+  };
 
-  const cleanData = () => setUploadId(null);
-
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowAlert: true,
-    }),
-  });
-
-  useEffect(() => {
-    if (
-      lastNotificationResponse
-            && lastNotificationResponse.notification.request.content.data.upload_reminder_id
-    ) {
-      const reminderId = lastNotificationResponse.notification.request.content.data.upload_reminder_id;
-      setUploadId(reminderId);
-    }
-  }, [lastNotificationResponse]);
+  const clearPushNotificationData = () => setPushNotificationData(null);
 
   // eslint-disable-next-line react/jsx-no-constructed-context-values
   const value = {
-    uploadId,
-    cleanData,
+    pushNotificationData,
+    updatePushNotificationData,
+    clearPushNotificationData,
   };
   return (
     <PushNotificationContext.Provider value={value}>

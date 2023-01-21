@@ -27,7 +27,6 @@ import Utils from '../../utils';
 import DELETE_TASK from '../../mutations/deleteTask';
 import FAButton from '../../components/FAButton';
 import UPDATE_TASK from '../../mutations/updateTask';
-import userManagement from '../../utils/userManagement';
 
 export default function ChecklistScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -283,7 +282,7 @@ export default function ChecklistScreen() {
           }}
           >
             <Headline
-              type={3}
+              type={4}
               text={i18n.t('Mutual list')}
             />
             <Divider top={12} />
@@ -323,7 +322,7 @@ export default function ChecklistScreen() {
           </View>
           <View style={{ marginTop: 20, marginHorizontal: PADDING.l }}>
             <Headline
-              type={3}
+              type={4}
               text={i18n.t('Private list')}
             />
             <Divider top={12} />

@@ -133,7 +133,7 @@ export default function ImageModal({
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Avatar
           disabled
-          size={55}
+          size={50}
           uri={user?.avatarUri}
         />
         <View style={{ marginLeft: 10 }}>

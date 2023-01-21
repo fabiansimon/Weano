@@ -1,7 +1,6 @@
 import {
   Image, Linking, Platform, StyleSheet, View,
 } from 'react-native';
-import * as Animatable from 'react-native-animatable';
 import React, { useEffect, useState } from 'react';
 import * as Notifications from 'expo-notifications';
 import { useNavigation } from '@react-navigation/native';
@@ -16,7 +15,6 @@ import userStore from '../stores/UserStore';
 import COLORS from '../constants/Theme';
 import AsyncStorageDAO from '../utils/AsyncStorageDAO';
 import tripsStore from '../stores/TripsStore';
-import { usePushNotificationContext } from '../providers/PushNotificationProvider';
 import UPDATE_USER from '../mutations/updateUser';
 import Logo from '../../assets/images/logo_temp.png';
 
@@ -33,7 +31,6 @@ export default function InitDataCrossroads() {
   const setTrips = tripsStore((state) => state.setTrips);
   const updateUserData = userStore((state) => state.updateUserData);
 
-  const { uploadId, cleanData } = usePushNotificationContext();
   const navigation = useNavigation();
 
   const registerPushNotificationToken = async () => {
@@ -78,11 +75,8 @@ export default function InitDataCrossroads() {
 
   const handleNavigation = () => {
     setTimeout(() => {
-      if (uploadId) {
-        const tripId = uploadId;
-        cleanData();
-        navigation.navigate(ROUTES.cameraScreen, { tripId });
-        return;
+      if (pushToken) {
+        navigation.navigate(ROUTES.cameraScreen, { tripId: pushToken });
       }
 
       // no deep linked route && no active trip && authenticated

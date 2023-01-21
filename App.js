@@ -1,8 +1,9 @@
 import React, {
   useEffect, useRef,
+  useState,
 } from 'react';
 import {
-  AppRegistry, LogBox, StatusBar,
+  AppRegistry, Linking, LogBox, StatusBar,
 } from 'react-native';
 import {
   ApolloClient, InMemoryCache, ApolloProvider,
@@ -37,7 +38,6 @@ import AsyncStorageDAO from './src/utils/AsyncStorageDAO';
 import PollScreen from './src/screens/Trip/PollScreen';
 import TimelineScreen from './src/screens/TimelineScreen';
 import MyAccountScreen from './src/screens/MyAccount';
-import PushNotificationProvider from './src/providers/PushNotificationProvider';
 import META_DATA from './src/constants/MetaData';
 
 const Stack = createNativeStackNavigator();
@@ -47,8 +47,16 @@ const asyncStorageDAO = new AsyncStorageDAO();
 export default function App() {
   const updateUserData = userStore((state) => state.updateUserData);
   const { authToken } = userStore((state) => state.user);
-  const notificationsListener = useRef();
+  const [pushNotificationData, setPushNotificationData] = useState(null);
   const navigationRef = useRef();
+
+  useEffect(() => {
+    if (pushNotificationData) {
+      console.log('HOIWHAPOIHDOAWHSPO');
+      navigationRef.current?.navigate(ROUTES.cameraScreen, { tripId: pushNotificationData.upload_reminder_id });
+      updateUserData({ pushToken: pushNotificationData.upload_reminder_id });
+    }
+  }, [pushNotificationData]);
 
   const client = new ApolloClient({
     uri: `${META_DATA.baseUrl}/graphql`,
@@ -63,13 +71,6 @@ export default function App() {
     }
   };
 
-  const handlePushTap = (response) => {
-    const { data } = response.notification.request.content;
-    if (data && authToken) {
-      navigationRef.current?.navigate(ROUTES.cameraScreen, { tripId: data.upload_reminder_id });
-    }
-  };
-
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
@@ -78,14 +79,6 @@ export default function App() {
 
   useEffect(() => {
     checkAuth();
-  }, []);
-
-  useEffect(() => {
-    notificationsListener.current = Notifications.addNotificationResponseReceivedListener((response) => handlePushTap(response));
-
-    return () => {
-      Notifications.removeNotificationSubscription(notificationsListener.current);
-    };
   }, []);
 
   useEffect(() => {
@@ -99,59 +92,99 @@ export default function App() {
         <ApolloProvider client={client}>
           <NavigationContainer
             ref={navigationRef}
-          >
-            <PushNotificationProvider>
-              <StatusBar barStyle="dark-content" />
-              <Stack.Navigator
-                screenOptions={{ headerShown: false }}
-              >
-                <Stack.Screen
-                  name={ROUTES.initDataCrossroads}
-                  component={InitDataCrossroads}
-                />
+            linking={{
+              config: {
 
-                <Stack.Screen
-                  name={ROUTES.signUpScreen}
-                  component={SignUpScreen}
-                  options={{ gestureEnabled: false }}
-                />
-                <Stack.Screen
-                  name={ROUTES.mainScreen}
-                  component={MainScreen}
-                  options={{ gestureEnabled: false }}
-                />
-                <Stack.Screen
-                  name={ROUTES.invitationScreen}
-                  component={InvitationScreen}
-                  options={{ gestureEnabled: false }}
-                />
-                <Stack.Screen
-                  name={ROUTES.introScreen}
-                  component={IntroScreen}
-                  options={{ gestureEnabled: false }}
-                />
-                <Stack.Screen name={ROUTES.profileScreen} component={ProfileScreen} />
-                <Stack.Screen name={ROUTES.mapScreen} component={MapScreen} />
-                <Stack.Screen
-                  name={ROUTES.tripScreen}
-                  options={{ gestureEnabled: false }}
-                  component={TripScreen}
-                />
-                <Stack.Screen name={ROUTES.dateScreen} component={DateScreen} />
-                <Stack.Screen name={ROUTES.inviteeScreen} component={InviteeScreen} />
-                <Stack.Screen name={ROUTES.accomodationsScreen} component={AccomodationsScreen} />
-                <Stack.Screen name={ROUTES.locationScreen} component={LocationScreen} />
-                <Stack.Screen name={ROUTES.chatScreen} component={ChatScreen} />
-                <Stack.Screen name={ROUTES.individualExpenseScreen} component={IndividualExpenseScreen} />
-                <Stack.Screen name={ROUTES.expenseScreen} component={ExpenseScreen} />
-                <Stack.Screen name={ROUTES.checklistScreen} component={ChecklistScreen} />
-                <Stack.Screen name={ROUTES.memoriesScreen} component={MemoriesScreen} />
-                <Stack.Screen name={ROUTES.cameraScreen} component={CameraScreen} />
-                <Stack.Screen name={ROUTES.pollScreen} component={PollScreen} />
-                <Stack.Screen name={ROUTES.timelineScreen} component={TimelineScreen} />
-                <Stack.Screen name={ROUTES.myAccountScreen} component={MyAccountScreen} />
-              </Stack.Navigator>
-            </PushNotificationProvider>
+              },
+              async getInitalURL() {
+                console.log('getInitalURL');
+                const deepLink = await Linking.getInitialURL();
+
+                if (deepLink != null) {
+                  console.log(`deepLink: ${deepLink}`);
+                  return deepLink;
+                }
+
+                const response = await Notifications.getLastNotificationResponseAsync();
+                const pushUrl = response?.notification.request.content.data;
+
+                console.log(`pushUrl: ${pushUrl}`);
+                return pushUrl;
+              },
+              subscribe(listener) {
+                const onReceiveURL = ({ url }) => listener(url);
+
+                Linking.addEventListener('url', onReceiveURL);
+
+                let url;
+                const suscription = Notifications.addNotificationResponseReceivedListener((response) => {
+                  url = response.notification.request.content.data;
+                  console.log(`<CURRENT> URL TRIP ID 1: ${url}`);
+                  setPushNotificationData(url);
+                  listener(url);
+                });
+
+                return () => {
+                  if (url) {
+                    setTimeout(() => {
+                      Linking.removeEventListener('url', onReceiveURL);
+                      suscription.remove();
+                    }, 2000);
+                  }
+                };
+              },
+            }}
+          >
+            <StatusBar barStyle="dark-content" />
+            <Stack.Navigator
+              screenOptions={{ headerShown: false }}
+            >
+              <Stack.Screen
+                name={ROUTES.initDataCrossroads}
+                initialParams={{ uploadReminder: null }}
+                component={InitDataCrossroads}
+              />
+              <Stack.Screen
+                name={ROUTES.signUpScreen}
+                component={SignUpScreen}
+                options={{ gestureEnabled: false }}
+              />
+              <Stack.Screen
+                name={ROUTES.mainScreen}
+                component={MainScreen}
+                options={{ gestureEnabled: false }}
+              />
+              <Stack.Screen
+                name={ROUTES.invitationScreen}
+                component={InvitationScreen}
+                options={{ gestureEnabled: false }}
+              />
+              <Stack.Screen
+                name={ROUTES.introScreen}
+                component={IntroScreen}
+                options={{ gestureEnabled: false }}
+              />
+              <Stack.Screen name={ROUTES.profileScreen} component={ProfileScreen} />
+              <Stack.Screen name={ROUTES.mapScreen} component={MapScreen} />
+              <Stack.Screen
+                name={ROUTES.tripScreen}
+                options={{ gestureEnabled: false }}
+                component={TripScreen}
+              />
+              <Stack.Screen name={ROUTES.dateScreen} component={DateScreen} />
+              <Stack.Screen name={ROUTES.inviteeScreen} component={InviteeScreen} />
+              <Stack.Screen name={ROUTES.accomodationsScreen} component={AccomodationsScreen} />
+              <Stack.Screen name={ROUTES.locationScreen} component={LocationScreen} />
+              <Stack.Screen name={ROUTES.chatScreen} component={ChatScreen} />
+              <Stack.Screen name={ROUTES.individualExpenseScreen} component={IndividualExpenseScreen} />
+              <Stack.Screen name={ROUTES.expenseScreen} component={ExpenseScreen} />
+              <Stack.Screen name={ROUTES.checklistScreen} component={ChecklistScreen} />
+              <Stack.Screen name={ROUTES.memoriesScreen} component={MemoriesScreen} />
+              <Stack.Screen name={ROUTES.cameraScreen} component={CameraScreen} />
+              <Stack.Screen name={ROUTES.pollScreen} component={PollScreen} />
+              <Stack.Screen name={ROUTES.timelineScreen} component={TimelineScreen} />
+              <Stack.Screen name={ROUTES.myAccountScreen} component={MyAccountScreen} />
+            </Stack.Navigator>
           </NavigationContainer>
         </ApolloProvider>
       </GestureHandlerRootView>

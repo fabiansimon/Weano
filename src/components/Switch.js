@@ -1,5 +1,5 @@
 import {
-  View, StyleSheet, TouchableOpacity,
+  View, StyleSheet, Pressable,
 } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -9,7 +9,7 @@ export default function Switch({ bool, onPress, color }) {
   const colorTheme = color || COLORS.shades[100];
 
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={onPress}
       style={[styles.container, { borderColor: colorTheme }]}
     >
@@ -27,7 +27,7 @@ export default function Switch({ bool, onPress, color }) {
           color={!bool ? COLORS.shades[0] : colorTheme}
         />
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 
