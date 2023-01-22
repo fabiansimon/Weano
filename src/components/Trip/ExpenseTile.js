@@ -5,10 +5,18 @@ import Headline from '../typography/Headline';
 
 import Body from '../typography/Body';
 import Utils from '../../utils';
+import i18n from '../../utils/i18n';
 
 export default function ExpenseTile({
   style, data, user, onPress,
 }) {
+  const getFullName = () => {
+    if (user?.firstName) {
+      return `${user?.firstName} ${user?.lastName}`;
+    }
+
+    return i18n.t('Deleted user');
+  };
   return (
     <Pressable
       onPress={onPress}
@@ -18,7 +26,7 @@ export default function ExpenseTile({
         <Headline
           type={3}
           color={COLORS.neutral[300]}
-          text={user?.firstName[0]}
+          text={user?.firstName[0] || 'D'}
         />
       </View>
       <View style={{
@@ -35,7 +43,7 @@ export default function ExpenseTile({
           <Body
             type={2}
             color={COLORS.neutral[300]}
-            text={`${user?.firstName} ${user?.lastName}`}
+            text={`${getFullName()}`}
           />
         </View>
         <View>

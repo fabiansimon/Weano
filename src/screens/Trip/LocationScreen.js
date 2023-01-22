@@ -110,7 +110,7 @@ export default function LocationScreen() {
     setInputVisible(false);
   };
 
-  const LocationContainer = () => (
+  const getLocationContainer = () => (
     <View>
       <View style={styles.locationContainer}>
         <View>
@@ -185,7 +185,7 @@ export default function LocationScreen() {
               type="location"
               style={{ marginBottom: 10 }}
             />
-          ) : <LocationContainer />}
+          ) : getLocationContainer()}
 
           {/* <PollView
             data={pollData}

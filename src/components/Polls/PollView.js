@@ -30,7 +30,7 @@ export default function PollView({
     for (let i = 0; i < pollData.options.length; i += 1) {
       countedVotes += pollData.options[i].votes.length;
     }
-    return countedVotes === 0 ? 0 : ((votes / countedVotes) * 100).toFixed(1);
+    return countedVotes === 0 ? 0 : ((votes.length / countedVotes) * 100).toFixed(1);
   };
 
   const header = data ? title : i18n.t('Be the first one to add one!');
@@ -78,7 +78,7 @@ export default function PollView({
             index={index}
             onPress={() => handleVote(index)}
             isActive={voteIndex === index}
-            percentage={`${getPercentage(item.votes.length)}%`}
+            percentage={`${getPercentage(item.votes)}%`}
           />
         )}
       />

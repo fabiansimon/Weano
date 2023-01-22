@@ -4,7 +4,6 @@ import {
   View,
 } from 'react-native';
 import React, { } from 'react';
-import COLORS, { } from '../constants/Theme';
 
 export default function LoadingModal({
   isLoading,

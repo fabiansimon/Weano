@@ -9,6 +9,10 @@ function convertIdToUser(id) {
   const { activeMembers } = activeTripStore((state) => state.activeTrip);
   const user = activeMembers.find((member) => member.id === id);
 
+  if (!user) {
+    return {};
+  }
+
   return user;
 }
 

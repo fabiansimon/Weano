@@ -69,17 +69,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   optionTileContainer: {
-    borderRadius: RADIUS.m,
+    borderRadius: RADIUS.l,
     borderWidth: 1,
     borderColor: COLORS.neutral[100],
   },
   inactiveContainerOverlay: {
-    borderRadius: RADIUS.m,
+    borderRadius: RADIUS.l,
     backgroundColor: COLORS.neutral[100],
     position: 'absolute',
   },
   activeContainerOverlay: {
-    borderRadius: RADIUS.m,
+    borderRadius: RADIUS.l,
     backgroundColor: COLORS.primary[700],
     position: 'absolute',
   },

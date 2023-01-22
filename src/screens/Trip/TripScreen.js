@@ -47,6 +47,7 @@ import TripScreenSkeleton from './TripScreenSkeleton';
 import FilterModal from '../../components/FilterModal';
 import RoleChip from '../../components/RoleChip';
 import userManagement from '../../utils/userManagement';
+import DELETE_TRIP_BY_ID from '../../mutations/deleteTripById';
 
 export default function TripScreen({ route }) {
   const { tripId } = route.params;
@@ -60,6 +61,7 @@ export default function TripScreen({ route }) {
 
   const isActive = activeTrip?.dateRange.startDate < now && activeTrip?.dateRange.endDate > now;
   const [updateTrip, { error }] = useMutation(UPDATE_TRIP);
+  const [deleteTrip] = useMutation(DELETE_TRIP_BY_ID);
   const activeTrip = activeTripStore((state) => state.activeTrip);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
   const setActiveTrip = activeTripStore((state) => state.setActiveTrip);
@@ -130,7 +132,7 @@ export default function TripScreen({ route }) {
         name: 'Delete Trip',
         trailing: !isHost && <RoleChip isHost string={i18n.t('Must be host')} />,
         notAvailable: !isHost,
-        onPress: () => console.log('deleteTrip'),
+        onPress: () => handleDeleteTrip(),
         deleteAction: isHost,
       },
     ],
@@ -162,6 +164,38 @@ export default function TripScreen({ route }) {
       getTripData();
     }
   }, [tripId]);
+
+  const handleDeleteTrip = async () => {
+    Utils.showConfirmationAlert(
+      i18n.t('Delete Expense'),
+      i18n.t(`Are you sure you want to delete '${data.title}' as an expense?`),
+      i18n.t('Delete'),
+      async () => {
+        await deleteTrip({
+          variables: {
+            tripId,
+          },
+        })
+          .then(() => {
+            Toast.show({
+              type: 'success',
+              text1: i18n.t('Whooray!'),
+              text2: i18n.t('Expense was succeessfully deleted!'),
+            });
+
+            navigation.navigate(ROUTES.mainScreen);
+          })
+          .catch((e) => {
+            Toast.show({
+              type: 'error',
+              text1: i18n.t('Whoops!'),
+              text2: e.message,
+            });
+            console.log(`ERROR: ${e.message}`);
+          });
+      },
+    );
+  };
 
   const handleTabPress = (index) => {
     setCurrentTab(index);
@@ -407,7 +441,7 @@ export default function TripScreen({ route }) {
       />,
       content: <InviteeContainer
         onPress={() => navigation.navigate(ROUTES.inviteeScreen)}
-        data={data?.invitees}
+        data={data?.activeMembers}
         onLayout={(e) => {
           console.log(`Invitees: ${e.nativeEvent.layout.y}`);
         }}
@@ -571,7 +605,7 @@ export default function TripScreen({ route }) {
         style={styles.image}
         resizeMode="cover"
         source={DefaultImage}
-        blurRadius={10}
+        blurRadius={5}
       />
       {!inactive && (
       <View style={styles.addImage}>

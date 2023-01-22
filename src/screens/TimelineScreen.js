@@ -114,7 +114,7 @@ export default function TimelineScreen() {
     const { firstName } = userManagement.convertIdToUser(createdBy);
 
     const isImage = item.__typename === 'Image';
-    const title = isImage ? `${firstName} ${i18n.t('uploaded photo 📸')}` : `${firstName} ${i18n.t('added expense 💰')}`;
+    const title = isImage ? `${firstName || i18n.t('Deleted user')} ${i18n.t('uploaded photo 📸')}` : `${firstName || i18n.t('Deleted user')} ${i18n.t('added expense 💰')}`;
 
     return (
       <View style={{

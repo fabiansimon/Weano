@@ -74,7 +74,7 @@ export default function StoryModal({
     const {
       uri, title, description, author, createdAt,
     } = item;
-    const { firstName, lastName } = author;
+
     return (
       <View style={{ width, height, backgroundColor: COLORS.neutral[900] }}>
         <FastImage
@@ -111,7 +111,7 @@ export default function StoryModal({
                 type={1}
                 style={{ textAlign: 'right' }}
                 color={COLORS.shades[0]}
-                text={`${firstName} ${lastName}`}
+                text={`${author?.firstName || ''} ${author?.lastName || i18n.t('Deleted user')}`}
               />
               <Body
                 type={2}

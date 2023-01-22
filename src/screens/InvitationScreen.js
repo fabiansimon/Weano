@@ -134,7 +134,7 @@ export default function InvitationScreen({ route }) {
             type={1}
             style={{ marginLeft: 2 }}
             color={COLORS.neutral[300]}
-            text={tripData?.location?.placeName || i18n.t('No location yet')}
+            text={tripData?.location?.placeName.split(',')[0] || i18n.t('No location yet')}
           />
         </View>
         <View style={{ marginLeft: 12, flexDirection: 'row', alignItems: 'center' }}>
@@ -191,7 +191,7 @@ export default function InvitationScreen({ route }) {
                       type={4}
                       text={`${tripData?.hostName} ${i18n.t('invited you to join a trip 🏝')}`}
                       style={{ marginTop: 4 }}
-                      color={COLORS.neutral[500]}
+                      color={COLORS.neutral[300]}
                     />
                     <TripInviteContainer />
                   </View>
