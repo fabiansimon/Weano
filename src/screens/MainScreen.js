@@ -26,7 +26,6 @@ import CreateModal from '../components/CreateModal';
 import ROUTES from '../constants/Routes';
 import AnimatedHeader from '../components/AnimatedHeader';
 import SearchModal from '../components/Search/SearchModal';
-import RewindTile from '../components/Trip/RewindTile';
 import userStore from '../stores/UserStore';
 import Body from '../components/typography/Body';
 import Utils from '../utils';
@@ -35,6 +34,7 @@ import tripsStore from '../stores/TripsStore';
 import Suitcase3D from '../../assets/images/suitcase_3d.png';
 import GET_TRIPS_FOR_USER from '../queries/getTripsForUser';
 import RecapCardMini from '../components/RecapCardMini';
+import ActionTile from '../components/Trip/ActionTile';
 
 export default function MainScreen() {
   const [getTripsForUser, { error, data }] = useLazyQuery(GET_TRIPS_FOR_USER);
@@ -115,13 +115,6 @@ export default function MainScreen() {
 
   const ChipSelection = () => {
     const options = [
-      {
-        title: i18n.t('• Active trip 🏖'),
-        onPress: () => navigation.navigate(ROUTES.tripScreen, { tripId: activeTrip.id }),
-        fontColor: COLORS.error[900],
-        style: styles.activeTripChip,
-        isShown: activeTrip,
-      },
       {
         title: i18n.t('Successful Trips ✈️'),
         onPress: () => console.log('0'),
@@ -207,9 +200,9 @@ export default function MainScreen() {
             <HeaderSection />
           </View>
           <ChipSelection />
-          <RewindTile
-            location={recapTrip?.location?.placeName}
-            tripId={recapTrip?.id}
+          <ActionTile
+            isActive={activeTrip}
+            trip={activeTrip || recapTrip || null}
             style={{ marginHorizontal: PADDING.l, marginTop: 20 }}
           />
           <View>

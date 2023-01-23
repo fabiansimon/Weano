@@ -7,7 +7,7 @@ export default function Subtitle({
 }) {
   const fontSize = type === 2 ? 12 : 14;
   const lineHeight = type === 2 ? 16 : 19;
-  const fontWeight = type === 2 ? '400' : '500';
+  const fontWeight = '400';
   const fontFamily = 'WorkSans-Regular';
   const textColor = color || COLORS.shades[100];
 

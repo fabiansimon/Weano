@@ -111,14 +111,24 @@ export default function LocationScreen() {
   };
 
   const getLocationContainer = () => (
-    <View>
+    <>
       <View style={styles.locationContainer}>
         <View>
-          <Headline
-            type={4}
-            text={i18n.t('Current destination')}
-            color={COLORS.neutral[300]}
-          />
+          <View style={{
+            flexDirection: 'row', justifyContent: 'space-between', width: '91%',
+          }}
+          >
+            <Headline
+              type={4}
+              text={i18n.t('Current destination')}
+              color={COLORS.neutral[300]}
+            />
+            <RoleChip
+              string={i18n.t('Set by host')}
+              isHost
+            />
+          </View>
+
           <Pressable
             onPress={() => isHost && setInputVisible(true)}
             style={{ flexDirection: 'row', alignItems: 'center' }}
@@ -138,11 +148,6 @@ export default function LocationScreen() {
             )}
           </Pressable>
         </View>
-        <RoleChip
-          string={i18n.t('Set by host')}
-          style={{ alignSelf: 'flex-start' }}
-          isHost
-        />
       </View>
       <View style={styles.mapContainer}>
         <MapboxGL.MapView
@@ -167,7 +172,7 @@ export default function LocationScreen() {
           </MapboxGL.MarkerView>
         </MapboxGL.MapView>
       </View>
-    </View>
+    </>
 
   );
 

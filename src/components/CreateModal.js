@@ -96,7 +96,6 @@ export default function CreateModal({ isVisible, onRequestClose }) {
             endDate,
             startDate,
           },
-          invitees,
           location: {
             placeName,
             latlon,

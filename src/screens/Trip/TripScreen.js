@@ -59,7 +59,6 @@ export default function TripScreen({ route }) {
 
   const now = Date.now() / 1000;
 
-  const isActive = activeTrip?.dateRange.startDate < now && activeTrip?.dateRange.endDate > now;
   const [updateTrip, { error }] = useMutation(UPDATE_TRIP);
   const [deleteTrip] = useMutation(DELETE_TRIP_BY_ID);
   const activeTrip = activeTripStore((state) => state.activeTrip);
@@ -154,17 +153,15 @@ export default function TripScreen({ route }) {
     }
 
     if (tripData) {
-      // console.log(tripData);
       setActiveTrip(tripData.getTripById);
     }
   }, [error, fetchError, tripData]);
 
   useEffect(() => {
-    if (tripId !== activeTrip.id) {
-      getTripData();
-    }
+    getTripData();
   }, [tripId]);
 
+  const isActive = data?.dateRange.startDate < now && activeTrip?.dateRange.endDate > now;
   const handleDeleteTrip = async () => {
     Utils.showConfirmationAlert(
       i18n.t('Delete Expense'),
@@ -352,8 +349,11 @@ export default function TripScreen({ route }) {
   };
 
   const getDayDifference = () => {
+    if (isActive) {
+      return i18n.t('• live');
+    }
     // eslint-disable-next-line no-unsafe-optional-chaining
-    const toDate = moment(new Date(data?.dateRange?.startDate * 1000));
+    const toDate = moment(new Date(data?.dateRange.startDate * 1000));
     const fromDate = moment().startOf('day');
 
     const difference = Math.round(moment.duration(toDate.diff(fromDate)).asDays());
@@ -474,6 +474,7 @@ export default function TripScreen({ route }) {
                 color={COLORS.neutral[700]}
               />
             </Pressable>
+
           </View>
           <ScrollView
             horizontal
@@ -538,7 +539,7 @@ export default function TripScreen({ route }) {
           >
             <Headline
               type={4}
-              text={isActive ? i18n.t('• live') : `${getDayDifference()}`}
+              text={getDayDifference()}
               style={{ fontWeight: '600', fontSize: 16 }}
               color={COLORS.shades[0]}
             />
