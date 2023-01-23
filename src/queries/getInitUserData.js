@@ -20,6 +20,7 @@ const GET_INIT_USER_DATA = gql`
             }
             trips {
                 id
+                expensesTotal
                 thumbnailUri
                 title
                 description
@@ -35,98 +36,6 @@ const GET_INIT_USER_DATA = gql`
                     _id
                     uri
                 }
-            }
-            activeTrip {
-                id
-                title
-                description
-                location {
-                    placeName
-                    latlon
-                }
-                thumbnailUri
-                expenses {
-                    createdAt
-                    creatorId
-                    title
-                    amount
-                    currency
-                }
-                mutualTasks {
-                    creatorId
-                    assignee
-                    title
-                    isDone
-                }
-                privateTasks {
-                    creatorId
-                    title
-                    isDone
-                }
-                polls {
-                    creatorId
-                    title
-                    description
-                    createdAt
-                    options {
-                        option
-                        votes
-                        creatorId
-                        id
-                    }
-                }
-                activeMembers {
-                    id
-                    phoneNumber
-                    avatarUri
-                    email
-                    firstName
-                    lastName
-                    images
-                    trips
-                    expenses {
-                        expense
-                        trip
-                    }
-                }
-                dateRange {
-                    startDate
-                    endDate
-                }
-            }
-            recapTrip {
-                id
-                title
-                location {
-                    placeName
-                    latlon
-                }
-                expenses {
-                    createdAt
-                    creatorId
-                    title
-                    amount
-                    currency
-                }
-                activeMembers {
-                    id
-                    phoneNumber
-                    avatarUri
-                    email
-                    firstName
-                    lastName
-                    images
-                    trips
-                    expenses {
-                    expense
-                    trip
-                    }
-                }
-                dateRange {
-                    startDate
-                    endDate
-                }
-                images
             }
             images {
                 uri

@@ -6,9 +6,11 @@ import COLORS from '../constants/Theme';
 import Body from './typography/Body';
 import TabBar from './Trip/TabBar';
 import Divider from './Divider';
+import i18n from '../utils/i18n';
+import Label from './typography/Label';
 
 export default function TripHeader({
-  style, title, subtitle, items, currentTab, onPress,
+  style, title, subtitle, items, currentTab, onPress, isActive,
 }) {
   return (
     <View style={[styles.container, style]}>
@@ -20,19 +22,28 @@ export default function TripHeader({
             text={title}
             style={{ fontWeight: '600', textAlign: 'center' }}
           />
-          <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-            <EntypoIcon
-              name="location-pin"
-              size={20}
-              color={COLORS.neutral[300]}
-            />
-            <Body
-              style={{ marginLeft: 2 }}
+          {isActive ? (
+            <Label
               type={1}
-              text={subtitle}
-              color={COLORS.neutral[300]}
+              style={{ fontSize: 16, alignSelf: 'center', marginTop: 2 }}
+              text={i18n.t('• Live Trip')}
+              color={COLORS.error[900]}
             />
-          </View>
+          ) : (
+            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+              <EntypoIcon
+                name="location-pin"
+                size={20}
+                color={COLORS.neutral[300]}
+              />
+              <Body
+                style={{ marginLeft: 2 }}
+                type={1}
+                text={subtitle}
+                color={COLORS.neutral[300]}
+              />
+            </View>
+          )}
         </View>
         <View style={{ width: 50, height: 55 }} />
       </View>

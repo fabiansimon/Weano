@@ -21,7 +21,7 @@ export default function ActionTile({ style, trip, isActive }) {
 
   if (!trip) { return <View />; }
   const {
-    id, images, location, dateRange,
+    id, images, location, dateRange, expensesTotal,
   } = trip;
 
   const tripStats = [
@@ -41,7 +41,8 @@ export default function ActionTile({ style, trip, isActive }) {
     },
     {
       string: i18n.t('spent'),
-      value: 3,
+      value: `$${expensesTotal}`,
+      isHidden: !expensesTotal,
     },
   ];
   return (

@@ -18,6 +18,7 @@ import ActionSheet from 'react-native-actionsheet';
 import FastImage from 'react-native-fast-image';
 import moment from 'moment';
 import ImageCropPicker from 'react-native-image-crop-picker';
+import { isEmpty } from 'lodash';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import AnimatedHeader from '../../components/AnimatedHeader';
 import Headline from '../../components/typography/Headline';
@@ -38,6 +39,7 @@ import StatusContainer from '../../components/Trip/StatusContainer';
 import ExpensesContainer from '../../components/Trip/ExpenseContainer';
 // import FAButton from '../../components/FAButton';
 import activeTripStore from '../../stores/ActiveTripStore';
+import META_DATA from '../../constants/MetaData';
 import UPDATE_TRIP from '../../mutations/updateTrip';
 import httpService from '../../utils/httpService';
 import InputModal from '../../components/InputModal';
@@ -74,7 +76,7 @@ export default function TripScreen({ route }) {
   const addImageRef = useRef();
 
   const navigation = useNavigation();
-  const data = activeTrip;
+  const data = activeTrip.title !== undefined ? activeTrip : null;
   const inactive = !data || loading;
 
   const isHost = userManagement.isHost();
@@ -119,7 +121,7 @@ export default function TripScreen({ route }) {
       {
         name: 'Copy invite link',
         onPress: () => {
-          Clipboard.setString(`http://143.198.241.91:4000/redirect/invitation/${tripId}`);
+          Clipboard.setString(`${META_DATA.baseUrl}/redirect/invitation/${tripId}`);
           Toast.show({
             type: 'success',
             text1: i18n.t('Copied!'),
@@ -161,11 +163,11 @@ export default function TripScreen({ route }) {
     getTripData();
   }, [tripId]);
 
-  const isActive = data?.dateRange.startDate < now && activeTrip?.dateRange.endDate > now;
+  const isActive = data && data?.dateRange.startDate < now && activeTrip?.dateRange.endDate > now;
   const handleDeleteTrip = async () => {
     Utils.showConfirmationAlert(
       i18n.t('Delete Expense'),
-      i18n.t(`Are you sure you want to delete '${data.title}' as an expense?`),
+      i18n.t(`Are you sure you want to delete '${data?.title}' as an expense?`),
       i18n.t('Delete'),
       async () => {
         await deleteTrip({
@@ -643,7 +645,8 @@ export default function TripScreen({ route }) {
         <TripHeader
           title={!inactive ? data?.title : i18n.t('Loading...')}
           id={data?.id}
-          subtitle={`${Utils.getDateRange(data?.dateRange)}`}
+          isActive={isActive}
+          subtitle={`${data?.location.placeName}`}
           items={contentItems}
           onPress={(index) => handleTabPress(index)}
           currentTab={currentTab}

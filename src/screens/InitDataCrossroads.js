@@ -116,28 +116,10 @@ export default function InitDataCrossroads() {
   const populateState = () => {
     setInit(true);
     const res = data.getUserInitData;
-    const {
-      activeTrip, recapTrip, userData, trips,
-    } = res;
+    const { userData, trips } = res;
 
     if (trips) {
       setTrips(trips);
-    }
-
-    if (activeTrip) {
-      setActiveTrip(activeTrip);
-
-      if (requestedRoute == null) {
-        // Not working for some reason
-        setRequestedRoute({
-          screen: ROUTES.tripScreen,
-          params: { isActive: true },
-        });
-      }
-    }
-
-    if (recapTrip) {
-      setRecapTrip(recapTrip);
     }
 
     if (userData) {
