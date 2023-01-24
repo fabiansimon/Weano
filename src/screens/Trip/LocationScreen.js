@@ -113,41 +113,35 @@ export default function LocationScreen() {
   const getLocationContainer = () => (
     <>
       <View style={styles.locationContainer}>
-        <View>
-          <View style={{
-            flexDirection: 'row', justifyContent: 'space-between', width: '91%',
-          }}
-          >
-            <Headline
-              type={4}
-              text={i18n.t('Current destination')}
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Headline
+            type={4}
+            text={i18n.t('Current destination')}
+            color={COLORS.neutral[300]}
+          />
+          <RoleChip
+            string={i18n.t('Set by host')}
+            isHost
+          />
+        </View>
+        <Pressable
+          onPress={() => isHost && setInputVisible(true)}
+          style={{ flexDirection: 'row', alignItems: 'center' }}
+        >
+          <Headline
+            type={3}
+            style={{ marginTop: 4 }}
+            text={location.placeName.split(',')[0]}
+          />
+          {isHost && (
+          <View style={styles.editButton}>
+            <FeatherIcon
+              name="edit"
               color={COLORS.neutral[300]}
             />
-            <RoleChip
-              string={i18n.t('Set by host')}
-              isHost
-            />
           </View>
-
-          <Pressable
-            onPress={() => isHost && setInputVisible(true)}
-            style={{ flexDirection: 'row', alignItems: 'center' }}
-          >
-            <Headline
-              type={3}
-              style={{ marginTop: 4 }}
-              text={location.placeName}
-            />
-            {isHost && (
-              <View style={styles.editButton}>
-                <FeatherIcon
-                  name="edit"
-                  color={COLORS.neutral[300]}
-                />
-              </View>
-            )}
-          </Pressable>
-        </View>
+          )}
+        </Pressable>
       </View>
       <View style={styles.mapContainer}>
         <MapboxGL.MapView
@@ -277,8 +271,6 @@ const styles = StyleSheet.create({
   locationContainer: {
     marginHorizontal: PADDING.s,
     marginTop: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
   },
   mapContainer: {
     marginTop: 20,

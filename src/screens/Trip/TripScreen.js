@@ -18,7 +18,6 @@ import ActionSheet from 'react-native-actionsheet';
 import FastImage from 'react-native-fast-image';
 import moment from 'moment';
 import ImageCropPicker from 'react-native-image-crop-picker';
-import { isEmpty } from 'lodash';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import AnimatedHeader from '../../components/AnimatedHeader';
 import Headline from '../../components/typography/Headline';
@@ -646,7 +645,7 @@ export default function TripScreen({ route }) {
           title={!inactive ? data?.title : i18n.t('Loading...')}
           id={data?.id}
           isActive={isActive}
-          subtitle={`${data?.location.placeName}`}
+          subtitle={`${data?.location.placeName.split(',')[0]}`}
           items={contentItems}
           onPress={(index) => handleTabPress(index)}
           currentTab={currentTab}

@@ -173,13 +173,32 @@ export default function ChecklistScreen() {
       });
   };
 
-  const handleUpdate = async (isDone, item) => {
-    const { _id: taskId } = item;
+  const handleUpdate = async (item, isPrivate) => {
+    const { _id: taskId, isDone } = item;
+
+    let oldData;
+    if (isPrivate) {
+      oldData = privateTasks;
+      updateActiveTrip({
+        privateTasks: privateTasks.map((task) => ({
+          ...task,
+          isDone: task._id === taskId ? !task.isDone : task.isDone,
+        })),
+      });
+    } else {
+      oldData = mutualTasks;
+      updateActiveTrip({
+        mutualTasks: mutualTasks.map((task) => ({
+          ...task,
+          isDone: task._id === taskId ? !task.isDone : task.isDone,
+        })),
+      });
+    }
 
     await updateTask({
       variables: {
         data: {
-          isDone,
+          isDone: !isDone,
           taskId,
         },
       },
@@ -189,7 +208,12 @@ export default function ChecklistScreen() {
         text1: i18n.t('Whoops!'),
         text2: e.message,
       });
-      // updateActiveTrip({ mutualTasks: oldMutualTasks });
+
+      if (isPrivate) {
+        updateActiveTrip({ privateTasks: oldData });
+      } else {
+        updateActiveTrip({ mutualTasks: oldData });
+      }
       console.log(`ERROR: ${e.message}`);
     });
   };
@@ -310,11 +334,11 @@ export default function ChecklistScreen() {
                       ...item,
                       isPrivate: false,
                     })}
-                    disabled={!isAssignee}
+                    disabled={!isAssignee && !isCreator}
                     showMorePress={isCreator}
                     style={{ marginVertical: 10, paddingLeft: 5 }}
                     item={item}
-                    onPress={(isChecked) => handleUpdate(isChecked, item)}
+                    onPress={() => handleUpdate(item, false)}
                   />
                 );
               }}
@@ -348,7 +372,7 @@ export default function ChecklistScreen() {
                   style={{ marginVertical: 10, paddingLeft: 5 }}
                   item={item}
                   disableLabel
-                  onPress={(isChecked) => handleUpdate(isChecked, item)}
+                  onPress={() => handleUpdate(item, true)}
                 />
               )}
             />

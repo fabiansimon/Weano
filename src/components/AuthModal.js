@@ -24,6 +24,7 @@ import AsyncStorageDAO from '../utils/AsyncStorageDAO';
 import httpService from '../utils/httpService';
 import userStore from '../stores/UserStore';
 import JOIN_TRIP from '../mutations/joinTrip';
+import Utils from '../utils';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
@@ -96,6 +97,7 @@ export default function AuthModal({
           text1: i18n.t('Whoops!'),
           text2: err.message,
         });
+        pageRef.current?.setPage(0);
         setIsLoading(false);
       });
   };
@@ -217,10 +219,7 @@ export default function AuthModal({
       onRequestClose={onRequestClose}
       title={isLogin ? i18n.t('Log in') : i18n.t('Authenticate')}
     >
-      <KeyboardView
-        ignoreTouch
-        paddingBottom={50}
-      >
+      <KeyboardView paddingBottom={50}>
         <View style={styles.container}>
           <PagerView
             style={{ flex: 1 }}
@@ -261,6 +260,11 @@ export default function AuthModal({
                   />
                   <Headline
                     type={4}
+                    onPress={() => {
+                      onRequestClose();
+                      setCode('');
+                      setPhoneNr('');
+                    }}
                     style={{ marginTop: 6, textDecorationLine: 'underline' }}
                     text={i18n.t('Register')}
                     color={COLORS.neutral[700]}
@@ -271,8 +275,14 @@ export default function AuthModal({
               <Button
                 isDisabled={phoneNr.length < 8}
                 isLoading={isLoading}
+                fullWidth
                 text={i18n.t('Next')}
-                onPress={requestCode}
+                onPress={() => {
+                  requestCode();
+                  setTimeout(() => {
+                    pageRef.current?.setPage(1);
+                  }, 500);
+                }}
               />
             </View>
             <View style={{ padding: 25 }}>
@@ -296,6 +306,22 @@ export default function AuthModal({
                   setValue={(val) => setCode(val)}
                 />
               </View>
+              <Body
+                type={1}
+                onPress={() => Utils.showConfirmationAlert(
+                  i18n.t('Retry'),
+                  i18n.t("Let's take a look at your phone number, and then we will try again."),
+                  i18n.t('Go back'),
+                  () => {
+                    setCode('');
+                    pageRef.current?.setPage(0);
+                  },
+                  false,
+                )}
+                text={i18n.t('Did not receive a code?')}
+                style={{ textDecorationLine: 'underline', marginTop: 8 }}
+                color={COLORS.neutral[300]}
+              />
             </View>
           </PagerView>
 

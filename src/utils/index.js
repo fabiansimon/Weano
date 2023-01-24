@@ -75,7 +75,7 @@ export default class Utils {
      * @param {String} action - action
      * @return {boolean} isFuture
      */
-  static showConfirmationAlert(title, subtitle, actionMessage, action) {
+  static showConfirmationAlert(title, subtitle, actionMessage, action, isDestructive = true) {
     Alert.alert(
       title,
       subtitle,
@@ -87,7 +87,7 @@ export default class Utils {
         {
           text: actionMessage,
           onPress: () => action(),
-          style: 'destructive',
+          style: isDestructive ? 'destructive' : 'default',
         },
       ],
     );

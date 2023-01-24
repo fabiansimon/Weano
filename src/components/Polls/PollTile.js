@@ -5,10 +5,20 @@ import Headline from '../typography/Headline';
 import COLORS, { RADIUS } from '../../constants/Theme';
 
 export default function PollTile({
-  style, data, onPress, isActive, percentage, height = 50,
+  style, item, onPress, isActive, height = 50, data,
 }) {
   const color = isActive ? COLORS.shades[0] : COLORS.neutral[500];
 
+  let countedVotes = 0;
+  const getPercentage = () => {
+    for (let i = 0; i < data.options.length; i += 1) {
+      countedVotes += data.options[i].votes.length;
+    }
+    return countedVotes === 0 ? 0 : ((item.votes.length / countedVotes) * 100).toFixed(1);
+  };
+  const percentage = getPercentage();
+
+  // console.log(JSON.stringify(data));
   return (
     <TouchableOpacity
       activeOpacity={0.9}
@@ -16,7 +26,7 @@ export default function PollTile({
       style={style}
     >
       <View style={[styles.optionTileContainer, { height }]}>
-        <View style={[isActive ? styles.activeContainerOverlay : styles.inactiveContainerOverlay, { width: percentage, height }]} />
+        <View style={[isActive ? styles.activeContainerOverlay : styles.inactiveContainerOverlay, { width: `${percentage}%`, height }]} />
         <MaskedView
           style={styles.optionTile}
           maskElement={(
@@ -36,18 +46,18 @@ export default function PollTile({
                 <Headline
                   type={4}
                   color={COLORS.neutral[500]}
-                  text={data.option}
+                  text={item.option}
                 />
                 <Headline
                   type={4}
                   color={COLORS.neutral[500]}
-                  text={percentage}
+                  text={`${percentage} ${countedVotes}`}
                 />
               </View>
             </View>
               )}
         >
-          <View style={{ backgroundColor: color, width: percentage, height: 45 }} />
+          <View style={{ backgroundColor: color, width: `${percentage}%`, height: 45 }} />
           <View style={{ backgroundColor: COLORS.neutral[300], flex: 1, height: 45 }} />
         </MaskedView>
       </View>

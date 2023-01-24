@@ -51,7 +51,7 @@ export default function ActionTile({ style, trip, isActive }) {
       animation="pulse"
       iterationCount={4}
       delay={2000}
-      style={[styles.container, style, { backgroundColor: isActive ? COLORS.error[900] : COLORS.primary[700] }]}
+      style={[styles.container, style, { backgroundColor: isActive ? COLORS.error[700] : COLORS.primary[700] }]}
     >
       <View style={styles.typeContainer}>
         {isActive ? (
@@ -123,15 +123,16 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.s,
     height: 116,
     padding: PADDING.s,
+    borderWidth: 1,
+    borderColor: COLORS.error[900],
   },
   typeContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: RADIUS.xl,
-    borderWidth: 1,
-    borderColor: COLORS.shades[0],
     position: 'absolute',
     top: 10,
+    backgroundColor: COLORS.error[900],
     right: 10,
     paddingVertical: 5,
     paddingHorizontal: 10,
