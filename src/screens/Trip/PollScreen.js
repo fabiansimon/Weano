@@ -116,6 +116,7 @@ export default function PollScreen() {
     }).then((res) => {
       const id = res.data.createPoll;
 
+      console.log(id);
       const newPoll = {
         createdAt: Date.now(),
         creatorId: userId,

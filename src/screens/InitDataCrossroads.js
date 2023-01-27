@@ -9,8 +9,6 @@ import Toast from 'react-native-toast-message';
 import i18n from '../utils/i18n';
 import ROUTES from '../constants/Routes';
 import GET_INIT_USER_DATA from '../queries/getInitUserData';
-import activeTripStore from '../stores/ActiveTripStore';
-import recapTripStore from '../stores/RecapTripStore';
 import userStore from '../stores/UserStore';
 import COLORS from '../constants/Theme';
 import AsyncStorageDAO from '../utils/AsyncStorageDAO';
@@ -26,8 +24,6 @@ export default function InitDataCrossroads() {
   const [init, setInit] = useState(false);
   const [requestedRoute, setRequestedRoute] = useState(null);
   const { authToken, pushToken } = userStore((state) => state.user);
-  const setActiveTrip = activeTripStore((state) => state.setActiveTrip);
-  const setRecapTrip = recapTripStore((state) => state.setRecapTrip);
   const setTrips = tripsStore((state) => state.setTrips);
   const updateUserData = userStore((state) => state.updateUserData);
 
@@ -159,7 +155,7 @@ export default function InitDataCrossroads() {
     }
     return () => {
       if (Platform.OS === 'ios') {
-        Linking.removeEventListener('url', handleOpenUrl);
+        Linking.remove('url', handleOpenUrl);
       }
     };
   }, []);

@@ -1,3 +1,5 @@
+/* eslint-disable no-mixed-operators */
+/* eslint-disable prefer-const */
 import {
   FlatList, Pressable, StyleSheet, View,
 } from 'react-native';
@@ -17,9 +19,9 @@ import VOTE_FOR_POLL from '../../mutations/voteForPoll';
 import userStore from '../../stores/UserStore';
 
 export default function PollView({
-  style, data, title, subtitle, onPress, onVote,
+  style, data, title, subtitle, onPress, isMinimized = false,
 }) {
-  const [voteForPoll, { error }] = useMutation(VOTE_FOR_POLL);
+  const [voteForPoll] = useMutation(VOTE_FOR_POLL);
   const { id } = userStore((state) => state.user);
   const { polls } = activeTripStore((state) => state.activeTrip);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
@@ -28,28 +30,36 @@ export default function PollView({
     const { _id: pollId } = data;
     const { id: optionId } = item;
 
+    const oldPolls = polls;
+
     updateActiveTrip({
       polls: polls.map((poll) => {
         if (poll._id === pollId) {
-          const { options } = poll;
-          const indexOption = options.findIndex((option) => option.id === optionId);
-          const { votes } = options[indexOption];
-          const indexVote = votes.indexOf(id);
+          let nOptions = poll.options;
+          const oIndex = nOptions.findIndex((o) => o.id === optionId);
 
-          const nVotes = [...votes];
-          if (indexVote === -1) {
+          let nVotes = [...nOptions[oIndex].votes];
+          const vIndex = nVotes.findIndex((v) => v === id);
+
+          if (vIndex === -1) {
             nVotes.push(id);
           } else {
-            nVotes.splice(indexVote, 1);
+            nVotes.splice(vIndex, 1);
           }
 
-          const nOptions = options;
-          nOptions[indexOption].votes = nVotes;
-          console.log(nOptions);
-          // console.log(newVotes);
+          const options = nOptions.map((o, i) => {
+            if (i === oIndex) {
+              return {
+                ...o,
+                votes: nVotes,
+              };
+            }
+            return o;
+          });
+
           return {
             ...poll,
-            options: nOptions,
+            options,
           };
         }
         return poll;
@@ -63,9 +73,6 @@ export default function PollView({
           pollId,
         },
       },
-    }).then(() => {
-
-      // updateActiveTrip({ polls: polls.filter((p) => p._id !== _id) });
     })
       .catch((e) => {
         Toast.show({
@@ -73,6 +80,7 @@ export default function PollView({
           text1: i18n.t('Whoops!'),
           text2: e.message,
         });
+        updateActiveTrip({ polls: oldPolls });
         console.log(`ERROR: ${e.message}`);
       });
   };
@@ -112,20 +120,31 @@ export default function PollView({
           />
         )}
       </View>
-      <FlatList
-        data={data.options}
-        scrollEnabled={false}
-        renderItem={({ item, index }) => (
-          <PollTile
-            style={{ marginBottom: 16 }}
-            item={item}
-            data={data}
-            index={index}
-            onPress={() => handleVote(item)}
-            isActive={false}
-          />
-        )}
-      />
+      {data.options.map((option, index) => {
+        if (isMinimized && index < 2 || !isMinimized) {
+          return (
+            <PollTile
+              key={option.id}
+              style={{ marginBottom: 16 }}
+              item={option}
+              data={data}
+              index={index}
+              onPress={() => handleVote(option)}
+              isActive={option.votes.includes(id)}
+            />
+          );
+        } if (isMinimized && index === 2) {
+          return (
+            <Body
+              type={1}
+              color={COLORS.neutral[300]}
+              style={{ marginLeft: 8, textAlign: 'center' }}
+              text={i18n.t('see more options')}
+            />
+          );
+        }
+        return null;
+      })}
     </View>
   );
 }

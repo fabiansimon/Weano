@@ -102,13 +102,15 @@ export default function LocationScreen({ isVisible, onRequestClose, onPress }) {
             <SectionList
               scrollEnabled={false}
               sections={data}
-              renderSectionHeader={({ section: { title } }) => (
+              renderSectionHeader={({ section: { title, data: sectionData } }) => (
+                sectionData.length >= 1 && (
                 <Body
                   type={2}
                   color={COLORS.neutral[300]}
                   text={title}
                   style={{ marginVertical: 10, marginLeft: 4 }}
                 />
+                )
               )}
               renderItem={({ item }) => (
                 <SearchResultTile

@@ -291,6 +291,6 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.l,
     borderWidth: 1,
     borderColor: COLORS.neutral[100],
-    marginBottom: 70,
+    marginBottom: 120,
   },
 });

@@ -1,8 +1,13 @@
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  Pressable, StyleSheet, View,
+} from 'react-native';
 import React from 'react';
 import MaskedView from '@react-native-masked-view/masked-view';
 import Headline from '../typography/Headline';
 import COLORS, { RADIUS } from '../../constants/Theme';
+import Avatar from '../Avatar';
+import userManagement from '../../utils/userManagement';
+import Body from '../typography/Body';
 
 export default function PollTile({
   style, item, onPress, isActive, height = 50, data,
@@ -18,9 +23,8 @@ export default function PollTile({
   };
   const percentage = getPercentage();
 
-  // console.log(JSON.stringify(data));
   return (
-    <TouchableOpacity
+    <Pressable
       activeOpacity={0.9}
       onPress={onPress}
       style={style}
@@ -43,15 +47,16 @@ export default function PollTile({
                 flexDirection: 'row', justifyContent: 'space-between', flex: 1,
               }}
               >
-                <Headline
-                  type={4}
+                <Body
+                  type={1}
                   color={COLORS.neutral[500]}
                   text={item.option}
                 />
-                <Headline
-                  type={4}
+                <Body
+                  type={1}
+                  style={{ marginRight: item.votes.length * 23 }}
                   color={COLORS.neutral[500]}
-                  text={`${percentage} ${countedVotes}`}
+                  text={`${percentage}%`}
                 />
               </View>
             </View>
@@ -60,8 +65,14 @@ export default function PollTile({
           <View style={{ backgroundColor: color, width: `${percentage}%`, height: 45 }} />
           <View style={{ backgroundColor: COLORS.neutral[300], flex: 1, height: 45 }} />
         </MaskedView>
+        <View style={{
+          position: 'absolute', right: 10, top: 11, flexDirection: 'row',
+        }}
+        >
+          {item.votes.map((user) => <Avatar style={{ marginLeft: -10 }} size={25} data={userManagement.convertIdToUser(user)} />)}
+        </View>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 

@@ -8,16 +8,17 @@ import i18n from '../../utils/i18n';
 import Body from '../typography/Body';
 
 export default function PollCarousel({
-  data, style, onLayout,
+  data, style,
 }) {
   const isEmpty = data.length <= 0;
   return (
-    <View style={{ height: isEmpty ? 70 : 250 }} onLayout={onLayout}>
+    <View style={{ height: isEmpty ? 70 : 250 }}>
       {!isEmpty ? (
         <PagerView style={{ flex: 1 }}>
           {data.map((poll) => (
             <View>
               <PollView
+                isMinimized
                 style={style}
                 data={poll}
                 title={poll.title}

@@ -94,7 +94,7 @@ export default function ChecklistScreen() {
             Toast.show({
               type: 'success',
               text1: i18n.t('Whooray!'),
-              text2: i18n.t('Poll was succeessfully deleted!'),
+              text2: i18n.t('Task was succeessfully deleted!'),
             });
 
             if (isPrivate) {

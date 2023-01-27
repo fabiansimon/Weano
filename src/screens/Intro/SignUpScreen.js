@@ -1,21 +1,23 @@
 import {
-  View, StyleSheet,
+  View, StyleSheet, Image, Pressable, ScrollView,
 } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import COLORS, { PADDING } from '../../constants/Theme';
+import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Headline from '../../components/typography/Headline';
 import Body from '../../components/typography/Body';
 import TextField from '../../components/TextField';
 import AuthModal from '../../components/AuthModal';
-import KeyboardView from '../../components/KeyboardView';
+import GoogleIcon from '../../../assets/icons/google_icon.svg';
 import Button from '../../components/Button';
 import REGEX from '../../constants/Regex';
+import Logo from '../../../assets/images/logo_temp.png';
+import Utils from '../../utils';
 
 export default function SignUpScreen({ invitationId }) {
   const errorColors = {
-    error: COLORS.error[900],
+    error: COLORS.error[700],
     success: COLORS.success[700],
     neutral: COLORS.neutral[300],
   };
@@ -140,50 +142,74 @@ export default function SignUpScreen({ invitationId }) {
   };
 
   const CheckList = () => (
-    <View style={{ marginBottom: 20 }}>
-      <Body
-        type={2}
-        color={errorChecks.firstName.color}
-        text={`• ${i18n.t('First name')} ${errorChecks.firstName.error}`}
-      />
+    <View style={{ marginTop: 10 }}>
+      {!errorChecks.firstName.isValid && firstName?.length >= 1
+        && (
+        <Body
+          type={2}
+          color={errorChecks.firstName.color}
+          text={`• ${i18n.t('First name')} ${errorChecks.firstName.error}`}
+        />
+        )}
+      {!errorChecks.lastName.isValid && lastName?.length >= 1
+      && (
       <Body
         type={2}
         color={errorChecks.lastName.color}
         text={`• ${i18n.t('Last name')} ${errorChecks.lastName.error}`}
       />
+      )}
+      {!errorChecks.email.isValid && email?.length >= 1
+      && (
       <Body
         type={2}
         color={errorChecks.email.color}
         text={`• ${i18n.t('Email')} ${errorChecks.email.error}`}
       />
+      )}
     </View>
   );
 
   return (
-
-    <KeyboardView paddingBottom={-30}>
-      <SafeAreaView style={{ backgroundColor: COLORS.neutral[50], flex: 1, justifyContent: 'space-between' }}>
-        <View style={styles.container}>
-          <Headline
-            text={i18n.t('Sign up!')}
-            type={2}
+    <>
+      <View style={styles.header}>
+        <SafeAreaView
+          style={styles.innerHeaderContainer}
+        >
+          <Image
+            source={Logo}
+            style={{ height: 50, width: 59 }}
+            resizeMode="cover"
           />
-          <View style={{ flexDirection: 'row', marginTop: 6 }}>
-            <Body text={i18n.t('Already have an account?')} />
+          <Pressable
+            onPress={() => setLoginVisible(true)}
+            style={styles.loginContainer}
+          >
             <Body
-              style={{ marginHorizontal: 3 }}
-              text={i18n.t('Click')}
+              type={1}
+              color={COLORS.shades[0]}
+              text={i18n.t('Log in instead')}
             />
-            <Body
-              onPress={() => {
-                setLoginVisible(true);
-              }}
-              text={i18n.t('here')}
-              style={{ textDecorationLine: 'underline', fontWeight: '500' }}
-            />
-
-          </View>
-          <View style={{ marginTop: 42 }}>
+          </Pressable>
+        </SafeAreaView>
+      </View>
+      <ScrollView
+        scrollEnabled={false}
+        contentContainerStyle={{ justifyContent: 'space-between', flex: 1 }}
+        style={styles.mainContainer}
+      >
+        <>
+          <Headline
+            type={2}
+            text={i18n.t('Hey there 👋')}
+          />
+          <Body
+            style={{ marginTop: 4 }}
+            color={COLORS.neutral[300]}
+            type={1}
+            text={i18n.t('Are you ready to make some memories? \nIf not, then better get ready! ')}
+          />
+          <View style={{ marginTop: 30 }}>
             <View style={{ flexDirection: 'row' }}>
               <View style={{ flex: 1, paddingRight: 8 }}>
                 <Body
@@ -199,6 +225,7 @@ export default function SignUpScreen({ invitationId }) {
                   label={i18n.t('First name')}
                   value={firstName || null}
                   onChangeText={(val) => setFirstName(val)}
+                  style={firstName.length > 0 ? errorChecks.firstName.isValid ? styles.validField : styles.invalidField : null}
                   placeholder={i18n.t('John')}
                   autoComplete={false}
                   autoCorrect
@@ -217,6 +244,7 @@ export default function SignUpScreen({ invitationId }) {
                   onDelete={() => setLastName('')}
                   returnKeyType="next"
                   label={i18n.t('Last name')}
+                  style={lastName.length > 0 ? errorChecks.lastName.isValid ? styles.validField : styles.invalidField : null}
                   value={lastName || null}
                   onChangeText={(val) => setLastName(val)}
                   placeholder={i18n.t('Doe')}
@@ -241,25 +269,35 @@ export default function SignUpScreen({ invitationId }) {
                 value={email || null}
                 returnKeyType="done"
                 autoComplete={false}
+                style={email.length > 0 ? errorChecks.email.isValid ? styles.validField : styles.invalidField : null}
                 autoCorrect={false}
                 onChangeText={(val) => setEmail(val)}
                 placeholder={i18n.t('Your Email')}
               />
             </View>
           </View>
-        </View>
-        <View style={styles.footer}>
           <CheckList />
-          <View style={{ width: '100%', height: 60 }}>
-            <Button
-              fullWidth
-              onPress={() => setRegisterVisible(true)}
-              text={i18n.t('Next')}
-              isDisabled={!allValid}
-            />
-          </View>
+        </>
+        <View style={{
+          width: '100%', height: 115, marginTop: 'auto',
+        }}
+        >
+          <Button
+            fullWidth
+            onPress={() => setRegisterVisible(true)}
+            text={i18n.t('Next')}
+            isDisabled={!allValid}
+          />
+          <Button
+            style={{ marginTop: 15 }}
+            fullWidth
+            icon={<GoogleIcon height={22} style={{ left: -20 }} />}
+            isSecondary
+            onPress={() => console.log('Google')}
+            text={i18n.t('Sign up with Google')}
+          />
         </View>
-      </SafeAreaView>
+      </ScrollView>
       <AuthModal
         isVisible={registerVisible}
         onRequestClose={() => setRegisterVisible(false)}
@@ -274,16 +312,50 @@ export default function SignUpScreen({ invitationId }) {
         onRequestClose={() => setLoginVisible(false)}
         joinTripId={invitationId}
       />
-    </KeyboardView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    marginTop: 14,
-    marginHorizontal: PADDING.l,
+  header: {
+    position: 'absolute',
+    top: 0,
+    backgroundColor: COLORS.primary[500],
+    width: '100%',
+    height: 200,
   },
-  footer: {
-    marginHorizontal: PADDING.l,
+  loginContainer: {
+    backgroundColor: COLORS.primary[300],
+    paddingVertical: 6,
+    paddingHorizontal: 15,
+    borderRadius: 100,
+  },
+  innerHeaderContainer: {
+    marginTop: 8,
+    marginBottom: -20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginHorizontal: PADDING.s,
+  },
+  mainContainer: {
+    backgroundColor: COLORS.shades[0],
+    borderTopRightRadius: RADIUS.m,
+    borderTopLeftRadius: RADIUS.m,
+    paddingHorizontal: PADDING.l,
+    paddingTop: PADDING.l,
+    height: 100,
+    marginTop: 120,
+    paddingBottom: 50,
+  },
+  validField: {
+    borderWidth: 1,
+    borderColor: COLORS.success[500],
+    backgroundColor: Utils.addAlpha(COLORS.success[500], 0.1),
+  },
+  invalidField: {
+    borderWidth: 1,
+    borderColor: COLORS.error[500],
+    backgroundColor: Utils.addAlpha(COLORS.error[500], 0.1),
   },
 });

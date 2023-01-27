@@ -1,5 +1,5 @@
 import {
-  View, StyleSheet, Image, Dimensions, TouchableOpacity, Pressable, RefreshControl,
+  View, StyleSheet, Image, Dimensions, Pressable, RefreshControl,
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import Toast from 'react-native-toast-message';
@@ -363,6 +363,17 @@ export default function TripScreen({ route }) {
     }
     return `${i18n.t('In')} ${difference} ${i18n.t('days')}`;
   };
+
+  const checkTasksStatus = () => {
+    if (!data) {
+      return false;
+    }
+
+    const { mutualTasks, privateTasks } = data;
+    const tasks = [...mutualTasks, ...privateTasks];
+    return tasks.filter((task) => task.isDone).length === tasks.length;
+  };
+
   const statusData = [
     {
       name: i18n.t('Location'),
@@ -376,7 +387,7 @@ export default function TripScreen({ route }) {
     },
     {
       name: i18n.t('Tasks'),
-      isDone: false,
+      isDone: checkTasksStatus(),
       route: ROUTES.checklistScreen,
     },
   ];
@@ -394,7 +405,7 @@ export default function TripScreen({ route }) {
       onPress: () => navigation.navigate(ROUTES.pollScreen),
       content: data?.polls && (
       <PollCarousel
-        style={{ marginHorizontal: PADDING.l, maxHeight: 220 }}
+        style={{ marginHorizontal: PADDING.l, maxHeight: 250 }}
         data={data?.polls}
       />
       ),
@@ -410,9 +421,6 @@ export default function TripScreen({ route }) {
       />,
       content: <ChecklistContainer
         onPress={() => navigation.navigate(ROUTES.checklistScreen)}
-        onLayout={(e) => {
-          console.log(`Checklist: ${e.nativeEvent.layout.y}`);
-        }}
       />,
       yPos: 0,
     },
@@ -509,11 +517,11 @@ export default function TripScreen({ route }) {
               style={[data?.dateRange?.startDate ? styles.infoTile : styles.infoButton, { marginLeft: 14 }]}
             />
           </ScrollView>
-          <TouchableOpacity
+          <Pressable
             style={{ flexDirection: 'row', marginTop: 16, alignItems: 'center' }}
             onPress={() => isHost && setInputOpen('description')}
           >
-            {!data?.description && (
+            {!data?.description && isHost && (
             <Icon
               size={16}
               color={COLORS.neutral[300]}
@@ -525,7 +533,7 @@ export default function TripScreen({ route }) {
               text={data?.description || i18n.t('Add a description to the trip 😎')}
               style={{ marginLeft: 4, color: COLORS.neutral[300] }}
             />
-          </TouchableOpacity>
+          </Pressable>
         </View>
         <Divider vertical={20} />
         <View style={styles.statusContainer}>
@@ -732,12 +740,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.2)',
   },
-  backButton: {
-    position: 'absolute',
-    top: 50,
-    left: 25,
-    index: 10,
-  },
   bodyContainer: {
     top: -20,
     zIndex: 100,
@@ -748,25 +750,6 @@ const styles = StyleSheet.create({
     shadowColor: COLORS.neutral[700],
     shadowRadius: 10,
     shadowOpacity: 0.1,
-  },
-  buttonContainer: {
-    borderTopEndRadius: 20,
-    borderTopStartRadius: 20,
-    paddingTop: 18,
-    shadowColor: COLORS.shades[100],
-    shadowRadius: 10,
-    shadowOpacity: 0.05,
-    shadowOffset: {
-      height: -10,
-    },
-    position: 'absolute',
-    backgroundColor: COLORS.shades[0],
-    paddingHorizontal: 20,
-    justifyContent: 'flex-start',
-    flexDirection: 'row',
-    height: 110,
-    width: '100%',
-    bottom: 0,
   },
   image: {
     position: 'absolute',
