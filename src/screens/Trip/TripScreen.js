@@ -88,7 +88,7 @@ export default function TripScreen({ route }) {
     title: i18n.t('Trip options'),
     options: [
       {
-        name: 'Change title',
+        name: i18n.t('Edit title'),
         trailing: !isHost && <RoleChip isHost string={i18n.t('Must be host')} />,
         notAvailable: !isHost,
         onPress: () => {
@@ -98,7 +98,7 @@ export default function TripScreen({ route }) {
         },
       },
       {
-        name: 'Change description',
+        name: i18n.t('Edit description'),
         trailing: !isHost && <RoleChip isHost string={i18n.t('Must be host')} />,
         notAvailable: !isHost,
         onPress: () => {
@@ -108,7 +108,7 @@ export default function TripScreen({ route }) {
         },
       },
       {
-        name: 'Change thumbnail',
+        name: i18n.t('Edit thumbnail'),
         trailing: !isHost && <RoleChip isHost string={i18n.t('Must be host')} />,
         notAvailable: !isHost,
         onPress: () => {
