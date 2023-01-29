@@ -41,6 +41,8 @@ export default function CameraScreen({ route }) {
 
   const navigation = useNavigation();
 
+  console.log(tripId);
+
   let lastPress = 0;
   const DOUBLE_PRESS_DELAY = 500;
 

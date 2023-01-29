@@ -56,7 +56,7 @@ export default function ImageModal({
     setIsLoading(true);
 
     try {
-      const { Location } = await httpService.uploadToS3(image);
+      const { Location } = await httpService.uploadToS3(image, true);
 
       await uploadTripImage({
         variables: {
@@ -78,7 +78,6 @@ export default function ImageModal({
         text2: e.message,
       });
       setIsLoading(false);
-      console.log(e);
     }
   };
 
@@ -134,8 +133,8 @@ export default function ImageModal({
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Avatar
           disabled
+          isSelf
           size={50}
-          data={user}
         />
         <View style={{ marginLeft: 10 }}>
           <Headline

@@ -186,6 +186,7 @@ export default function MemoriesScreen({ route }) {
   const getImageTile = (image, index) => {
     const isLeft = index === 0 || index % numColumns === 0;
 
+    console.log(image.uri);
     return (
       <ImageContainer
         onPress={() => {

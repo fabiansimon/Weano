@@ -139,7 +139,11 @@ export default function App() {
             <Stack.Navigator
               screenOptions={{ headerShown: false }}
             >
-
+              {/* <Stack.Screen
+                name={ROUTES.cameraScreen}
+                initialParams={{ tripId: '63c3e95eafa1d7827eb9c3bd' }}
+                component={CameraScreen}
+              /> */}
               <Stack.Screen
                 name={ROUTES.initDataCrossroads}
                 initialParams={{ uploadReminder: null }}

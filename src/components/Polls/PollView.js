@@ -1,12 +1,13 @@
 /* eslint-disable no-mixed-operators */
 /* eslint-disable prefer-const */
 import {
-  FlatList, Pressable, StyleSheet, View,
+  Pressable, StyleSheet, View,
 } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Feather';
 import { useMutation } from '@apollo/client';
 import Toast from 'react-native-toast-message';
+// eslint-disable-next-line import/no-named-as-default
 import PollTile from './PollTile';
 import Headline from '../typography/Headline';
 import Body from '../typography/Body';
@@ -23,7 +24,7 @@ export default function PollView({
 }) {
   const [voteForPoll] = useMutation(VOTE_FOR_POLL);
   const { id } = userStore((state) => state.user);
-  const { polls } = activeTripStore((state) => state.activeTrip);
+  const { polls, activeMembers } = activeTripStore((state) => state.activeTrip);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
 
   const handleVote = async (item) => {
@@ -31,40 +32,39 @@ export default function PollView({
     const { id: optionId } = item;
 
     const oldPolls = polls;
+    const updatedPolls = polls.map((poll) => {
+      if (poll._id === pollId) {
+        let nOptions = poll.options;
+        const oIndex = nOptions.findIndex((o) => o.id === optionId);
 
-    updateActiveTrip({
-      polls: polls.map((poll) => {
-        if (poll._id === pollId) {
-          let nOptions = poll.options;
-          const oIndex = nOptions.findIndex((o) => o.id === optionId);
+        let nVotes = [...nOptions[oIndex].votes];
+        const vIndex = nVotes.findIndex((v) => v === id);
 
-          let nVotes = [...nOptions[oIndex].votes];
-          const vIndex = nVotes.findIndex((v) => v === id);
-
-          if (vIndex === -1) {
-            nVotes.push(id);
-          } else {
-            nVotes.splice(vIndex, 1);
-          }
-
-          const options = nOptions.map((o, i) => {
-            if (i === oIndex) {
-              return {
-                ...o,
-                votes: nVotes,
-              };
-            }
-            return o;
-          });
-
-          return {
-            ...poll,
-            options,
-          };
+        if (vIndex === -1) {
+          nVotes.push(id);
+        } else {
+          nVotes.splice(vIndex, 1);
         }
-        return poll;
-      }),
+
+        const options = nOptions.map((o, i) => {
+          if (i === oIndex) {
+            return {
+              ...o,
+              votes: nVotes,
+            };
+          }
+          return o;
+        });
+
+        return {
+          ...poll,
+          options,
+        };
+      }
+      return poll;
     });
+
+    updateActiveTrip({ polls: updatedPolls });
 
     await voteForPoll({
       variables: {
@@ -124,6 +124,7 @@ export default function PollView({
         if (isMinimized && index < 2 || !isMinimized) {
           return (
             <PollTile
+              activeMembers={activeMembers}
               key={option.id}
               style={{ marginBottom: 16 }}
               item={option}
