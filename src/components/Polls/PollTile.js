@@ -10,7 +10,7 @@ import userManagement from '../../utils/userManagement';
 import Body from '../typography/Body';
 
 export default function PollTile({
-  style, item, onPress, isActive, height = 50, data,
+  style, item, onPress, isActive, height = 45, data,
 }) {
   const color = isActive ? COLORS.shades[0] : COLORS.neutral[500];
 
@@ -90,18 +90,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   optionTileContainer: {
-    borderRadius: RADIUS.l,
+    borderRadius: RADIUS.m,
     borderWidth: 1,
     borderColor: COLORS.neutral[100],
   },
   inactiveContainerOverlay: {
-    borderRadius: RADIUS.l,
+    borderRadius: RADIUS.m,
     backgroundColor: COLORS.neutral[100],
     position: 'absolute',
   },
   activeContainerOverlay: {
-    borderRadius: RADIUS.l,
-    backgroundColor: COLORS.primary[700],
+    borderRadius: RADIUS.m,
+    backgroundColor: COLORS.primary[300],
     position: 'absolute',
   },
 });

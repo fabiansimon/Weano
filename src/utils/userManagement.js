@@ -5,7 +5,10 @@ import userStore from '../stores/UserStore';
      * Convert MonthInt to a Month String
      * @param {image} image - image to download
      */
-function convertIdToUser(id) {
+function convertIdToUser(id, userList) {
+  if (userList) {
+    return userList.find((member) => member.id === id);
+  }
   const { activeMembers } = activeTripStore((state) => state.activeTrip);
   const user = activeMembers.find((member) => member.id === id);
 

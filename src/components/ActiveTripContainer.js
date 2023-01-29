@@ -23,11 +23,7 @@ export default function ActiveTripContainer({ style, onPress }) {
             color={COLORS.shades[0]}
             text={i18n.t('Ongoing Trip')}
           />
-          {/* <IonIcon
-            name="ios-chevron-down-circle-sharp"
-            color={COLORS.primary[300]}
-            size={26}
-          /> */}
+
         </View>
         <Headline
           type={1}

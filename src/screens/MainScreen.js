@@ -35,6 +35,7 @@ import Suitcase3D from '../../assets/images/suitcase_3d.png';
 import GET_TRIPS_FOR_USER from '../queries/getTripsForUser';
 import RecapCardMini from '../components/RecapCardMini';
 import ActionTile from '../components/Trip/ActionTile';
+import ActionHeader from '../components/ActionHeader';
 
 export default function MainScreen() {
   const [getTripsForUser, { error, data }] = useLazyQuery(GET_TRIPS_FOR_USER);
@@ -46,6 +47,8 @@ export default function MainScreen() {
   const setTrips = tripsStore((state) => state.setTrips);
   const [refreshing, setRefreshing] = React.useState(false);
 
+  const { width } = Dimensions.get('window');
+
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     getTripsForUser().then(() => setRefreshing(false)).catch(() => setRefreshing(false));
@@ -55,7 +58,11 @@ export default function MainScreen() {
   let recapTimestamp = new Date();
   recapTimestamp.setFullYear(recapTimestamp.getFullYear() - 1);
   recapTimestamp = Date.parse(recapTimestamp) / 1000;
-  const { width } = Dimensions.get('window');
+  const upcomingTrips = trips.filter((trip) => trip.dateRange.startDate > now && trip.dateRange.endDate > now);
+  const recentTrips = trips.filter((trip) => trip.dateRange.startDate < now && trip.dateRange.endDate < now);
+  const activeTrip = trips.filter((trip) => trip.dateRange.startDate < now && trip.dateRange.endDate > now)[0];
+  const recapTrip = trips.filter((trip) => trip.dateRange.startDate < recapTimestamp && trip.dateRange.endDate < now)[0];
+  const upcomingTrip = upcomingTrips.length > 0 && upcomingTrips.filter((trip) => ((trip.dateRange.startDate - now) / 86400) < 7)[0];
 
   useEffect(() => {
     if (data) {
@@ -70,11 +77,6 @@ export default function MainScreen() {
       });
     }
   }, [data, error]);
-
-  const upcomingTrips = trips.filter((trip) => trip.dateRange.startDate > now && trip.dateRange.endDate > now);
-  const recentTrips = trips.filter((trip) => trip.dateRange.startDate < now && trip.dateRange.endDate < now);
-  const activeTrip = trips.filter((trip) => trip.dateRange.startDate < now && trip.dateRange.endDate > now)[0];
-  const recapTrip = trips.filter((trip) => trip.dateRange.startDate < recapTimestamp && trip.dateRange.endDate < now)[0];
 
   const navigation = useNavigation();
 
@@ -158,26 +160,43 @@ export default function MainScreen() {
     <View style={{ backgroundColor: COLORS.neutral[50], flex: 1 }}>
       <AnimatedHeader
         scrollY={scrollY}
+        marginTop={10}
         maxHeight={120}
       >
         <View style={styles.header}>
-          <View>
-            <Headline type={3} text={`${i18n.t('Hey')} ${user?.firstName}!`} />
-            <Body
-              type={1}
-              text={i18n.t('Are you looking for something? 👀')}
-              color={COLORS.neutral[300]}
+          <SafeAreaView style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            flex: 1,
+          }}
+          >
+            <View>
+              <Headline
+                type={3}
+                text={`${i18n.t('Hey')} ${user?.firstName}!`}
+              />
+              <Body
+                type={1}
+                text={i18n.t('Are you looking for something? 👀')}
+                color={COLORS.neutral[300]}
+              />
+            </View>
+            <Button
+              isSecondary
+              style={styles.searchButton}
+              backgroundColor={COLORS.shades[0]}
+              icon={<Icon name="search1" size={20} />}
+              fullWidth={false}
+              onPress={() => setSearchVisible(true)}
+              color={COLORS.neutral[900]}
             />
-          </View>
-          <Button
-            isSecondary
-            style={styles.searchButton}
-            backgroundColor={COLORS.shades[0]}
-            icon={<Icon name="search1" size={20} />}
-            fullWidth={false}
-            onPress={() => setSearchVisible(true)}
-            color={COLORS.neutral[900]}
+          </SafeAreaView>
+          <ActionHeader
+            type={activeTrip ? 'active' : upcomingTrip ? 'upcoming' : recapTrip ? 'recap' : null}
+            trip={activeTrip || upcomingTrip || recapTrip || null}
+            style={{ position: 'absolute', bottom: -20 }}
           />
+
         </View>
       </AnimatedHeader>
       <Animated.ScrollView
@@ -201,8 +220,8 @@ export default function MainScreen() {
           </View>
           <ChipSelection />
           <ActionTile
-            isActive={activeTrip}
-            trip={activeTrip || recapTrip || null}
+            type={activeTrip ? 'active' : upcomingTrip ? 'upcoming' : recapTrip ? 'recap' : null}
+            trip={activeTrip || upcomingTrip || recapTrip || null}
             style={{ marginHorizontal: PADDING.l, marginTop: 20 }}
           />
           <View>
@@ -356,11 +375,8 @@ const styles = StyleSheet.create({
   },
   header: {
     flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
     paddingHorizontal: 20,
-    paddingBottom: 14,
+
   },
   activeTripChip: {
     borderRadius: 100,

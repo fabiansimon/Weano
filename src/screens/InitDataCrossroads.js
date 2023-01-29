@@ -155,7 +155,7 @@ export default function InitDataCrossroads() {
     }
     return () => {
       if (Platform.OS === 'ios') {
-        Linking.remove('url', handleOpenUrl);
+        Linking.removeAllListeners('url', handleOpenUrl);
       }
     };
   }, []);

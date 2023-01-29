@@ -20,17 +20,27 @@ const GET_INIT_USER_DATA = gql`
             }
             trips {
                 id
-                expensesTotal
                 thumbnailUri
                 title
-                description
                 location {
                     placeName
                     latlon
                 }
+                description
                 dateRange {
                     startDate
                     endDate
+                }
+                openTasks {
+                    _id
+                    assignee
+                    title
+                }
+                activeMembers {
+                    id
+                    avatarUri
+                    firstName
+                    lastName
                 }
                 images {
                     _id

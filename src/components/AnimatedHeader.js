@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 import COLORS from '../constants/Theme';
 
 function AnimatedHeader({
-  scrollY, style, children, maxHeight, minHeight,
+  scrollY, style, children, maxHeight, minHeight, marginTop = 0,
 }) {
   const HEADER_MAX_HEIGHT = maxHeight || 250;
   const HEADER_MIN_HEIGHT = minHeight || 60; // min header height
@@ -25,7 +25,7 @@ function AnimatedHeader({
   return (
     <Animated.View
       style={[
-        [styles.stickyHeader, style],
+        [styles.stickyHeader, style, { marginTop }],
         {
           opacity,
           transform: [{ translateY }],

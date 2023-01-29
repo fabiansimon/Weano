@@ -212,8 +212,6 @@ const styles = StyleSheet.create({
   },
   shareButton: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: COLORS.secondary[900],
     flexDirection: 'row',
     marginBottom: 10,
     paddingHorizontal: 16,
@@ -221,7 +219,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: 8,
     borderRadius: RADIUS.xl,
-    backgroundColor: COLORS.secondary[700],
+    backgroundColor: COLORS.success[700],
     paddingVertical: 6,
   },
   copyButton: {
