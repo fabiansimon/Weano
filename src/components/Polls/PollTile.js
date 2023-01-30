@@ -4,11 +4,12 @@ import {
 import React from 'react';
 import MaskedView from '@react-native-masked-view/masked-view';
 import COLORS, { RADIUS } from '../../constants/Theme';
-import Avatar from '../Avatar';
+// import Avatar from '../Avatar';
 import Body from '../typography/Body';
+import i18n from '../../utils/i18n';
 
 export default function PollTile({
-  style, item, onPress, isActive, height = 45, data, activeMembers,
+  style, item, onPress, isActive, height = 45, data, /* activeMembers, */
 }) {
   const color = isActive ? COLORS.shades[0] : COLORS.neutral[500];
 
@@ -51,10 +52,10 @@ export default function PollTile({
                   text={item.option}
                 />
                 <Body
-                  type={1}
-                  style={{ marginRight: item.votes.length * 23 }}
+                  type={2}
+                  // style={{ marginRight: item.votes.length * 23 }}
                   color={COLORS.neutral[500]}
-                  text={`${percentage}%`}
+                  text={`${item.votes.length} ${i18n.t('votes')}`}
                 />
               </View>
             </View>
@@ -63,13 +64,13 @@ export default function PollTile({
           <View style={{ backgroundColor: color, width: `${percentage}%`, height: 45 }} />
           <View style={{ backgroundColor: COLORS.neutral[300], flex: 1, height: 45 }} />
         </MaskedView>
-        <View style={{
-          position: 'absolute', right: 10, top: 11, flexDirection: 'row',
-        }}
-        >
-          {item.votes && item.votes.map((user) => <Avatar style={{ marginLeft: -10 }} size={25} data={activeMembers.find((member) => member.id === user)} />)}
-        </View>
       </View>
+      {/* <View style={{
+        position: 'absolute', right: 10, top: 11, flexDirection: 'row',
+      }}
+      >
+        {item.votes && item.votes.map((user) => <Avatar style={{ marginLeft: -10 }} size={25} data={activeMembers.find((member) => member.id === user)} />)}
+      </View> */}
     </Pressable>
   );
 }
