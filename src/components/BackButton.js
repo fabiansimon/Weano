@@ -16,7 +16,7 @@ export default function BackButton({
         suppressHighlighting
         name="arrowleft"
         size={22}
-        color={iconColor}
+        color={iconColor || COLORS.shades[100]}
         style={[{ zIndex: 9999 }, style]}
         onPress={() => (onPress ? onPress() : navigation.goBack())}
       />
@@ -26,7 +26,13 @@ export default function BackButton({
           isSecondary
           style={[style, styles.backButton]}
           backgroundColor={COLORS.shades[0]}
-          icon={<Icon name="arrowleft" size={22} />}
+          icon={(
+            <Icon
+              name="arrowleft"
+              color={COLORS.shades[100]}
+              size={22}
+            />
+)}
           fullWidth={false}
           color={COLORS.neutral[900]}
           onPress={() => (onPress ? onPress() : navigation.goBack())}

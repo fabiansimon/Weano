@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
   },
   activeContainerOverlay: {
     borderRadius: RADIUS.m,
-    backgroundColor: COLORS.primary[300],
+    backgroundColor: COLORS.primary[700],
     position: 'absolute',
   },
 });

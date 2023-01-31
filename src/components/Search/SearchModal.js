@@ -83,6 +83,7 @@ export default function LocationScreen({ isVisible, onRequestClose, onPress }) {
               }}
             >
               <Icon
+                color={COLORS.shades[100]}
                 name="close"
                 size={22}
               />

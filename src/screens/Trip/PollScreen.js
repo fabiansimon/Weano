@@ -157,15 +157,21 @@ export default function PollScreen() {
               />
           )}
             data={polls}
-            ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
+            ItemSeparatorComponent={() => (
+              <View style={{
+                marginTop: 10, marginBottom: 24, borderTopColor: COLORS.neutral[100], borderTopWidth: 1,
+              }}
+              />
+            )}
             renderItem={({ item }) => {
               const onPress = user.id === item.creatorId ? () => setPollSelected(item) : null;
               return (
                 <PollView
+                  style={{ marginHorizontal: 5 }}
                   onPress={onPress}
                   data={item}
                   title={item.title}
-                  subtitle={Utils.getDateFromTimestamp(item.createdAt / 1000, 'DD.MM.YYYY • HH:mm')}
+                  subtitle={Utils.getDateFromTimestamp(item.createdAt / 1000, 'HH:mm • Do MMMM ')}
                 />
               );
             }}
@@ -195,7 +201,7 @@ export default function PollScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.neutral[50],
+    backgroundColor: COLORS.shades[0],
   },
   innerContainer: {
     paddingHorizontal: PADDING.s,

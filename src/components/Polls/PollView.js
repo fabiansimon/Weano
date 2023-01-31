@@ -20,7 +20,7 @@ import VOTE_FOR_POLL from '../../mutations/voteForPoll';
 import userStore from '../../stores/UserStore';
 
 export default function PollView({
-  style, data, title, subtitle, onPress, isMinimized = false,
+  style, data, title, subtitle, onPress, isMinimized = false, onNavigation,
 }) {
   const [voteForPoll] = useMutation(VOTE_FOR_POLL);
   const { id } = userStore((state) => state.user);
@@ -88,7 +88,10 @@ export default function PollView({
   const header = data ? title : i18n.t('Be the first one to add one!');
 
   return (
-    <View style={[styles.pollContainer, style]}>
+    <Pressable
+      onPress={onNavigation}
+      style={[styles.pollContainer, style]}
+    >
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 5 }}>
         <View>
           <Headline
@@ -146,27 +149,19 @@ export default function PollView({
         }
         return null;
       })}
-    </View>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   addIcon: {
-    borderRadius: 100,
-    backgroundColor: COLORS.neutral[50],
     justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 0.5,
-    borderColor: COLORS.neutral[100],
+    alignItems: 'flex-end',
+    backgroundColor: 'transparent',
     height: 35,
     width: 35,
   },
   pollContainer: {
-    paddingVertical: 20,
-    paddingHorizontal: PADDING.s,
     borderRadius: 14,
-    borderColor: COLORS.neutral[100],
-    borderWidth: 1,
-    backgroundColor: COLORS.shades[0],
   },
 });

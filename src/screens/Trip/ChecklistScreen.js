@@ -226,16 +226,16 @@ export default function ChecklistScreen() {
           activeOpacity={0.9}
           style={[styles.chipContainer, { backgroundColor: COLORS.success[500] }]}
         >
-          <Headline
-            type={4}
+          <Body
+            type={1}
             text={i18n.t('Done')}
             color={COLORS.shades[0]}
           />
           {filterOption !== 1
             ? (
               <View style={[styles.innerCircle, { backgroundColor: COLORS.success[700] }]}>
-                <Headline
-                  type={4}
+                <Body
+                  type={1}
                   text={taskCount(true)}
                   color={COLORS.shades[0]}
                 />
@@ -245,7 +245,7 @@ export default function ChecklistScreen() {
               <Icon
                 name="closecircle"
                 color={COLORS.shades[0]}
-                size={18}
+                size={16}
                 style={{ marginLeft: 20, marginRight: 4 }}
                 onPress={() => setFilterOption(0)}
                 suppressHighlighting
@@ -259,16 +259,16 @@ export default function ChecklistScreen() {
         activeOpacity={0.9}
         style={[styles.chipContainer, { backgroundColor: COLORS.error[500], marginLeft: filterOption !== 2 ? 10 : 0 }]}
       >
-        <Headline
-          type={4}
+        <Body
+          type={1}
           text={i18n.t('Open')}
           color={COLORS.shades[0]}
         />
         {filterOption !== 2
           ? (
             <View style={[styles.innerCircle, { backgroundColor: COLORS.error[700] }]}>
-              <Headline
-                type={4}
+              <Body
+                type={1}
                 text={taskCount(false)}
                 color={COLORS.shades[0]}
               />
@@ -278,7 +278,7 @@ export default function ChecklistScreen() {
             <Icon
               name="closecircle"
               color={COLORS.shades[0]}
-              size={18}
+              size={16}
               style={{ marginLeft: 20, marginRight: 4 }}
               onPress={() => setFilterOption(0)}
               suppressHighlighting
@@ -336,7 +336,7 @@ export default function ChecklistScreen() {
                     })}
                     disabled={!isAssignee && !isCreator}
                     showMorePress={isCreator}
-                    style={{ marginVertical: 10, paddingLeft: 5 }}
+                    style={{ marginVertical: 4, paddingLeft: 5 }}
                     item={item}
                     onPress={() => handleUpdate(item, false)}
                   />
@@ -369,7 +369,7 @@ export default function ChecklistScreen() {
                     ...item,
                     isPrivate: true,
                   })}
-                  style={{ marginVertical: 10, paddingLeft: 5 }}
+                  style={{ paddingLeft: 5 }}
                   item={item}
                   disableLabel
                   onPress={() => handleUpdate(item, true)}

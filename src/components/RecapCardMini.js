@@ -1,16 +1,48 @@
 import { View, Pressable, StyleSheet } from 'react-native';
 import React from 'react';
-import COLORS, { PADDING } from '../constants/Theme';
+import moment from 'moment';
+import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import Headline from './typography/Headline';
 import Body from './typography/Body';
-import DaysContainer from './DaysContainer';
 import Utils from '../utils';
+import i18n from '../utils/i18n';
 
 export default function RecapCardMini({ data, style, onPress }) {
   const {
     location, description, dateRange, title,
   // eslint-disable-next-line react/destructuring-assignment
   } = data;
+
+  const getDaysContainer = (dates) => {
+    const getDayDifference = () => {
+      if (!dates) {
+        return;
+      }
+
+      const toDate = moment(Utils.getDateFromTimestamp(dates.startDate));
+      const fromDate = moment().startOf('day');
+
+      const difference = Math.round(moment.duration(toDate.diff(fromDate)).asDays());
+      return difference;
+    };
+
+    return (
+      <View style={styles.daysContainer}>
+        <Headline
+          type={4}
+          text={getDayDifference()}
+          color={COLORS.shades[100]}
+          isDense
+        />
+        <Body
+          type={2}
+          text={i18n.t('days')}
+          color={COLORS.shades[100]}
+        />
+      </View>
+    );
+  };
+
   return (
     <Pressable
       style={[styles.miniContainer, styles.boxShadow, style]}
@@ -34,7 +66,7 @@ export default function RecapCardMini({ data, style, onPress }) {
           isDense
         />
       </View>
-      <DaysContainer dates={dateRange || null} />
+      {getDaysContainer(dateRange || null)}
     </Pressable>
   );
 }
@@ -49,5 +81,15 @@ const styles = StyleSheet.create({
     aspectRatio: 3.7,
     height: 75,
     padding: PADDING.s,
+  },
+  daysContainer: {
+    borderRadius: RADIUS.m,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 55,
+    borderWidth: 1,
+    borderColor: COLORS.neutral[100],
+    backgroundColor: COLORS.neutral[50],
+
   },
 });

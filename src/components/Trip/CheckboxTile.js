@@ -58,20 +58,12 @@ export default function CheckboxTile({
             </View>
             )}
           </View>
-          {isDense ? (
-            <Body
-              type={1}
-              text={title}
-              color={isDone ? COLORS.success[700] : COLORS.shades[100]}
-            />
-          ) : (
-            <Headline
-              type={4}
-              text={title}
-              style={{ textDecorationLine: isDone ? 'line-through' : 'none' }}
-              color={isDone ? COLORS.success[700] : COLORS.shades[100]}
-            />
-          )}
+          <Body
+            type={1}
+            text={title}
+            style={{ textDecorationLine: isDone ? 'line-through' : 'none' }}
+            color={isDone ? COLORS.success[700] : COLORS.shades[100]}
+          />
         </View>
 
         {!isDense && (
@@ -89,11 +81,13 @@ export default function CheckboxTile({
               />
             </Pressable>
           ) : (
+            item.assignee && (
             <Avatar
               disabled
               size={35}
               data={user}
             />
+            )
           )}
         </>
         )}

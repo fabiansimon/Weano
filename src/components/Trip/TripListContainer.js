@@ -10,7 +10,7 @@ export default function TripListContainer({
       onPress={onPress}
       {...rest}
       onLayout={onLayout}
-      style={[styles.container, style]}
+      style={[style, styles.container]}
     >
       {children}
     </Pressable>

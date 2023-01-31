@@ -1,5 +1,5 @@
 import {
-  Pressable, StyleSheet, Text, View,
+  Pressable, StyleSheet, View,
 } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -30,18 +30,19 @@ export default function ActionHeader({ style, trip, type }) {
         type={1}
         text={title}
         style={{ fontWeight: '500' }}
-        color={COLORS.shades[0]}
+        color="white"
       />
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Body
           type={2}
-          color={COLORS.shades[0]}
+          color="white"
           text={tripTitle}
         />
         <Icon
           name="ios-chevron-forward-circle"
           size={18}
-          color={COLORS.shades[0]}
+          style={{ marginLeft: 4 }}
+          color="white"
         />
       </View>
     </Pressable>

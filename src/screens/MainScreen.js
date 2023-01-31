@@ -107,7 +107,13 @@ export default function MainScreen() {
         isSecondary
         style={styles.searchButton}
         backgroundColor={COLORS.shades[0]}
-        icon={<Icon name="search1" size={20} />}
+        icon={(
+          <Icon
+            name="search1"
+            color={COLORS.neutral[900]}
+            size={20}
+          />
+)}
         fullWidth={false}
         onPress={() => setSearchVisible(true)}
         color={COLORS.neutral[900]}
@@ -185,16 +191,21 @@ export default function MainScreen() {
               isSecondary
               style={styles.searchButton}
               backgroundColor={COLORS.shades[0]}
-              icon={<Icon name="search1" size={20} />}
+              icon={(
+                <Icon
+                  name="search1"
+                  color={COLORS.neutral[900]}
+                  size={20}
+                />
+                )}
               fullWidth={false}
               onPress={() => setSearchVisible(true)}
-              color={COLORS.neutral[900]}
             />
           </SafeAreaView>
           <ActionHeader
             type={activeTrip ? 'active' : upcomingTrip ? 'upcoming' : recapTrip ? 'recap' : null}
             trip={activeTrip || upcomingTrip || recapTrip || null}
-            style={{ position: 'absolute', bottom: -20 }}
+            style={{ position: 'absolute', bottom: -24 }}
           />
 
         </View>

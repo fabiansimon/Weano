@@ -7,7 +7,6 @@ import FastImage from 'react-native-fast-image';
 import { BlurView } from '@react-native-community/blur';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import Headline from './typography/Headline';
-import DaysContainer from './DaysContainer';
 import Body from './typography/Body';
 import Utils from '../utils';
 import i18n from '../utils/i18n';

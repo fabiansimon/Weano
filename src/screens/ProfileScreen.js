@@ -75,12 +75,14 @@ export default function ProfileScreen() {
       icon: <IonIcon
         name="person-circle-outline"
         size={22}
+        color={COLORS.shades[100]}
       />,
     },
     {
       title: i18n.t('Privacy Policy'),
       onPress: () => setWebVisible(true),
       icon: <IonIcon
+        color={COLORS.shades[100]}
         name="ios-hand-left-outline"
         size={22}
       />,
@@ -90,6 +92,7 @@ export default function ProfileScreen() {
       onPress: () => Utils.openEmailApp(),
       icon: <IonIcon
         name="ios-mail-open-outline"
+        color={COLORS.shades[100]}
         size={22}
       />,
     },
@@ -97,6 +100,7 @@ export default function ProfileScreen() {
       title: i18n.t('Log out'),
       onPress: () => handleLogOut(),
       icon: <IonIcon
+        color={COLORS.shades[100]}
         name="ios-arrow-back-circle-outline"
         size={22}
       />,

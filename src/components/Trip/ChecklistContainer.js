@@ -8,7 +8,7 @@ import Switch from '../Switch';
 import CheckboxTile from './CheckboxTile';
 import activeTripStore from '../../stores/ActiveTripStore';
 import Body from '../typography/Body';
-import COLORS from '../../constants/Theme';
+import COLORS, { PADDING } from '../../constants/Theme';
 
 export default function ChecklistContainer({
   onPress, onLayout, sender,
@@ -20,11 +20,11 @@ export default function ChecklistContainer({
     <View
       onLayout={onLayout}
       style={{
-        marginVertical: 10,
-        marginHorizontal: 25,
+        marginHorizontal: PADDING.l,
       }}
     >
       <CheckboxTile
+        isDense={item.isPrivate}
         disabled
         disableLabel={isPrivate}
         item={item}
@@ -34,6 +34,7 @@ export default function ChecklistContainer({
 
   return (
     <TripListContainer
+      style={{ paddingBottom: 14 }}
       onPress={onPress}
     >
       <View style={{

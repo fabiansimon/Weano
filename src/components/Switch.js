@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import COLORS from '../constants/Theme';
 
 export default function Switch({ bool, onPress, color }) {
-  const colorTheme = color || COLORS.shades[100];
+  const colorTheme = color || COLORS.neutral[300];
 
   return (
     <Pressable
@@ -34,8 +34,8 @@ export default function Switch({ bool, onPress, color }) {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    width: 70,
-    height: 30,
+    width: 65,
+    height: 28,
     borderWidth: 1,
     borderRadius: 100,
     justifyContent: 'space-between',

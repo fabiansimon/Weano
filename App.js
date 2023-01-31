@@ -52,7 +52,6 @@ export default function App() {
 
   useEffect(() => {
     if (pushNotificationData) {
-      console.log('HOIWHAPOIHDOAWHSPO');
       navigationRef.current?.navigate(ROUTES.cameraScreen, { tripId: pushNotificationData.upload_reminder_id });
       updateUserData({ pushToken: pushNotificationData.upload_reminder_id });
     }

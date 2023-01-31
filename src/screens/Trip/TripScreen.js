@@ -398,14 +398,14 @@ export default function TripScreen({ route }) {
       trailing: <Headline
         onPress={() => navigation.navigate(ROUTES.pollScreen)}
         type={4}
+        style={{ textDecorationLine: 'underline' }}
         text={i18n.t('see all')}
-        color={COLORS.neutral[500]}
+        color={COLORS.neutral[300]}
       />,
       omitPadding: true,
-      onPress: () => navigation.navigate(ROUTES.pollScreen),
       content: data?.polls && (
       <PollCarousel
-        style={{ marginHorizontal: PADDING.l, maxHeight: 250 }}
+        onPress={() => navigation.navigate(ROUTES.pollScreen)}
         data={data?.polls}
       />
       ),
@@ -416,8 +416,9 @@ export default function TripScreen({ route }) {
       trailing: <Headline
         onPress={() => navigation.navigate(ROUTES.checklistScreen)}
         type={4}
+        style={{ textDecorationLine: 'underline' }}
         text={i18n.t('see all')}
-        color={COLORS.neutral[500]}
+        color={COLORS.neutral[300]}
       />,
       content: <ChecklistContainer
         onPress={() => navigation.navigate(ROUTES.checklistScreen)}
@@ -429,8 +430,9 @@ export default function TripScreen({ route }) {
       trailing: <Headline
         onPress={() => navigation.navigate(ROUTES.expenseScreen, { expenses: data?.expenses || {}, tripId: data.id || '' })}
         type={4}
+        style={{ textDecorationLine: 'underline' }}
         text={i18n.t('see all')}
-        color={COLORS.neutral[500]}
+        color={COLORS.neutral[300]}
       />,
       content: <ExpensesContainer
         tileBackground={COLORS.shades[0]}
@@ -445,8 +447,9 @@ export default function TripScreen({ route }) {
       trailing: <Headline
         onPress={() => navigation.navigate(ROUTES.inviteeScreen)}
         type={4}
+        style={{ textDecorationLine: 'underline' }}
         text={i18n.t('see all')}
-        color={COLORS.neutral[500]}
+        color={COLORS.neutral[300]}
       />,
       content: <InviteeContainer
         onPress={() => navigation.navigate(ROUTES.inviteeScreen)}
@@ -510,7 +513,7 @@ export default function TripScreen({ route }) {
               isSecondary
               text={data?.dateRange?.startDate ? Utils.getDateRange(data.dateRange) : i18n.t('Find date')}
               fullWidth={false}
-              icon={<AntIcon name="calendar" size={22} />}
+              icon={<AntIcon name="calendar" size={18} />}
               onPress={() => navigation.push(ROUTES.dateScreen)}
               backgroundColor={COLORS.shades[0]}
               textColor={COLORS.shades[100]}
@@ -622,12 +625,12 @@ export default function TripScreen({ route }) {
         <Headline
           type={3}
           text={i18n.t('Add Trip Image')}
-          color={COLORS.shades[0]}
+          color="white"
         />
         <Icon
           name="image"
           size={32}
-          color={COLORS.shades[0]}
+          color="white"
         />
       </View>
       )}
@@ -816,4 +819,5 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     backgroundColor: COLORS.error[700],
   },
+
 });

@@ -1,42 +1,44 @@
-import { StyleSheet, View } from 'react-native';
+import {
+  FlatList, StyleSheet, View,
+} from 'react-native';
 import React from 'react';
-import PagerView from 'react-native-pager-view';
 import PollView from './PollView';
 import Utils from '../../utils';
-import COLORS, { PADDING } from '../../constants/Theme';
+import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Body from '../typography/Body';
 
 export default function PollCarousel({
-  data, style,
+  data, onPress,
 }) {
   const isEmpty = data.length <= 0;
   return (
-    <View style={{ height: isEmpty ? 70 : 250 }}>
-      {!isEmpty ? (
-        <PagerView style={{ flex: 1 }}>
-          {data.map((poll) => (
-            <View>
-              <PollView
-                isMinimized
-                style={style}
-                data={poll}
-                title={poll.title}
-                subtitle={Utils.getDateFromTimestamp(poll.createdAt / 1000, 'DD.MM.YYYY • HH:mm')}
-              />
-            </View>
-          ))}
-        </PagerView>
-      ) : (
-        <View style={styles.emptyContainer}>
-          <Body
-            type={1}
-            text={i18n.t('Be the first one to add a poll 📊')}
-            color={COLORS.neutral[300]}
+    !isEmpty ? (
+      <FlatList
+        data={data}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingRight: 20 }}
+        renderItem={({ item }) => (
+          <PollView
+            onNavigation={onPress}
+            isMinimized
+            style={styles.view}
+            data={item}
+            title={item.title}
+            subtitle={Utils.getDateFromTimestamp(item.createdAt / 1000, 'DD.MM.YYYY • HH:mm')}
           />
-        </View>
-      )}
-    </View>
+        )}
+      />
+    ) : (
+      <View style={styles.emptyContainer}>
+        <Body
+          type={1}
+          text={i18n.t('Be the first one to add a poll 📊')}
+          color={COLORS.neutral[300]}
+        />
+      </View>
+    )
   );
 }
 
@@ -47,8 +49,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 14,
+    height: 80,
     borderColor: COLORS.neutral[100],
     borderWidth: 1,
     backgroundColor: COLORS.shades[0],
+  },
+  view: {
+    width: 300,
+    marginLeft: PADDING.l,
+    maxHeight: 250,
+    backgroundColor: COLORS.shades[0],
+    borderRadius: RADIUS.m,
+    borderColor: COLORS.neutral[100],
+    borderWidth: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
   },
 });

@@ -24,7 +24,7 @@ export default function InviteeContainer({ onPress }) {
           data={item}
           style={{ marginRight: 10, marginLeft: -6 }}
         />
-        <View>
+        <View style={{ flex: 1 }}>
           <View style={{
             flexDirection: 'row', justifyContent: 'space-between',
           }}
@@ -73,5 +73,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.neutral[100],
     marginRight: 10,
+    width: 300,
   },
 });
