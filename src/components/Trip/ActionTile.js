@@ -142,7 +142,7 @@ export default function ActionTile({ style, trip, type = 'active' }) {
       animation="pulse"
       iterationCount={4}
       delay={2000}
-      style={[styles.container, style, { shadowColor: typeColor }]}
+      style={[styles.container, style, { shadowColor: COLORS.neutral[300] }]}
     >
       <View style={[styles.typeContainer, { backgroundColor: Utils.addAlpha(typeColor, 0.2) }]}>
         <Subtitle

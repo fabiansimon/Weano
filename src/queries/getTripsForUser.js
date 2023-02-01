@@ -11,6 +11,17 @@ const GET_TRIPS_FOR_USER = gql`
                 placeName
                 latlon
             }
+            activeMembers {
+                id
+                avatarUri
+                firstName
+                lastName
+            }
+            openTasks {
+                _id
+                assignee
+                title
+            }
             dateRange {
                 startDate
                 endDate

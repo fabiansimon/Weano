@@ -7,6 +7,7 @@ import Toast from 'react-native-toast-message';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { MenuView } from '@react-native-menu/menu';
+import { useMutation } from '@apollo/client';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import HybridHeader from '../../components/HybridHeader';
@@ -20,12 +21,18 @@ import activeTripStore from '../../stores/ActiveTripStore';
 import httpService from '../../utils/httpService';
 import META_DATA from '../../constants/MetaData';
 import userManagement from '../../utils/userManagement';
+import REMOVE_USER_FROM_TRIP from '../../mutations/removeUserFromTrip';
+import Utils from '../../utils';
 
 export default function InviteeScreen() {
   const { activeMembers, hostId, id } = activeTripStore((state) => state.activeTrip);
+  const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
   const [inputVisible, setInputVisible] = useState(false);
+  const [removeUser] = useMutation(REMOVE_USER_FROM_TRIP);
 
   const isHost = userManagement.isHost();
+
+  const scrollY = useRef(new Animated.Value(0)).current;
 
   const handleShare = () => {
     Share.share({
@@ -65,7 +72,44 @@ export default function InviteeScreen() {
       });
   };
 
-  const scrollY = useRef(new Animated.Value(0)).current;
+  const handleMenuOption = (input, user) => {
+    const { event } = input;
+    const { id: removeUserId } = user;
+
+    if (event === 'remove') {
+      Utils.showConfirmationAlert(
+        i18n.t('Remove user'),
+        i18n.t('Are you sure you want to remove'),
+        i18n.t('Yes'),
+        async () => {
+          await removeUser({
+            variables: {
+              data: {
+                id: removeUserId,
+                tripId: id,
+              },
+            },
+          }).then(() => {
+            Toast.show({
+              type: 'success',
+              text1: i18n.t('Whooray!'),
+              text2: i18n.t('User was succeessfully removed!'),
+            });
+
+            updateActiveTrip({ activeMembers: activeMembers.filter((a) => a.id !== removeUserId) });
+          })
+            .catch((e) => {
+              Toast.show({
+                type: 'error',
+                text1: i18n.t('Whoops!'),
+                text2: e.message,
+              });
+              console.log(`ERROR: ${e.message}`);
+            });
+        },
+      );
+    }
+  };
 
   const getTile = ({ item }) => {
     const {
@@ -75,10 +119,10 @@ export default function InviteeScreen() {
 
       <MenuView
         style={styles.tileContainer}
-        onPressAction={({ nativeEvent }) => console.log(nativeEvent)}
+        onPressAction={({ nativeEvent }) => handleMenuOption(nativeEvent, item)}
         actions={[
           {
-            id: 'delete',
+            id: 'remove',
             attributes: {
               disabled: !isHost,
               destructive: true,

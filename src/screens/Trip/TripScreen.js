@@ -719,22 +719,17 @@ export default function TripScreen({ route }) {
           position: 'absolute', top: 47, left: 20, zIndex: 10,
         }}
       />
-      <Button
-        isSecondary
-        style={{
-          position: 'absolute', top: 47, right: 20, zIndex: 10,
-        }}
+      <Pressable
         onPress={() => (data ? navigation.navigate(ROUTES.memoriesScreen, { tripId: data.id }) : null)}
-        icon={(
-          <Icon
-            name="image"
-            color={COLORS.neutral[700]}
-            size={22}
-          />
-            )}
-        fullWidth={false}
-        color={COLORS.neutral[900]}
-      />
+        style={styles.memoryButton}
+      >
+        <Icon
+          name="image"
+          color={COLORS.neutral[700]}
+          size={22}
+        />
+
+      </Pressable>
       {/* <FAButton
         icon="chatbox-ellipses"
         onPress={() => navigation.push(ROUTES.chatScreen)}
@@ -838,5 +833,18 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     backgroundColor: COLORS.error[700],
   },
-
+  memoryButton: {
+    position: 'absolute',
+    top: 47,
+    right: 20,
+    zIndex: 10,
+    borderWidth: 1,
+    width: 45,
+    height: 45,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.shades[0],
+    borderColor: COLORS.neutral[100],
+    borderRadius: RADIUS.l,
+  },
 });

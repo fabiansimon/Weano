@@ -3,10 +3,10 @@ import {
 } from 'react-native';
 import React from 'react';
 import MaskedView from '@react-native-masked-view/masked-view';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import COLORS, { RADIUS } from '../../constants/Theme';
-// import Avatar from '../Avatar';
-import Body from '../typography/Body';
 import i18n from '../../utils/i18n';
+import Subtitle from '../typography/Subtitle';
 
 export default function PollTile({
   style, item, onPress, isActive, height = 45, data, /* activeMembers, */
@@ -25,7 +25,13 @@ export default function PollTile({
   return (
     <Pressable
       activeOpacity={0.9}
-      onPress={onPress}
+      onPress={() => {
+        onPress();
+        ReactNativeHapticFeedback.trigger('impactHeavy', {
+          enableVibrateFallback: true,
+          ignoreAndroidSystemSettings: true,
+        });
+      }}
       style={style}
     >
       <View style={[styles.optionTileContainer, { height }]}>
@@ -46,14 +52,14 @@ export default function PollTile({
                 flexDirection: 'row', justifyContent: 'space-between', flex: 1,
               }}
               >
-                <Body
+                <Subtitle
                   type={1}
                   color={COLORS.neutral[500]}
                   text={item.option}
                 />
-                <Body
-                  type={2}
-                  // style={{ marginRight: item.votes.length * 23 }}
+                <Subtitle
+                  type={1}
+                  style={{ fontWeight: '400' }}
                   color={COLORS.neutral[500]}
                   text={`${item.votes.length} ${i18n.t('votes')}`}
                 />

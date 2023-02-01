@@ -17,6 +17,7 @@ import Avatar from './Avatar';
 import Body from './typography/Body';
 import Headline from './typography/Headline';
 import WorldImage from '../../assets/images/world.jpeg';
+import Utils from '../utils';
 
 function ContactDetailModal({
   isVisible,
@@ -119,9 +120,9 @@ function ContactDetailModal({
               color={COLORS.neutral[300]}
             />
             <View style={styles.bottomRow}>
-              {getRoundButton('phone', i18n.t('Audio call'), () => Linking.openURL(`tel:${data && data.phoneNumber}`))}
+              {getRoundButton('phone', i18n.t('Audio call'), () => data && Linking.openURL(`tel:${data.phoneNumber}`))}
               <View style={{ width: PADDING.m }} />
-              {getRoundButton('save', i18n.t('Save Nr'))}
+              {getRoundButton('save', i18n.t('Save Nr'), () => data && Utils.openPhoneNumber(data.phoneNumber, data.firstName, data.lastName))}
             </View>
           </View>
         </Animated.View>

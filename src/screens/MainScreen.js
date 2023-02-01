@@ -17,7 +17,7 @@ import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/AntDesign';
 import { useLazyQuery } from '@apollo/client';
 import Toast from 'react-native-toast-message';
-import COLORS, { PADDING } from '../constants/Theme';
+import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import Headline from '../components/typography/Headline';
 import i18n from '../utils/i18n';
 import RecapCard from '../components/RecapCard';
@@ -103,21 +103,17 @@ export default function MainScreen() {
           color={COLORS.neutral[300]}
         />
       </View>
-      <Button
+      <Pressable
+        onPress={() => setSearchVisible(true)}
         isSecondary
         style={styles.searchButton}
-        backgroundColor={COLORS.shades[0]}
-        icon={(
-          <Icon
-            name="search1"
-            color={COLORS.neutral[900]}
-            size={20}
-          />
-)}
-        fullWidth={false}
-        onPress={() => setSearchVisible(true)}
-        color={COLORS.neutral[900]}
-      />
+      >
+        <Icon
+          name="search1"
+          color={COLORS.neutral[900]}
+          size={20}
+        />
+      </Pressable>
     </View>
   );
 
@@ -187,20 +183,17 @@ export default function MainScreen() {
                 color={COLORS.neutral[300]}
               />
             </View>
-            <Button
+            <Pressable
+              onPress={() => setSearchVisible(true)}
               isSecondary
               style={styles.searchButton}
-              backgroundColor={COLORS.shades[0]}
-              icon={(
-                <Icon
-                  name="search1"
-                  color={COLORS.neutral[900]}
-                  size={20}
-                />
-                )}
-              fullWidth={false}
-              onPress={() => setSearchVisible(true)}
-            />
+            >
+              <Icon
+                name="search1"
+                color={COLORS.neutral[900]}
+                size={20}
+              />
+            </Pressable>
           </SafeAreaView>
           <ActionHeader
             type={activeTrip ? 'active' : upcomingTrip ? 'upcoming' : recapTrip ? 'recap' : null}
@@ -382,7 +375,13 @@ const styles = StyleSheet.create({
   },
   searchButton: {
     borderWidth: 1,
+    height: 45,
+    width: 45,
     borderColor: COLORS.neutral[100],
+    borderRadius: RADIUS.l,
+    backgroundColor: COLORS.shades[0],
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
     flex: 1,

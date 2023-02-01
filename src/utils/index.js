@@ -4,6 +4,8 @@ import moment from 'moment';
 import { Alert, Linking } from 'react-native';
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import Toast from 'react-native-toast-message';
+import Contacts from 'react-native-contacts';
+
 import i18n from './i18n';
 
 import META_DATA from '../constants/MetaData';
@@ -196,5 +198,25 @@ export default class Utils {
         }
       })
       .catch((err) => console.log(err));
+  }
+
+  /**
+     * Open phone number
+     * @param {String} phoneNr - phoneNumber
+     */
+  static openPhoneNumber(phoneNr, firstName, lastName) {
+    const contact = {
+      familyName: lastName,
+      givenName: firstName,
+      phoneNumbers: [{
+        label: 'mobile',
+        number: phoneNr,
+      }],
+    };
+    try {
+      Contacts.openContactForm(contact);
+    } catch (error) {
+      console.log(error);
+    }
   }
 }

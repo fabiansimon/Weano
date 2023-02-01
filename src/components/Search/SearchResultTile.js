@@ -1,8 +1,7 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Entypo';
-import Headline from '../typography/Headline';
-import COLORS, { RADIUS } from '../../constants/Theme';
+import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import Body from '../typography/Body';
 import Utils from '../../utils';
 
@@ -13,9 +12,9 @@ export default function SearchResultTile({ style, data, onPress }) {
       onPress={onPress}
       style={[styles.container, style]}
     >
-      <View>
-        <Headline
-          type={4}
+      <View style={{ maxWidth: '84%' }}>
+        <Body
+          type={1}
           text={title}
         />
         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
@@ -29,7 +28,7 @@ export default function SearchResultTile({ style, data, onPress }) {
       <View style={styles.chevronContainer}>
         <Icon
           name="chevron-small-right"
-          size={24}
+          size={22}
           color={COLORS.neutral[300]}
         />
       </View>
@@ -43,18 +42,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     backgroundColor: COLORS.shades[0],
-    minHeight: 72,
+    minHeight: 68,
     borderRadius: RADIUS.s,
     borderWidth: 1,
     borderColor: COLORS.neutral[100],
-    padding: 15,
+    paddingHorizontal: PADDING.s,
   },
   chevronContainer: {
     borderRadius: 100,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: COLORS.neutral[50],
-    height: 30,
-    width: 30,
+    height: 25,
+    width: 25,
   },
 });

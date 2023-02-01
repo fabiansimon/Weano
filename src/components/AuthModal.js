@@ -206,10 +206,10 @@ export default function AuthModal({
   const countryPickerTheme = {
     primaryColorVariant: COLORS.neutral[100],
     onBackgroundTextColor: COLORS.shades[100],
-    fontSize: 16,
+    fontSize: 14,
     filterPlaceholderTextColor: 'red',
     activeOpacity: 0.7,
-    itemHeight: 70,
+    itemHeight: 60,
     marginHorizontal: 10,
   };
 
@@ -319,7 +319,7 @@ export default function AuthModal({
                   false,
                 )}
                 text={i18n.t('Did not receive a code?')}
-                style={{ textDecorationLine: 'underline', marginTop: 8 }}
+                style={{ textDecorationLine: 'underline', marginTop: 8, alignSelf: 'center' }}
                 color={COLORS.neutral[300]}
               />
             </View>

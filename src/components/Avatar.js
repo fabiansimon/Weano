@@ -3,6 +3,7 @@ import {
 } from 'react-native';
 import React, { useState } from 'react';
 import FastImage from 'react-native-fast-image';
+import { isEmpty } from 'lodash';
 import COLORS from '../constants/Theme';
 import DefaultAvatar from '../../assets/images/default_avatar.png';
 import Headline from './typography/Headline';
@@ -53,11 +54,13 @@ export default function Avatar({
         />
         )}
       </TouchableOpacity>
+      {!isEmpty(info) && (
       <ContactDetailModal
         isVisible={showDetails}
         onRequestClose={() => setShowDetails(false)}
         data={data}
       />
+      )}
     </>
   );
 }

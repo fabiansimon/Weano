@@ -127,7 +127,7 @@ export default function PollScreen() {
   return (
     <View style={styles.container}>
       <HybridHeader
-        title={i18n.t('Polls 📊')}
+        title={i18n.t('Polls')}
         scrollY={scrollY}
         info={INFORMATION.dateScreen}
       >

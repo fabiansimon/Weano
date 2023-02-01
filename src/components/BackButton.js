@@ -1,9 +1,9 @@
-import { StyleSheet } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
-import Button from './Button';
-import COLORS from '../constants/Theme';
+import COLORS, { RADIUS } from '../constants/Theme';
+import Utils from '../utils';
 
 export default function BackButton({
   style, isClear = false, onPress, iconColor,
@@ -22,21 +22,23 @@ export default function BackButton({
       />
     )
       : (
-        <Button
-          isSecondary
+        <Pressable
           style={[style, styles.backButton]}
-          backgroundColor={COLORS.shades[0]}
           icon={(
             <Icon
               name="arrowleft"
               color={COLORS.shades[100]}
               size={22}
             />
-)}
-          fullWidth={false}
-          color={COLORS.neutral[900]}
+          )}
           onPress={() => (onPress ? onPress() : navigation.goBack())}
-        />
+        >
+          <Icon
+            name="arrowleft"
+            color={COLORS.shades[100]}
+            size={22}
+          />
+        </Pressable>
       )
   );
 }
@@ -46,6 +48,12 @@ const styles = StyleSheet.create({
     zIndex: 9999,
     marginRight: 10,
     borderWidth: 1,
+    width: 45,
+    height: 45,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.shades[0],
     borderColor: COLORS.neutral[100],
+    borderRadius: RADIUS.l,
   },
 });
