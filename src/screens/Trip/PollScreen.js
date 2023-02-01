@@ -16,7 +16,6 @@ import ADD_POLL from '../../mutations/addPoll';
 import userStore from '../../stores/UserStore';
 import Headline from '../../components/typography/Headline';
 import DELETE_POLL from '../../mutations/deletePoll';
-import FilterModal from '../../components/FilterModal';
 
 export default function PollScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -26,21 +25,9 @@ export default function PollScreen() {
   const user = userStore((state) => state.user);
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [pollSelected, setPollSelected] = useState(null);
 
   const [addPoll, { loading, error }] = useMutation(ADD_POLL);
   const [deletePoll, { error: deleteError }] = useMutation(DELETE_POLL);
-
-  const inputOptions = {
-    title: pollSelected?.title,
-    options: [
-      {
-        name: 'Delete Poll',
-        onPress: () => handleDelete(pollSelected),
-        deleteAction: true,
-      },
-    ],
-  };
 
   useEffect(() => {
     if (error || deleteError) {
@@ -164,7 +151,7 @@ export default function PollScreen() {
               />
             )}
             renderItem={({ item }) => {
-              const onPress = user.id === item.creatorId ? () => setPollSelected(item) : null;
+              const onPress = user.id === item.creatorId ? () => handleDelete(item) : null;
               return (
                 <PollView
                   style={{ marginHorizontal: 5 }}
@@ -189,11 +176,7 @@ export default function PollScreen() {
         onPress={(data) => handleAddPoll(data)}
         isLoading={isLoading || loading}
       />
-      <FilterModal
-        isVisible={pollSelected !== null}
-        onRequestClose={() => setPollSelected(null)}
-        data={inputOptions}
-      />
+
     </View>
   );
 }

@@ -1,5 +1,5 @@
 import {
-  View, StyleSheet, Image, Dimensions, Pressable, RefreshControl,
+  View, StyleSheet, Image, Dimensions, Pressable, RefreshControl, Platform,
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import Toast from 'react-native-toast-message';
@@ -18,6 +18,7 @@ import ActionSheet from 'react-native-actionsheet';
 import FastImage from 'react-native-fast-image';
 import moment from 'moment';
 import ImageCropPicker from 'react-native-image-crop-picker';
+import { MenuView } from '@react-native-menu/menu';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import AnimatedHeader from '../../components/AnimatedHeader';
 import Headline from '../../components/typography/Headline';
@@ -45,8 +46,6 @@ import InputModal from '../../components/InputModal';
 import PollCarousel from '../../components/Polls/PollCarousel';
 import GET_TRIP_BY_ID from '../../queries/getTripById';
 import TripScreenSkeleton from './TripScreenSkeleton';
-import FilterModal from '../../components/FilterModal';
-import RoleChip from '../../components/RoleChip';
 import userManagement from '../../utils/userManagement';
 import DELETE_TRIP_BY_ID from '../../mutations/deleteTripById';
 
@@ -68,7 +67,6 @@ export default function TripScreen({ route }) {
   const scrollY = useRef(new Animated.Value(0)).current;
   const scrollRef = useRef();
   const [currentTab, setCurrentTab] = useState(0);
-  const [optionsVisible, setOptionsVisible] = useState(false);
   const [inputOpen, setInputOpen] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -84,59 +82,36 @@ export default function TripScreen({ route }) {
 
   const IMAGE_HEIGHT = 240;
 
-  const menuOptions = {
-    title: i18n.t('Trip options'),
-    options: [
-      {
-        name: i18n.t('Edit title'),
-        trailing: !isHost && <RoleChip isHost string={i18n.t('Must be host')} />,
-        notAvailable: !isHost,
-        onPress: () => {
-          setTimeout(() => {
-            setInputOpen('title');
-          }, 300);
-        },
-      },
-      {
-        name: i18n.t('Edit description'),
-        trailing: !isHost && <RoleChip isHost string={i18n.t('Must be host')} />,
-        notAvailable: !isHost,
-        onPress: () => {
-          setTimeout(() => {
-            setInputOpen('description');
-          }, 300);
-        },
-      },
-      {
-        name: i18n.t('Edit thumbnail'),
-        trailing: !isHost && <RoleChip isHost string={i18n.t('Must be host')} />,
-        notAvailable: !isHost,
-        onPress: () => {
-          setTimeout(() => {
-            addImageRef.current?.show();
-          }, 300);
-        },
-      },
-      {
-        name: 'Copy invite link',
-        onPress: () => {
-          Clipboard.setString(`${META_DATA.baseUrl}/redirect/invitation/${tripId}`);
-          Toast.show({
-            type: 'success',
-            text1: i18n.t('Copied!'),
-            text2: i18n.t('You can now send it to your friends'),
-          });
-        },
-      },
-      {
-        name: 'Delete Trip',
-        trailing: !isHost && <RoleChip isHost string={i18n.t('Must be host')} />,
-        notAvailable: !isHost,
-        onPress: () => handleDeleteTrip(),
-        deleteAction: isHost,
-      },
-    ],
+  const handleMenuOption = (input) => {
+    const { event } = input;
+
+    switch (event) {
+      case 'editTitle':
+        setInputOpen('title');
+        break;
+      case 'editDescription':
+        setInputOpen('description');
+        break;
+      case 'editThumbnail':
+        addImageRef.current?.show();
+        break;
+      case 'copy':
+        Clipboard.setString(`${META_DATA.baseUrl}/redirect/invitation/${tripId}`);
+        Toast.show({
+          type: 'success',
+          text1: i18n.t('Copied!'),
+          text2: i18n.t('You can now send it to your friends'),
+        });
+        break;
+      case 'delete':
+        handleDeleteTrip();
+        break;
+
+      default:
+        break;
+    }
   };
+
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     getTripData().then(() => setRefreshing(false)).catch(() => setRefreshing(false));
@@ -476,16 +451,69 @@ export default function TripScreen({ route }) {
               style={{ flex: 1 }}
               text={data?.title}
             />
-            <Pressable
-              onPress={() => setOptionsVisible(true)}
+
+            <MenuView
               style={styles.addIcon}
+              onPressAction={({ nativeEvent }) => handleMenuOption(nativeEvent)}
+              actions={[
+                {
+
+                  id: 'edit',
+                  title: i18n.t('Edit Trip'),
+                  subactions: [
+                    {
+                      id: 'editTitle',
+                      title: i18n.t('Edit title'),
+                      attributes: {
+                        disabled: !isHost,
+                      },
+                    },
+                    {
+                      id: 'editDescription',
+                      title: i18n.t('Edit description'),
+                      attributes: {
+                        disabled: !isHost,
+                      },
+                    },
+                    {
+                      id: 'editThumbnail',
+                      title: i18n.t('Edit thumbnail'),
+                      attributes: {
+                        disabled: !isHost,
+                      },
+                    },
+                    {
+                      id: 'delete',
+                      title: i18n.t('Delete trip'),
+                      attributes: {
+                        destructive: true,
+                        disabled: !isHost,
+                      },
+                      image: Platform.select({
+                        ios: 'trash',
+                        android: 'ic_menu_delete',
+                      }),
+                    },
+                  ],
+                },
+                {
+                  id: 'copy',
+                  title: i18n.t('Copy invite link'),
+                  image: Platform.select({
+                    ios: 'square.and.arrow.up',
+                    android: 'ic_menu_share',
+                  }),
+                },
+
+              ]}
             >
               <FeatherIcon
                 name="more-vertical"
                 size={20}
                 color={COLORS.neutral[700]}
               />
-            </Pressable>
+            </MenuView>
+            {/* </Pressable> */}
 
           </View>
           <ScrollView
@@ -724,11 +752,6 @@ export default function TripScreen({ route }) {
         onRequestClose={() => setInputOpen(null)}
         onPress={(string) => (inputOpen === 'description' ? updateDescription(string) : updateTitle(string))}
       />
-      <FilterModal
-        isVisible={optionsVisible}
-        onRequestClose={() => setOptionsVisible(false)}
-        data={menuOptions}
-      />
 
     </View>
   );
@@ -798,10 +821,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     height: 35,
     width: 35,
-    backgroundColor: COLORS.neutral[50],
-    borderRadius: RADIUS.xl,
-    borderWidth: 0.5,
-    borderColor: COLORS.neutral[100],
   },
   handler: {
     height: 7,

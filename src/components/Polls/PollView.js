@@ -1,6 +1,7 @@
 /* eslint-disable no-mixed-operators */
 /* eslint-disable prefer-const */
 import {
+  Platform,
   Pressable, StyleSheet, View,
 } from 'react-native';
 import React from 'react';
@@ -8,10 +9,11 @@ import Icon from 'react-native-vector-icons/Feather';
 import { useMutation } from '@apollo/client';
 import Toast from 'react-native-toast-message';
 // eslint-disable-next-line import/no-named-as-default
+import { MenuView } from '@react-native-menu/menu';
 import PollTile from './PollTile';
 import Headline from '../typography/Headline';
 import Body from '../typography/Body';
-import COLORS, { PADDING } from '../../constants/Theme';
+import COLORS from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Avatar from '../Avatar';
 import userManagement from '../../utils/userManagement';
@@ -106,16 +108,29 @@ export default function PollView({
           />
         </View>
         {onPress ? (
-          <Pressable
-            onPress={onPress}
+          <MenuView
             style={styles.addIcon}
+            onPressAction={({ nativeEvent }) => onPress(nativeEvent)}
+            actions={[
+              {
+                id: 'delete',
+                attributes: {
+                  destructive: true,
+                },
+                title: i18n.t('Delete Poll'),
+                image: Platform.select({
+                  ios: 'trash',
+                  android: 'ic_menu_delete',
+                }),
+              },
+            ]}
           >
             <Icon
               name="more-vertical"
               size={20}
               color={COLORS.neutral[700]}
             />
-          </Pressable>
+          </MenuView>
         ) : (
           <Avatar
             data={userManagement.convertIdToUser(data.creatorId)}

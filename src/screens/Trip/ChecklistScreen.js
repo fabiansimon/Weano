@@ -22,7 +22,6 @@ import Body from '../../components/typography/Body';
 import activeTripStore from '../../stores/ActiveTripStore';
 import ADD_TASK from '../../mutations/addTask';
 import userStore from '../../stores/UserStore';
-import FilterModal from '../../components/FilterModal';
 import Utils from '../../utils';
 import DELETE_TASK from '../../mutations/deleteTask';
 import FAButton from '../../components/FAButton';
@@ -39,21 +38,9 @@ export default function ChecklistScreen() {
   const { id: userId } = userStore((state) => state.user);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
   const [filterOption, setFilterOption] = useState(0);
-  const [taskSelected, setSelectedTask] = useState(null);
 
   const [isVisible, setIsVisible] = useState(false);
   const emptyString = filterOption === 0 ? i18n.t('No task added yet') : filterOption === 1 ? i18n.t('No done tasks') : i18n.t('No open tasks');
-
-  const inputOptions = {
-    title: `${i18n.t('Task')}: ${taskSelected?.title}`,
-    options: [
-      {
-        name: 'Delete Task',
-        onPress: () => handleDelete(taskSelected),
-        deleteAction: true,
-      },
-    ],
-  };
 
   useEffect(() => {
     if (error) {
@@ -330,7 +317,7 @@ export default function ChecklistScreen() {
 
                 return (
                   <CheckboxTile
-                    onMorePress={() => setSelectedTask({
+                    onMorePress={() => handleDelete({
                       ...item,
                       isPrivate: false,
                     })}
@@ -365,7 +352,7 @@ export default function ChecklistScreen() {
               )}
               renderItem={({ item }) => (
                 <CheckboxTile
-                  onMorePress={() => setSelectedTask({
+                  onMorePress={() => handleDelete({
                     ...item,
                     isPrivate: true,
                   })}
@@ -384,11 +371,7 @@ export default function ChecklistScreen() {
         onRequestClose={() => setIsVisible(false)}
         onPress={(data) => handleChange(data)}
       />
-      <FilterModal
-        isVisible={taskSelected !== null}
-        onRequestClose={() => setSelectedTask(null)}
-        data={inputOptions}
-      />
+
       <FAButton
         icon="add"
         iconSize={28}
@@ -406,9 +389,9 @@ const styles = StyleSheet.create({
   chipContainer: {
     alignItems: 'center',
     paddingLeft: 10,
-    paddingRight: 8,
+    paddingRight: 6,
     flexDirection: 'row',
-    height: 40,
+    height: 38,
     borderRadius: 100,
   },
   innerCircle: {
@@ -419,4 +402,5 @@ const styles = StyleSheet.create({
     width: 30,
     marginLeft: 12,
   },
+
 });

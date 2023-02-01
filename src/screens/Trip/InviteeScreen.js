@@ -1,11 +1,12 @@
 import {
-  View, StyleSheet, FlatList, Pressable, Share,
+  View, StyleSheet, FlatList, Pressable, Share, Platform,
 } from 'react-native';
 import React, { useRef, useState } from 'react';
 import Animated from 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Clipboard from '@react-native-clipboard/clipboard';
+import { MenuView } from '@react-native-menu/menu';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import HybridHeader from '../../components/HybridHeader';
@@ -17,29 +18,14 @@ import FAButton from '../../components/FAButton';
 import InputModal from '../../components/InputModal';
 import activeTripStore from '../../stores/ActiveTripStore';
 import httpService from '../../utils/httpService';
-import FilterModal from '../../components/FilterModal';
 import META_DATA from '../../constants/MetaData';
 import userManagement from '../../utils/userManagement';
 
 export default function InviteeScreen() {
   const { activeMembers, hostId, id } = activeTripStore((state) => state.activeTrip);
   const [inputVisible, setInputVisible] = useState(false);
-  const [userSelected, setUserSelected] = useState(null);
 
   const isHost = userManagement.isHost();
-
-  const options = {
-    title: `${userSelected?.firstName} ${userSelected?.lastName}`,
-    options: [
-      {
-        name: 'Remove User',
-        trailing: !isHost && <RoleChip isHost string={i18n.t('Must be host')} />,
-        notAvailable: !isHost,
-        onPress: () => console.log('removeUser'),
-        deleteAction: isHost,
-      },
-    ],
-  };
 
   const handleShare = () => {
     Share.share({
@@ -86,29 +72,52 @@ export default function InviteeScreen() {
       firstName, lastName, email,
     } = item;
     return (
-      <Pressable
-        onPress={() => setUserSelected(item)}
-        style={styles.tile}
+
+      <MenuView
+        style={styles.tileContainer}
+        onPressAction={({ nativeEvent }) => console.log(nativeEvent)}
+        actions={[
+          {
+            id: 'delete',
+            attributes: {
+              disabled: !isHost,
+              destructive: true,
+            },
+            title: i18n.t('Remove user'),
+            image: Platform.select({
+              ios: 'trash',
+              android: 'ic_menu_delete',
+            }),
+          },
+        ]}
       >
-        <Avatar
-          data={item}
-          size={40}
-          style={{ marginRight: 10 }}
-        />
-        <View style={{ marginRight: 'auto' }}>
-          <Body
-            type={1}
-            color={COLORS.shades[100]}
-            text={`${firstName} ${lastName}`}
+        <View style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+        >
+          <Avatar
+            data={item}
+            size={40}
+            style={{ marginRight: 10 }}
           />
-          <Body
-            type={2}
-            color={COLORS.neutral[300]}
-            text={`${email}`}
-          />
+          <View style={{ marginRight: 'auto' }}>
+            <Body
+              type={1}
+              color={COLORS.shades[100]}
+              text={`${firstName} ${lastName}`}
+            />
+            <Body
+              type={2}
+              color={COLORS.neutral[300]}
+              text={`${email}`}
+            />
+          </View>
         </View>
         <RoleChip isHost={item.id === hostId} />
-      </Pressable>
+      </MenuView>
+
     );
   };
 
@@ -190,11 +199,7 @@ export default function InviteeScreen() {
         onPress={(input) => handleInvitations(input)}
         autoClose
       />
-      <FilterModal
-        isVisible={userSelected !== null}
-        onRequestClose={() => setUserSelected(null)}
-        data={options}
-      />
+
     </View>
   );
 }
@@ -203,12 +208,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.shades[0],
-  },
-  tile: {
-    marginTop: 20,
-    justifyContent: 'center',
-    flexDirection: 'row',
-    alignItems: 'center',
   },
   shareButton: {
     flex: 1,
@@ -232,5 +231,12 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.xl,
     backgroundColor: COLORS.shades[0],
     paddingVertical: 6,
+  },
+  tileContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 20,
   },
 });
