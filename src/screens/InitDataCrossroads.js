@@ -1,7 +1,7 @@
 import {
   Image, Linking, Platform, StyleSheet, View,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import * as Notifications from 'expo-notifications';
 import { useNavigation } from '@react-navigation/native';
 import { useLazyQuery, useMutation } from '@apollo/client';
@@ -27,7 +27,21 @@ export default function InitDataCrossroads() {
   const setTrips = tripsStore((state) => state.setTrips);
   const updateUserData = userStore((state) => state.updateUserData);
 
+  const [notification, setNotification] = useState();
+  const notificationListener = useRef();
+  const responseListener = useRef();
+
+  const lastNotificationResponse = Notifications.useLastNotificationResponse();
+
   const navigation = useNavigation();
+
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: false,
+      shouldSetBadge: false,
+    }),
+  });
 
   const registerPushNotificationToken = async () => {
     if (pushToken) {
@@ -71,22 +85,18 @@ export default function InitDataCrossroads() {
 
   const handleNavigation = () => {
     setTimeout(() => {
-      if (pushToken) {
-        navigation.navigate(ROUTES.cameraScreen, { tripId: pushToken });
-      }
-
       // no deep linked route && no active trip && authenticated
       if (requestedRoute != null) {
         navigation.navigate(requestedRoute.screen, requestedRoute.params || null);
         return;
       }
 
-      if (authToken) {
+      if (authToken && !notification) {
         navigation.navigate(ROUTES.mainScreen);
-        return;
       }
-
-      navigation.navigate(ROUTES.signUpScreen);
+      // if (!authToken && !notification) {
+      //   navigation.navigate(ROUTES.signUpScreen);
+      // }
     }, 1000);
   };
 
@@ -159,6 +169,40 @@ export default function InitDataCrossroads() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    notificationListener.current = Notifications.addNotificationReceivedListener((n) => {
+      if (n.notification) {
+        setNotification(n.notification.request.content.data);
+      }
+    });
+
+    responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
+      setNotification(response.notification.request.content.data);
+    });
+
+    return () => {
+      Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (
+      lastNotificationResponse
+      && lastNotificationResponse.notification.request.content.data.url
+      && lastNotificationResponse.actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER
+    ) {
+      setNotification(lastNotificationResponse.notification.request.content.data);
+    }
+  }, [lastNotificationResponse]);
+
+  useEffect(() => {
+    if (!notification) {
+      return;
+    }
+    navigation.navigate(ROUTES.cameraScreen, { tripId: notification.upload_reminder_id });
+  }, [notification]);
 
   const handleOpenUrl = (event) => {
     navigateHandler(event.url);

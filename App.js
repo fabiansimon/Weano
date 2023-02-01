@@ -47,15 +47,7 @@ const asyncStorageDAO = new AsyncStorageDAO();
 export default function App() {
   const updateUserData = userStore((state) => state.updateUserData);
   const { authToken } = userStore((state) => state.user);
-  const [pushNotificationData, setPushNotificationData] = useState(null);
   const navigationRef = useRef();
-
-  useEffect(() => {
-    if (pushNotificationData) {
-      navigationRef.current?.navigate(ROUTES.cameraScreen, { tripId: pushNotificationData.upload_reminder_id });
-      updateUserData({ pushToken: pushNotificationData.upload_reminder_id });
-    }
-  }, [pushNotificationData]);
 
   const client = new ApolloClient({
     uri: `${META_DATA.baseUrl}/graphql`,
@@ -91,48 +83,42 @@ export default function App() {
         <ApolloProvider client={client}>
           <NavigationContainer
             ref={navigationRef}
-            linking={{
-              config: {
+            // linking={{
+            //   config: {
 
-              },
-              async getInitalURL() {
-                console.log('getInitalURL');
-                const deepLink = await Linking.getInitialURL();
+            //   },
+            //   async getInitalURL() {
+            //     const deepLink = await Linking.getInitialURL();
 
-                if (deepLink != null) {
-                  console.log(`deepLink: ${deepLink}`);
-                  return deepLink;
-                }
+            //     if (deepLink != null) {
+            //       return deepLink;
+            //     }
 
-                const response = await Notifications.getLastNotificationResponseAsync();
-                const pushUrl = response?.notification.request.content.data;
+            //     const response = await Notifications.getLastNotificationResponseAsync();
+            //     const pushUrl = response?.notification.request.content.data;
 
-                console.log(`pushUrl: ${pushUrl}`);
-                return pushUrl;
-              },
-              subscribe(listener) {
-                const onReceiveURL = ({ url }) => listener(url);
+            //     return pushUrl;
+            //   },
+            //   subscribe(listener) {
+            //     const onReceiveURL = ({ url }) => listener(url);
 
-                Linking.addEventListener('url', onReceiveURL);
+            //     Linking.addEventListener('url', onReceiveURL);
 
-                let url;
-                const suscription = Notifications.addNotificationResponseReceivedListener((response) => {
-                  url = response.notification.request.content.data;
-                  console.log(`<CURRENT> URL TRIP ID 1: ${url}`);
-                  setPushNotificationData(url);
-                  listener(url);
-                });
+            //     let url;
+            //     const suscription = Notifications.addNotificationResponseReceivedListener((response) => {
+            //       url = response.notification.request.content.data;
+            //       console.log(`<CURRENT> URL TRIP ID 1: ${url}`);
+            //       listener(url);
+            //     });
 
-                return () => {
-                  if (url) {
-                    setTimeout(() => {
-                      Linking.removeEventListener('url', onReceiveURL);
-                      suscription.remove();
-                    }, 2000);
-                  }
-                };
-              },
-            }}
+            //     return () => {
+            //       if (url) {
+            //         Linking.removeEventListener('url', onReceiveURL);
+            //         suscription.remove();
+            //       }
+            //     };
+            //   },
+            // }}
           >
             <StatusBar barStyle="dark-content" />
             <Stack.Navigator
