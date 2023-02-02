@@ -29,7 +29,7 @@ import Utils from '../utils';
 const asyncStorageDAO = new AsyncStorageDAO();
 
 export default function AuthModal({
-  isVisible, onRequestClose, registerData, joinTripId,
+  isVisible, onRequestClose, registerData, joinTripId, uploadReminderId,
 }) {
   const [registerUser, { error: registerError }] = useMutation(REGISTER_USER);
   const [loginUser, { error: loginError }] = useMutation(LOGIN_USER);

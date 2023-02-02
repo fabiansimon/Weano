@@ -17,7 +17,7 @@ import Utils from '../../utils';
 import userStore from '../../stores/UserStore';
 
 export default function ExpenseDetailModal({
-  isVisible, onRequestClose, data, users, onDelete,
+  isVisible, onRequestClose, data, users, onDelete, onReminder,
 }) {
   const { id: userId } = userStore((state) => state.user);
   const [showModal, setShowModal] = useState(isVisible);
@@ -188,7 +188,12 @@ export default function ExpenseDetailModal({
           {isCreator && (
             <View style={styles.buttonContainer}>
               <Button
-                onPress={() => console.log(`Send email to ${splitees}`)}
+                onPress={() => onReminder({
+                  splitees,
+                  currency: data?.currency,
+                  amount: splitAmount,
+                  title: data?.title,
+                })}
                 isDisabled={splitees.length <= 0}
                 text={i18n.t('Send reminder')}
               />

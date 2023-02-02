@@ -22,15 +22,19 @@ import userStore from '../../stores/UserStore';
 import activeTripStore from '../../stores/ActiveTripStore';
 import ExpenseDetailModal from '../../components/Trip/ExpenseDetailModal';
 import DELETE_EXPENSE from '../../mutations/deleteExpense';
+import SEND_REMINDER from '../../mutations/sendReminder';
 
 export default function ExpenseScreen() {
-  const { expenses, activeMembers: users, id: tripId } = activeTripStore((state) => state.activeTrip);
+  const {
+    expenses, activeMembers: users, id: tripId, location,
+  } = activeTripStore((state) => state.activeTrip);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
-  const { id } = userStore((state) => state.user);
+  const { id, firstName } = userStore((state) => state.user);
 
   const scrollY = useRef(new Animated.Value(0)).current;
 
   const [addExpense, { loading, error }] = useMutation(ADD_EXPENSE);
+  const [sendReminder] = useMutation(SEND_REMINDER);
   const [deleteExpense] = useMutation(DELETE_EXPENSE);
 
   const [showTotal, setShowTotal] = useState(true);
@@ -65,6 +69,47 @@ export default function ExpenseScreen() {
       amount += expense.amount;
     });
     return amount;
+  };
+
+  const handleSendingReminder = async (data) => {
+    const {
+      splitees, amount, currency, title,
+    } = data;
+
+    const receivers = [];
+    for (let i = 0; i < splitees.length; i += 1) {
+      const { id: receiverId } = splitees[i];
+      if (receiverId !== id) {
+        receivers.push(receiverId);
+      }
+    }
+
+    await sendReminder({
+      variables: {
+        data: {
+          receivers,
+          title: i18n.t('Hey, pay up! 💰'),
+          description: `${i18n.t('You owe')} ${firstName} ${i18n.t('from the')} ${location.placeName.split(',')[0]} ${i18n.t('Trip')} ${currency}${amount} ${i18n.t('for')} '${title}'`,
+          tripId,
+          type: 'expense_reminder',
+        },
+      },
+    })
+      .then(() => {
+        Toast.show({
+          type: 'success',
+          text1: i18n.t('Success!'),
+          text2: i18n.t('Reminder was sent out'),
+        });
+      })
+      .catch((e) => {
+        Toast.show({
+          type: 'error',
+          text1: i18n.t('Whoops!'),
+          text2: e.message,
+        });
+        console.log(`ERROR: ${e.message}`);
+      });
   };
 
   const handleAddExpense = async (data) => {
@@ -254,6 +299,7 @@ export default function ExpenseScreen() {
         isLoading={isLoading || loading}
       />
       <ExpenseDetailModal
+        onReminder={(data) => handleSendingReminder(data)}
         isVisible={selectedExpense.isVisible}
         onRequestClose={() => setSelectedExpense((prev) => ({
           ...prev,

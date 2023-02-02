@@ -1,9 +1,8 @@
 import React, {
   useEffect, useRef,
-  useState,
 } from 'react';
 import {
-  AppRegistry, Linking, LogBox, StatusBar,
+  AppRegistry, LogBox, StatusBar,
 } from 'react-native';
 import {
   ApolloClient, InMemoryCache, ApolloProvider,
@@ -83,42 +82,7 @@ export default function App() {
         <ApolloProvider client={client}>
           <NavigationContainer
             ref={navigationRef}
-            // linking={{
-            //   config: {
 
-            //   },
-            //   async getInitalURL() {
-            //     const deepLink = await Linking.getInitialURL();
-
-            //     if (deepLink != null) {
-            //       return deepLink;
-            //     }
-
-            //     const response = await Notifications.getLastNotificationResponseAsync();
-            //     const pushUrl = response?.notification.request.content.data;
-
-            //     return pushUrl;
-            //   },
-            //   subscribe(listener) {
-            //     const onReceiveURL = ({ url }) => listener(url);
-
-            //     Linking.addEventListener('url', onReceiveURL);
-
-            //     let url;
-            //     const suscription = Notifications.addNotificationResponseReceivedListener((response) => {
-            //       url = response.notification.request.content.data;
-            //       console.log(`<CURRENT> URL TRIP ID 1: ${url}`);
-            //       listener(url);
-            //     });
-
-            //     return () => {
-            //       if (url) {
-            //         Linking.removeEventListener('url', onReceiveURL);
-            //         suscription.remove();
-            //       }
-            //     };
-            //   },
-            // }}
           >
             <StatusBar barStyle="dark-content" />
             <Stack.Navigator
@@ -131,12 +95,12 @@ export default function App() {
               /> */}
               <Stack.Screen
                 name={ROUTES.initDataCrossroads}
-                initialParams={{ uploadReminder: null }}
                 component={InitDataCrossroads}
               />
               <Stack.Screen
                 name={ROUTES.signUpScreen}
                 component={SignUpScreen}
+                initialParams={{ uploadReminderId: null }}
                 options={{ gestureEnabled: false }}
               />
               <Stack.Screen

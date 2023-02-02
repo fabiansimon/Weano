@@ -22,12 +22,12 @@ export default function InitDataCrossroads() {
   const [getInitData, { error, data }] = useLazyQuery(GET_INIT_USER_DATA);
   const [updateUser] = useMutation(UPDATE_USER);
   const [init, setInit] = useState(false);
-  const [requestedRoute, setRequestedRoute] = useState(null);
   const { authToken, pushToken } = userStore((state) => state.user);
   const setTrips = tripsStore((state) => state.setTrips);
   const updateUserData = userStore((state) => state.updateUserData);
 
   const [notification, setNotification] = useState();
+  const [deepLink, setDeepLink] = useState();
   const notificationListener = useRef();
   const responseListener = useRef();
 
@@ -44,10 +44,6 @@ export default function InitDataCrossroads() {
   });
 
   const registerPushNotificationToken = async () => {
-    if (pushToken) {
-      return;
-    }
-
     const { status: currentStatus } = Notifications.getPermissionsAsync();
     let finalStatus = currentStatus;
 
@@ -69,6 +65,11 @@ export default function InitDataCrossroads() {
     if (!token) {
       return;
     }
+
+    if (token === pushToken) {
+      return;
+    }
+
     const updatedUser = {};
     updatedUser.pushToken = token;
 
@@ -84,39 +85,67 @@ export default function InitDataCrossroads() {
   };
 
   const handleNavigation = () => {
-    setTimeout(() => {
-      // no deep linked route && no active trip && authenticated
-      if (requestedRoute != null) {
-        navigation.navigate(requestedRoute.screen, requestedRoute.params || null);
+    // console.log(`Notification link: ${notification}`);
+    // console.log(`Deep link: ${deepLink}`);
+    // console.log(`Userauth: ${authToken}`);
+
+    if (authToken && !notification && !deepLink) {
+      navigation.navigate(ROUTES.mainScreen);
+      return;
+    }
+
+    if (authToken && notification && !deepLink) {
+      if (notification.type === 'upload_reminder') {
+        navigation.navigate(ROUTES.cameraScreen, { tripId: notification.tripId });
         return;
       }
-
-      if (authToken && !notification) {
-        navigation.navigate(ROUTES.mainScreen);
+      if (notification.type === 'expense_reminder') {
+        navigation.navigate(ROUTES.tripScreen, { tripId: notification.tripId });
+        return;
       }
-      // if (!authToken && !notification) {
-      //   navigation.navigate(ROUTES.signUpScreen);
-      // }
-    }, 1000);
+      if (notification.type === 'task_reminder') {
+        navigation.navigate(ROUTES.tripScreen, { tripId: notification.tripId });
+        return;
+      }
+    }
+
+    if (authToken && !notification && deepLink) {
+      navigation.navigate(deepLink.screen, deepLink.params);
+      return;
+    }
+
+    if (!authToken && notification && !deepLink) {
+      if (notification.type === 'upload_reminder') {
+        navigation.navigate(ROUTES.signUpScreen, { uploadReminderId: notification.tripId });
+        return;
+      }
+    }
+
+    if (!authToken && !notification && !deepLink) {
+      navigation.navigate(ROUTES.navigate(ROUTES.signUpScreen));
+    }
   };
 
   const checkInitStatus = async () => {
     if (authToken) {
-      getInitData();
-      registerPushNotificationToken();
+      await registerPushNotificationToken();
+      updateUserData({ authToken: token });
+      await getInitData();
       return;
     }
 
     const token = await asyncStorageDAO.getAccessToken();
     if (token) {
+      await registerPushNotificationToken();
       updateUserData({ authToken: token });
-      registerPushNotificationToken();
       setTimeout(() => {
         getInitData();
       }, 500);
     }
 
-    handleNavigation();
+    if (!token && !authToken) {
+      navigation.navigate(ROUTES.signUpScreen);
+    }
   };
 
   const populateState = () => {
@@ -131,12 +160,13 @@ export default function InitDataCrossroads() {
     if (userData) {
       updateUserData(userData);
     }
+
+    handleNavigation();
   };
 
   useEffect(() => {
     if (data && !init) {
       populateState();
-      handleNavigation();
     }
 
     if (error) {
@@ -154,20 +184,6 @@ export default function InitDataCrossroads() {
 
   useEffect(() => {
     checkInitStatus();
-  }, []);
-
-  useEffect(() => {
-    Linking.getInitialURL().then((url) => {
-      navigateHandler(url);
-    });
-    if (Platform.OS === 'ios') {
-      Linking.addEventListener('url', handleOpenUrl);
-    }
-    return () => {
-      if (Platform.OS === 'ios') {
-        Linking.removeAllListeners('url', handleOpenUrl);
-      }
-    };
   }, []);
 
   useEffect(() => {
@@ -201,8 +217,14 @@ export default function InitDataCrossroads() {
     if (!notification) {
       return;
     }
-    navigation.navigate(ROUTES.cameraScreen, { tripId: notification.upload_reminder_id });
+    handleNavigation();
   }, [notification]);
+  useEffect(() => {
+    if (!deepLink) {
+      return;
+    }
+    handleNavigation();
+  }, [deepLink]);
 
   const handleOpenUrl = (event) => {
     navigateHandler(event.url);
@@ -216,7 +238,7 @@ export default function InitDataCrossroads() {
       }
 
       if (url.includes('invitation')) {
-        setRequestedRoute({
+        setDeepLink({
           screen: ROUTES.invitationScreen,
           params: { tripId },
         });
@@ -224,6 +246,19 @@ export default function InitDataCrossroads() {
     }
   };
 
+  useEffect(() => {
+    Linking.getInitialURL().then((url) => {
+      navigateHandler(url);
+    });
+    if (Platform.OS === 'ios') {
+      Linking.addEventListener('url', handleOpenUrl);
+    }
+    return () => {
+      if (Platform.OS === 'ios') {
+        Linking.removeAllListeners('url', handleOpenUrl);
+      }
+    };
+  }, []);
   return (
     <View style={styles.container}>
       <Image

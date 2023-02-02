@@ -15,9 +15,11 @@ import Avatar from '../Avatar';
 import i18n from '../../utils/i18n';
 
 export default function CheckboxTile({
-  style, item, disableLabel, onPress, disabled = false, onMorePress, showMorePress = true, userList, isDense,
+  style, item, disableLabel, onPress, disabled = false, onMorePress, showMorePress = true, userList, isDense, isCreator,
 }) {
-  const { isDone, assignee, title } = item;
+  const {
+    isDone, assignee, title, isPrivate,
+  } = item;
   const user = userManagement.convertIdToUser(assignee, userList);
 
   const backgroundColor = isDone ? COLORS.success[700] : 'transparent';
@@ -25,6 +27,43 @@ export default function CheckboxTile({
 
   const height = isDense ? 22 : 26;
   const width = isDense ? 22 : 26;
+
+  const actions = isPrivate ? [
+    {
+      id: 'delete',
+      attributes: {
+        destructive: true,
+      },
+      title: i18n.t('Delete Task'),
+      image: Platform.select({
+        ios: 'trash',
+        android: 'ic_menu_delete',
+      }),
+    },
+  ] : isCreator ? [
+    {
+      id: 'reminder',
+      title: `${i18n.t('Remind')} ${user?.firstName}`,
+
+    },
+    {
+      id: 'delete',
+      attributes: {
+        destructive: true,
+      },
+      title: i18n.t('Delete Task'),
+      image: Platform.select({
+        ios: 'trash',
+        android: 'ic_menu_delete',
+      }),
+    },
+  ] : [
+    {
+      id: 'reminder',
+      title: `${i18n.t('Remind')} ${user?.firstName}`,
+
+    },
+  ];
 
   return (
     <View
@@ -82,19 +121,7 @@ export default function CheckboxTile({
             <MenuView
               style={styles.addIcon}
               onPressAction={({ nativeEvent }) => onMorePress(nativeEvent)}
-              actions={[
-                {
-                  id: 'delete',
-                  attributes: {
-                    destructive: true,
-                  },
-                  title: i18n.t('Delete Task'),
-                  image: Platform.select({
-                    ios: 'trash',
-                    android: 'ic_menu_delete',
-                  }),
-                },
-              ]}
+              actions={actions}
             >
               <FeatherIcon
                 name="more-vertical"

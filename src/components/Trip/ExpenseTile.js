@@ -35,7 +35,7 @@ export default function ExpenseTile({
       >
         <View style={{ flex: 1 }}>
           <Headline
-            type={3}
+            type={4}
             numberOfLines={1}
             ellipsizeMode="tail"
             text={data.title}
@@ -48,7 +48,7 @@ export default function ExpenseTile({
         </View>
         <View>
           <Headline
-            type={3}
+            type={4}
             style={{ textAlign: 'right' }}
             text={`$${data.amount}`}
           />
@@ -70,8 +70,8 @@ const styles = StyleSheet.create({
   },
   initalContainer: {
     marginTop: 4,
-    height: 40,
-    width: 40,
+    height: 35,
+    width: 35,
     borderRadius: RADIUS.s,
     backgroundColor: COLORS.neutral[100],
     alignItems: 'center',

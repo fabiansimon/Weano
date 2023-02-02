@@ -6,7 +6,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import COLORS, { RADIUS } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
-import Subtitle from '../typography/Subtitle';
+import Body from '../typography/Body';
 
 export default function PollTile({
   style, item, onPress, isActive, height = 45, data, /* activeMembers, */
@@ -52,13 +52,13 @@ export default function PollTile({
                 flexDirection: 'row', justifyContent: 'space-between', flex: 1,
               }}
               >
-                <Subtitle
+                <Body
                   type={1}
                   color={COLORS.neutral[500]}
                   text={item.option}
                 />
-                <Subtitle
-                  type={1}
+                <Body
+                  type={2}
                   style={{ fontWeight: '400' }}
                   color={COLORS.neutral[500]}
                   text={`${item.votes.length} ${i18n.t('votes')}`}

@@ -31,13 +31,13 @@ export default function RecapCardMini({ data, style, onPress }) {
         <Headline
           type={4}
           text={getDayDifference()}
-          color={COLORS.shades[100]}
+          color={COLORS.neutral[500]}
           isDense
         />
         <Body
           type={2}
           text={i18n.t('days')}
-          color={COLORS.shades[100]}
+          color={COLORS.neutral[500]}
         />
       </View>
     );

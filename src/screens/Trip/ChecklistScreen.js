@@ -4,7 +4,7 @@ import {
 import React, {
   useEffect, useRef, useState,
 } from 'react';
-import Animated from 'react-native-reanimated';
+import Animated, { diff } from 'react-native-reanimated';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { useMutation } from '@apollo/client';
@@ -26,14 +26,18 @@ import Utils from '../../utils';
 import DELETE_TASK from '../../mutations/deleteTask';
 import FAButton from '../../components/FAButton';
 import UPDATE_TASK from '../../mutations/updateTask';
+import SEND_REMINDER from '../../mutations/sendReminder';
 
 export default function ChecklistScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
-  const { mutualTasks, privateTasks, id: tripId } = activeTripStore((state) => state.activeTrip);
+  const {
+    mutualTasks, privateTasks, id: tripId, dateRange,
+  } = activeTripStore((state) => state.activeTrip);
 
   const [addTask, { error }] = useMutation(ADD_TASK);
   const [deleteTask] = useMutation(DELETE_TASK);
   const [updateTask] = useMutation(UPDATE_TASK);
+  const [sendReminder] = useMutation(SEND_REMINDER);
 
   const { id: userId } = userStore((state) => state.user);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
@@ -60,7 +64,54 @@ export default function ChecklistScreen() {
     return length || 0;
   };
 
-  const handleDelete = (task) => {
+  const handleMenuOption = (task, { event }) => {
+    if (event === 'delete') {
+      handleDeletion(task);
+    }
+
+    if (event === 'reminder') {
+      handleReminder(task);
+    }
+  };
+
+  const handleReminder = async (task) => {
+    const { assignee, title } = task;
+    const now = Date.now() / 1000;
+    const difference = ((dateRange.startDate - now) / 86400).toFixed(0);
+
+    let addString = '';
+    if (difference > 0) {
+      addString = `${i18n.t('Only')} ${difference} ${i18n.t('days left')}`;
+    }
+    await sendReminder({
+      variables: {
+        data: {
+          receivers: [assignee],
+          title: i18n.t("Don't forget! 💭"),
+          description: `${i18n.t('You still have to finish your task:')} ${title}. ${addString} ⌛️`,
+          tripId,
+          type: 'task_reminder',
+        },
+      },
+    })
+      .then(() => {
+        Toast.show({
+          type: 'success',
+          text1: i18n.t('Success!'),
+          text2: i18n.t('Reminder was sent out'),
+        });
+      })
+      .catch((e) => {
+        Toast.show({
+          type: 'error',
+          text1: i18n.t('Whoops!'),
+          text2: e.message,
+        });
+        console.log(`ERROR: ${e.message}`);
+      });
+  };
+
+  const handleDeletion = (task) => {
     Utils.showConfirmationAlert(
       i18n.t('Delete Task'),
       i18n.t('Are you sure you want to delete your task?'),
@@ -317,14 +368,17 @@ export default function ChecklistScreen() {
 
                 return (
                   <CheckboxTile
-                    onMorePress={() => handleDelete({
+                    onMorePress={(event) => handleMenuOption({
                       ...item,
                       isPrivate: false,
-                    })}
+                    }, event)}
                     disabled={!isAssignee && !isCreator}
-                    showMorePress={isCreator}
+                    isCreator={isCreator}
                     style={{ marginVertical: 4, paddingLeft: 5 }}
-                    item={item}
+                    item={{
+                      ...item,
+                      isPrivate: false,
+                    }}
                     onPress={() => handleUpdate(item, false)}
                   />
                 );
@@ -352,12 +406,15 @@ export default function ChecklistScreen() {
               )}
               renderItem={({ item }) => (
                 <CheckboxTile
-                  onMorePress={() => handleDelete({
+                  onMorePress={(event) => handleMenuOption({
+                    ...item,
+                    isPrivate: false,
+                  }, event)}
+                  style={{ paddingLeft: 5 }}
+                  item={{
                     ...item,
                     isPrivate: true,
-                  })}
-                  style={{ paddingLeft: 5 }}
-                  item={item}
+                  }}
                   disableLabel
                   onPress={() => handleUpdate(item, true)}
                 />

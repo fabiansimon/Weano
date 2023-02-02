@@ -15,7 +15,8 @@ import REGEX from '../../constants/Regex';
 import Logo from '../../../assets/images/logo_temp.png';
 import Utils from '../../utils';
 
-export default function SignUpScreen({ invitationId }) {
+export default function SignUpScreen({ invitationId, route }) {
+  const { uploadReminderId } = route.params;
   const errorColors = {
     error: COLORS.error[700],
     success: COLORS.success[700],
@@ -306,11 +307,14 @@ export default function SignUpScreen({ invitationId }) {
           lastName: lastName.trim(),
           email,
         }}
+        joinTripId={invitationId}
+        uploadReminderId={uploadReminderId}
       />
       <AuthModal
         isVisible={loginVisible}
         onRequestClose={() => setLoginVisible(false)}
         joinTripId={invitationId}
+        uploadReminderId={uploadReminderId}
       />
     </>
   );
