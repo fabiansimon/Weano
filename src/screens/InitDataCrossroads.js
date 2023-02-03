@@ -264,7 +264,6 @@ export default function InitDataCrossroads() {
       <Image
         source={Logo}
         style={{ height: 200, width: 377 }}
-        resizeMode="center"
       />
     </View>
   );
