@@ -8,7 +8,7 @@ import COLORS, { RADIUS } from '../constants/Theme';
 import Body from './typography/Body';
 
 export default function FilterModal({
-  isVisible, onRequestClose, data, onPress, selectedIndex,
+  isVisible, onRequestClose, data, selectedIndex,
 }) {
   const [showModal, setShowModal] = useState(isVisible);
   const animatedBottom = useRef(new Animated.Value(900)).current;

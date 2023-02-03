@@ -1,6 +1,7 @@
 import {
-  FlatList, StyleSheet, View, TouchableOpacity, StatusBar, Image, Pressable, Dimensions,
+  FlatList, StyleSheet, View, TouchableOpacity, StatusBar, Image, Pressable, Dimensions, Platform,
 } from 'react-native';
+import * as Animatable from 'react-native-animatable';
 import Icon from 'react-native-vector-icons/AntDesign';
 import EntIcon from 'react-native-vector-icons/Entypo';
 import React, { useRef, useState, useEffect } from 'react';
@@ -12,6 +13,8 @@ import Animated, {
 import { useNavigation } from '@react-navigation/native';
 import { useQuery } from '@apollo/client';
 import Toast from 'react-native-toast-message';
+import { MenuView } from '@react-native-menu/menu';
+import ImageCropPicker from 'react-native-image-crop-picker';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import Headline from '../components/typography/Headline';
 import i18n from '../utils/i18n';
@@ -25,6 +28,7 @@ import GET_IMAGES_FROM_TRIP from '../queries/getImagesFromTrip';
 import StoryModal from '../components/StoryModal';
 import JourneyIcon from '../../assets/icons/journey_icon.svg';
 import ROUTES from '../constants/Routes';
+import Label from '../components/typography/Label';
 
 export default function MemoriesScreen({ route }) {
   const { tripId } = route.params;
@@ -75,6 +79,23 @@ export default function MemoriesScreen({ route }) {
       setIsLoading(false);
     }
   }, [data, error]);
+
+  const handleMenuOption = ({ event }) => {
+    if (event === 'take') {
+      navigation.navigate(ROUTES.cameraScreen, { tripId, onNavBack: () => navigation.goBack() });
+    }
+
+    if (event === 'select') {
+      const options = {
+        compressImageQuality: 0.2,
+        mediaType: 'photo',
+      };
+
+      ImageCropPicker.openPicker(options).then(async (image) => {
+        navigation.navigate(ROUTES.cameraScreen, { tripId, onNavBack: () => navigation.goBack(), preselectedImage: image });
+      });
+    }
+  };
 
   const numColumns = Math.round(Math.sqrt(user.images.length));
 
@@ -157,29 +178,71 @@ export default function MemoriesScreen({ route }) {
   };
 
   const Buttons = () => (
-    <View style={{
-      flexDirection: 'row', position: 'absolute', right: PADDING.l, bottom: 50,
-    }}
-    >
-      <Pressable
-        onPress={() => navigation.navigate(ROUTES.timelineScreen, { tripId })}
-        activeOpacity={0.5}
-        style={styles.fabSecondary}
+    <View style={styles.buttonRow}>
+      <MenuView
+        style={styles.addIcon}
+        onPressAction={({ nativeEvent }) => handleMenuOption(nativeEvent)}
+        actions={[
+          {
+            id: 'take',
+            title: i18n.t('Take a picture'),
+            image: Platform.select({
+              ios: 'camera',
+            }),
+          },
+          {
+            id: 'select',
+            title: i18n.t('Select from Cameraroll'),
+            image: Platform.select({
+              ios: 'photo',
+            }),
+          },
+        ]}
       >
-        <JourneyIcon height={35} />
-      </Pressable>
-      <Pressable
-        onPress={() => setStoryVisible(true)}
-        activeOpacity={0.5}
-        style={styles.fab}
-      >
-        <EntIcon
-          name="controller-play"
-          size={30}
-          style={{ marginRight: -3 }}
-          color={COLORS.shades[100]}
-        />
-      </Pressable>
+        <Animatable.View
+          animation="pulse"
+          iterationCount="infinite"
+          activeOpacity={0.5}
+          style={[styles.fab, { backgroundColor: COLORS.primary[700] }]}
+        >
+          <View
+            style={styles.imagesLeftContainer}
+          >
+            <Label
+              type={1}
+              color={COLORS.shades[0]}
+              style={{ marginRight: -1 }}
+              text="2"
+            />
+          </View>
+          <EntIcon
+            name="camera"
+            size={22}
+            color={COLORS.shades[0]}
+          />
+        </Animatable.View>
+      </MenuView>
+      <View style={{ flexDirection: 'row' }}>
+        <Pressable
+          onPress={() => navigation.navigate(ROUTES.timelineScreen, { tripId })}
+          activeOpacity={0.5}
+          style={styles.fabSecondary}
+        >
+          <JourneyIcon height={28} />
+        </Pressable>
+        <Pressable
+          onPress={() => setStoryVisible(true)}
+          activeOpacity={0.5}
+          style={styles.fab}
+        >
+          <EntIcon
+            name="controller-play"
+            size={30}
+            style={{ marginRight: -3 }}
+            color={COLORS.shades[100]}
+          />
+        </Pressable>
+      </View>
     </View>
   );
 
@@ -334,5 +397,24 @@ const styles = StyleSheet.create({
   gif: {
     width: '100%',
     height: 100,
+  },
+  buttonRow: {
+    paddingHorizontal: PADDING.l,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    position: 'absolute',
+    bottom: 50,
+  },
+  imagesLeftContainer: {
+    position: 'absolute',
+    top: -2,
+    right: -2,
+    borderRadius: 100,
+    backgroundColor: COLORS.error[900],
+    height: 18,
+    width: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

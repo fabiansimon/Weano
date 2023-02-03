@@ -17,7 +17,7 @@ import InstagramBubble from '../../assets/images/instagram_bubble.png';
 import Button from './Button';
 import toastConfig from '../constants/ToastConfig';
 
-export default function ImageSharedModal({
+export default function ImageSharedView({
   image, style, onDone,
 }) {
   const facebookColor = '#4267B2';
@@ -98,8 +98,7 @@ export default function ImageSharedModal({
         style={{ marginTop: 6 }}
         color={COLORS.neutral[300]}
       />
-      <Image
-        source={{ uri: image && image.uri }}
+      <View
         style={styles.image}
       />
       <View>
@@ -120,7 +119,6 @@ export default function ImageSharedModal({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1E1E1E',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -153,10 +151,5 @@ const styles = StyleSheet.create({
     aspectRatio: 3 / 4,
     height: '40%',
     marginVertical: 30,
-    borderRadius: RADIUS.s,
-    transform: [{ rotate: '2deg' }],
-    shadowColor: COLORS.shades[100],
-    shadowRadius: 100,
-    shadowOpacity: 1,
   },
 });

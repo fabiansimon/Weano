@@ -101,6 +101,10 @@ export default function ExpenseScreen() {
           text1: i18n.t('Success!'),
           text2: i18n.t('Reminder was sent out'),
         });
+        setSelectedExpense((prev) => ({
+          ...prev,
+          isVisible: false,
+        }));
       })
       .catch((e) => {
         Toast.show({

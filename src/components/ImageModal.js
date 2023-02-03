@@ -1,8 +1,8 @@
 import 'react-native-get-random-values';
 import {
-  ImageBackground, Modal, StyleSheet, TextInput, View, TouchableOpacity, Share,
+  Animated, Modal, StyleSheet, TextInput, View, TouchableOpacity, Share, Image, Dimensions,
 } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { useMutation } from '@apollo/client';
@@ -15,7 +15,7 @@ import Utils from '../utils';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import Button from './Button';
 import KeyboardView from './KeyboardView';
-import ImageSharedModal from './ImageSharedModal';
+import ImageSharedView from './ImageSharedView';
 import ROUTES from '../constants/Routes';
 import httpService from '../utils/httpService';
 import userStore from '../stores/UserStore';
@@ -24,7 +24,7 @@ import UPLOAD_TRIP_IMAGE from '../mutations/uploadTripImage';
 import LoadingModal from './LoadingModal';
 
 export default function ImageModal({
-  style, image, isVisible, onRetake, onRequestClose, tripId,
+  style, image, isVisible, onRetake, onRequestClose, tripId, isPreselected = false,
 }) {
   const [uploadTripImage, { error }] = useMutation(UPLOAD_TRIP_IMAGE);
   const user = userStore((state) => state.user);
@@ -33,6 +33,58 @@ export default function ImageModal({
   const [description, setDescription] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isShared, setIsShared] = useState(false);
+  const [animationDone, setAnimationDone] = useState(false);
+
+  const { width, height } = Dimensions.get('window');
+
+  const imageHeight = useRef(new Animated.Value(height)).current;
+  const imageWidth = useRef(new Animated.Value(width)).current;
+  const imageBorderRadius = useRef(new Animated.Value(0)).current;
+  const imageRotation = useRef(new Animated.Value(0)).current;
+  const imageBottomMargin = useRef(new Animated.Value(0)).current;
+
+  const duration = 300;
+
+  useEffect(() => {
+    toggleShareView();
+  }, [isShared]);
+
+  const toggleShareView = () => {
+    if (isShared) {
+      Animated.sequence([
+        Animated.parallel([
+          Animated.spring(imageHeight, {
+            toValue: height * 0.4,
+            duration,
+          }),
+          Animated.spring(imageWidth, {
+            toValue: height * 0.3,
+            duration,
+          }),
+          Animated.spring(imageBorderRadius, {
+            toValue: 10,
+            duration,
+          }),
+          Animated.spring(imageRotation, {
+            toValue: 1,
+            duration,
+          }),
+          Animated.spring(imageBottomMargin, {
+            toValue: 40,
+            duration,
+          }),
+        ]).start(),
+      ]);
+      setTimeout(() => {
+        setAnimationDone(true);
+      }, duration);
+    }
+  };
+
+  const rotation = imageRotation.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '2deg'],
+  });
 
   useEffect(() => {
     if (error) {
@@ -56,7 +108,7 @@ export default function ImageModal({
     setIsLoading(true);
 
     try {
-      const { Location } = await httpService.uploadToS3(image, true);
+      const { Location } = await httpService.uploadToS3(image, !isPreselected);
 
       await uploadTripImage({
         variables: {
@@ -134,7 +186,7 @@ export default function ImageModal({
         <Avatar
           disabled
           isSelf
-          size={50}
+          size={45}
         />
         <View style={{ marginLeft: 10 }}>
           <Headline
@@ -152,7 +204,7 @@ export default function ImageModal({
         </View>
       </View>
       <Button
-        text={i18n.t('Retake')}
+        text={isPreselected ? i18n.t('Go back') : i18n.t('Retake')}
         fullWidth={false}
         onPress={onRetake}
         style={{ borderRadius: RADIUS.xl, paddingHorizontal: 18 }}
@@ -160,6 +212,8 @@ export default function ImageModal({
       />
     </View>
   );
+
+  const AnimatedImage = Animated.createAnimatedComponent(Image);
   return (
     <Modal
       animationType="none"
@@ -170,48 +224,65 @@ export default function ImageModal({
       onRequestClose={onRequestClose}
     >
       <View style={[styles.container, style]}>
-        <ImageSharedModal
+        {animationDone && (
+        <ImageSharedView
           style={styles.doneContainer}
           image={image}
           onDone={handleDone}
         />
-
-        {!isShared && (
-          <>
-            <ImageBackground
-              source={{ uri: image && image.uri }}
-              style={{
-                flex: 1,
-              }}
-            />
-            <>
-              <KeyboardView
-                paddingBottom={20}
-                style={styles.textinputs}
-              >
-                <View style={{ flex: 1 }} />
-                <View style={{ marginLeft: PADDING.m }}>
-                  <TextInput
-                    maxLength={20}
-                    placeholder={i18n.t('Add a title')}
-                    placeholderTextColor={Utils.addAlpha(COLORS.neutral[100], 0.6)}
-                    style={[styles.titleStyle, styles.shadow]}
-                    onChangeText={(val) => setTitle(val)}
-                  />
-                  <TextInput
-                    maxLength={80}
-                    placeholder={i18n.t('Or even an description')}
-                    placeholderTextColor={Utils.addAlpha(COLORS.neutral[100], 0.6)}
-                    style={[styles.descriptionStyle, styles.shadow]}
-                    onChangeText={(val) => setDescription(val)}
-                  />
-                </View>
-              </KeyboardView>
-              <DetailsHeader />
-              <PublishFooter />
-            </>
-          </>
         )}
+        <>
+          <View style={{
+            backgroundColor: '#1E1E1E',
+            position: 'absolute',
+            height: '100%',
+            width: '100%',
+            alignContent: 'center',
+            justifyContent: 'center',
+          }}
+          >
+            <AnimatedImage
+              source={{ uri: isPreselected ? image?.path || image.sourceURL : image?.uri }}
+              resizeMode={isPreselected && 'contain'}
+              style={[{
+                alignSelf: 'center',
+                borderRadius: imageBorderRadius,
+                height: imageHeight,
+                bottom: imageBottomMargin,
+                width: imageWidth,
+              }, { transform: [{ rotate: rotation }] },
+              ]}
+            />
+          </View>
+          {!isShared && (
+          <>
+            <KeyboardView
+              paddingBottom={20}
+              style={styles.textinputs}
+            >
+              <View style={{ flex: 1 }} />
+              <View style={{ marginLeft: PADDING.m }}>
+                <TextInput
+                  maxLength={20}
+                  placeholder={i18n.t('Add a title')}
+                  placeholderTextColor={Utils.addAlpha(COLORS.neutral[100], 0.6)}
+                  style={[styles.titleStyle, styles.shadow]}
+                  onChangeText={(val) => setTitle(val)}
+                />
+                <TextInput
+                  maxLength={80}
+                  placeholder={i18n.t('Or even an description')}
+                  placeholderTextColor={Utils.addAlpha(COLORS.neutral[100], 0.6)}
+                  style={[styles.descriptionStyle, styles.shadow]}
+                  onChangeText={(val) => setDescription(val)}
+                />
+              </View>
+            </KeyboardView>
+            <DetailsHeader />
+            <PublishFooter />
+          </>
+          )}
+        </>
       </View>
       <Toast config={toastConfig} />
       <LoadingModal isLoading={isLoading} />
@@ -225,7 +296,7 @@ const styles = StyleSheet.create({
   },
   titleStyle: {
     fontFamily: 'WorkSans-Medium',
-    fontSize: 20,
+    fontSize: 18,
     color: COLORS.shades[0],
     letterSpacing: -0.6,
   },
@@ -233,7 +304,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
     fontFamily: 'WorkSans-Regular',
     color: COLORS.shades[0],
-    fontSize: 18,
+    fontSize: 16,
     letterSpacing: -0.6,
   },
   header: {
@@ -274,11 +345,12 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
     position: 'absolute',
-    bottom: '20%',
+    bottom: '16%',
   },
   doneContainer: {
     width: '100%',
     height: '100%',
     position: 'absolute',
+    zIndex: 1,
   },
 });

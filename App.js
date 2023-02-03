@@ -134,7 +134,11 @@ export default function App() {
               <Stack.Screen name={ROUTES.expenseScreen} component={ExpenseScreen} />
               <Stack.Screen name={ROUTES.checklistScreen} component={ChecklistScreen} />
               <Stack.Screen name={ROUTES.memoriesScreen} component={MemoriesScreen} />
-              <Stack.Screen name={ROUTES.cameraScreen} component={CameraScreen} />
+              <Stack.Screen
+                name={ROUTES.cameraScreen}
+                initialParams={{ onNavBack: () => navigationRef.current?.navigate(ROUTES.mainScreen), preselectedImage: null }}
+                component={CameraScreen}
+              />
               <Stack.Screen name={ROUTES.pollScreen} component={PollScreen} />
               <Stack.Screen name={ROUTES.timelineScreen} component={TimelineScreen} />
               <Stack.Screen name={ROUTES.myAccountScreen} component={MyAccountScreen} />

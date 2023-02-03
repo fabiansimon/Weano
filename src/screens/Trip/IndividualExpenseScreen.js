@@ -19,10 +19,6 @@ export default function IndividualExpenseScreen({ route }) {
 
   const getExpenseTile = (expense) => (
     <ExpenseTile
-      onPress={() => setSelectedExpense({
-        isVisible: true,
-        data: expense,
-      })}
       data={expense}
       user={data.user}
     />

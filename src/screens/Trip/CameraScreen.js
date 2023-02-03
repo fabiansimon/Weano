@@ -4,12 +4,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import MatIcon from 'react-native-vector-icons/MaterialIcons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
 import * as Animatable from 'react-native-animatable';
 import moment from 'moment';
 import { Camera, CameraType, FlashMode } from 'expo-camera';
@@ -24,11 +23,10 @@ import Button from '../../components/Button';
 import Utils from '../../utils';
 import ImageModal from '../../components/ImageModal';
 import Body from '../../components/typography/Body';
-import ROUTES from '../../constants/Routes';
 
 let camera;
 export default function CameraScreen({ route }) {
-  const { tripId } = route.params;
+  const { tripId, onNavBack, preselectedImage } = route.params;
 
   const [cameraType, setCameraType] = useState(CameraType.back);
   const [flashMode, setFlashMode] = useState(FlashMode.off);
@@ -39,9 +37,11 @@ export default function CameraScreen({ route }) {
   const [isRecording, setIsRecording] = useState(false);
   const [timer] = useState(120);
 
-  const navigation = useNavigation();
-
-  console.log(tripId);
+  useEffect(() => {
+    if (preselectedImage) {
+      setCapturedImage(preselectedImage);
+    }
+  }, [preselectedImage]);
 
   let lastPress = 0;
   const DOUBLE_PRESS_DELAY = 500;
@@ -143,9 +143,9 @@ export default function CameraScreen({ route }) {
 
   const RoundedBackButton = () => (
     <TouchableOpacity
-      onPress={() => navigation.navigate(ROUTES.mainScreen)}
+      onPress={onNavBack}
       activeOpacity={0.9}
-      disabled={isRecording}
+      // disabled={isRecording}
       style={[styles.roundButton, { opacity: isRecording && 0 }]}
     >
       <Icon
@@ -178,10 +178,14 @@ export default function CameraScreen({ route }) {
           <View
             style={styles.captureContainer}
           >
-            <View style={{ textAlign: 'center', transform: [{ skewX: '+8deg' }] }}>
+            <View style={{
+              textAlign: 'center', flexDirection: 'row', alignItems: 'center',
+            }}
+            >
               <Headline
                 type={4}
                 isDense
+                style={{ marginTop: -2 }}
                 text={i18n.t('Capture now')}
                 color={COLORS.shades[0]}
               />
@@ -310,8 +314,8 @@ export default function CameraScreen({ route }) {
               />
               <SafeAreaView style={styles.overlay} edges={['top']}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <CaptureContainer />
                   <RoundedBackButton />
+                  <CaptureContainer />
                 </View>
                 <FooterContainer />
               </SafeAreaView>
@@ -324,8 +328,16 @@ export default function CameraScreen({ route }) {
         isVisible={capturedImage !== null}
         onRequestClose={() => setCapturedImage(null)}
         image={capturedImage}
-        onRetake={() => setCapturedImage(null)}
+        onRetake={() => {
+          if (preselectedImage) {
+            setCapturedImage(null);
+            onNavBack();
+          } else {
+            setCapturedImage(null);
+          }
+        }}
         tripId={tripId}
+        isPreselected={preselectedImage}
       />
     </>
   );
@@ -338,8 +350,8 @@ const styles = StyleSheet.create({
   captureContainer: {
     alignSelf: 'center',
     height: 35,
-    borderRadius: 2,
-    transform: [{ skewX: '-8deg' }],
+    borderRadius: 100,
+    // transform: [{ skewX: '-8deg' }],
     backgroundColor: COLORS.primary[700],
     paddingHorizontal: 12,
     justifyContent: 'center',
@@ -361,6 +373,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   roundButton: {
+    zIndex: 1,
     marginLeft: PADDING.m,
     borderRadius: RADIUS.xl,
     alignItems: 'center',
