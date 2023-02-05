@@ -41,6 +41,7 @@ export default function MemoriesScreen({ route }) {
   });
 
   const [images, setImages] = useState([]);
+  const [freeImages, setFreeImage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [storyVisible, setStoryVisible] = useState(false);
   const [initalIndex, setInitalIndex] = useState(0);
@@ -67,7 +68,8 @@ export default function MemoriesScreen({ route }) {
   useEffect(() => {
     if (data) {
       const { getImagesFromTrip: imageData } = data;
-      setImages(imageData);
+      setImages(imageData.images);
+      setFreeImage(imageData.userFreeImages);
     }
 
     if (error) {
@@ -179,6 +181,7 @@ export default function MemoriesScreen({ route }) {
 
   const Buttons = () => (
     <View style={styles.buttonRow}>
+      {freeImages > 0 && (
       <MenuView
         style={styles.addIcon}
         onPressAction={({ nativeEvent }) => handleMenuOption(nativeEvent)}
@@ -212,7 +215,7 @@ export default function MemoriesScreen({ route }) {
               type={1}
               color={COLORS.shades[0]}
               style={{ marginRight: -1 }}
-              text="2"
+              text={freeImages}
             />
           </View>
           <EntIcon
@@ -222,6 +225,8 @@ export default function MemoriesScreen({ route }) {
           />
         </Animatable.View>
       </MenuView>
+      )}
+      {images.length > 0 && (
       <View style={{ flexDirection: 'row' }}>
         <Pressable
           onPress={() => navigation.navigate(ROUTES.timelineScreen, { tripId })}
@@ -243,13 +248,13 @@ export default function MemoriesScreen({ route }) {
           />
         </Pressable>
       </View>
+      )}
     </View>
   );
 
   const getImageTile = (image, index) => {
     const isLeft = index === 0 || index % numColumns === 0;
 
-    console.log(image.uri);
     return (
       <ImageContainer
         onPress={() => {
