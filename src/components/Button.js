@@ -58,7 +58,7 @@ export default function Button({
       <Headline
         type={4}
         text={text}
-        color={textColor || isSecondary ? COLORS.shades[100] : COLORS.shades[0]}
+        color={textColor || (isSecondary ? COLORS.shades[100] : COLORS.shades[0])}
         style={{ marginLeft: icon ? 6 : 0 }}
       />
       )}

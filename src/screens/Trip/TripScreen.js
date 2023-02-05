@@ -708,7 +708,7 @@ export default function TripScreen({ route }) {
           { useNativeDriver: true },
         )}
       >
-        <Pressable style={{ height: IMAGE_HEIGHT }} onPress={() => (data ? addImageRef.current?.show() : null)} />
+        <Pressable style={{ height: IMAGE_HEIGHT }} onPress={() => (data && isHost ? addImageRef.current?.show() : null)} />
         {inactive && <View style={[styles.bodyContainer, { paddingHorizontal: PADDING.m, marginBottom: 60 }]}><TripScreenSkeleton /></View>}
         {!inactive && <TopContent />}
         {!inactive && <MainContent />}

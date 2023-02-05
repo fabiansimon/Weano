@@ -126,12 +126,7 @@ export default function ProfileScreen() {
       ImageCropPicker.openPicker(options).then(async (image) => {
         uploadImage(image);
       });
-    }
-
-    if (index === 2) {
-      ImageCropPicker.openPicker(options).then(async (image) => {
-        uploadImage(image);
-      });
+      return;
     }
 
     await updateUser({
@@ -284,7 +279,7 @@ export default function ProfileScreen() {
       <ActionSheet
         ref={addImageRef}
         title={i18n.t('Choose an option')}
-        options={['Cancel', i18n.t('Choose from Camera Roll'), i18n.t('Take a picture'), i18n.t('Reset image')]}
+        options={['Cancel', i18n.t('Choose from Camera Roll'), i18n.t('Reset image')]}
         cancelButtonIndex={0}
         onPress={(index) => handleAddImage(index)}
       />
