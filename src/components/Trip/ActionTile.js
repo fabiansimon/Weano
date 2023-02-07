@@ -1,9 +1,9 @@
 import {
+  Animated,
   Pressable, ScrollView, StyleSheet, View,
 } from 'react-native';
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Icon from 'react-native-vector-icons/Fontisto';
-import * as Animatable from 'react-native-animatable';
 import { useNavigation } from '@react-navigation/native';
 import moment from 'moment';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
@@ -16,18 +16,44 @@ import CheckboxTile from './CheckboxTile';
 import Avatar from '../Avatar';
 
 export default function ActionTile({ style, trip, type = 'active' }) {
-  const navigation = useNavigation();
-
-  const AnimatablePressable = Animatable.createAnimatableComponent(Pressable);
-
-  if (!trip) { return <View />; }
-  const {
-    id, images, location, dateRange, activeMembers,
-  } = trip;
+  const [isExpanded, setIsExpanded] = useState(false);
+  const animatedHeight = useRef(new Animated.Value(50)).current;
+  const animatedBorderRadius = useRef(new Animated.Value(RADIUS.xl)).current;
+  const duration = 300;
 
   const isActive = type === 'active';
   const isUpcoming = type === 'upcoming';
   const isRecap = type === 'recap';
+  const height = isActive ? 150 : isUpcoming ? 180 : 120;
+
+  useEffect(() => {
+    if (isExpanded) {
+      Animated.spring(animatedHeight, {
+        toValue: height,
+        duration,
+      }).start();
+      Animated.timing(animatedBorderRadius, {
+        toValue: RADIUS.m,
+        duration,
+      }).start();
+    } else {
+      Animated.spring(animatedHeight, {
+        toValue: 50,
+        duration,
+      }).start();
+      Animated.timing(animatedBorderRadius, {
+        toValue: 30,
+        duration,
+      }).start();
+    }
+  }, [isExpanded]);
+
+  const navigation = useNavigation();
+
+  if (!trip) { return <View />; }
+  const {
+    id, images, location, dateRange, activeMembers, title: tripTitle,
+  } = trip;
 
   const typeTitle = isActive ? i18n.t('Active') : isUpcoming ? i18n.t('Upcoming') : i18n.t('Rewind');
   const typeColor = isActive ? COLORS.error[900] : isUpcoming ? COLORS.success[700] : COLORS.primary[700];
@@ -44,7 +70,7 @@ export default function ActionTile({ style, trip, type = 'active' }) {
   const getOpenTaskList = () => {
     const { openTasks } = trip;
     return (
-      <ScrollView horizontal style={{ marginHorizontal: -15, paddingHorizontal: 15, marginVertical: 10 }}>
+      <ScrollView horizontal style={{ marginHorizontal: -PADDING.s, paddingHorizontal: 15, marginVertical: 10 }}>
         {openTasks.map((task) => (
           <CheckboxTile
             onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: id })}
@@ -82,7 +108,7 @@ export default function ActionTile({ style, trip, type = 'active' }) {
     }
 
     return (
-      <View style={{ marginTop: isActive && 14 }}>
+      <View style={{ marginTop: isActive ? 14 : 1 }}>
         <View style={{
           flexDirection: 'row', justifyContent: 'space-between', marginTop: 8, alignItems: 'flex-end',
         }}
@@ -136,38 +162,68 @@ export default function ActionTile({ style, trip, type = 'active' }) {
     );
   };
 
+  const getMinimizedTitle = () => (
+    <View style={{ marginLeft: 2, flexDirection: 'row' }}>
+      <Body
+        style={{ fontWeight: '500' }}
+        type={1}
+        text={tripTitle}
+      />
+      {tripTitle.length < 18 && (
+      <Body
+        style={{ fontWeight: '400' }}
+        type={1}
+        color={COLORS.neutral[300]}
+        numberOfLines={1}
+        ellipsizeMode="tail"
+        text={`, ${location.placeName.split(',')[0]}`}
+      />
+      )}
+    </View>
+  );
+
+  const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
   return (
-    <AnimatablePressable
-      onPress={() => navigation.navigate(isActive || isUpcoming ? ROUTES.tripScreen : ROUTES.memoriesScreen, { tripId: id })}
-      animation="pulse"
-      iterationCount={4}
-      delay={2000}
-      style={[styles.container, style, { shadowColor: COLORS.neutral[300] }]}
+    <AnimatedPressable
+      // onPress={() => navigation.navigate(isActive || isUpcoming ? ROUTES.tripScreen : ROUTES.memoriesScreen, { tripId: id })}
+      onPress={() => setIsExpanded(!isExpanded)}
+      style={[styles.container, style, { shadowColor: COLORS.neutral[300] }, { height: animatedHeight, borderRadius: animatedBorderRadius }]}
     >
-      <View style={[styles.typeContainer, { backgroundColor: Utils.addAlpha(typeColor, 0.2) }]}>
-        <Subtitle
-          type={1}
-          text={typeTitle}
-          color={typeColor}
-        />
-      </View>
       <View>
+        <View style={{
+          flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+        }}
+        >
+          {isExpanded ? (
+            <Body
+              type={1}
+              style={{ maxWidth: '70%', fontWeight: '500' }}
+              text={title}
+              color={COLORS.shades[100]}
+            />
+          ) : getMinimizedTitle()}
+          <View style={[styles.typeContainer, { backgroundColor: Utils.addAlpha(typeColor, 0.2) }]}>
+            <Subtitle
+              type={1}
+              text={typeTitle}
+              color={typeColor}
+            />
+          </View>
+        </View>
+
+        {isExpanded && (
         <Body
           type={1}
-          style={{ marginTop: -4, maxWidth: '70%' }}
-          text={title}
-          color={COLORS.shades[100]}
-        />
-        <Body
-          type={2}
           text={!isRecap && subtitle}
-          style={{ marginTop: 2, maxWidth: '60%' }}
+          style={{ maxWidth: '80%' }}
           color={COLORS.neutral[300]}
         />
+        )}
       </View>
       {isUpcoming && getOpenTaskList()}
       {getBottomInfo()}
-    </AnimatablePressable>
+    </AnimatedPressable>
   );
 }
 
@@ -176,10 +232,11 @@ const styles = StyleSheet.create({
     shadowOffset: {
       height: 4,
     },
+    overflow: 'hidden',
     shadowRadius: 10,
     shadowOpacity: 0.1,
     borderRadius: RADIUS.m,
-    padding: PADDING.m,
+    padding: PADDING.s,
     backgroundColor: COLORS.shades[0],
     borderWidth: 1,
     borderColor: COLORS.neutral[100],
@@ -189,9 +246,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: RADIUS.xl,
-    position: 'absolute',
-    top: 10,
-    right: 10,
     paddingVertical: 5,
     paddingHorizontal: 10,
   },

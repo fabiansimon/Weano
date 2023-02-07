@@ -15,6 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/AntDesign';
+import IonIcon from 'react-native-vector-icons/Ionicons';
 import { useLazyQuery } from '@apollo/client';
 import Toast from 'react-native-toast-message';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
@@ -35,7 +36,9 @@ import Suitcase3D from '../../assets/images/suitcase_3d.png';
 import GET_TRIPS_FOR_USER from '../queries/getTripsForUser';
 import RecapCardMini from '../components/RecapCardMini';
 import ActionTile from '../components/Trip/ActionTile';
-import ActionHeader from '../components/ActionHeader';
+import FAButton from '../components/FAButton';
+import StorySection from '../components/StorySection';
+import Divider from '../components/Divider';
 
 export default function MainScreen() {
   const [getTripsForUser, { error, data }] = useLazyQuery(GET_TRIPS_FOR_USER);
@@ -59,7 +62,6 @@ export default function MainScreen() {
   recapTimestamp.setFullYear(recapTimestamp.getFullYear() - 1);
   recapTimestamp = Date.parse(recapTimestamp) / 1000;
   const upcomingTrips = trips.filter((trip) => trip.dateRange.startDate > now && trip.dateRange.endDate > now);
-  const recentTrips = trips.filter((trip) => trip.dateRange.startDate < now && trip.dateRange.endDate < now);
   const activeTrip = trips.filter((trip) => trip.dateRange.startDate < now && trip.dateRange.endDate > now)[0];
   const recapTrip = trips.filter((trip) => trip.dateRange.startDate < recapTimestamp && trip.dateRange.endDate < now)[0];
   const upcomingTrip = upcomingTrips.length > 0 && upcomingTrips.filter((trip) => ((trip.dateRange.startDate - now) / 86400) < 7)[0];
@@ -80,33 +82,38 @@ export default function MainScreen() {
 
   const navigation = useNavigation();
 
-  const HeaderSection = () => (
+  const getHeaderSection = () => (
     <View style={{
-      flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+      flexDirection: 'row', alignItems: 'center',
     }}
     >
-      <Avatar
-        onPress={() => navigation.navigate(ROUTES.profileScreen)}
-        isSelf
-        size={45}
-      />
-      <View style={{ }}>
+      <View style={{ flex: 1 }}>
         <Headline
           type={3}
-          style={{ textAlign: 'center' }}
-          text={`${i18n.t('Hey')} ${user?.firstName}!`}
+          text={`${i18n.t('Hey')} ${user?.firstName} 👋🏻`}
         />
         <Body
           type={1}
-          style={{ textAlign: 'center' }}
+          style={{ marginTop: -2 }}
           text={i18n.t('ready for a new Adventure?')}
           color={COLORS.neutral[300]}
         />
       </View>
       <Pressable
-        onPress={() => setSearchVisible(true)}
+        onPress={() => navigation.navigate(ROUTES.profileScreen)}
         isSecondary
         style={styles.searchButton}
+      >
+        <IonIcon
+          name="ios-person"
+          color={COLORS.neutral[900]}
+          size={18}
+        />
+      </Pressable>
+      <Pressable
+        onPress={() => setSearchVisible(true)}
+        isSecondary
+        style={[styles.searchButton, { marginLeft: 6 }]}
       >
         <Icon
           name="search1"
@@ -117,91 +124,63 @@ export default function MainScreen() {
     </View>
   );
 
-  const ChipSelection = () => {
-    const options = [
-      {
-        title: i18n.t('Successful Trips ✈️'),
-        onPress: () => console.log('0'),
-        style: styles.basicChip,
-        fontColor: COLORS.neutral[900],
-        isShown: true,
-      },
-      {
-        title: i18n.t('Upcoming Trips ⏳'),
-        fontColor: COLORS.neutral[900],
-        onPress: () => console.log('1'),
-        style: styles.basicChip,
-        isShown: true,
-      },
-    ];
-
-    return (
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: PADDING.m }}
-        style={{ marginTop: 20, marginBottom: 5 }}
-      >
-        {options.map((option) => option.isShown && (
-          <Pressable
-            onPress={option.onPress}
-            style={[option.style, { marginRight: 10 }]}
-          >
-            <Body
-              type={1}
-              color={option.fontColor}
-              text={option.title}
-            />
-          </Pressable>
-        ))}
-      </ScrollView>
-    );
-  };
+  const getUpcomingTripSection = () => (
+    <View>
+      <Headline
+        type={4}
+        style={{ marginLeft: 5 }}
+        text={i18n.t('Upcoming Trips')}
+      />
+      {upcomingTrips.map((trip) => (
+        <RecapCardMini
+          onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: trip.id })}
+          style={{ marginTop: 15 }}
+          data={trip}
+        />
+      ))}
+    </View>
+  );
 
   return (
-    <View style={{ backgroundColor: COLORS.neutral[50], flex: 1 }}>
+    <View style={{ backgroundColor: COLORS.shades[0], flex: 1 }}>
       <AnimatedHeader
         scrollY={scrollY}
-        marginTop={10}
-        maxHeight={120}
+        maxHeight={110}
+        minHeight={10}
       >
-        <View style={styles.header}>
-          <SafeAreaView style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            flex: 1,
-          }}
+        <SafeAreaView style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          flex: 1,
+          paddingTop: 10,
+          paddingHorizontal: PADDING.l,
+          marginBottom: -18,
+          height: 140,
+        }}
+        >
+          <View>
+            <Headline
+              type={3}
+              text={`${i18n.t('Hey')} ${user?.firstName}!`}
+            />
+            <Body
+              type={1}
+              text={i18n.t('Are you looking for something? 👀')}
+              color={COLORS.neutral[300]}
+            />
+          </View>
+          <Pressable
+            onPress={() => setSearchVisible(true)}
+            isSecondary
+            style={styles.searchButton}
           >
-            <View>
-              <Headline
-                type={3}
-                text={`${i18n.t('Hey')} ${user?.firstName}!`}
-              />
-              <Body
-                type={1}
-                text={i18n.t('Are you looking for something? 👀')}
-                color={COLORS.neutral[300]}
-              />
-            </View>
-            <Pressable
-              onPress={() => setSearchVisible(true)}
-              isSecondary
-              style={styles.searchButton}
-            >
-              <Icon
-                name="search1"
-                color={COLORS.neutral[900]}
-                size={20}
-              />
-            </Pressable>
-          </SafeAreaView>
-          <ActionHeader
-            type={activeTrip ? 'active' : upcomingTrip ? 'upcoming' : recapTrip ? 'recap' : null}
-            trip={activeTrip || upcomingTrip || recapTrip || null}
-            style={{ position: 'absolute', bottom: -24 }}
-          />
-
-        </View>
+            <Icon
+              name="search1"
+              color={COLORS.neutral[900]}
+              size={20}
+            />
+          </Pressable>
+        </SafeAreaView>
       </AnimatedHeader>
       <Animated.ScrollView
         refreshControl={(
@@ -219,111 +198,22 @@ export default function MainScreen() {
         )}
       >
         <SafeAreaView style={styles.container}>
-          <View style={{ paddingHorizontal: PADDING.l }}>
-            <HeaderSection />
-          </View>
-          <ChipSelection />
+          {getHeaderSection()}
           <ActionTile
             type={activeTrip ? 'active' : upcomingTrip ? 'upcoming' : recapTrip ? 'recap' : null}
             trip={activeTrip || upcomingTrip || recapTrip || null}
-            style={{ marginHorizontal: PADDING.l, marginTop: 20 }}
+            style={{ marginTop: 20 }}
           />
-          <View>
-            <Headline
-              type={3}
-              text={i18n.t('Successful Trips ✈️')}
-              style={{ marginLeft: PADDING.xl, marginTop: 25 }}
-            />
-
-            <FlatList
-              horizontal
-              scrollEnabled={recentTrips.length > 0}
-              showsHorizontalScrollIndicator={false}
-              style={{ marginTop: 20, paddingHorizontal: PADDING.m }}
-              ListEmptyComponent={() => (
-                <View style={{ width: width * 0.9, alignItems: 'center' }}>
-                  <Image
-                    source={Suitcase3D}
-                    style={{ height: 150 }}
-                    resizeMode="contain"
-                  />
-                  <Body
-                    style={{ alignSelf: 'center', marginVertical: 10 }}
-                    type={1}
-                    text={i18n.t('No Trips to show 😢')}
-                    color={COLORS.neutral[300]}
-                  />
-                  <Pressable
-                    onPress={() => setCreateVisible(true)}
-                    style={styles.addtripButton}
-                  >
-                    <Body
-                      type={1}
-                      color={COLORS.shades[100]}
-                      text={i18n.t('Add trip')}
-                    />
-                  </Pressable>
-                </View>
-              )}
-              data={recentTrips}
-              ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-              renderItem={({ item }) => (
-                <RecapCard
-                  key={item.latlon}
-                  onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: item.id })}
-                  data={item}
-                  style={{ marginRight: 20 }}
-                />
-              )}
-            />
-          </View>
-          {upcomingTrips && (
-          <View style={[styles.carousel, { marginBottom: 110 }]}>
-            {upcomingTrips.length > 0 && (
-            <Headline
-              type={3}
-              text={i18n.t('Upcoming Trips ⏳')}
-              style={{ marginLeft: PADDING.l, marginTop: 35 }}
-            />
-            )}
-            <FlatList
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ paddingRight: PADDING.l }}
-              style={{ marginTop: 20, paddingHorizontal: PADDING.m }}
-              data={upcomingTrips}
-              ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-              renderItem={({ item }) => (
-                <RecapCardMini
-                  key={item.latlon}
-                  onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: item.id })}
-                  data={item}
-                  style={{ marginRight: 10 }}
-                />
-              )}
-            />
-          </View>
-          )}
+          <StorySection
+            contentContainerStyle={{ marginHorizontal: PADDING.l }}
+            style={{ marginHorizontal: -PADDING.l, marginTop: 20 }}
+            onAddTrip={() => setCreateVisible(true)}
+            data={trips}
+          />
+          <Divider color={COLORS.neutral[50]} vertical={20} />
+          {getUpcomingTripSection()}
         </SafeAreaView>
       </Animated.ScrollView>
-      <View style={styles.bottom}>
-        <View style={styles.buttonContainer}>
-          <Button
-            text={i18n.t('new adventure')}
-            onPress={() => setCreateVisible(true)}
-            style={[styles.buttonShadow]}
-          />
-          <Button
-            style={[styles.globeButton, styles.buttonShadow]}
-            backgroundColor={COLORS.shades[0]}
-            onPress={() => navigation.navigate(ROUTES.mapScreen)}
-            icon="globe"
-            isSecondary
-            fullWidth={false}
-            color={COLORS.neutral[900]}
-          />
-        </View>
-      </View>
       <CreateModal
         isVisible={createVisible}
         onRequestClose={() => setCreateVisible(false)}
@@ -333,7 +223,11 @@ export default function MainScreen() {
         onRequestClose={() => setSearchVisible(false)}
         onPress={(id) => navigation.navigate(ROUTES.tripScreen, { tripId: id })}
       />
-
+      <FAButton
+        icon="map"
+        iconSize={22}
+        onPress={() => navigation.navigate(ROUTES.mapScreen)}
+      />
     </View>
   );
 }
@@ -364,9 +258,9 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   container: {
+    paddingHorizontal: PADDING.l,
     marginTop: 20,
     flex: 1,
-    backgroundColor: COLORS.neutral[50],
   },
   globeButton: {
     marginLeft: 15,
@@ -383,11 +277,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  header: {
-    flex: 1,
-    paddingHorizontal: 20,
 
-  },
   activeTripChip: {
     borderRadius: 100,
     padding: 15,

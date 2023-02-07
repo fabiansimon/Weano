@@ -43,7 +43,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     width: '100%',
-    height: 120,
     backgroundColor: COLORS.shades[0],
     shadowColor: COLORS.shades[100],
     shadowOffset: {
