@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     width: 65,
     borderWidth: 1,
     borderColor: COLORS.neutral[100],
-    backgroundColor: COLORS.neutral[50],
+    backgroundColor: COLORS.shades[0],
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',

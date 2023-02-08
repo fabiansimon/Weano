@@ -87,7 +87,9 @@ const styles = StyleSheet.create({
   dateContainer: {
     marginTop: 10,
     borderRadius: RADIUS.xl,
-    backgroundColor: COLORS.neutral[100],
+    backgroundColor: COLORS.neutral[50],
+    borderWidth: 1,
+    borderColor: COLORS.neutral[100],
     paddingVertical: 5,
     paddingHorizontal: 10,
   },

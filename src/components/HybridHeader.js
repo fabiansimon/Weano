@@ -6,7 +6,7 @@ import AnimatedHeader from './AnimatedHeader';
 import BackButton from './BackButton';
 import Headline from './typography/Headline';
 import BasicHeader from './BasicHeader';
-import COLORS, { PADDING } from '../constants/Theme';
+import COLORS from '../constants/Theme';
 
 export default function HybridHeader({
   style, title, subtitle, onPressBack, info, children, scrollY, content, backButton = true, backgroundColor = COLORS.shades[0],
@@ -58,12 +58,12 @@ export default function HybridHeader({
 }
 
 const styles = StyleSheet.create({
-  animatedHeader: {
-    paddingBottom: 10,
-    flexDirection: 'row',
-    paddingHorizontal: PADDING.m,
-    justifyContent: 'space-between',
-  },
+  // animatedHeader: {
+  //   paddingBottom: 10,
+  //   flexDirection: 'row',
+  //   paddingHorizontal: PADDING.m,
+  //   justifyContent: 'space-between',
+  // },
   backButton: {
     position: 'absolute',
     zIndex: 9999,

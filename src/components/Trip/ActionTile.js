@@ -3,6 +3,7 @@ import {
   Pressable, ScrollView, StyleSheet, View,
 } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
+import EntIcon from 'react-native-vector-icons/Entypo';
 import Icon from 'react-native-vector-icons/Fontisto';
 import { useNavigation } from '@react-navigation/native';
 import moment from 'moment';
@@ -31,18 +32,22 @@ export default function ActionTile({ style, trip, type = 'active' }) {
       Animated.spring(animatedHeight, {
         toValue: height,
         duration,
+        bounciness: 0.2,
       }).start();
       Animated.timing(animatedBorderRadius, {
         toValue: RADIUS.m,
+        bounciness: 0.2,
         duration,
       }).start();
     } else {
       Animated.spring(animatedHeight, {
         toValue: 50,
+        bounciness: 0.2,
         duration,
       }).start();
       Animated.timing(animatedBorderRadius, {
         toValue: 30,
+        bounciness: 0.2,
         duration,
       }).start();
     }
@@ -186,23 +191,32 @@ export default function ActionTile({ style, trip, type = 'active' }) {
 
   return (
     <AnimatedPressable
-      // onPress={() => navigation.navigate(isActive || isUpcoming ? ROUTES.tripScreen : ROUTES.memoriesScreen, { tripId: id })}
-      onPress={() => setIsExpanded(!isExpanded)}
+      onPress={() => navigation.navigate(isActive || isUpcoming ? ROUTES.tripScreen : ROUTES.memoriesScreen, { tripId: id })}
       style={[styles.container, style, { shadowColor: COLORS.neutral[300] }, { height: animatedHeight, borderRadius: animatedBorderRadius }]}
     >
       <View>
-        <View style={{
-          flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-        }}
+        <Pressable
+          onPress={() => setIsExpanded(!isExpanded)}
+          style={{
+            flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+          }}
         >
-          {isExpanded ? (
-            <Body
-              type={1}
-              style={{ maxWidth: '70%', fontWeight: '500' }}
-              text={title}
-              color={COLORS.shades[100]}
+          <View style={{ flexDirection: 'row' }}>
+            <EntIcon
+              name={isExpanded ? 'chevron-up' : 'chevron-down'}
+              size={20}
+              color={COLORS.neutral[300]}
+              style={{ marginRight: 4 }}
             />
-          ) : getMinimizedTitle()}
+            {isExpanded ? (
+              <Body
+                type={1}
+                style={{ maxWidth: '100%', fontWeight: '500' }}
+                text={title}
+                color={COLORS.shades[100]}
+              />
+            ) : getMinimizedTitle()}
+          </View>
           <View style={[styles.typeContainer, { backgroundColor: Utils.addAlpha(typeColor, 0.2) }]}>
             <Subtitle
               type={1}
@@ -210,7 +224,7 @@ export default function ActionTile({ style, trip, type = 'active' }) {
               color={typeColor}
             />
           </View>
-        </View>
+        </Pressable>
 
         {isExpanded && (
         <Body

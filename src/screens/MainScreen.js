@@ -1,10 +1,8 @@
 import {
   Dimensions,
-  FlatList,
-  Image,
   Pressable,
   RefreshControl,
-  ScrollView, StyleSheet, View,
+  StyleSheet, View,
 } from 'react-native';
 import React, {
   useRef, useState,
@@ -21,8 +19,6 @@ import Toast from 'react-native-toast-message';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import Headline from '../components/typography/Headline';
 import i18n from '../utils/i18n';
-import RecapCard from '../components/RecapCard';
-import Button from '../components/Button';
 import CreateModal from '../components/CreateModal';
 import ROUTES from '../constants/Routes';
 import AnimatedHeader from '../components/AnimatedHeader';
@@ -30,9 +26,7 @@ import SearchModal from '../components/Search/SearchModal';
 import userStore from '../stores/UserStore';
 import Body from '../components/typography/Body';
 import Utils from '../utils';
-import Avatar from '../components/Avatar';
 import tripsStore from '../stores/TripsStore';
-import Suitcase3D from '../../assets/images/suitcase_3d.png';
 import GET_TRIPS_FOR_USER from '../queries/getTripsForUser';
 import RecapCardMini from '../components/RecapCardMini';
 import ActionTile from '../components/Trip/ActionTile';
@@ -49,8 +43,6 @@ export default function MainScreen() {
   const trips = tripsStore((state) => state.trips);
   const setTrips = tripsStore((state) => state.setTrips);
   const [refreshing, setRefreshing] = React.useState(false);
-
-  const { width } = Dimensions.get('window');
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -142,7 +134,7 @@ export default function MainScreen() {
   );
 
   return (
-    <View style={{ backgroundColor: COLORS.shades[0], flex: 1 }}>
+    <View style={{ backgroundColor: COLORS.neutral[50], flex: 1 }}>
       <AnimatedHeader
         scrollY={scrollY}
         maxHeight={110}
