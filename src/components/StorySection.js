@@ -23,7 +23,6 @@ export default function StorySection({
       location, thumbnailUri: uri, id: tripId, dateRange,
     } = trip;
     const type = Utils.convertDateToType(dateRange);
-
     const borderColor = type === 'active' ? COLORS.error[700] : type === 'soon' || type === 'upcoming' ? COLORS.success[700] : COLORS.primary[500];
 
     return (

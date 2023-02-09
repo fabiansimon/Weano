@@ -10,6 +10,10 @@ import React, { useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import FastImage from 'react-native-fast-image';
 import { BlurView } from '@react-native-community/blur';
+import { PanGestureHandler } from 'react-native-gesture-handler';
+import Animated, {
+  useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withSpring,
+} from 'react-native-reanimated';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import BackButton from './BackButton';
 import Utils from '../utils';
@@ -23,10 +27,51 @@ export default function StoryModal({
   const [imageIndex, setImageIndex] = useState(0);
   const { width, height } = Dimensions.get('window');
 
+  const translateY = useSharedValue(0);
+  const translateX = useSharedValue(0);
+  const scale = useSharedValue(1);
+  const animatedBorderRadius = useSharedValue(0);
+
   useEffect(() => {
     setImageIndex(initalIndex);
   }, [initalIndex]);
 
+  const handleGesture = useAnimatedGestureHandler({
+    onActive: (event) => {
+      const { translationY, translationX } = event;
+
+      const borderRadius = translationY / 15;
+
+      translateY.value = translationY;
+      translateX.value = translationX;
+      animatedBorderRadius.value = borderRadius > 20 ? 20 : borderRadius;
+      scale.value = Math.abs((translationY - height) / height);
+    },
+    onEnd: () => {
+      const springConfig = {
+        mass: 0.5,
+      };
+
+      translateY.value = withSpring(0, springConfig);
+      translateX.value = withSpring(0, springConfig);
+      animatedBorderRadius.value = withSpring(0, springConfig);
+      scale.value = withSpring(1, springConfig);
+    },
+  }, [onRequestClose]);
+
+  const modalStyle = useAnimatedStyle(() => ({
+    borderTopLeftRadius: animatedBorderRadius.value,
+    borderTopRightRadius: animatedBorderRadius.value,
+    borderBottomLeftRadius: animatedBorderRadius.value,
+    borderBottomRightRadius: animatedBorderRadius.value,
+    transform: [{
+      translateY: translateY.value,
+    }, {
+      translateX: translateX.value,
+    }, {
+      scale: scale.value,
+    }],
+  }));
   const handleShare = async () => {
     Share.share({
       message:
@@ -161,10 +206,17 @@ export default function StoryModal({
       statusBarTranslucent
       onRequestClose={onRequestClose}
     >
-      <View style={{ flex: 1, backgroundColor: COLORS.neutral[900] }}>
-        <ImagePreview item={data[imageIndex]} />
-        <ProgressHeader />
-      </View>
+      <PanGestureHandler onGestureEvent={handleGesture}>
+        <Animated.View style={[{
+          overflow: 'hidden',
+          flex: 1,
+          backgroundColor: COLORS.neutral[900],
+        }, modalStyle]}
+        >
+          <ImagePreview item={data[imageIndex]} />
+          <ProgressHeader />
+        </Animated.View>
+      </PanGestureHandler>
     </Modal>
   );
 }

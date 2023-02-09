@@ -1,5 +1,4 @@
 import {
-  Dimensions,
   Pressable,
   RefreshControl,
   StyleSheet, View,

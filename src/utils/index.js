@@ -234,6 +234,10 @@ export default class Utils {
       return 'recent';
     }
 
+    if (dateRange.startDate < now && dateRange.endDate > now) {
+      return 'active';
+    }
+
     if (((dateRange.startDate - now) / 86400) < 7) {
       return 'soon';
     }
@@ -242,9 +246,6 @@ export default class Utils {
       return 'upcoming';
     }
 
-    if (dateRange.startDate < now && dateRange.endDate > now) {
-      return 'active';
-    }
     // const upcomingTrips = trips.filter((trip) => trip.dateRange.startDate > now && trip.dateRange.endDate > now);
     // const recentTrips = trips.filter((trip) => trip.dateRange.startDate < now && trip.dateRange.endDate < now);
     // const activeTrip = trips.filter((trip) => trip.dateRange.startDate < now && trip.dateRange.endDate > now)[0];

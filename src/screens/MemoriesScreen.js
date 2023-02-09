@@ -29,6 +29,7 @@ import StoryModal from '../components/StoryModal';
 import JourneyIcon from '../../assets/icons/journey_icon.svg';
 import ROUTES from '../constants/Routes';
 import Label from '../components/typography/Label';
+import Utils from '../utils';
 
 export default function MemoriesScreen({ route }) {
   const { tripId } = route.params;
@@ -178,54 +179,79 @@ export default function MemoriesScreen({ route }) {
       </Animated.View>
     );
   };
-
   const Buttons = () => (
     <View style={styles.buttonRow}>
-      {freeImages > 0 && (
-      <MenuView
-        style={styles.addIcon}
-        onPressAction={({ nativeEvent }) => handleMenuOption(nativeEvent)}
-        actions={[
-          {
-            id: 'take',
-            title: i18n.t('Take a picture'),
-            image: Platform.select({
-              ios: 'camera',
-            }),
-          },
-          {
-            id: 'select',
-            title: i18n.t('Select from Cameraroll'),
-            image: Platform.select({
-              ios: 'photo',
-            }),
-          },
-        ]}
-      >
-        <Animatable.View
-          animation="pulse"
-          iterationCount="infinite"
-          activeOpacity={0.5}
-          style={[styles.fab, { backgroundColor: COLORS.primary[700] }]}
+
+      {freeImages > 0 ? (
+        <MenuView
+          style={styles.addIcon}
+          onPressAction={({ nativeEvent }) => handleMenuOption(nativeEvent)}
+          actions={[
+            {
+              id: 'take',
+              title: i18n.t('Take a picture'),
+              image: Platform.select({
+                ios: 'camera',
+              }),
+            },
+            {
+              id: 'select',
+              title: i18n.t('Select from Cameraroll'),
+              image: Platform.select({
+                ios: 'photo',
+              }),
+            },
+          ]}
         >
-          <View
-            style={styles.imagesLeftContainer}
+          <Animatable.View
+            animation="pulse"
+            iterationCount="infinite"
+            activeOpacity={0.5}
+            style={[styles.fab, { backgroundColor: COLORS.primary[700] }]}
           >
-            <Label
-              type={1}
+            <View
+              style={styles.imagesLeftContainer}
+            >
+              <Label
+                type={1}
+                color={COLORS.shades[0]}
+                style={{ marginRight: -1 }}
+                text={freeImages}
+              />
+            </View>
+            <EntIcon
+              name="camera"
+              size={22}
               color={COLORS.shades[0]}
-              style={{ marginRight: -1 }}
-              text={freeImages}
+            />
+          </Animatable.View>
+        </MenuView>
+      )
+        : (
+          <View
+            animation="pulse"
+            iterationCount="infinite"
+            activeOpacity={0.5}
+            style={[styles.fab, { backgroundColor: Utils.addAlpha(COLORS.primary[700], 0.3) }]}
+          >
+            <View
+              style={[styles.imagesLeftContainer, { backgroundColor: Utils.addAlpha(COLORS.error[900], 0.3) }]}
+            >
+              <Label
+                type={1}
+                color={COLORS.shades[0]}
+                style={{ marginRight: -1 }}
+                text={freeImages}
+              />
+            </View>
+            <EntIcon
+              name="camera"
+              size={22}
+              color={COLORS.shades[0]}
             />
           </View>
-          <EntIcon
-            name="camera"
-            size={22}
-            color={COLORS.shades[0]}
-          />
-        </Animatable.View>
-      </MenuView>
-      )}
+        )}
+
       {images.length > 0 && (
       <View style={{ flexDirection: 'row' }}>
         <Pressable
@@ -334,7 +360,10 @@ export default function MemoriesScreen({ route }) {
       <StoryModal
         initalIndex={initalIndex}
         data={images}
-        onRequestClose={() => setStoryVisible(false)}
+        onRequestClose={() => {
+          setStoryVisible(false);
+          console.log('closed');
+        }}
         isVisible={storyVisible}
       />
     </View>

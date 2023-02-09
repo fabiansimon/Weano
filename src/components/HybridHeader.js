@@ -19,19 +19,23 @@ export default function HybridHeader({
       </SafeAreaView>
       )}
       <AnimatedHeader
-        maxHeight={160}
-        style={[style, { justifyContent: 'flex-end', opacity: 1 }]}
+        maxHeight={110}
+        minHeight={10}
+        style={style}
         scrollY={scrollY}
       >
-        <View style={styles.animatedHeader}>
-          <View style={styles.title}>
-            <Headline
-              style={{ textAlign: 'center' }}
-              type={3}
-              text={title}
-            />
-          </View>
-        </View>
+
+        <SafeAreaView style={{
+          flex: 1,
+          marginBottom: -24,
+        }}
+        >
+          <Headline
+            style={{ alignSelf: 'center', paddingTop: 25 }}
+            type={3}
+            text={title}
+          />
+        </SafeAreaView>
       </AnimatedHeader>
       <Animated.ScrollView
         ref={scrollY}
@@ -43,7 +47,7 @@ export default function HybridHeader({
         )}
       >
         <BasicHeader
-          style={{ paddingTop: 800, marginTop: backButton ? -750 : -780, backgroundColor }}
+          style={{ paddingTop: 800, marginTop: backButton ? -760 : -790, backgroundColor }}
           scrollY={scrollY}
           title={title}
           subtitle={subtitle}
@@ -58,17 +62,12 @@ export default function HybridHeader({
 }
 
 const styles = StyleSheet.create({
-  // animatedHeader: {
-  //   paddingBottom: 10,
-  //   flexDirection: 'row',
-  //   paddingHorizontal: PADDING.m,
-  //   justifyContent: 'space-between',
-  // },
+
   backButton: {
     position: 'absolute',
     zIndex: 9999,
     left: 20,
-    top: 22,
+    top: 15,
   },
   title: {
     zIndex: 10,

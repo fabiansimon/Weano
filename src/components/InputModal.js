@@ -193,7 +193,7 @@ export default function InputModal({
           onRequestClose();
           clearData();
         }}
-        style={{ backgroundColor: 'rgba(0,0,0,0.6)', flex: 1 }}
+        style={{ backgroundColor: 'rgba(0,0,0,0.15)', flex: 1 }}
       >
         <KeyboardView ignoreTouch>
           <Animated.View style={[styles.modalContainer, { transform: [{ translateY: animatedBottom }] }]}>

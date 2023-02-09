@@ -22,6 +22,10 @@ export default function LocationScreen({ isVisible, onRequestClose, onPress }) {
 
   const data = [
     {
+      title: i18n.t('Active trips'),
+      data: trips.filter((trip) => trip.dateRange.startDate < now && trip.dateRange.endDate > now),
+    },
+    {
       title: i18n.t('Successful trips'),
       data: trips.filter((trip) => trip.dateRange.startDate < now && trip.dateRange.endDate < now),
     },

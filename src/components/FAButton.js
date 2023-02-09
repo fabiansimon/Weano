@@ -12,8 +12,8 @@ export default function FAButton({
 }) {
   return (
     <Pressable
-      style={[styles.fab, { paddingHorizontal: string ? PADDING.l : 0 }, style]}
       onPress={onPress}
+      style={[styles.fab, { paddingHorizontal: string ? PADDING.l : 0 }, style]}
     >
       <Headline
         type={4}
@@ -25,6 +25,7 @@ export default function FAButton({
         color={COLORS.shades[0]}
         size={iconSize}
       />
+
     </Pressable>
   );
 }
