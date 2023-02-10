@@ -12,6 +12,7 @@ import i18n from '../utils/i18n';
 import ROUTES from '../constants/Routes';
 import Utils from '../utils';
 import Label from './typography/Label';
+import DefaultImage from '../../assets/images/default_trip.png';
 
 export default function StorySection({
   style, contentContainerStyle, data, onAddTrip,
@@ -33,9 +34,8 @@ export default function StorySection({
         <View style={[styles.outerTripContainer, { borderColor }]}>
           <FastImage
             style={styles.tripContainer}
-            source={{ uri }}
+            source={uri ? { uri } : DefaultImage}
           />
-
         </View>
         <Body
           numberOfLines={1}

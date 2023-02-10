@@ -346,6 +346,11 @@ export default function TripScreen({ route }) {
 
     const { mutualTasks, privateTasks } = data;
     const tasks = [...mutualTasks, ...privateTasks];
+
+    if (tasks.length <= 0) {
+      return false;
+    }
+
     return tasks.filter((task) => task.isDone).length === tasks.length;
   };
 
@@ -745,6 +750,8 @@ export default function TripScreen({ route }) {
         isVisible={inputOpen}
         placeholder={inputOpen === 'description' ? i18n.t('Enter description') : i18n.t('Enter title')}
         onRequestClose={() => setInputOpen(null)}
+        multiline={inputOpen === 'description'}
+        maxLength={inputOpen === 'description' ? 100 : 20}
         onPress={(string) => (inputOpen === 'description' ? updateDescription(string) : updateTitle(string))}
       />
 

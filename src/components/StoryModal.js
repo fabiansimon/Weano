@@ -4,27 +4,32 @@ import {
   View,
   Dimensions,
   Pressable,
-  Share,
+  ActivityIndicator,
 } from 'react-native';
+import Toast from 'react-native-toast-message';
 import React, { useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import FastImage from 'react-native-fast-image';
 import { BlurView } from '@react-native-community/blur';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import Animated, {
-  useAnimatedGestureHandler, useAnimatedStyle, useSharedValue, withSpring,
+  runOnJS,
+  useAnimatedGestureHandler, useAnimatedStyle, useDerivedValue, useSharedValue, withSpring,
 } from 'react-native-reanimated';
+import RNFetchBlob from 'rn-fetch-blob';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import BackButton from './BackButton';
 import Utils from '../utils';
 import i18n from '../utils/i18n';
 import Body from './typography/Body';
 import Avatar from './Avatar';
+import toastConfig from '../constants/ToastConfig';
 
 export default function StoryModal({
   data, isVisible, onRequestClose, initalIndex = 0,
 }) {
   const [imageIndex, setImageIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
   const { width, height } = Dimensions.get('window');
 
   const translateY = useSharedValue(0);
@@ -35,6 +40,17 @@ export default function StoryModal({
   useEffect(() => {
     setImageIndex(initalIndex);
   }, [initalIndex]);
+
+  const handleClose = (value) => {
+    if (value < 0.7) {
+      onRequestClose();
+
+      translateY.value = 0;
+      translateX.value = 0;
+      animatedBorderRadius.value = 0;
+      scale.value = 1;
+    }
+  };
 
   const handleGesture = useAnimatedGestureHandler({
     onActive: (event) => {
@@ -57,7 +73,11 @@ export default function StoryModal({
       animatedBorderRadius.value = withSpring(0, springConfig);
       scale.value = withSpring(1, springConfig);
     },
-  }, [onRequestClose]);
+  });
+
+  useDerivedValue(() => {
+    runOnJS(handleClose)(scale.value);
+  });
 
   const modalStyle = useAnimatedStyle(() => ({
     borderTopLeftRadius: animatedBorderRadius.value,
@@ -72,10 +92,21 @@ export default function StoryModal({
       scale: scale.value,
     }],
   }));
-  const handleShare = async () => {
-    Share.share({
-      message:
-            'React Native | A framework for building native apps using React',
+  const handleDownload = async () => {
+    setIsLoading(true);
+    RNFetchBlob.config({
+      fileCache: true,
+      appendExt: 'png',
+    }).fetch('GET', data[imageIndex].uri).then((res) => {
+      Utils.downloadImage(res.data);
+      setIsLoading(false);
+    }).catch((e) => {
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('Whoops!'),
+        text2: e.message,
+      });
+      setIsLoading(false);
     });
   };
 
@@ -100,16 +131,20 @@ export default function StoryModal({
           iconColor={COLORS.shades[0]}
         />
         <Pressable
-          onPress={handleShare}
+          onPress={handleDownload}
+          disabled={isLoading}
           activeOpacity={0.8}
           style={[styles.roundButton, { marginLeft: 10 }]}
         >
-          <Icon
-            name="arrow-redo"
-            size={20}
-            color={Utils.addAlpha(COLORS.neutral[50], 0.9)}
-            style={{ marginRight: -2 }}
-          />
+          {isLoading ? <ActivityIndicator color={COLORS.shades[0]} />
+            : (
+              <Icon
+                name="download"
+                size={20}
+                color={Utils.addAlpha(COLORS.neutral[50], 0.9)}
+                style={{ marginRight: -2 }}
+              />
+            )}
         </Pressable>
       </View>
     </View>
@@ -217,6 +252,7 @@ export default function StoryModal({
           <ProgressHeader />
         </Animated.View>
       </PanGestureHandler>
+      <Toast config={toastConfig} />
     </Modal>
   );
 }

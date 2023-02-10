@@ -92,6 +92,7 @@ export default function MemoriesScreen({ route }) {
       const options = {
         compressImageQuality: 0.2,
         mediaType: 'photo',
+        includeBase64: true,
       };
 
       ImageCropPicker.openPicker(options).then(async (image) => {
@@ -331,7 +332,6 @@ export default function MemoriesScreen({ route }) {
               renderItem={({ item, index }) => getImageTile(item, index)}
             />
           </PinchGestureHandler>
-          <Buttons />
           {(loading || error) && (
           <View style={styles.loading}>
             <View style={{ justifyContent: 'center', alignItems: 'center', top: '40%' }}>
@@ -356,6 +356,7 @@ export default function MemoriesScreen({ route }) {
           )}
         </>
       ) : <EmptyDataSet />}
+      <Buttons />
       <Header />
       <StoryModal
         initalIndex={initalIndex}

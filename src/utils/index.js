@@ -173,14 +173,14 @@ export default class Utils {
      * @param {image} image - image to download
      */
   static downloadImage(image) {
-    CameraRoll.save(image, { type: 'photo', album: 'Ayno' });
+    CameraRoll.save(image, { type: 'photo', album: 'Weano' });
     setTimeout(() => {
       Toast.show({
         type: 'success',
         text1: i18n.t('Done!'),
         text2: i18n.t('Image successfully saved on your device'),
       });
-    }, 1000);
+    }, 300);
   }
 
   /**

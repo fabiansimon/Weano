@@ -23,7 +23,7 @@ export default function BackButton({
     )
       : (
         <Pressable
-          style={[style, styles.backButton]}
+          style={[styles.backButton, style]}
           icon={(
             <Icon
               name="arrowleft"

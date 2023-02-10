@@ -107,8 +107,10 @@ export default function ImageModal({
   const handlePublish = async () => {
     setIsLoading(true);
 
+    const data = isPreselected ? image.data : image;
+
     try {
-      const { Location } = await httpService.uploadToS3(image, !isPreselected);
+      const { Location } = await httpService.uploadToS3(data, !isPreselected);
 
       await uploadTripImage({
         variables: {
@@ -141,7 +143,7 @@ export default function ImageModal({
     }, 500);
   };
 
-  const PublishFooter = () => (
+  const getPublishFooter = () => (
     <View style={styles.footer}>
       <View style={{ flexDirection: 'row' }}>
         <TouchableOpacity
@@ -180,7 +182,7 @@ export default function ImageModal({
     </View>
   );
 
-  const DetailsHeader = () => (
+  const getDetailsHeader = () => (
     <View style={styles.header}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Avatar
@@ -278,8 +280,8 @@ export default function ImageModal({
                 />
               </View>
             </KeyboardView>
-            <DetailsHeader />
-            <PublishFooter />
+            {getDetailsHeader()}
+            {getPublishFooter()}
           </>
           )}
         </>

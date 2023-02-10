@@ -7,6 +7,7 @@ import IonIcon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { useMutation } from '@apollo/client';
 import Toast from 'react-native-toast-message';
+import FeatherIcon from 'react-native-vector-icons/Feather';
 import COLORS, { PADDING } from '../constants/Theme';
 import i18n from '../utils/i18n';
 import HybridHeader from '../components/HybridHeader';
@@ -175,11 +176,18 @@ export default function MyAccountScreen() {
     title, value, onPress, style,
   }) => (
     <Pressable style={style} onPress={onPress}>
-      <Body
-        type={1}
-        text={title}
-        color={COLORS.neutral[900]}
-      />
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Body
+          type={1}
+          text={title}
+          color={COLORS.neutral[900]}
+        />
+        <FeatherIcon
+          name="edit"
+          style={{ marginLeft: 6 }}
+          color={COLORS.neutral[300]}
+        />
+      </View>
       <Headline
         style={{ marginHeight: 10 }}
         type={2}
@@ -263,6 +271,7 @@ export default function MyAccountScreen() {
         </View>
       </HybridHeader>
       <InputModal
+        maxLength={(inputState?.state === 'firstName' || inputState?.state === 'lastName') && 15}
         isVisible={inputState}
         placeholder={inputState?.placeholder}
         onRequestClose={() => setInputState(null)}

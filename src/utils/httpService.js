@@ -64,7 +64,7 @@ async function checkVerificationCode(phoneNumber, code) {
   });
 }
 
-async function uploadToS3(image, tranformToBase64 = false) {
+async function uploadToS3(image, transformToBase64 = false) {
   const key = uuidv4();
 
   const bucket = new S3({
@@ -77,7 +77,7 @@ async function uploadToS3(image, tranformToBase64 = false) {
   const type = 'image/jpeg';
 
   let arrayBuffer;
-  if (tranformToBase64) {
+  if (transformToBase64) {
     const path = image.uri;
     const base64 = await readFile(path, 'base64');
     arrayBuffer = decode(base64);

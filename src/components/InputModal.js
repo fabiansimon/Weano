@@ -18,9 +18,10 @@ import i18n from '../utils/i18n';
 import Divider from './Divider';
 import toastConfig from '../constants/ToastConfig';
 import REGEX from '../constants/Regex';
+import Label from './typography/Label';
 
 export default function InputModal({
-  isVisible, onRequestClose, placeholder, onPress, geoMatching = false, topContent, emailInput, autoClose, ...rest
+  isVisible, onRequestClose, placeholder, onPress, geoMatching = false, topContent, emailInput, autoClose, multiline, maxLength, ...rest
 }) {
   const [showModal, setShowModal] = useState(isVisible);
   const [input, setInput] = useState('');
@@ -177,6 +178,12 @@ export default function InputModal({
     </View>
   );
 
+  const getCounter = () => (
+    <View style={styles.counter}>
+      <Label type={1} text={`${input.length}/${maxLength}`} />
+    </View>
+  );
+
   return (
     <Modal
       animationType="fade"
@@ -193,7 +200,7 @@ export default function InputModal({
           onRequestClose();
           clearData();
         }}
-        style={{ backgroundColor: 'rgba(0,0,0,0.15)', flex: 1 }}
+        style={{ backgroundColor: 'rgba(0,0,0,0.1)', flex: 1 }}
       >
         <KeyboardView ignoreTouch>
           <Animated.View style={[styles.modalContainer, { transform: [{ translateY: animatedBottom }] }]}>
@@ -232,6 +239,8 @@ export default function InputModal({
               <TextInput
                 {...rest}
                 autoFocus
+                maxLength={maxLength}
+                multiline={multiline}
                 value={input}
                 onChangeText={(val) => handleChangeText(val)}
                 style={styles.textInput}
@@ -265,6 +274,7 @@ export default function InputModal({
               </TouchableOpacity>
               )}
             </View>
+            {maxLength && getCounter()}
           </Animated.View>
         </KeyboardView>
       </TouchableOpacity>
@@ -370,5 +380,17 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.neutral[100],
     paddingVertical: 7,
     paddingHorizontal: 9,
+  },
+  counter: {
+    position: 'absolute',
+    top: -12,
+    // alignSelf: 'center',
+    left: 20,
+    backgroundColor: COLORS.shades[0],
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 100,
+    borderWidth: 1,
+    borderColor: COLORS.neutral[100],
   },
 });

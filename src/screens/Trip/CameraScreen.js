@@ -65,7 +65,7 @@ export default function CameraScreen({ route }) {
 
     if (camera) {
       camera.pausePreview();
-      const image = await camera.takePictureAsync();
+      const image = await camera.takePictureAsync({ quality: 0.5 });
       let flippedImage;
 
       if (cameraType === CameraType.front) {

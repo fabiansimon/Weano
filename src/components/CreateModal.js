@@ -25,9 +25,13 @@ import Body from './typography/Body';
 import tripsStore from '../stores/TripsStore';
 import InputModal from './InputModal';
 import httpService from '../utils/httpService';
+import userStore from '../stores/UserStore';
 
 export default function CreateModal({ isVisible, onRequestClose }) {
   const addTripState = tripsStore((state) => state.addTrip);
+  const {
+    avatarUri, firstName, lastName, id: userId,
+  } = userStore((state) => state.user);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(() => {
     const date = new Date();
@@ -122,7 +126,12 @@ export default function CreateModal({ isVisible, onRequestClose }) {
           placeName,
           latlon,
         },
-        activeMembers: null,
+        activeMembers: [{
+          avatarUri,
+          firstName,
+          lastName,
+          id: userId,
+        }],
         dateRange: {
           endDate,
           startDate,
@@ -337,7 +346,10 @@ export default function CreateModal({ isVisible, onRequestClose }) {
           />
           <View style={styles.buttonContainer}>
             {pageIndex !== 0 && (
-            <BackButton onPress={() => handleChange(true)} />
+              <BackButton
+                style={{ height: 50, width: 50 }}
+                onPress={() => handleChange(true)}
+              />
             )}
             <Button
               isLoading={loading}
