@@ -18,7 +18,6 @@ import i18n from '../utils/i18n';
 import Divider from './Divider';
 import toastConfig from '../constants/ToastConfig';
 import REGEX from '../constants/Regex';
-import Label from './typography/Label';
 
 export default function InputModal({
   isVisible, onRequestClose, placeholder, onPress, geoMatching = false, topContent, emailInput, autoClose, multiline, maxLength, ...rest

@@ -57,8 +57,6 @@ export default function TripScreen({ route }) {
     },
   });
 
-  const now = Date.now() / 1000;
-
   const [updateTrip, { error }] = useMutation(UPDATE_TRIP);
   const [deleteTrip] = useMutation(DELETE_TRIP_BY_ID);
   const activeTrip = activeTripStore((state) => state.activeTrip);
@@ -66,6 +64,21 @@ export default function TripScreen({ route }) {
   const setActiveTrip = activeTripStore((state) => state.setActiveTrip);
   const scrollY = useRef(new Animated.Value(0)).current;
   const scrollRef = useRef();
+
+  // const documentsRef = useRef();
+  const expensesRef = useRef();
+  const pollsRef = useRef();
+  const checklistRef = useRef();
+  const travelersRef = useRef();
+
+  const contentRefs = [
+    // documentsRef,
+    expensesRef,
+    checklistRef,
+    pollsRef,
+    travelersRef,
+  ];
+
   const [currentTab, setCurrentTab] = useState(0);
   const [inputOpen, setInputOpen] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -78,6 +91,7 @@ export default function TripScreen({ route }) {
 
   const isHost = userManagement.isHost();
 
+  const now = Date.now() / 1000;
   const { width } = Dimensions.get('window');
 
   const IMAGE_HEIGHT = 240;
@@ -137,6 +151,24 @@ export default function TripScreen({ route }) {
     getTripData();
   }, [tripId]);
 
+  // const measureComponents = () => {
+  //   documentsRef.current.measure((fx, fy, _, __, px, py) => {
+  //     documentsRef.value = py;
+  //   });
+  //   expensesRef.current.measure((fx, fy, _, __, px, py) => {
+  //     expensesRef.value = py;
+  //   });
+  //   checklistRef.current.measure((fx, fy, _, __, px, py) => {
+  //     checklistRef.value = py;
+  //   });
+  //   pollsRef.current.measure((fx, fy, _, __, px, py) => {
+  //     pollsRef.value = py;
+  //   });
+  //   travelersRef.current.measure((fx, fy, _, __, px, py) => {
+  //     travelersRef.value = py;
+  //   });
+  // };
+
   const isActive = data && data?.dateRange.startDate < now && activeTrip?.dateRange.endDate > now;
   const handleDeleteTrip = async () => {
     Utils.showConfirmationAlert(
@@ -172,7 +204,11 @@ export default function TripScreen({ route }) {
 
   const handleTabPress = (index) => {
     setCurrentTab(index);
-    scrollRef.current?.scrollTo({ y: contentItems[index].yPos, animated: true });
+    const headerHeight = 460;
+    const ref = contentRefs[index];
+    ref.current.measure((fx, fy, _, __, px, py) => {
+      scrollRef.current?.scrollTo({ y: fy + headerHeight, animated: true });
+    });
   };
 
   const handleAddImage = async (index) => {
@@ -373,38 +409,24 @@ export default function TripScreen({ route }) {
   ];
 
   const contentItems = [
-    {
-      title: i18n.t('Polls'),
-      trailing: <Headline
-        onPress={() => navigation.navigate(ROUTES.pollScreen)}
-        type={4}
-        style={{ textDecorationLine: 'underline' }}
-        text={i18n.t('see all')}
-        color={COLORS.neutral[300]}
-      />,
-      omitPadding: true,
-      content: data?.polls && (
-      <PollCarousel
-        onPress={() => navigation.navigate(ROUTES.pollScreen)}
-        data={data?.polls}
-      />
-      ),
-      yPos: 0,
-    },
-    {
-      title: i18n.t('Checklist'),
-      trailing: <Headline
-        onPress={() => navigation.navigate(ROUTES.checklistScreen)}
-        type={4}
-        style={{ textDecorationLine: 'underline' }}
-        text={i18n.t('see all')}
-        color={COLORS.neutral[300]}
-      />,
-      content: <ChecklistContainer
-        onPress={() => navigation.navigate(ROUTES.checklistScreen)}
-      />,
-      yPos: 0,
-    },
+    // {
+    //   title: i18n.t('Documents'),
+    //   trailing: <Headline
+    //     onPress={() => navigation.navigate(ROUTES.pollScreen)}
+    //     type={4}
+    //     style={{ textDecorationLine: 'underline' }}
+    //     text={i18n.t('see all')}
+    //     color={COLORS.neutral[300]}
+    //   />,
+    //   ref: documentsRef,
+    //   omitPadding: true,
+    //   content: data?.polls && (
+    //   <PollCarousel
+    //     onPress={() => navigation.navigate(ROUTES.pollScreen)}
+    //     data={data?.polls}
+    //   />
+    //   ),
+    // },
     {
       title: i18n.t('Expenses'),
       trailing: <Headline
@@ -414,23 +436,57 @@ export default function TripScreen({ route }) {
         text={i18n.t('see all')}
         color={COLORS.neutral[300]}
       />,
+      ref: expensesRef,
       content: <ExpensesContainer
         tileBackground={COLORS.shades[0]}
-        onLayout={(e) => {
-          console.log(`Invitees: ${e.nativeEvent.layout.y}`);
-        }}
       />,
-      yPos: 0,
+    },
+    {
+      title: i18n.t('Checklist'),
+      trailing: <Headline
+        ref={checklistRef}
+        onPress={() => navigation.navigate(ROUTES.checklistScreen)}
+        type={4}
+        style={{ textDecorationLine: 'underline' }}
+        text={i18n.t('see all')}
+        color={COLORS.neutral[300]}
+      />,
+      ref: checklistRef,
+      content: <ChecklistContainer
+        onPress={() => navigation.navigate(ROUTES.checklistScreen)}
+      />,
+    },
+
+    {
+      title: i18n.t('Polls'),
+      trailing: <Headline
+        ref={pollsRef}
+        onPress={() => navigation.navigate(ROUTES.pollScreen)}
+        type={4}
+        style={{ textDecorationLine: 'underline' }}
+        text={i18n.t('see all')}
+        color={COLORS.neutral[300]}
+      />,
+      ref: pollsRef,
+      omitPadding: true,
+      content: data?.polls && (
+      <PollCarousel
+        onPress={() => navigation.navigate(ROUTES.pollScreen)}
+        data={data?.polls}
+      />
+      ),
     },
     {
       title: i18n.t('Travelers'),
       trailing: <Headline
+        ref={travelersRef}
         onPress={() => navigation.navigate(ROUTES.inviteeScreen)}
         type={4}
         style={{ textDecorationLine: 'underline' }}
         text={i18n.t('see all')}
         color={COLORS.neutral[300]}
       />,
+      ref: travelersRef,
       content: <InviteeContainer
         onPress={() => navigation.navigate(ROUTES.inviteeScreen)}
         data={data?.activeMembers}
@@ -438,7 +494,6 @@ export default function TripScreen({ route }) {
           console.log(`Invitees: ${e.nativeEvent.layout.y}`);
         }}
       />,
-      yPos: 0,
     },
   ];
 
@@ -518,7 +573,6 @@ export default function TripScreen({ route }) {
                 color={COLORS.neutral[700]}
               />
             </MenuView>
-            {/* </Pressable> */}
 
           </View>
           <ScrollView
@@ -615,14 +669,16 @@ export default function TripScreen({ route }) {
   const MainContent = () => (
     <View style={styles.mainContainer}>
       {contentItems.map((item) => (
-        <ListItem
-          onPress={item.onPress}
-          omitPadding={item.omitPadding}
-          title={item.title}
-          trailing={item.trailing}
-        >
-          {item.content}
-        </ListItem>
+        <View ref={item.ref}>
+          <ListItem
+            onPress={item.onPress}
+            omitPadding={item.omitPadding}
+            title={item.title}
+            trailing={item.trailing}
+          >
+            {item.content}
+          </ListItem>
+        </View>
       ))}
     </View>
   );
@@ -682,7 +738,8 @@ export default function TripScreen({ route }) {
     <View style={{ backgroundColor: COLORS.shades[0], flex: 1 }}>
       <AnimatedHeader
         style={{ height: 170 }}
-        maxHeight={380}
+        scrollDistance={480}
+        threshold={1.2}
         scrollY={scrollY}
       >
         <TripHeader

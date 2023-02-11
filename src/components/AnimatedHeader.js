@@ -4,20 +4,20 @@ import { StyleSheet } from 'react-native';
 import COLORS from '../constants/Theme';
 
 function AnimatedHeader({
-  scrollY, style, children, maxHeight, minHeight, marginTop = 0,
+  scrollY, style, children, maxHeight, minHeight, marginTop = 0, threshold = 2, scrollDistance,
 }) {
   const HEADER_MAX_HEIGHT = maxHeight || 250;
   const HEADER_MIN_HEIGHT = minHeight || 60; // min header height
-  const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
+  const HEADER_SCROLL_DISTANCE = scrollDistance || (HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT);
 
   // Animated Header Data
   const translateY = scrollY.interpolate({
-    inputRange: [0, HEADER_SCROLL_DISTANCE / 2, HEADER_SCROLL_DISTANCE],
+    inputRange: [0, HEADER_SCROLL_DISTANCE / threshold, HEADER_SCROLL_DISTANCE],
     outputRange: [-200, 0, -10],
     extrapolate: 'clamp',
   });
   const opacity = scrollY.interpolate({
-    inputRange: [0, HEADER_SCROLL_DISTANCE / 2, HEADER_SCROLL_DISTANCE],
+    inputRange: [0, HEADER_SCROLL_DISTANCE / threshold, HEADER_SCROLL_DISTANCE],
     outputRange: [0, 0, 1],
     extrapolate: 'clamp',
   });

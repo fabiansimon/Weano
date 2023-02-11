@@ -101,13 +101,13 @@ export default function PollScreen() {
         },
       },
     }).then((res) => {
-      const id = res.data.createPoll;
+      const { id, options: newOptions } = res.data.createPoll;
 
       const newPoll = {
         createdAt: Date.now(),
         creatorId: userId,
         title,
-        options,
+        options: newOptions,
         _id: id,
       };
       updateActiveTrip({ polls: [...polls, newPoll] });

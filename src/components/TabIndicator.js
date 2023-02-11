@@ -11,6 +11,7 @@ export default function TabIndicator({
 
   return (
     <TouchableOpacity
+      activeOpacity={0.8}
       style={[styles.container, style, { backgroundColor }]}
       onPress={onPress}
     >

@@ -3,6 +3,7 @@ import {
   ScrollView, StyleSheet, View,
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
+import Toast from 'react-native-toast-message';
 import Icon from 'react-native-vector-icons/AntDesign';
 import { TextInput } from 'react-native-gesture-handler';
 import TitleModal from '../TitleModal';
@@ -10,6 +11,7 @@ import KeyboardView from '../KeyboardView';
 import i18n from '../../utils/i18n';
 import COLORS, { PADDING } from '../../constants/Theme';
 import Body from '../typography/Body';
+import toastConfig from '../../constants/ToastConfig';
 
 export default function AddPollModal({
   isVisible, onRequestClose, onPress, isLoading,
@@ -53,7 +55,7 @@ export default function AddPollModal({
     const borderBottomLeftRadius = 10;
     const borderBottomRightRadius = 10;
 
-    const showAddTile = options[options.length - 1] !== '';
+    const showAddTile = options[options.length - 1] !== '' && options.length < 5;
 
     return (
       <View style={{ marginBottom: 30 }}>
@@ -79,7 +81,7 @@ export default function AddPollModal({
           return (
             <View style={[styles.optionContainer, {
               // eslint-disable-next-line max-len
-              borderTopRightRadius: !index && 10, borderTopLeftRadius: !index && 10, borderBottomLeftRadius: (isEmpty && !showAddTile) ? 10 : 0, borderBottomRightRadius: (isEmpty && !showAddTile) ? 10 : 0,
+              borderTopRightRadius: !index && 10, borderTopLeftRadius: !index && 10, borderBottomLeftRadius: ((isEmpty && !showAddTile) || index === 4) ? 10 : 0, borderBottomRightRadius: ((isEmpty && !showAddTile) || index === 4) ? 10 : 0,
             }]}
             >
               <TextInput
@@ -88,7 +90,7 @@ export default function AddPollModal({
                 autoFocus
                 style={styles.optionInput}
                 placeholderTextColor={COLORS.neutral[300]}
-                placeholder={i18n.t('Add another')}
+                placeholder={!index ? i18n.t('Add option') : i18n.t('Add another')}
               />
               {!isEmpty && (
               <Pressable
@@ -116,7 +118,7 @@ export default function AddPollModal({
             type={1}
             style={{ marginLeft: 15 }}
             color={COLORS.neutral[300]}
-            text={i18n.t('Add another')}
+            text={!options.length ? i18n.t('Add option') : i18n.t('Add another')}
           />
         </Pressable>
         )}
@@ -134,7 +136,7 @@ export default function AddPollModal({
       isLoading={isLoading}
       isDisabled={title.trim().length <= 0 || options.length <= 0}
     >
-      <KeyboardView>
+      <KeyboardView paddingBottom={-40}>
         <ScrollView style={{ marginBottom: 100 }}>
           <View style={styles.container}>
             <View style={{ flexDirection: 'row', marginVertical: 20, width: '90%' }}>
@@ -143,7 +145,7 @@ export default function AddPollModal({
                 style={styles.titleInput}
                 value={title}
                 placeholderTextColor={COLORS.neutral[300]}
-                placeholder={i18n.t('Add a title for the poll')}
+                placeholder={i18n.t('Add a title')}
               />
             </View>
 
@@ -151,6 +153,7 @@ export default function AddPollModal({
           </View>
         </ScrollView>
       </KeyboardView>
+      <Toast config={toastConfig} />
     </TitleModal>
   );
 }
