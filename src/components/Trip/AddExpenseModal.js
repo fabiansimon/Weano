@@ -51,7 +51,11 @@ export default function AddExpenseModal({
     <TitleModal
       isVisible={isVisible}
       onRequestClose={onRequestClose}
-      title={i18n.t('Add Expense')}
+      title={i18n.t('Expense')}
+      actionLabel={i18n.t('Create')}
+      onPress={handlePress}
+      isLoading={isLoading}
+      isDisabled={amount.length <= 0 || title.length <= 0}
     >
       <KeyboardView paddingBottom={50}>
         <View style={styles.container}>
@@ -95,12 +99,7 @@ export default function AddExpenseModal({
               />
             </View>
           </View>
-          <Button
-            text={i18n.t('Add Expense')}
-            style={{ margin: 25 }}
-            isLoading={isLoading}
-            onPress={() => handlePress()}
-          />
+
         </View>
       </KeyboardView>
     </TitleModal>

@@ -178,11 +178,18 @@ export default function InputModal({
     </View>
   );
 
-  const getCounter = () => (
-    <View style={styles.counter}>
-      <Label type={1} text={`${input.length}/${maxLength}`} />
-    </View>
-  );
+  const getCounter = () => {
+    const isMax = input.length === maxLength;
+    return (
+      <View style={[styles.counter, { borderColor: isMax ? COLORS.error[900] : COLORS.neutral[100] }]}>
+        <Body
+          type={2}
+          color={isMax ? COLORS.error[900] : COLORS.neutral[500]}
+          text={`${input.length}/${maxLength}`}
+        />
+      </View>
+    );
+  };
 
   return (
     <Modal
@@ -202,7 +209,7 @@ export default function InputModal({
         }}
         style={{ backgroundColor: 'rgba(0,0,0,0.1)', flex: 1 }}
       >
-        <KeyboardView ignoreTouch>
+        <KeyboardView paddingBottom={0} ignoreTouch>
           <Animated.View style={[styles.modalContainer, { transform: [{ translateY: animatedBottom }] }]}>
             {((geoMatching && suggestionData) || (suggestionsLoading && suggestionData)) && (
             <View style={styles.suggestionsContainer}>
@@ -383,8 +390,7 @@ const styles = StyleSheet.create({
   },
   counter: {
     position: 'absolute',
-    top: -12,
-    // alignSelf: 'center',
+    top: -14,
     left: 20,
     backgroundColor: COLORS.shades[0],
     paddingVertical: 4,

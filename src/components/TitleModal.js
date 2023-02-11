@@ -1,5 +1,5 @@
 import {
-  Modal, View, StyleSheet, TouchableOpacity,
+  Modal, View, StyleSheet, TouchableOpacity, Dimensions, ActivityIndicator,
 } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
@@ -9,7 +9,7 @@ import Headline from './typography/Headline';
 import toastConfig from '../constants/ToastConfig';
 
 export default function TitleModal({
-  isVisible, onRequestClose, title, children,
+  isVisible, onRequestClose, title, children, actionLabel, onPress, isLoading, isDisabled,
 }) {
   return (
     <Modal
@@ -20,11 +20,27 @@ export default function TitleModal({
     >
       <View style={styles.container}>
         <View style={styles.headerContainer}>
-          <TouchableOpacity onPress={onRequestClose}>
-            <Icon name="close" size={24} />
+          <View style={{ position: 'absolute', width: Dimensions.get('window').width }}>
+            <Headline type={3} text={title} style={{ alignSelf: 'center' }} />
+          </View>
+          <TouchableOpacity hitSlop={20} onPress={onRequestClose}>
+            <Icon name="close" size={20} />
           </TouchableOpacity>
-          <Headline type={3} text={title} />
-          <View style={{ width: 24 }} />
+          {actionLabel && (
+            <TouchableOpacity
+              disabled={isDisabled}
+              onPress={onPress}
+            >
+              {isLoading ? <ActivityIndicator color={COLORS.neutral[300]} style={{ marginRight: 5 }} /> : (
+                <Headline
+                  type={4}
+                  style={{ fontWeight: '500' }}
+                  color={(isLoading || isDisabled) ? COLORS.neutral[300] : COLORS.primary[500]}
+                  text={actionLabel}
+                />
+              )}
+            </TouchableOpacity>
+          )}
         </View>
         {children}
       </View>

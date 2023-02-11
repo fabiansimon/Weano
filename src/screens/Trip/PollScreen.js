@@ -78,11 +78,11 @@ export default function PollScreen() {
   };
 
   const handleAddPoll = async (data) => {
-    const title = data[0].value.trim();
-    const optionsArr = data.splice(1, data.length);
+    const { title } = data;
+    const { options: optionsData } = data;
 
-    const options = optionsArr.map(((item) => ({
-      option: item.value,
+    const options = optionsData.map(((item) => ({
+      option: item,
       votes: [],
     }))).filter(((item) => item.option !== ''));
 
@@ -103,7 +103,6 @@ export default function PollScreen() {
     }).then((res) => {
       const id = res.data.createPoll;
 
-      console.log(id);
       const newPoll = {
         createdAt: Date.now(),
         creatorId: userId,

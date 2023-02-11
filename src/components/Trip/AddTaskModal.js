@@ -197,7 +197,7 @@ export default function AddTaskModal({
         onPress={onRequestClose}
         style={{ backgroundColor: 'rgba(0,0,0,0.6)', flex: 1 }}
       >
-        <KeyboardView ignoreTouch>
+        <KeyboardView paddingBottom={0} ignoreTouch>
           <Animated.View style={[styles.modalContainer, { transform: [{ translateY: animatedBottom }] }]}>
             <View style={styles.innerContainer}>
               <TextInput

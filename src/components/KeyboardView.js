@@ -7,13 +7,13 @@ export default function KeyboardView({
   style,
   children,
   ignoreTouch = false,
-  paddingBottom = 0,
+  paddingBottom = 20,
 }) {
   if (ignoreTouch) {
     return (
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : null}
-        style={[style, { flex: 1 }]}
+        behavior={Platform.OS === 'ios' ? 'height' : null}
+        style={[style, { flex: 1, backgroundColor: 'transparent' }]}
         keyboardVerticalOffset={Platform.select({ ios: paddingBottom, android: 500 })}
       >
         {children}
@@ -27,8 +27,8 @@ export default function KeyboardView({
       onPress={() => Keyboard.dismiss()}
     >
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : null}
-        style={[style, { flex: 1 }]}
+        behavior={Platform.OS === 'ios' ? 'height' : null}
+        style={[style, { flex: 1, backgroundColor: 'transparent' }]}
         keyboardVerticalOffset={Platform.select({ ios: paddingBottom, android: 500 })}
       >
         {children}
