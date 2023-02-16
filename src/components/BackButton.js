@@ -3,10 +3,9 @@ import React from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
 import { useNavigation } from '@react-navigation/native';
 import COLORS, { RADIUS } from '../constants/Theme';
-import Utils from '../utils';
 
 export default function BackButton({
-  style, isClear = false, onPress, iconColor,
+  style, isClear = false, onPress, iconColor, closeIcon = false,
 }) {
   const navigation = useNavigation();
 
@@ -14,7 +13,7 @@ export default function BackButton({
     isClear ? (
       <Icon
         suppressHighlighting
-        name="arrowleft"
+        name={closeIcon ? 'close' : 'arrowleft'}
         size={22}
         color={iconColor || COLORS.shades[100]}
         style={[{ zIndex: 9999 }, style]}
@@ -26,7 +25,7 @@ export default function BackButton({
           style={[styles.backButton, style]}
           icon={(
             <Icon
-              name="arrowleft"
+              name={closeIcon ? 'close' : 'arrowleft'}
               color={COLORS.shades[100]}
               size={22}
             />

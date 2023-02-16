@@ -189,7 +189,7 @@ export default function TimelineScreen() {
   return (
     <View style={styles.container}>
       <HybridHeader
-        title={i18n.t('Timeline Recap 🔙')}
+        title={i18n.t('Timeline Recap')}
         scrollY={scrollY}
         info={INFORMATION.dateScreen}
       >

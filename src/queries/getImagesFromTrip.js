@@ -5,6 +5,7 @@ const GET_IMAGES_FROM_TRIP = gql`
         getImagesFromTrip(tripId: $tripId) {
             userFreeImages
             images {
+                _id
                 createdAt
                 uri
                 title

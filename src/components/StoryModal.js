@@ -8,9 +8,8 @@ import {
 } from 'react-native';
 import Toast from 'react-native-toast-message';
 import React, { useState, useEffect } from 'react';
-import Icon from 'react-native-vector-icons/Ionicons';
+import OctiIcon from 'react-native-vector-icons/Octicons';
 import FastImage from 'react-native-fast-image';
-import { BlurView } from '@react-native-community/blur';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import Animated, {
   runOnJS,
@@ -126,6 +125,7 @@ export default function StoryModal({
       </View>
       <View style={styles.buttonRow}>
         <BackButton
+          closeIcon
           isClear
           onPress={onRequestClose}
           iconColor={COLORS.shades[0]}
@@ -136,15 +136,22 @@ export default function StoryModal({
           activeOpacity={0.8}
           style={[styles.roundButton, { marginLeft: 10 }]}
         >
-          {isLoading ? <ActivityIndicator color={COLORS.shades[0]} />
-            : (
-              <Icon
-                name="download"
-                size={20}
-                color={Utils.addAlpha(COLORS.neutral[50], 0.9)}
-                style={{ marginRight: -2 }}
+          {isLoading ? <ActivityIndicator size={14} style={{ padding: 4 }} color={COLORS.shades[100]} /> : (
+            <>
+              <Body
+                type={1}
+                text={i18n.t('Save')}
+                color={COLORS.neutral[700]}
+                style={{ marginRight: 6 }}
               />
-            )}
+
+              <OctiIcon
+                name="download"
+                size={16}
+                color={COLORS.neutral[700]}
+              />
+            </>
+          )}
         </Pressable>
       </View>
     </View>
@@ -156,20 +163,20 @@ export default function StoryModal({
     } = item;
 
     return (
-      <View style={{ width, height, backgroundColor: COLORS.neutral[900] }}>
+      <View style={{ width, height, backgroundColor: COLORS.shades[100] }}>
         <FastImage
           source={{ uri }}
           style={{
-            width,
-            height: Dimensions.get('window').height,
+            borderRadius: RADIUS.m,
+            flex: 1,
           }}
         />
-        <BlurView
+        {/* <BlurView
           style={styles.blurView}
           blurType="dark"
           blurAmount={4}
           reducedTransparencyFallbackColor={COLORS.shades[0]}
-        />
+        /> */}
         <View style={styles.infoContainer}>
           <View>
             <Body
@@ -265,17 +272,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: PADDING.m,
   },
   roundButton: {
+    flexDirection: 'row',
     borderRadius: RADIUS.xl,
-    borderWidth: 0.5,
-    borderColor: Utils.addAlpha(COLORS.neutral[50], 0.3),
-    height: 40,
-    width: 40,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    // width: 40,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: COLORS.shades[100],
     shadowRadius: 30,
     shadowOpacity: 0.3,
-    backgroundColor: Utils.addAlpha(COLORS.neutral[50], 0.15),
+    backgroundColor: COLORS.shades[0],
   },
   progressBar: {
     flexDirection: 'row',
@@ -288,8 +295,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: PADDING.l,
     paddingBottom: 50,
-    position: 'absolute',
     width: Dimensions.get('window').width,
+    backgroundColor: COLORS.shades[100],
+    paddingTop: 16,
     bottom: 0,
   },
   blurView: {

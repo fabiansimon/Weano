@@ -23,7 +23,6 @@ import ImageContainer from '../components/Trip/ImageContainer';
 import LoadingGif from '../../assets/images/loading.gif';
 import Camera3D from '../../assets/images/camera_3d.png';
 import Body from '../components/typography/Body';
-import userStore from '../stores/UserStore';
 import GET_IMAGES_FROM_TRIP from '../queries/getImagesFromTrip';
 import StoryModal from '../components/StoryModal';
 import JourneyIcon from '../../assets/icons/journey_icon.svg';
@@ -49,7 +48,6 @@ export default function MemoriesScreen({ route }) {
   const gridRef = useRef();
   const scale = useSharedValue(1);
   const headerOpacity = useSharedValue(1);
-  const user = userStore((state) => state.user);
   const animatedSensor = useAnimatedSensor(SensorType.ROTATION, {
     interval: 100,
   });
@@ -63,8 +61,6 @@ export default function MemoriesScreen({ route }) {
   });
 
   const { width } = Dimensions.get('window');
-
-  let loadingIndex = 0;
 
   useEffect(() => {
     if (data) {
@@ -101,7 +97,7 @@ export default function MemoriesScreen({ route }) {
     }
   };
 
-  const numColumns = Math.round(Math.sqrt(user.images.length));
+  const numColumns = Math.round(Math.sqrt(images.length));
 
   const pinchHandler = useAnimatedGestureHandler({
     onActive: (event) => {
@@ -181,8 +177,7 @@ export default function MemoriesScreen({ route }) {
     );
   };
   const Buttons = () => (
-    <View style={styles.buttonRow}>
-
+    <Animated.View style={[styles.buttonRow, hAnimated]}>
       {freeImages > 0 ? (
         <MenuView
           style={styles.addIcon}
@@ -276,7 +271,7 @@ export default function MemoriesScreen({ route }) {
         </Pressable>
       </View>
       )}
-    </View>
+    </Animated.View>
   );
 
   const getImageTile = (image, index) => {
@@ -284,13 +279,13 @@ export default function MemoriesScreen({ route }) {
 
     return (
       <ImageContainer
+        tripId={tripId}
         onPress={() => {
           setInitalIndex(index);
           setStoryVisible(true);
         }}
-        onLoadEnd={() => loadingIndex += 1}
-        style={{ marginLeft: isLeft ? 0 : 40, marginTop: 40 }}
-        uri={image.uri}
+        style={[{ marginLeft: isLeft ? 0 : 10, marginTop: 10 }, animatedStyle]}
+        image={image}
       />
     );
   };
@@ -321,7 +316,7 @@ export default function MemoriesScreen({ route }) {
           <PinchGestureHandler onGestureEvent={pinchHandler}>
             <AnimatedFlatlist
               ref={gridRef}
-              style={[gAnimated, animatedStyle]}
+              style={gAnimated}
               onScrollBeginDrag={() => headerOpacity.value = withSpring(0)}
               onScrollEndDrag={() => headerOpacity.value = withSpring(1)}
               data={images || null}
