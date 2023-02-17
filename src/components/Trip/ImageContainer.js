@@ -15,7 +15,7 @@ import Utils from '../../utils';
 import DELETE_IMAGE from '../../mutations/deleteImage';
 
 export default function ImageContainer({
-  style, image, onPress, tripId,
+  style, image, onPress, tripId, onDelete,
 }) {
   const [deleteImage] = useMutation(DELETE_IMAGE);
   if (!image) {
@@ -61,6 +61,7 @@ export default function ImageContainer({
               text1: i18n.t('Whooray!'),
               text2: i18n.t('Image was successfully deleted!'),
             });
+            onDelete(image._id);
           })
             .catch((e) => {
               Toast.show({

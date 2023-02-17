@@ -3,6 +3,7 @@ import {
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import Icon from 'react-native-vector-icons/AntDesign';
+import FeatherIcon from 'react-native-vector-icons/Feather';
 import EntIcon from 'react-native-vector-icons/Entypo';
 import React, { useRef, useState, useEffect } from 'react';
 import { PinchGestureHandler } from 'react-native-gesture-handler';
@@ -15,6 +16,8 @@ import { useQuery } from '@apollo/client';
 import Toast from 'react-native-toast-message';
 import { MenuView } from '@react-native-menu/menu';
 import ImageCropPicker from 'react-native-image-crop-picker';
+import RNFetchBlob from 'rn-fetch-blob';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import Headline from '../components/typography/Headline';
 import i18n from '../utils/i18n';
@@ -45,7 +48,10 @@ export default function MemoriesScreen({ route }) {
   const [isLoading, setIsLoading] = useState(false);
   const [storyVisible, setStoryVisible] = useState(false);
   const [initalIndex, setInitalIndex] = useState(0);
+  const [downloadIndex, setDownloadIndex] = useState(null);
+
   const gridRef = useRef();
+
   const scale = useSharedValue(1);
   const headerOpacity = useSharedValue(1);
   const animatedSensor = useAnimatedSensor(SensorType.ROTATION, {
@@ -79,7 +85,7 @@ export default function MemoriesScreen({ route }) {
     }
   }, [data, error]);
 
-  const handleMenuOption = ({ event }) => {
+  const handleMenuOption = async ({ event }) => {
     if (event === 'take') {
       navigation.navigate(ROUTES.cameraScreen, { tripId, onNavBack: () => navigation.goBack() });
     }
@@ -94,6 +100,30 @@ export default function MemoriesScreen({ route }) {
       ImageCropPicker.openPicker(options).then(async (image) => {
         navigation.navigate(ROUTES.cameraScreen, { tripId, onNavBack: () => navigation.goBack(), preselectedImage: image });
       });
+    }
+
+    if (event === 'download') {
+      setDownloadIndex(0);
+      for (let i = 0; i < images.length; i += 1) {
+        const { uri } = images[i];
+        // eslint-disable-next-line no-await-in-loop
+        await RNFetchBlob.config({
+          fileCache: true,
+          appendExt: 'png',
+        // eslint-disable-next-line no-loop-func
+        }).fetch('GET', uri).then((res) => {
+          const isLast = i === images.length - 1;
+          Utils.downloadImage(res.data, !!isLast);
+          setDownloadIndex(isLast ? null : i);
+        }).catch((e) => {
+          Toast.show({
+            type: 'error',
+            text1: i18n.t('Whoops!'),
+            text2: e.message,
+          });
+          setDownloadIndex(null);
+        });
+      }
     }
   };
 
@@ -126,7 +156,7 @@ export default function MemoriesScreen({ route }) {
     return (
       <Animated.View style={[styles.header, hAnimated]}>
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
+          onPress={() => downloadIndex === null && navigation.goBack()}
           activeOpacity={0.9}
           style={styles.roundButton}
         >
@@ -161,17 +191,37 @@ export default function MemoriesScreen({ route }) {
         </View>
         )}
         {!isLoading && (
-        <TouchableOpacity
-          activeOpacity={0.9}
-          style={styles.roundButton}
+        <MenuView
+          style={styles.addIcon}
+          onPressAction={({ nativeEvent }) => handleMenuOption(nativeEvent)}
+          actions={[
+            {
+              id: 'share',
+              title: i18n.t('Share Collage'),
+              image: Platform.select({
+                ios: 'square.and.arrow.up',
+              }),
+            },
+            {
+              id: 'download',
+              title: i18n.t('Download Album'),
+              image: Platform.select({
+                ios: 'square.and.arrow.down',
+              }),
+            },
+          ]}
         >
-          <Icon
-            style={{ marginLeft: -2 }}
-            name="sharealt"
-            color={COLORS.neutral[300]}
-            size={18}
-          />
-        </TouchableOpacity>
+          <View
+            style={styles.roundButton}
+          >
+            <FeatherIcon
+              name="more-vertical"
+              color={COLORS.neutral[300]}
+              size={18}
+            />
+          </View>
+
+        </MenuView>
         )}
       </Animated.View>
     );
@@ -284,6 +334,10 @@ export default function MemoriesScreen({ route }) {
           setInitalIndex(index);
           setStoryVisible(true);
         }}
+        onDelete={(id) => {
+          setImages((prev) => prev.filter((i) => i._id !== id));
+          setFreeImage((prev) => prev + 1);
+        }}
         style={[{ marginLeft: isLeft ? 0 : 10, marginTop: 10 }, animatedStyle]}
         image={image}
       />
@@ -307,6 +361,33 @@ export default function MemoriesScreen({ route }) {
   );
 
   const AnimatedFlatlist = Animated.createAnimatedComponent(FlatList);
+
+  const getDownloadContainer = () => {
+    const percentage = (downloadIndex / images.length) * 100;
+    return (
+      <View style={styles.loadingContainer}>
+        <SafeAreaView edges={['bottom']}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Body
+              type={1}
+              text={i18n.t('Downloading')}
+              color={COLORS.shades[0]}
+            />
+            <Body
+              type={2}
+              style={{ marginLeft: 8 }}
+              text={`${downloadIndex + 1}/${images.length} ${i18n.t('image')}`}
+              color={COLORS.shades[0]}
+            />
+          </View>
+          <View style={styles.loadingBar}>
+            <View style={[styles.progressBar, { width: `${percentage}%` }]} />
+          </View>
+
+        </SafeAreaView>
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -353,12 +434,12 @@ export default function MemoriesScreen({ route }) {
       ) : <EmptyDataSet />}
       <Buttons />
       <Header />
+      {downloadIndex !== null && getDownloadContainer()}
       <StoryModal
         initalIndex={initalIndex}
         data={images}
         onRequestClose={() => {
           setStoryVisible(false);
-          console.log('closed');
         }}
         isVisible={storyVisible}
       />
@@ -446,5 +527,26 @@ const styles = StyleSheet.create({
     width: 18,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  loadingContainer: {
+    height: 105,
+    paddingTop: 10,
+    paddingHorizontal: PADDING.m,
+    width: '100%',
+    backgroundColor: COLORS.primary[700],
+    position: 'absolute',
+    bottom: 0,
+  },
+  loadingBar: {
+    marginTop: 15,
+    marginBottom: 10,
+    height: 5,
+    borderRadius: RADIUS.xl,
+    backgroundColor: Utils.addAlpha(COLORS.shades[100], 0.1),
+  },
+  progressBar: {
+    backgroundColor: COLORS.shades[0],
+    borderRadius: RADIUS.xl,
+    height: 5,
   },
 });

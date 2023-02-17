@@ -172,15 +172,17 @@ export default class Utils {
      * Convert MonthInt to a Month String
      * @param {image} image - image to download
      */
-  static downloadImage(image) {
+  static downloadImage(image, showToast = true) {
     CameraRoll.save(image, { type: 'photo', album: 'Weano' });
-    setTimeout(() => {
-      Toast.show({
-        type: 'success',
-        text1: i18n.t('Done!'),
-        text2: i18n.t('Image successfully saved on your device'),
-      });
-    }, 300);
+    if (showToast) {
+      setTimeout(() => {
+        Toast.show({
+          type: 'success',
+          text1: i18n.t('Done!'),
+          text2: i18n.t('Image successfully saved on your device'),
+        });
+      }, 300);
+    }
   }
 
   /**

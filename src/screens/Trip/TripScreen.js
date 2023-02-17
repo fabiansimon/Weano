@@ -206,7 +206,7 @@ export default function TripScreen({ route }) {
     setCurrentTab(index);
     const headerHeight = 460;
     const ref = contentRefs[index];
-    ref.current.measure((fx, fy, _, __, px, py) => {
+    ref?.current.measure((fx, fy, _, __, px, py) => {
       scrollRef.current?.scrollTo({ y: fy + headerHeight, animated: true });
     });
   };

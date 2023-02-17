@@ -2,6 +2,7 @@ import { StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
 import Headline from './typography/Headline';
 import COLORS from '../constants/Theme';
+import Body from './typography/Body';
 
 export default function TabIndicator({
   style, text, isActive, onPress,
@@ -15,7 +16,7 @@ export default function TabIndicator({
       style={[styles.container, style, { backgroundColor }]}
       onPress={onPress}
     >
-      <Headline type={4} text={text} color={color} />
+      <Body type={1} text={text} color={color} />
     </TouchableOpacity>
   );
 }
