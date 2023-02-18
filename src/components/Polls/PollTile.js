@@ -71,25 +71,11 @@ export default function PollTile({
           <View style={{ backgroundColor: COLORS.neutral[300], flex: 1, height: 45 }} />
         </MaskedView>
       </View>
-      {/* <View style={{
-        position: 'absolute', right: 10, top: 11, flexDirection: 'row',
-      }}
-      >
-        {item.votes && item.votes.map((user) => <Avatar style={{ marginLeft: -10 }} size={25} data={activeMembers.find((member) => member.id === user)} />)}
-      </View> */}
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 10,
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    height: '100%',
-  },
   optionTile: {
     flex: 1,
     flexDirection: 'row',

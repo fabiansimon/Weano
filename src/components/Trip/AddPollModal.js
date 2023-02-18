@@ -16,6 +16,7 @@ import toastConfig from '../../constants/ToastConfig';
 export default function AddPollModal({
   isVisible, onRequestClose, onPress, isLoading,
 }) {
+  // STATE & MISC
   const [title, setTitle] = useState('');
   const [options, setOptions] = useState([]);
 
@@ -148,7 +149,6 @@ export default function AddPollModal({
                 placeholder={i18n.t('Add a title')}
               />
             </View>
-
             {getOptionsContainer()}
           </View>
         </ScrollView>
@@ -178,7 +178,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-
   },
   optionInput: {
     height: 50,

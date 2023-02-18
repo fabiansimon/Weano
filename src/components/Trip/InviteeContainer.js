@@ -9,6 +9,7 @@ import Body from '../typography/Body';
 import RoleChip from '../RoleChip';
 
 export default function InviteeContainer({ onPress }) {
+  // STORES
   const { activeMembers, hostId } = activeTripStore((state) => state.activeTrip);
 
   const getUserTile = (item) => {

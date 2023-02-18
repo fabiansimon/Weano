@@ -21,10 +21,13 @@ import userStore from '../../stores/UserStore';
 export default function ImageContainer({
   style, image, onPress, tripId, onDelete,
 }) {
+  // MUTATIONS
+  const [deleteImage] = useMutation(DELETE_IMAGE);
+
+  // STORES
   const {
     id,
   } = userStore((state) => state.user);
-  const [deleteImage] = useMutation(DELETE_IMAGE);
   if (!image) {
     return;
   }

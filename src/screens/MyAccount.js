@@ -26,14 +26,20 @@ import REGEX from '../constants/Regex';
 const asyncStorageDAO = new AsyncStorageDAO();
 
 export default function MyAccountScreen() {
-  const scrollY = useRef(new Animated.Value(0)).current;
+  // MUTATIONS
   const [updateUser, { error }] = useMutation(UPDATE_USER);
   const [deleteUser] = useMutation(DELETE_USER);
+
+  // STORES
   const {
     firstName, lastName, email, phoneNumber,
   } = userStore((state) => state.user);
   const updateUserState = userStore((state) => state.updateUserData);
+
+  // STATE & MISC
+  const scrollY = useRef(new Animated.Value(0)).current;
   const [inputState, setInputState] = useState(null);
+
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -101,7 +107,7 @@ export default function MyAccountScreen() {
       });
       Toast.show({
         type: 'success',
-        text1: i18n.t('Whoops!'),
+        text1: i18n.t('Great!'),
         text2: i18n.t('Successfully updated'),
       });
     } catch (e) {
@@ -200,7 +206,7 @@ export default function MyAccountScreen() {
   return (
     <View style={styles.container}>
       <HybridHeader
-        title={i18n.t('Profile')}
+        title={i18n.t('Your info')}
         subtitle={i18n.t('To edit your data, just tap on it')}
         scrollY={scrollY}
         info={INFORMATION.dateScreen}

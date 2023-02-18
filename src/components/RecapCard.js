@@ -14,6 +14,7 @@ import i18n from '../utils/i18n';
 export default function RecapCard({
   data, style, onPress,
 }) {
+  // STATE & MISC
   const [totalImages, setTotalImages] = useState();
   const [imageIndex, setImageIndex] = useState(0);
   const [infoHeight, setInfoHeight] = useState(0);

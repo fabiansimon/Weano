@@ -27,14 +27,16 @@ import toastConfig from '../constants/ToastConfig';
 export default function StoryModal({
   data, isVisible, onRequestClose, initalIndex = 0,
 }) {
+  // STATE & MISC
   const [imageIndex, setImageIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const { width, height } = Dimensions.get('window');
 
   const translateY = useSharedValue(0);
   const translateX = useSharedValue(0);
   const scale = useSharedValue(1);
   const animatedBorderRadius = useSharedValue(0);
+
+  const { width, height } = Dimensions.get('window');
 
   useEffect(() => {
     setImageIndex(initalIndex);
@@ -109,7 +111,7 @@ export default function StoryModal({
     });
   };
 
-  const ProgressHeader = () => (
+  const getProgressHeader = () => (
     <View style={{
       position: 'absolute',
       top: 50,
@@ -157,7 +159,7 @@ export default function StoryModal({
     </View>
   );
 
-  const ImagePreview = ({ item }) => {
+  const getImagePreview = (item) => {
     const {
       uri, title, description, author, createdAt,
     } = item;
@@ -171,12 +173,6 @@ export default function StoryModal({
             flex: 1,
           }}
         />
-        {/* <BlurView
-          style={styles.blurView}
-          blurType="dark"
-          blurAmount={4}
-          reducedTransparencyFallbackColor={COLORS.shades[0]}
-        /> */}
         <View style={styles.infoContainer}>
           <View>
             <Body
@@ -255,8 +251,8 @@ export default function StoryModal({
           backgroundColor: COLORS.neutral[900],
         }, modalStyle]}
         >
-          <ImagePreview item={data[imageIndex]} />
-          <ProgressHeader />
+          {getImagePreview(data[imageIndex])}
+          {getProgressHeader()}
         </Animated.View>
       </PanGestureHandler>
       <Toast config={toastConfig} />
@@ -276,7 +272,6 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.xl,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    // width: 40,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: COLORS.shades[100],
@@ -298,12 +293,6 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width,
     backgroundColor: COLORS.shades[100],
     paddingTop: 16,
-    bottom: 0,
-  },
-  blurView: {
-    position: 'absolute',
-    width: '100%',
-    height: '13%',
     bottom: 0,
   },
 });

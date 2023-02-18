@@ -12,6 +12,7 @@ import Subtitle from '../typography/Subtitle';
 export default function AddExpenseModal({
   isVisible, onRequestClose, onPress, isLoading,
 }) {
+  // STATE & MISC
   const [amount, setAmount] = useState('');
   const [title, setTitle] = useState('');
 

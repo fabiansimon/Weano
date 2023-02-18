@@ -228,9 +228,6 @@ export default class Utils {
      */
   static convertDateToType(dateRange) {
     const now = Date.now() / 1000;
-    // let recapTimestamp = new Date();
-    // recapTimestamp.setFullYear(recapTimestamp.getFullYear() - 1);
-    // recapTimestamp = Date.parse(recapTimestamp) / 1000;
 
     if (dateRange.startDate < now && dateRange.endDate < now) {
       return 'recent';
@@ -247,11 +244,5 @@ export default class Utils {
     if (dateRange.startDate > now && dateRange.endDate > now) {
       return 'upcoming';
     }
-
-    // const upcomingTrips = trips.filter((trip) => trip.dateRange.startDate > now && trip.dateRange.endDate > now);
-    // const recentTrips = trips.filter((trip) => trip.dateRange.startDate < now && trip.dateRange.endDate < now);
-    // const activeTrip = trips.filter((trip) => trip.dateRange.startDate < now && trip.dateRange.endDate > now)[0];
-    // const recapTrip = trips.filter((trip) => trip.dateRange.startDate < recapTimestamp && trip.dateRange.endDate < now)[0];
-    // const upcomingTrip = upcomingTrips.length > 0 && upcomingTrips.filter((trip) => ((trip.dateRange.startDate - now) / 86400) < 7)[0];
   }
 }

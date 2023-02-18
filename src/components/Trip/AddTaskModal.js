@@ -16,13 +16,17 @@ import activeTripStore from '../../stores/ActiveTripStore';
 export default function AddTaskModal({
   isVisible, onRequestClose, onPress,
 }) {
+  // STORES
   const { activeMembers: users } = activeTripStore((state) => state.activeTrip);
+
+  // STATE & MISC
   const [isPrivate, setIsPrivate] = useState(true);
   const [task, setTask] = useState('');
   const [showModal, setShowModal] = useState(isVisible);
   const [assigneIndex, setAssigneIndex] = useState(0);
   const animatedBottom = useRef(new Animated.Value(900)).current;
   const translateY = useRef(new Animated.Value(0)).current;
+
   const duration = 300;
 
   useEffect(() => {
@@ -72,7 +76,6 @@ export default function AddTaskModal({
 
   const handlePress = () => {
     if (task.trim().length <= 0) {
-      console.log('No text');
       return;
     }
 

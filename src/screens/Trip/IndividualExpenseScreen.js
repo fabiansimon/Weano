@@ -3,7 +3,7 @@ import {
 } from 'react-native';
 import React, { useRef, useState } from 'react';
 import Animated from 'react-native-reanimated';
-import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
+import COLORS, { PADDING } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import HybridHeader from '../../components/HybridHeader';
 import INFORMATION from '../../constants/Information';
@@ -13,9 +13,12 @@ import Divider from '../../components/Divider';
 import ExpenseDetailModal from '../../components/Trip/ExpenseDetailModal';
 
 export default function IndividualExpenseScreen({ route }) {
+  // PARAMS
+  const { data, users } = route.params;
+
+  // STATE & MISC
   const scrollY = useRef(new Animated.Value(0)).current;
   const [selectedExpense, setSelectedExpense] = useState({ isVisible: false, data: null });
-  const { data, users } = route.params;
 
   const getExpenseTile = (expense) => (
     <ExpenseTile
@@ -74,29 +77,8 @@ export default function IndividualExpenseScreen({ route }) {
 }
 
 const styles = StyleSheet.create({
-  activeTab: {
-    marginTop: 8,
-    height: 4,
-    borderRadius: RADIUS.xl,
-    backgroundColor: COLORS.primary[500],
-    zIndex: 2,
-  },
-  inactiveTab: {
-    marginTop: 9,
-    height: 1,
-    borderRadius: RADIUS.xl,
-    backgroundColor: COLORS.neutral[50],
-    zIndex: 2,
-  },
   container: {
     flex: 1,
     backgroundColor: COLORS.shades[0],
-  },
-  summaryContainer: {
-    marginTop: 25,
-    borderRadius: RADIUS.l,
-    borderWidth: 1,
-    borderColor: COLORS.neutral[50],
-    marginBottom: 70,
   },
 });

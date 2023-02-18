@@ -24,15 +24,17 @@ import SearchModal from '../components/Search/SearchModal';
 MapboxGL.setAccessToken(MAPBOX_TOKEN);
 
 export default function MapScreen() {
-  const navigation = useNavigation();
+  // STORES
+  const trips = tripsStore((state) => state.trips);
 
+  // STATE & MISC
+  const [showSearch, setShowSearch] = useState(false);
   const snapPoints = useMemo(() => ['17%', '88%'], []);
   const sheetRef = useRef(null);
-  const trips = tripsStore((state) => state.trips);
-  const [showSearch, setShowSearch] = useState(false);
   const [showUpcoming, setShowUpcoming] = useState(false);
-
   const mapCamera = useRef();
+
+  const navigation = useNavigation();
 
   const ICON_WIDTH = 40;
   const ICON_HEIGHT = 50;
@@ -85,7 +87,7 @@ export default function MapScreen() {
     );
   };
 
-  const TabSelector = () => (
+  const getTabSelector = () => (
     <Pressable
       onPress={() => setShowUpcoming(!showUpcoming)}
       style={styles.tabSelector}
@@ -122,7 +124,7 @@ export default function MapScreen() {
         {(!showUpcoming && recentTrips) && recentTrips.map((trip) => renderTripPins(trip))}
       </MapboxGL.MapView>
       <BackButton style={styles.backButton} />
-      <TabSelector />
+      {getTabSelector()}
       <BottomSheet
         handleIndicatorStyle={{ opacity: 0 }}
         backgroundStyle={{

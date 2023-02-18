@@ -7,7 +7,6 @@ import COLORS, { PADDING } from '../../constants/Theme';
 import Headline from '../typography/Headline';
 import i18n from '../../utils/i18n';
 import Button from '../Button';
-// import CONTINENTS_DATA from '../../constants/Continents';
 import userStore from '../../stores/UserStore';
 import Body from '../typography/Body';
 import SearchResultTile from '../Search/SearchResultTile';
@@ -15,6 +14,7 @@ import SearchResultTile from '../Search/SearchResultTile';
 export default function CountriesVisited({
   showUpcoming, upcomingTrips, recentTrips, onSearchPress, onPress,
 }) {
+  // STORES
   const { firstName } = userStore((state) => state.user);
 
   const title = !showUpcoming ? `${i18n.t("You've completed")} ${recentTrips?.length} ${i18n.t('Trips')}` : `${i18n.t("You've planned")} ${upcomingTrips?.length} ${i18n.t('Trips')}`;

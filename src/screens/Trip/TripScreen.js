@@ -4,7 +4,7 @@ import {
 import * as Animatable from 'react-native-animatable';
 import Toast from 'react-native-toast-message';
 import React, {
-  useRef, useState, useEffect, useCallback,
+  useRef, useState, useEffect,
 } from 'react';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Animated from 'react-native-reanimated';
@@ -37,7 +37,6 @@ import ChecklistContainer from '../../components/Trip/ChecklistContainer';
 import ROUTES from '../../constants/Routes';
 import StatusContainer from '../../components/Trip/StatusContainer';
 import ExpensesContainer from '../../components/Trip/ExpenseContainer';
-// import FAButton from '../../components/FAButton';
 import activeTripStore from '../../stores/ActiveTripStore';
 import META_DATA from '../../constants/MetaData';
 import UPDATE_TRIP from '../../mutations/updateTrip';
@@ -50,26 +49,39 @@ import userManagement from '../../utils/userManagement';
 import DELETE_TRIP_BY_ID from '../../mutations/deleteTripById';
 
 export default function TripScreen({ route }) {
+  // PARAMS
   const { tripId } = route.params;
+
+  // QUERIES
   const [getTripData, { error: fetchError, data: tripData, loading }] = useLazyQuery(GET_TRIP_BY_ID, {
     variables: {
       tripId,
     },
   });
 
+  // MUTATIONS
   const [updateTrip, { error }] = useMutation(UPDATE_TRIP);
   const [deleteTrip] = useMutation(DELETE_TRIP_BY_ID);
+
+  // STORES
   const activeTrip = activeTripStore((state) => state.activeTrip);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
   const setActiveTrip = activeTripStore((state) => state.setActiveTrip);
-  const scrollY = useRef(new Animated.Value(0)).current;
-  const scrollRef = useRef();
 
+  // STATE & MISC
+  const [currentTab, setCurrentTab] = useState(0);
+  const [inputOpen, setInputOpen] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const addImageRef = useRef();
+  const scrollRef = useRef();
   // const documentsRef = useRef();
   const expensesRef = useRef();
   const pollsRef = useRef();
   const checklistRef = useRef();
   const travelersRef = useRef();
+
+  const navigation = useNavigation();
 
   const contentRefs = [
     // documentsRef,
@@ -79,22 +91,16 @@ export default function TripScreen({ route }) {
     travelersRef,
   ];
 
-  const [currentTab, setCurrentTab] = useState(0);
-  const [inputOpen, setInputOpen] = useState(null);
-  const [refreshing, setRefreshing] = useState(false);
-
-  const addImageRef = useRef();
-
-  const navigation = useNavigation();
+  const IMAGE_HEIGHT = 240;
   const data = activeTrip.title !== undefined ? activeTrip : null;
   const inactive = !data || loading;
 
   const isHost = userManagement.isHost();
 
   const now = Date.now() / 1000;
-  const { width } = Dimensions.get('window');
+  const isActive = data && data?.dateRange.startDate < now && activeTrip?.dateRange.endDate > now;
 
-  const IMAGE_HEIGHT = 240;
+  const { width } = Dimensions.get('window');
 
   const handleMenuOption = (input) => {
     const { event } = input;
@@ -126,10 +132,10 @@ export default function TripScreen({ route }) {
     }
   };
 
-  const onRefresh = useCallback(() => {
+  const onRefresh = () => {
     setRefreshing(true);
     getTripData().then(() => setRefreshing(false)).catch(() => setRefreshing(false));
-  }, []);
+  };
 
   useEffect(() => {
     if (error || fetchError) {
@@ -151,25 +157,6 @@ export default function TripScreen({ route }) {
     getTripData();
   }, [tripId]);
 
-  // const measureComponents = () => {
-  //   documentsRef.current.measure((fx, fy, _, __, px, py) => {
-  //     documentsRef.value = py;
-  //   });
-  //   expensesRef.current.measure((fx, fy, _, __, px, py) => {
-  //     expensesRef.value = py;
-  //   });
-  //   checklistRef.current.measure((fx, fy, _, __, px, py) => {
-  //     checklistRef.value = py;
-  //   });
-  //   pollsRef.current.measure((fx, fy, _, __, px, py) => {
-  //     pollsRef.value = py;
-  //   });
-  //   travelersRef.current.measure((fx, fy, _, __, px, py) => {
-  //     travelersRef.value = py;
-  //   });
-  // };
-
-  const isActive = data && data?.dateRange.startDate < now && activeTrip?.dateRange.endDate > now;
   const handleDeleteTrip = async () => {
     Utils.showConfirmationAlert(
       i18n.t('Delete Expense'),
@@ -206,7 +193,7 @@ export default function TripScreen({ route }) {
     setCurrentTab(index);
     const headerHeight = 460;
     const ref = contentRefs[index];
-    ref?.current.measure((fx, fy, _, __, px, py) => {
+    ref?.current.measure((fx, fy) => {
       scrollRef.current?.scrollTo({ y: fy + headerHeight, animated: true });
     });
   };
@@ -497,7 +484,7 @@ export default function TripScreen({ route }) {
     },
   ];
 
-  const TopContent = () => (
+  const getTopContent = () => (
     <>
       <View style={styles.handler} />
       <View style={styles.bodyContainer}>
@@ -666,7 +653,7 @@ export default function TripScreen({ route }) {
     </>
   );
 
-  const MainContent = () => (
+  const getMainContent = () => (
     <View style={styles.mainContainer}>
       {contentItems.map((item) => (
         <View ref={item.ref}>
@@ -702,7 +689,6 @@ export default function TripScreen({ route }) {
       }],
     }}
     >
-
       <Image
         style={styles.image}
         resizeMode="cover"
@@ -734,7 +720,6 @@ export default function TripScreen({ route }) {
   );
 
   return (
-
     <View style={{ backgroundColor: COLORS.shades[0], flex: 1 }}>
       <AnimatedHeader
         style={{ height: 170 }}
@@ -772,8 +757,8 @@ export default function TripScreen({ route }) {
       >
         <Pressable style={{ height: IMAGE_HEIGHT }} onPress={() => (data && isHost ? addImageRef.current?.show() : null)} />
         {inactive && <View style={[styles.bodyContainer, { paddingHorizontal: PADDING.m, marginBottom: 60 }]}><TripScreenSkeleton /></View>}
-        {!inactive && <TopContent />}
-        {!inactive && <MainContent />}
+        {!inactive && getTopContent()}
+        {!inactive && getMainContent()}
       </Animated.ScrollView>
       <BackButton
         onPress={() => navigation.navigate(ROUTES.mainScreen)}
@@ -792,10 +777,6 @@ export default function TripScreen({ route }) {
         />
 
       </Pressable>
-      {/* <FAButton
-        icon="chatbox-ellipses"
-        onPress={() => navigation.push(ROUTES.chatScreen)}
-      /> */}
       <ActionSheet
         ref={addImageRef}
         title={i18n.t('Choose an option')}

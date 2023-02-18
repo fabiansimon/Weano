@@ -1,19 +1,7 @@
 import create from 'zustand';
 
 const userStore = create((set) => ({
-  user: {
-    authToken: '',
-    id: '',
-    avatarUri: '',
-    email: '',
-    expenses: [],
-    firstName: '',
-    lastName: '',
-    images: [],
-    phoneNumber: '',
-    trips: [],
-    pushToken: '',
-  },
+  user: {},
   setUserData: (data) => set(() => ({
     user: {
       id: data.id || null,

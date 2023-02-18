@@ -25,18 +25,20 @@ import DELETE_EXPENSE from '../../mutations/deleteExpense';
 import SEND_REMINDER from '../../mutations/sendReminder';
 
 export default function ExpenseScreen() {
+  // MUTATIONS
+  const [addExpense, { loading, error }] = useMutation(ADD_EXPENSE);
+  const [sendReminder] = useMutation(SEND_REMINDER);
+  const [deleteExpense] = useMutation(DELETE_EXPENSE);
+
+  // STORES
   const {
     expenses, activeMembers: users, id: tripId, location,
   } = activeTripStore((state) => state.activeTrip);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
   const { id, firstName } = userStore((state) => state.user);
 
+  // STATE & MISC
   const scrollY = useRef(new Animated.Value(0)).current;
-
-  const [addExpense, { loading, error }] = useMutation(ADD_EXPENSE);
-  const [sendReminder] = useMutation(SEND_REMINDER);
-  const [deleteExpense] = useMutation(DELETE_EXPENSE);
-
   const [showTotal, setShowTotal] = useState(true);
   const [selectedExpense, setSelectedExpense] = useState({ isVisible: false, data: null });
   const [showModal, setShowModal] = useState(false);

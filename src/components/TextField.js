@@ -32,6 +32,7 @@ export default function TextField({
   onSuggestionPress,
   ...rest
 }) {
+  // STATE & MISC
   const [suggestionData, setSuggestionData] = useState(null);
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
 

@@ -31,12 +31,15 @@ const asyncStorageDAO = new AsyncStorageDAO();
 export default function AuthModal({
   isVisible, onRequestClose, registerData, joinTripId, uploadReminderId,
 }) {
+  // MUTATIONS
   const [registerUser, { error: registerError }] = useMutation(REGISTER_USER);
   const [loginUser, { error: loginError }] = useMutation(LOGIN_USER);
   const [joinTrip, { error: joinError }] = useMutation(JOIN_TRIP);
 
+  // STORES
   const updateUserData = userStore((state) => state.updateUserData);
 
+  // STATE & MISC
   const [phoneNr, setPhoneNr] = useState('');
   const [pickerVisible, setPickerVisible] = useState(false);
   const [code, setCode] = useState('');
@@ -46,6 +49,16 @@ export default function AuthModal({
 
   const navigation = useNavigation();
   const isLogin = !registerData;
+
+  const countryPickerTheme = {
+    primaryColorVariant: COLORS.neutral[100],
+    onBackgroundTextColor: COLORS.shades[100],
+    fontSize: 14,
+    filterPlaceholderTextColor: 'red',
+    activeOpacity: 0.7,
+    itemHeight: 60,
+    marginHorizontal: 10,
+  };
 
   useEffect(() => {
     if (loginError || registerError || joinError) {
@@ -118,12 +131,12 @@ export default function AuthModal({
     const { email, firstName, lastName } = registerData;
     const phoneNumber = `+${countryCode}${phoneNr.trim()}`;
 
-    // const check = await checkCode();
+    const check = await checkCode();
 
-    // if (check !== 'approved') {
-    //   setCode('');
-    //   return;
-    // }
+    if (check !== 'approved') {
+      setCode('');
+      return;
+    }
 
     await registerUser({
       variables: {
@@ -162,12 +175,12 @@ export default function AuthModal({
 
   const handleLogin = async () => {
     const phoneNumber = `+${countryCode}${phoneNr.trim()}`;
-    // const check = await checkCode();
+    const check = await checkCode();
 
-    // if (check !== 'approved') {
-    //   setCode('');
-    //   return;
-    // }
+    if (check !== 'approved') {
+      setCode('');
+      return;
+    }
 
     await loginUser({
       variables: {
@@ -201,16 +214,6 @@ export default function AuthModal({
           onRequestClose();
         }
       });
-  };
-
-  const countryPickerTheme = {
-    primaryColorVariant: COLORS.neutral[100],
-    onBackgroundTextColor: COLORS.shades[100],
-    fontSize: 14,
-    filterPlaceholderTextColor: 'red',
-    activeOpacity: 0.7,
-    itemHeight: 60,
-    marginHorizontal: 10,
   };
 
   return (

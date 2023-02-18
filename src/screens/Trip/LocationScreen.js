@@ -8,16 +8,11 @@ import { MAPBOX_TOKEN } from '@env';
 import Toast from 'react-native-toast-message';
 import { useMutation } from '@apollo/client';
 import MapboxGL from '@react-native-mapbox-gl/maps';
-import Icon from 'react-native-vector-icons/Entypo';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import HybridHeader from '../../components/HybridHeader';
 import INFORMATION from '../../constants/Information';
-// import PollView from '../../components/Polls/PollView';
-// import AddSuggestionModal from '../../components/Trip/AddSuggestionModal';
-// import HighlightContainer from '../../components/Trip/HighlightContainer';
-import BoardingPassModal from '../../components/Trip/BoardingPassModal';
 import activeTripStore from '../../stores/ActiveTripStore';
 import SetupContainer from '../../components/Trip/SetupContainer';
 import InputModal from '../../components/InputModal';
@@ -30,20 +25,19 @@ import PinImage from '../../../assets/images/pin.png';
 MapboxGL.setAccessToken(MAPBOX_TOKEN);
 
 export default function LocationScreen() {
-  const scrollY = useRef(new Animated.Value(0)).current;
-  const { location, id } = activeTripStore((state) => state.activeTrip);
-
+  // MUTATIONS
   const [updateTrip, { error }] = useMutation(UPDATE_TRIP);
+
+  // STORES
+  const { location, id } = activeTripStore((state) => state.activeTrip);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
 
-  const [isBoardingPassVisible, setBoardingPassVisible] = useState(false);
+  // STATE & MISC
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const camera = useRef();
   const [inputVisible, setInputVisible] = useState(false);
 
   const isHost = userManagement.isHost();
-
-  const camera = useRef();
-  // const [isVisible, setIsVisible] = useState(false);
-  // const [pollData, setPollData] = useState(null);
 
   useEffect(() => {
     if (error) {
@@ -186,29 +180,8 @@ export default function LocationScreen() {
             />
           ) : getLocationContainer()}
 
-          {/* <PollView
-            data={pollData}
-            title={i18n.t('Destination options')}
-            onAdd={() => setIsVisible(true)}
-            subtitle={pollData.length < 1 ? i18n.t('No suggestion yet, add one!') : i18n.t('You can simply add a new one')}
-          /> */}
         </View>
       </HybridHeader>
-      {/* <AddSuggestionModal
-        isVisible={isVisible}
-        onRequestClose={() => setIsVisible(false)}
-        data={pollData}
-        setPollData={setPollData}
-      /> */}
-
-      {/* {location && (
-      <HighlightContainer
-        onPress={() => setBoardingPassVisible(true)}
-        description={i18n.t('Location')}
-        text={location.placeName}
-      />
-      )} */}
-
       <InputModal
         isVisible={inputVisible}
         geoMatching
@@ -217,11 +190,6 @@ export default function LocationScreen() {
         onPress={(input) => handleLocationInput(input)}
       />
 
-      <BoardingPassModal
-        isVisible={isBoardingPassVisible}
-        onRequestClose={() => setBoardingPassVisible(false)}
-        type="destination"
-      />
     </View>
   );
 }
@@ -235,33 +203,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: PADDING.s,
     paddingTop: 15,
     paddingBottom: 36,
-  },
-  pollContainer: {
-    paddingVertical: 20,
-    paddingHorizontal: PADDING.s,
-    borderRadius: 14,
-    borderColor: COLORS.neutral[100],
-    borderWidth: 1,
-    backgroundColor: COLORS.shades[0],
-  },
-  isLiked: {
-    flexDirection: 'row',
-    paddingHorizontal: 12,
-    alignItems: 'center',
-    paddingVertical: 6,
-    backgroundColor: COLORS.primary[700],
-    borderRadius: RADIUS.xl,
-    height: 32,
-  },
-  isNotLiked: {
-    flexDirection: 'row',
-    paddingHorizontal: 12,
-    alignItems: 'center',
-    paddingVertical: 6,
-    borderWidth: 1,
-    borderColor: COLORS.neutral[100],
-    borderRadius: RADIUS.xl,
-    height: 32,
   },
   map: {
     height: Dimensions.get('window').height * 0.3,

@@ -19,13 +19,19 @@ import Logo from '../../assets/images/logo_temp.png';
 const asyncStorageDAO = new AsyncStorageDAO();
 
 export default function InitDataCrossroads() {
+  // QUERIES
   const [getInitData, { error, data }] = useLazyQuery(GET_INIT_USER_DATA);
+
+  // MUTATIONS
   const [updateUser] = useMutation(UPDATE_USER);
-  const [init, setInit] = useState(false);
+
+  // STORES
   const { authToken, pushToken } = userStore((state) => state.user);
   const setTrips = tripsStore((state) => state.setTrips);
   const updateUserData = userStore((state) => state.updateUserData);
 
+  // STATE & MISC
+  const [init, setInit] = useState(false);
   const [notification, setNotification] = useState();
   const [deepLink, setDeepLink] = useState();
   const notificationListener = useRef();
@@ -85,10 +91,6 @@ export default function InitDataCrossroads() {
   };
 
   const handleNavigation = () => {
-    // console.log(`Notification link: ${notification}`);
-    // console.log(`Deep link: ${deepLink}`);
-    // console.log(`Userauth: ${authToken}`);
-
     if (authToken && !notification && !deepLink) {
       navigation.navigate(ROUTES.mainScreen);
       return;

@@ -9,11 +9,8 @@ import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
-import AvailabilityModal from '../../components/Trip/AvailabilityModal';
 import HybridHeader from '../../components/HybridHeader';
 import INFORMATION from '../../constants/Information';
-import BoardingPassModal from '../../components/Trip/BoardingPassModal';
-import CalendarAvailabilityContainer from '../../components/Trip/CalendarAvailabilityContainer';
 import Label from '../../components/typography/Label';
 import activeTripStore from '../../stores/ActiveTripStore';
 import SetupContainer from '../../components/Trip/SetupContainer';
@@ -25,9 +22,15 @@ import userManagement from '../../utils/userManagement';
 import Utils from '../../utils';
 
 export default function DateScreen() {
+  // MUTATIONS
+  const [updateTrip, { error }] = useMutation(UPDATE_TRIP);
+
+  // STORES
+  const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
+  const { dateRange, id } = activeTripStore((state) => state.activeTrip);
+
+  // STATE & MISC
   const scrollY = useRef(new Animated.Value(0)).current;
-  const [isVisible, setIsVisible] = useState(false);
-  const [isBoardingPassVisible, setBoardingPassVisible] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(() => {
     const date = new Date();
@@ -35,10 +38,6 @@ export default function DateScreen() {
     return date;
   });
   const [calendarVisible, setCalendarVisible] = useState(false);
-
-  const [updateTrip, { error }] = useMutation(UPDATE_TRIP);
-  const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
-  const { dateRange, id } = activeTripStore((state) => state.activeTrip);
 
   const isHost = userManagement.isHost();
 
@@ -130,44 +129,7 @@ export default function DateScreen() {
     </View>
   );
 
-  const availabilityData = {
-    available: [
-      {
-        dateRange: {
-          startDate: 1656865380,
-          endDate: 1658074980,
-        },
-      },
-      {
-        dateRange: {
-          startDate: 1656865380,
-          endDate: 1658074980,
-        },
-      },
-      {
-        dateRange: {
-          startDate: 1656865380,
-          endDate: 1658074980,
-        },
-      },
-    ],
-    unavailable: [
-      {
-        dateRange: {
-          startDate: 1656865380,
-          endDate: 1658074980,
-        },
-      },
-      {
-        dateRange: {
-          startDate: 1656865380,
-          endDate: 1658074980,
-        },
-      },
-    ],
-  };
-
-  const AvailbleExplanation = () => (
+  const getAvailbleExplanation = () => (
     <View style={{
       flexDirection: 'row', marginLeft: PADDING.l, marginTop: -10,
     }}
@@ -204,9 +166,8 @@ export default function DateScreen() {
         title={i18n.t('Find date')}
         scrollY={scrollY}
         info={INFORMATION.dateScreen}
-        content={<AvailbleExplanation />}
+        content={getAvailbleExplanation()}
       >
-
         <View style={styles.innerContainer}>
           {!dateRange && (
           <SetupContainer
@@ -216,30 +177,11 @@ export default function DateScreen() {
           />
           )}
           {getDateContainer()}
-          <CalendarAvailabilityContainer
-            onPress={() => setIsVisible(true)}
+          {/* <CalendarAvailabilityContainer
             style={{ marginBottom: 40, marginTop: 30 }}
-          />
+          /> */}
         </View>
       </HybridHeader>
-      <AvailabilityModal
-        isVisible={isVisible}
-        data={availabilityData}
-        onRequestClose={() => setIsVisible(false)}
-      />
-
-      {/* {dateRange && (
-      <HighlightContainer
-        onPress={() => setBoardingPassVisible(true)}
-        description={i18n.t('Date')}
-        text={Utils.getDateRange(dateRange)}
-      />
-      )} */}
-
-      <BoardingPassModal
-        isVisible={isBoardingPassVisible}
-        onRequestClose={() => setBoardingPassVisible(false)}
-      />
 
       <CalendarModal
         isVisible={calendarVisible}
@@ -264,28 +206,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.shades[0],
   },
-  dateCarousel: {
-    paddingHorizontal: PADDING.m,
-    paddingTop: 20,
-    paddingBottom: 25,
-  },
   innerContainer: {
     paddingBottom: 120,
-  },
-  tileContainer: {
-    paddingTop: 10,
-    paddingBottoms: 20,
-    borderRadius: 14,
-    borderColor: COLORS.neutral[100],
-    borderWidth: 1,
-    backgroundColor: COLORS.shades[0],
-    marginBottom: 20,
-  },
-  suggestedHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: PADDING.m,
   },
   dateContainer: {
     marginHorizontal: PADDING.l,

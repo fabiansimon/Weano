@@ -7,7 +7,6 @@ export default function TripScreenSkeleton() {
   const { width } = Dimensions.get('window');
 
   return (
-
     <SkeletonPlaceholder.Item
       marginTop={8}
       flex={1}

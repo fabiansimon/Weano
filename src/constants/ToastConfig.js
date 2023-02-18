@@ -9,7 +9,7 @@ const toastConfig = {
       style={{ borderLeftColor: COLORS.success[700] }}
       text1Style={{
         fontFamily: 'WorkSans-Regular',
-        fontSize: 18,
+        fontSize: 14,
         letterSpacing: -0.5,
         fontWeight: '600',
         color: COLORS.neutral[900],
@@ -29,7 +29,7 @@ const toastConfig = {
       style={{ borderLeftColor: COLORS.warning[700] }}
       text1Style={{
         fontFamily: 'WorkSans-Regular',
-        fontSize: 18,
+        fontSize: 14,
         letterSpacing: -0.5,
         fontWeight: '600',
         color: COLORS.neutral[900],
@@ -49,7 +49,7 @@ const toastConfig = {
       style={{ borderLeftColor: COLORS.error[900] }}
       text1Style={{
         fontFamily: 'WorkSans-Regular',
-        fontSize: 18,
+        fontSize: 14,
         letterSpacing: -0.5,
         fontWeight: '600',
         color: COLORS.neutral[900],

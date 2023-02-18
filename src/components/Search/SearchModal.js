@@ -14,8 +14,11 @@ import Body from '../typography/Body';
 import REGEX from '../../constants/Regex';
 
 export default function LocationScreen({ isVisible, onRequestClose, onPress }) {
-  const [term, setTerm] = useState('');
+  // STORES
   const trips = tripsStore((state) => state.trips);
+
+  // STATE & MISC
+  const [term, setTerm] = useState('');
   const [searchResult, setSearchResult] = useState([]);
 
   const now = Date.now() / 1000;
@@ -167,12 +170,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.neutral[50],
   },
-  innerContainer: {
-    flex: 1,
-    paddingHorizontal: PADDING.s,
-    paddingTop: 15,
-    paddingBottom: 36,
-  },
+
   header: {
     paddingHorizontal: PADDING.s,
     alignItems: 'center',

@@ -6,7 +6,6 @@ import {
 import React, {
   useRef, useState,
   useEffect,
-  useCallback,
 } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -24,7 +23,6 @@ import AnimatedHeader from '../components/AnimatedHeader';
 import SearchModal from '../components/Search/SearchModal';
 import userStore from '../stores/UserStore';
 import Body from '../components/typography/Body';
-import Utils from '../utils';
 import tripsStore from '../stores/TripsStore';
 import GET_TRIPS_FOR_USER from '../queries/getTripsForUser';
 import RecapCardMini from '../components/RecapCardMini';
@@ -34,24 +32,33 @@ import StorySection from '../components/StorySection';
 import Divider from '../components/Divider';
 
 export default function MainScreen() {
+  // QUERIES
   const [getTripsForUser, { error, data }] = useLazyQuery(GET_TRIPS_FOR_USER);
+
+  // STORES
   const user = userStore((state) => state.user);
-  const [createVisible, setCreateVisible] = useState(false);
-  const [searchVisible, setSearchVisible] = useState(false);
-  const scrollY = useRef(new Animated.Value(0)).current;
   const trips = tripsStore((state) => state.trips);
   const setTrips = tripsStore((state) => state.setTrips);
-  const [refreshing, setRefreshing] = React.useState(false);
 
-  const onRefresh = useCallback(() => {
+  // STATE & MISC
+  const [createVisible, setCreateVisible] = useState(false);
+  const [searchVisible, setSearchVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const navigation = useNavigation();
+
+  // ----------- //
+  const onRefresh = () => {
     setRefreshing(true);
     getTripsForUser().then(() => setRefreshing(false)).catch(() => setRefreshing(false));
-  }, []);
+  };
 
   const now = Date.now() / 1000;
+
   let recapTimestamp = new Date();
   recapTimestamp.setFullYear(recapTimestamp.getFullYear() - 1);
   recapTimestamp = Date.parse(recapTimestamp) / 1000;
+
   const upcomingTrips = trips.filter((trip) => trip.dateRange.startDate > now && trip.dateRange.endDate > now);
   const activeTrip = trips.filter((trip) => trip.dateRange.startDate < now && trip.dateRange.endDate > now)[0];
   const recapTrip = trips.filter((trip) => trip.dateRange.startDate < recapTimestamp && trip.dateRange.endDate < now)[0];
@@ -70,8 +77,6 @@ export default function MainScreen() {
       });
     }
   }, [data, error]);
-
-  const navigation = useNavigation();
 
   const getHeaderSection = () => (
     <View style={{
@@ -224,39 +229,10 @@ export default function MainScreen() {
 }
 
 const styles = StyleSheet.create({
-  bottom: {
-    width: '100%',
-    position: 'absolute',
-    bottom: 0,
-  },
-  buttonContainer: {
-    borderTopEndRadius: 20,
-    borderTopStartRadius: 20,
-    paddingTop: 18,
-    borderWidth: 1,
-    borderColor: COLORS.neutral[100],
-    shadowColor: COLORS.neutral[300],
-    shadowRadius: 10,
-    shadowOpacity: 0.05,
-    shadowOffset: {
-      height: -10,
-    },
-    backgroundColor: COLORS.shades[0],
-    paddingHorizontal: PADDING.l,
-    justifyContent: 'flex-start',
-    flexDirection: 'row',
-    height: 110,
-    width: '100%',
-  },
   container: {
     paddingHorizontal: PADDING.l,
     marginTop: 20,
     flex: 1,
-  },
-  globeButton: {
-    marginLeft: 15,
-    borderWidth: 1,
-    borderColor: COLORS.neutral[100],
   },
   searchButton: {
     borderWidth: 1,
@@ -267,28 +243,5 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.shades[0],
     justifyContent: 'center',
     alignItems: 'center',
-  },
-
-  activeTripChip: {
-    borderRadius: 100,
-    padding: 15,
-    backgroundColor: Utils.addAlpha(COLORS.error[700], 0.08),
-    borderWidth: 1,
-    borderColor: COLORS.error[700],
-  },
-  basicChip: {
-    borderRadius: 100,
-    padding: 15,
-    backgroundColor: COLORS.shades[0],
-    borderWidth: 1,
-    borderColor: COLORS.neutral[100],
-  },
-  addtripButton: {
-    borderRadius: 100,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    backgroundColor: COLORS.shades[0],
-    borderWidth: 1,
-    borderColor: COLORS.neutral[100],
   },
 });

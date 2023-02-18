@@ -11,7 +11,9 @@ import activeTripStore from '../../stores/ActiveTripStore';
 export default function ExpensesContainer({
   style, tileBackground = COLORS.neutral[50],
 }) {
+  // STORES
   const { expenses: data, activeMembers: users } = activeTripStore((state) => state.activeTrip);
+
   const navigation = useNavigation();
 
   const extractIndividualData = (user) => {

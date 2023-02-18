@@ -22,15 +22,16 @@ import REGEX from '../constants/Regex';
 export default function InputModal({
   isVisible, onRequestClose, placeholder, onPress, geoMatching = false, topContent, emailInput, autoClose, multiline, maxLength, ...rest
 }) {
+  // STATE & MISC
   const [showModal, setShowModal] = useState(isVisible);
   const [input, setInput] = useState('');
   const [emailValues, setEmailValues] = useState([]);
-  const animatedBottom = useRef(new Animated.Value(900)).current;
-  const duration = 300;
-
   const [suggestionData, setSuggestionData] = useState(null);
   const [suggestion, setSuggestion] = useState(null);
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
+
+  const animatedBottom = useRef(new Animated.Value(900)).current;
+  const duration = 300;
 
   useEffect(() => {
     if (!input) {
@@ -132,7 +133,7 @@ export default function InputModal({
     }
   };
 
-  const SuggestionTile = ({ item }) => (
+  const getSuggestionTile = (item) => (
     <Pressable
       onPress={() => {
         setInput(item.string);
@@ -155,7 +156,7 @@ export default function InputModal({
     </Pressable>
   );
 
-  const MultipleValuesContainer = () => (
+  const getMultipleValuesContainer = () => (
     <View style={styles.wrapContainer}>
       {emailValues.map((value, index) => (
         <View style={styles.chip}>
@@ -234,12 +235,12 @@ export default function InputModal({
                         color={COLORS.neutral[50]}
                       />
                     )}
-                    renderItem={({ item }) => <SuggestionTile item={item} />}
+                    renderItem={({ item }) => getSuggestionTile(item)}
                   />
                 )}
             </View>
             )}
-            {emailInput && emailValues.length > 0 && <MultipleValuesContainer />}
+            {emailInput && emailValues.length > 0 && getMultipleValuesContainer()}
             {topContent && !emailValues.length > 0 && !suggestionData && topContent}
             <View style={styles.innerContainer}>
               <TextInput

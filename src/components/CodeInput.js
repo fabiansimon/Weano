@@ -1,5 +1,5 @@
 import { StyleSheet, Text } from 'react-native';
-import React, { useState } from 'react';
+import React from 'react';
 import {
   CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell,
 } from 'react-native-confirmation-code-field';

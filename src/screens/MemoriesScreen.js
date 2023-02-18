@@ -31,15 +31,17 @@ import months from '../constants/Months';
 import AnimatedHeader from '../components/AnimatedHeader';
 
 export default function MemoriesScreen({ route }) {
+  // PARAMS
   const { tripId } = route.params;
-  const navigation = useNavigation();
 
+  // QUERIES
   const { error, data } = useQuery(GET_IMAGES_FROM_TRIP, {
     variables: {
       tripId,
     },
   });
 
+  // STATE & MISC
   const scrollY = useRef(new Animated.Value(0)).current;
   const [images, setImages] = useState([]);
   const [freeImages, setFreeImage] = useState(0);
@@ -49,6 +51,8 @@ export default function MemoriesScreen({ route }) {
   const [storyVisible, setStoryVisible] = useState(false);
   const [initalIndex, setInitalIndex] = useState(0);
   const [downloadIndex, setDownloadIndex] = useState(null);
+
+  const navigation = useNavigation();
 
   const animatedSensor = useAnimatedSensor(SensorType.ROTATION, {
     interval: 100,
@@ -406,7 +410,6 @@ export default function MemoriesScreen({ route }) {
   return (
     <>
       <StatusBar barStyle="light-content" />
-
       <View style={styles.container}>
         {images.length > 0 && (
         <AnimatedHeader
@@ -438,14 +441,15 @@ export default function MemoriesScreen({ route }) {
           <FlatList
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={() => (
-              <View style={{ justifyContent: 'space-between', alignItems: 'center', marginTop: '50%' }}>
-                <Headline
-                  type={4}
+              <View style={{ justifyContent: 'space-between', alignItems: 'center', marginTop: '60%' }}>
+                <Body
+                  type={1}
                   text={i18n.t('No memories captured yet')}
+                  style={{ marginBottom: 4 }}
                   color={COLORS.shades[0]}
                 />
                 <Body
-                  type={1}
+                  type={2}
                   text={i18n.t("You will get a notification as soon as it's time to snap some memories 📸 ")}
                   style={{ maxWidth: '80%', textAlign: 'center' }}
                   color={COLORS.neutral[500]}
@@ -491,20 +495,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  fabSecondary: {
-    borderRadius: RADIUS.xl,
-    height: 50,
-    width: 50,
-    marginRight: 10,
-    shadowOffset: {},
-    shadowOpacity: 0.05,
-    borderWidth: 1,
-    shadowColor: COLORS.shades[100],
-    borderColor: COLORS.neutral[700],
-    backgroundColor: COLORS.neutral[900],
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   header: {
     width: '100%',
     paddingTop: 10,
@@ -517,25 +507,6 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     backgroundColor: COLORS.shades[100],
-  },
-  loading: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-    backgroundColor: COLORS.shades[100],
-  },
-  gif: {
-    width: '100%',
-    height: 100,
-  },
-  buttonRow: {
-    paddingHorizontal: PADDING.l,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginLeft: 30,
-    position: 'absolute',
-    bottom: 50,
   },
   imagesLeftContainer: {
     position: 'absolute',

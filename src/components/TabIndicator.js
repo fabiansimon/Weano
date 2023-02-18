@@ -1,6 +1,5 @@
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import React from 'react';
-import Headline from './typography/Headline';
 import COLORS from '../constants/Theme';
 import Body from './typography/Body';
 

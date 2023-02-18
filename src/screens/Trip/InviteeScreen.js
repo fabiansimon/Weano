@@ -25,20 +25,25 @@ import REMOVE_USER_FROM_TRIP from '../../mutations/removeUserFromTrip';
 import Utils from '../../utils';
 
 export default function InviteeScreen() {
-  const { activeMembers, hostId, id } = activeTripStore((state) => state.activeTrip);
-  const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
-  const [inputVisible, setInputVisible] = useState(false);
+  // MUTATIONS
   const [removeUser] = useMutation(REMOVE_USER_FROM_TRIP);
 
-  const isHost = userManagement.isHost();
+  // STORES
+  const { activeMembers, hostId, id } = activeTripStore((state) => state.activeTrip);
+  const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
 
+  // STATE & MISC
   const scrollY = useRef(new Animated.Value(0)).current;
+  const [inputVisible, setInputVisible] = useState(false);
+
+  const isHost = userManagement.isHost();
 
   const handleShare = () => {
     Share.share({
       message: `Hey! You've been invited to join a trip! Click the link below to join! ${META_DATA.baseUrl}/redirect/invitation/${id}`,
     });
   };
+
   const copyLink = () => {
     Clipboard.setString(`${META_DATA.baseUrl}/redirect/invitation/${id}`);
     Toast.show({
@@ -72,8 +77,7 @@ export default function InviteeScreen() {
       });
   };
 
-  const handleMenuOption = (input, user) => {
-    const { event } = input;
+  const handleMenuOption = ({ event }, user) => {
     const { id: removeUserId } = user;
 
     if (event === 'remove') {
@@ -165,7 +169,7 @@ export default function InviteeScreen() {
     );
   };
 
-  const ShareLinkButton = () => (
+  const getShareLinkButton = () => (
     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: PADDING.s }}>
       <Pressable
         onPress={handleShare}
@@ -231,7 +235,7 @@ export default function InviteeScreen() {
       />
       <InputModal
         topContent={(
-          <ShareLinkButton />
+          getShareLinkButton()
         )}
         isVisible={inputVisible}
         keyboardType="email-address"

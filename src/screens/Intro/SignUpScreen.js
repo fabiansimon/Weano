@@ -19,14 +19,17 @@ import META_DATA from '../../constants/MetaData';
 import SensorView from '../../components/SensorView';
 import BackButton from '../../components/BackButton';
 
-export default function SignUpScreen({ invitationId, route }) {
-  const { uploadReminderId } = route.params;
-  const errorColors = {
-    error: COLORS.error[700],
-    success: COLORS.success[700],
-    neutral: COLORS.neutral[300],
-  };
+const errorColors = {
+  error: COLORS.error[700],
+  success: COLORS.success[700],
+  neutral: COLORS.neutral[300],
+};
 
+export default function SignUpScreen({ invitationId, route }) {
+  // PARAMS
+  const { uploadReminderId } = route.params;
+
+  // STATE & MISC
   const [errorChecks, setErrorChecks] = useState(
     {
       firstName: {
@@ -57,10 +60,12 @@ export default function SignUpScreen({ invitationId, route }) {
   const [initIntro, setInitIntro] = useState(false);
   const [webViewOption, setWebViewOption] = useState(null);
 
+  // ANIMATIONS
   const animatedTranslateY = useRef(new Animated.Value(1000)).current;
   const animatedImageY = useRef(new Animated.Value(0)).current;
   const animatedBackButtonX = useRef(new Animated.Value(-100)).current;
   const duration = 300;
+  const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
   useEffect(() => {
     if (initIntro) {
@@ -213,10 +218,8 @@ export default function SignUpScreen({ invitationId, route }) {
     </View>
   );
 
-  const AniamtedScrollView = Animated.createAnimatedComponent(ScrollView);
-
   const getAuthContainer = () => (
-    <AniamtedScrollView
+    <AnimatedScrollView
       scrollEnabled={false}
       contentContainerStyle={{
         justifyContent: 'space-between', flex: 1, paddingBottom: 50,
@@ -338,17 +341,7 @@ export default function SignUpScreen({ invitationId, route }) {
           />
         </Pressable>
       </View>
-    </AniamtedScrollView>
-  );
-
-  const getBackButton = () => (
-    <Animated.View style={[{ position: 'absolute', top: 50, left: PADDING.m }, { transform: [{ translateX: animatedBackButtonX }] }]}>
-      <BackButton
-        onPress={() => setInitIntro(false)}
-        isClear
-        iconColor={COLORS.shades[0]}
-      />
-    </Animated.View>
+    </AnimatedScrollView>
   );
 
   const AnimatedImage = Animated.createAnimatedComponent(Image);
@@ -494,7 +487,13 @@ export default function SignUpScreen({ invitationId, route }) {
         </View>
       </View>
       {getAuthContainer()}
-      {getBackButton()}
+      <Animated.View style={[{ position: 'absolute', top: 50, left: PADDING.m }, { transform: [{ translateX: animatedBackButtonX }] }]}>
+        <BackButton
+          onPress={() => setInitIntro(false)}
+          isClear
+          iconColor={COLORS.shades[0]}
+        />
+      </Animated.View>
       <AuthModal
         isVisible={registerVisible}
         onRequestClose={() => setRegisterVisible(false)}
@@ -523,27 +522,6 @@ export default function SignUpScreen({ invitationId, route }) {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    position: 'absolute',
-    top: 0,
-    backgroundColor: COLORS.primary[500],
-    width: '100%',
-    height: 200,
-  },
-  loginContainer: {
-    backgroundColor: COLORS.primary[300],
-    paddingVertical: 6,
-    paddingHorizontal: 15,
-    borderRadius: 100,
-  },
-  innerHeaderContainer: {
-    marginTop: 8,
-    marginBottom: -20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginHorizontal: PADDING.s,
-  },
   mainContainer: {
     backgroundColor: COLORS.shades[0],
     borderTopRightRadius: RADIUS.m,

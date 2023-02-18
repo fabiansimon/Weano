@@ -13,15 +13,12 @@ import * as Notifications from 'expo-notifications';
 import Toast from 'react-native-toast-message';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import ROUTES from './src/constants/Routes';
-import IntroScreen from './src/screens/Intro/IntroScreen';
 import MainScreen from './src/screens/MainScreen';
 import TripScreen from './src/screens/Trip/TripScreen';
 import MapScreen from './src/screens/MapScreen';
 import InviteeScreen from './src/screens/Trip/InviteeScreen';
-import AccomodationsScreen from './src/screens/Trip/AccomodationsScreen';
 import LocationScreen from './src/screens/Trip/LocationScreen';
 import DateScreen from './src/screens/Trip/DateScreen';
-import ChatScreen from './src/screens/Trip/ChatScreen';
 import ChecklistScreen from './src/screens/Trip/ChecklistScreen';
 import ExpenseScreen from './src/screens/Trip/ExpenseScreen';
 import IndividualExpenseScreen from './src/screens/Trip/IndividualExpenseScreen';
@@ -113,11 +110,6 @@ export default function App() {
                 component={InvitationScreen}
                 options={{ gestureEnabled: false }}
               />
-              <Stack.Screen
-                name={ROUTES.introScreen}
-                component={IntroScreen}
-                options={{ gestureEnabled: false }}
-              />
               <Stack.Screen name={ROUTES.profileScreen} component={ProfileScreen} />
               <Stack.Screen name={ROUTES.mapScreen} component={MapScreen} />
               <Stack.Screen
@@ -127,9 +119,7 @@ export default function App() {
               />
               <Stack.Screen name={ROUTES.dateScreen} component={DateScreen} />
               <Stack.Screen name={ROUTES.inviteeScreen} component={InviteeScreen} />
-              <Stack.Screen name={ROUTES.accomodationsScreen} component={AccomodationsScreen} />
               <Stack.Screen name={ROUTES.locationScreen} component={LocationScreen} />
-              <Stack.Screen name={ROUTES.chatScreen} component={ChatScreen} />
               <Stack.Screen name={ROUTES.individualExpenseScreen} component={IndividualExpenseScreen} />
               <Stack.Screen name={ROUTES.expenseScreen} component={ExpenseScreen} />
               <Stack.Screen name={ROUTES.checklistScreen} component={ChecklistScreen} />

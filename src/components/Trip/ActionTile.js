@@ -17,15 +17,19 @@ import CheckboxTile from './CheckboxTile';
 import Avatar from '../Avatar';
 
 export default function ActionTile({ style, trip, type = 'active' }) {
+  // STATE & MISC
   const [isExpanded, setIsExpanded] = useState(false);
   const animatedHeight = useRef(new Animated.Value(50)).current;
   const animatedBorderRadius = useRef(new Animated.Value(RADIUS.xl)).current;
+
   const duration = 300;
 
   const isActive = type === 'active';
   const isUpcoming = type === 'upcoming';
   const isRecap = type === 'recap';
   const height = isActive ? 150 : isUpcoming ? 180 : 120;
+
+  const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
   useEffect(() => {
     if (isExpanded) {
@@ -186,8 +190,6 @@ export default function ActionTile({ style, trip, type = 'active' }) {
       )}
     </View>
   );
-
-  const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
   return (
     <AnimatedPressable

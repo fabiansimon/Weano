@@ -10,8 +10,10 @@ import Body from './typography/Body';
 export default function FilterModal({
   isVisible, onRequestClose, data, selectedIndex,
 }) {
+  // STATE & MISC
   const [showModal, setShowModal] = useState(isVisible);
   const animatedBottom = useRef(new Animated.Value(900)).current;
+
   const duration = 300;
 
   useEffect(() => {

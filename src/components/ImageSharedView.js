@@ -23,7 +23,7 @@ export default function ImageSharedView({
   const facebookColor = '#4267B2';
   const whatsappColor = '#25D366';
 
-  const ShareContainer = () => (
+  const getShareContainer = () => (
     <View style={styles.shareContainer}>
       <TouchableOpacity
         activeOpacity={0.9}
@@ -69,7 +69,6 @@ export default function ImageSharedView({
   );
 
   return (
-
     <View style={[styles.container, style]}>
       <View style={{ flexDirection: 'row' }}>
         <Headline
@@ -102,7 +101,7 @@ export default function ImageSharedView({
         style={styles.image}
       />
       <View>
-        <ShareContainer />
+        {getShareContainer()}
         <Button
           text={i18n.t('Done')}
           backgroundColor={COLORS.shades[0]}

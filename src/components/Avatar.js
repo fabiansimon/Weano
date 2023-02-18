@@ -14,12 +14,16 @@ import userStore from '../stores/UserStore';
 export default function Avatar({
   style, size, data, onPress, backgroundColor, borderWidth, disabled, isSelf = false,
 }) {
+  // STORES
   const user = userStore((state) => state.user);
+
+  // STATE & MISC
+  const [showDetails, setShowDetails] = useState(false);
+
   const info = isSelf ? user : data;
 
   const hasAvatar = info?.avatarUri !== '';
 
-  const [showDetails, setShowDetails] = useState(false);
   const height = size || 55;
   const width = size || 55;
   const bg = backgroundColor || !hasAvatar ? COLORS.neutral[300] : COLORS.shades[0];

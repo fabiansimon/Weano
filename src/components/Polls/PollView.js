@@ -24,7 +24,10 @@ import userStore from '../../stores/UserStore';
 export default function PollView({
   style, data, title, subtitle, onPress, isMinimized = false, onNavigation,
 }) {
+  // MUTATIONS
   const [voteForPoll] = useMutation(VOTE_FOR_POLL);
+
+  // STORES
   const { id } = userStore((state) => state.user);
   const { polls, activeMembers } = activeTripStore((state) => state.activeTrip);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
@@ -36,10 +39,10 @@ export default function PollView({
     const oldPolls = polls;
     const updatedPolls = polls.map((poll) => {
       if (poll._id === pollId) {
-        let nOptions = poll.options;
+        const nOptions = poll.options;
         const oIndex = nOptions.findIndex((o) => o.id === optionId);
 
-        let nVotes = [...nOptions[oIndex].votes];
+        const nVotes = [...nOptions[oIndex].votes];
         const vIndex = nVotes.findIndex((v) => v === id);
 
         if (vIndex === -1) {
@@ -139,6 +142,7 @@ export default function PollView({
         )}
       </View>
       {data.options.map((option, index) => {
+        // eslint-disable-next-line no-mixed-operators
         if (isMinimized && index < 2 || !isMinimized) {
           return (
             <PollTile

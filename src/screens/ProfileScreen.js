@@ -29,12 +29,16 @@ import META_DATA from '../constants/MetaData';
 const asyncStorageDAO = new AsyncStorageDAO();
 
 export default function ProfileScreen() {
-  const scrollY = useRef(new Animated.Value(0)).current;
+  // MUTATIONS
   const [updateUser, { error }] = useMutation(UPDATE_USER);
+
+  // STORE
   const user = userStore((state) => state.user);
   const updateUserState = userStore((state) => state.updateUserData);
-  const [webVisible, setWebVisible] = useState(false);
 
+  // STATE & MISC
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const [webVisible, setWebVisible] = useState(false);
   const addImageRef = useRef();
 
   const navigation = useNavigation();
@@ -206,7 +210,7 @@ export default function ProfileScreen() {
     </TouchableOpacity>
   );
 
-  const Header = () => (
+  const getHeader = () => (
     <>
       <Avatar
         onPress={() => addImageRef.current?.show()}
@@ -236,7 +240,7 @@ export default function ProfileScreen() {
     </>
   );
 
-  const StatsContainer = () => (
+  const getStatsContainer = () => (
     <View style={styles.statContainer}>
       {statData.map((stat) => (
         <View style={styles.stat}>
@@ -264,8 +268,8 @@ export default function ProfileScreen() {
         info={INFORMATION.dateScreen}
       >
         <View style={styles.innerContainer}>
-          <Header />
-          <StatsContainer />
+          {getHeader()}
+          {getStatsContainer()}
           {profileLinks.map((link, index) => <ListTile item={link} index={index} />)}
 
         </View>

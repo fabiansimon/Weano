@@ -1,6 +1,5 @@
-import { View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import React, { useState } from 'react';
-import TripListContainer from './TripListContainer';
 import Headline from '../typography/Headline';
 import i18n from '../../utils/i18n';
 import Divider from '../Divider';
@@ -8,15 +7,18 @@ import Switch from '../Switch';
 import CheckboxTile from './CheckboxTile';
 import activeTripStore from '../../stores/ActiveTripStore';
 import Body from '../typography/Body';
-import COLORS, { PADDING } from '../../constants/Theme';
+import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 
 export default function ChecklistContainer({
   onPress, onLayout, sender,
 }) {
+  // STORES
   const { mutualTasks, privateTasks } = activeTripStore((state) => state.activeTrip);
+
+  // STATE & MISC
   const [isPrivate, setIsPrivate] = useState(false);
 
-  const ChecklistItem = ({ item }) => (
+  const getChecklistItem = (item) => (
     <View
       onLayout={onLayout}
       style={{
@@ -33,8 +35,8 @@ export default function ChecklistContainer({
   );
 
   return (
-    <TripListContainer
-      style={{ paddingBottom: 14 }}
+    <Pressable
+      style={styles.container}
       onPress={onPress}
     >
       <View style={{
@@ -52,7 +54,7 @@ export default function ChecklistContainer({
       </View>
       <Divider top={12} />
       {isPrivate ? privateTasks?.length > 0
-        ? privateTasks?.map((item) => <ChecklistItem item={item} />)
+        ? privateTasks?.map((item) => getChecklistItem(item))
         : (
           <Body
             color={COLORS.neutral[300]}
@@ -61,7 +63,7 @@ export default function ChecklistContainer({
             style={{ alignSelf: 'center' }}
           />
         ) : mutualTasks?.length > 0
-        ? mutualTasks?.map((item) => <ChecklistItem item={item} />)
+        ? mutualTasks?.map((item) => getChecklistItem(item))
         : (
           <Body
             color={COLORS.neutral[300]}
@@ -70,6 +72,17 @@ export default function ChecklistContainer({
             style={{ alignSelf: 'center' }}
           />
         )}
-    </TripListContainer>
+    </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    borderRadius: RADIUS.m,
+    backgroundColor: COLORS.shades[0],
+    borderColor: COLORS.neutral[100],
+    borderWidth: 1,
+    paddingVertical: 15,
+    paddingBottom: 14,
+  },
+});

@@ -26,8 +26,13 @@ import LoadingModal from './LoadingModal';
 export default function ImageModal({
   style, image, isVisible, onRetake, onRequestClose, tripId, isPreselected = false,
 }) {
+  // MUTATIONS
   const [uploadTripImage, { error }] = useMutation(UPLOAD_TRIP_IMAGE);
+
+  // STORES
   const user = userStore((state) => state.user);
+
+  // STATE & MISC
   const navigation = useNavigation();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');

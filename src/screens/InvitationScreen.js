@@ -24,22 +24,28 @@ import JOIN_TRIP from '../mutations/joinTrip';
 import userStore from '../stores/UserStore';
 
 export default function InvitationScreen({ route }) {
+  // PARAMS
   const { tripId } = route.params;
-  const navigation = useNavigation();
 
-  const { authToken } = userStore((state) => state.user);
-
-  const [joinTrip, { jError }] = useMutation(JOIN_TRIP);
+  // QUERIES
   const { loading, error, data } = useQuery(GET_INVITATION_TRIP_DATA, {
     variables: {
       tripId,
     },
   });
 
+  // MUTAIONS
+  const [joinTrip, { jError }] = useMutation(JOIN_TRIP);
+
+  // STORES
+  const { authToken } = userStore((state) => state.user);
+
+  // STATE & MISC
   const [tripData, setTripData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-
   const pageRef = useRef();
+
+  const navigation = useNavigation();
 
   const isAuth = authToken !== '';
 
@@ -63,7 +69,6 @@ export default function InvitationScreen({ route }) {
       pageRef.current?.setPage(1);
       return;
     }
-
     handleJoinTrip();
   };
 
@@ -105,7 +110,7 @@ export default function InvitationScreen({ route }) {
     );
   };
 
-  const TripInviteContainer = () => (
+  const getTripInviteContainer = () => (
     <View style={styles.tripInvite}>
       <Headline
         type={2}
@@ -193,7 +198,7 @@ export default function InvitationScreen({ route }) {
                       style={{ marginTop: 4 }}
                       color={COLORS.neutral[300]}
                     />
-                    <TripInviteContainer />
+                    {getTripInviteContainer()}
                   </View>
                   <View style={{ width: '100%', height: 100 }}>
                     <Button
@@ -233,17 +238,5 @@ const styles = StyleSheet.create({
     borderColor: COLORS.neutral[100],
     borderWidth: 0.5,
     padding: 15,
-  },
-  infoButton: {
-    borderColor: COLORS.neutral[300],
-    borderWidth: 1,
-    height: 40,
-    paddingHorizontal: 12,
-  },
-  infoTile: {
-    height: 40,
-    borderWidth: 0,
-    backgroundColor: COLORS.neutral[50],
-    paddingHorizontal: 12,
   },
 });

@@ -19,10 +19,14 @@ import FilterModal from '../FilterModal';
 import activeTripStore from '../../stores/ActiveTripStore';
 
 export default function CalendarAvailabilityContainer({ style, onPress }) {
+  // STORES
   const { activeMembers } = activeTripStore((state) => state.activeTrip);
+
+  // STATE & MISC
   const [monthVisible, setMonthVisible] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(9);
   const [daysOfMonth, setdaysOfMonth] = useState([]);
+
   const CELL_HEIGHT = 60;
   const CELL_WIDTH = 50;
   const dateFormat = 'DDMMYY';
@@ -81,55 +85,6 @@ export default function CalendarAvailabilityContainer({ style, onPress }) {
     ],
   };
 
-  // const mockData = [
-  //   {
-  //     name: 'Fabian',
-  //     available_dates: [
-  //       1659347334,
-  //       1659433734,
-  //       1659610134,
-  //       1659700134,
-  //       1659790134,
-  //       1661261227,
-  //       1665416143,
-  //     ],
-  //   },
-  //   {
-  //     name: 'Didi',
-  //     available_dates: [
-  //       1659347334,
-  //       1665416143,
-  //     ],
-  //   },
-  //   {
-  //     name: 'Julia',
-  //     available_dates: [
-  //       1659347334,
-  //       1665416143,
-  //     ],
-  //   },
-  //   {
-  //     name: 'René',
-  //     available_dates: [
-  //       165934733,
-  //       1659610134,
-  //       1659700134,
-  //       1659790134,
-  //       1665416143,
-  //     ],
-  //   },
-  //   {
-  //     name: 'Clembo',
-  //     available_dates: [
-  //       1659347334,
-  //       1659433734,
-  //       1659610134,
-  //       1659790134,
-  //       1665416143,
-  //     ],
-  //   },
-  // ];
-
   useEffect(() => {
     getDaysOfMonth();
   }, [currentMonth]);
@@ -186,7 +141,7 @@ export default function CalendarAvailabilityContainer({ style, onPress }) {
     return false;
   };
 
-  const AvatarTile = ({ person }) => (
+  const getAvatarTile = (person) => (
     <View style={{
       height: CELL_HEIGHT,
       width: CELL_WIDTH,
@@ -208,7 +163,7 @@ export default function CalendarAvailabilityContainer({ style, onPress }) {
     </View>
   );
 
-  const DateHeader = () => (
+  const getDateHeader = () => (
     <View style={[styles.column, { height: CELL_HEIGHT, alignItems: 'center' }]}>
       <View style={{ width: CELL_WIDTH }} />
       {daysOfMonth && daysOfMonth.map((date) => {
@@ -229,12 +184,12 @@ export default function CalendarAvailabilityContainer({ style, onPress }) {
 
     return (
       <View style={styles.column}>
-        <AvatarTile person={person} />
+        {getAvatarTile(person)}
         {daysOfMonth && daysOfMonth.map((date) => {
           const available = isAvailable(person, date);
           return (
             <TouchableOpacity
-              onPress={onPress}
+              onPress={onPress || null}
               style={{
                 height: CELL_HEIGHT,
                 width: CELL_WIDTH,
@@ -288,7 +243,7 @@ export default function CalendarAvailabilityContainer({ style, onPress }) {
         <View
           style={{ paddingHorizontal: 8, marginTop: 10 }}
         >
-          <DateHeader />
+          {getDateHeader()}
           <Divider color={COLORS.neutral[50]} />
           {activeMembers.map((_, index) => getColumn(index))}
         </View>

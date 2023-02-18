@@ -26,14 +26,16 @@ import Body from '../../components/typography/Body';
 
 let camera;
 export default function CameraScreen({ route }) {
+  // PARAMS
   const { tripId, onNavBack, preselectedImage } = route.params;
 
+  // STATE & MISC
   const [cameraType, setCameraType] = useState(CameraType.back);
+  const [permission, requestPermission] = Camera.useCameraPermissions();
   const [flashMode, setFlashMode] = useState(FlashMode.off);
   const [capturedImage, setCapturedImage] = useState(null);
   const [capturedVideo, setCapturedVideo] = useState(null);
   const [zoom, setZoom] = useState(0);
-  const [permission, requestPermission] = Camera.useCameraPermissions();
   const [isRecording, setIsRecording] = useState(false);
   const [timer] = useState(120);
 
@@ -85,14 +87,14 @@ export default function CameraScreen({ route }) {
 
   const rotateCamera = () => { setCameraType((current) => (current === CameraType.back ? CameraType.front : CameraType.back)); };
 
-  const startCaptureVideo = async () => {
-    setIsRecording(true);
-    const options = {
-      maxDuration: 10,
-    };
-    const video = await camera.recordAsync(options);
-    setCapturedVideo(video);
-  };
+  // const startCaptureVideo = async () => {
+  //   setIsRecording(true);
+  //   const options = {
+  //     maxDuration: 10,
+  //   };
+  //   const video = await camera.recordAsync(options);
+  //   setCapturedVideo(video);
+  // };
 
   const endCaptureVideo = () => {
     setIsRecording(false);
@@ -100,7 +102,6 @@ export default function CameraScreen({ route }) {
   };
 
   if (!permission) {
-    // Camera permissions are still loading
     return <View />;
   }
 
@@ -141,7 +142,7 @@ export default function CameraScreen({ route }) {
     lastPress = time;
   };
 
-  const RoundedBackButton = () => (
+  const getRoundedBackButton = () => (
     <TouchableOpacity
       onPress={onNavBack}
       activeOpacity={0.9}
@@ -156,7 +157,7 @@ export default function CameraScreen({ route }) {
     </TouchableOpacity>
   );
 
-  const CaptureContainer = () => (
+  const getCaptureContainer = () => (
     <View style={{ position: 'absolute', width: Dimensions.get('window').width }}>
       {isRecording
         ? (
@@ -195,7 +196,8 @@ export default function CameraScreen({ route }) {
 
     </View>
   );
-  const FooterContainer = () => {
+
+  const getFooterContainer = () => {
     const AnimatableTouchableOpacity = Animatable.createAnimatableComponent(TouchableOpacity);
     return (
       <View>
@@ -231,7 +233,7 @@ export default function CameraScreen({ route }) {
           )}
           <AnimatableTouchableOpacity
             onPress={handleCapture}
-            onLongPress={startCaptureVideo}
+            // onLongPress={startCaptureVideo}
             animation="pulse"
             easing="ease-out"
             iterationCount="infinite"
@@ -314,13 +316,12 @@ export default function CameraScreen({ route }) {
               />
               <SafeAreaView style={styles.overlay} edges={['top']}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <RoundedBackButton />
-                  <CaptureContainer />
+                  {getRoundedBackButton()}
+                  {getCaptureContainer()}
                 </View>
-                <FooterContainer />
+                {getFooterContainer()}
               </SafeAreaView>
             </>
-
           </View>
         </PinchGestureHandler>
       </TouchableOpacity>
@@ -351,7 +352,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     height: 35,
     borderRadius: 100,
-    // transform: [{ skewX: '-8deg' }],
     backgroundColor: COLORS.primary[700],
     paddingHorizontal: 12,
     justifyContent: 'center',

@@ -22,17 +22,22 @@ import userManagement from '../utils/userManagement';
 import months from '../constants/Months';
 
 export default function TimelineScreen() {
-  const scrollY = useRef(new Animated.Value(0)).current;
+  // STORES
   const { id: tripId } = activeTripStore((state) => state.activeTrip);
-  const [timelineData, setTimelineData] = useState([]);
+
+  // QUERIES
   const { error, data, loading } = useQuery(GET_TIMELINE_DATA, {
     variables: {
       tripId,
     },
   });
 
-  const navigation = useNavigation();
+  // STATE & MISC
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const [timelineData, setTimelineData] = useState([]);
+
   const { height } = Dimensions.get('window');
+  const navigation = useNavigation();
 
   const setData = (d) => {
     const { expenses, images } = d;
@@ -48,7 +53,6 @@ export default function TimelineScreen() {
     const dataSet = [];
 
     for (let i = 0; i < arr.length; i += 1) {
-      // const month = moment(arr[i].start_time).format('MMYY');
       const datestamp = Utils.getDateFromTimestamp(arr[i].createdAt / 1000, 'DDMMYY');
       const setSection = getMonthString(datestamp);
 

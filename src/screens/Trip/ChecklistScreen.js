@@ -4,7 +4,7 @@ import {
 import React, {
   useEffect, useRef, useState,
 } from 'react';
-import Animated, { diff } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { useMutation } from '@apollo/client';
@@ -29,21 +29,24 @@ import UPDATE_TASK from '../../mutations/updateTask';
 import SEND_REMINDER from '../../mutations/sendReminder';
 
 export default function ChecklistScreen() {
-  const scrollY = useRef(new Animated.Value(0)).current;
-  const {
-    mutualTasks, privateTasks, id: tripId, dateRange,
-  } = activeTripStore((state) => state.activeTrip);
-
+  // MUTATIONS
   const [addTask, { error }] = useMutation(ADD_TASK);
   const [deleteTask] = useMutation(DELETE_TASK);
   const [updateTask] = useMutation(UPDATE_TASK);
   const [sendReminder] = useMutation(SEND_REMINDER);
 
+  // STORES
+  const {
+    mutualTasks, privateTasks, id: tripId, dateRange,
+  } = activeTripStore((state) => state.activeTrip);
   const { id: userId } = userStore((state) => state.user);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
-  const [filterOption, setFilterOption] = useState(0);
 
+  // STATE & MISC
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const [filterOption, setFilterOption] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
+
   const emptyString = filterOption === 0 ? i18n.t('No task added yet') : filterOption === 1 ? i18n.t('No done tasks') : i18n.t('No open tasks');
 
   useEffect(() => {
@@ -81,14 +84,14 @@ export default function ChecklistScreen() {
 
     let addString = '';
     if (difference > 0) {
-      addString = `${i18n.t('Only')} ${difference} ${i18n.t('days left')}`;
+      addString = `. ${i18n.t('Only')} ${difference} ${i18n.t('days left')}⏳`;
     }
     await sendReminder({
       variables: {
         data: {
           receivers: [assignee],
           title: i18n.t("Don't forget! 💭"),
-          description: `${i18n.t('You still have to finish your task:')} ${title}. ${addString} ⌛️`,
+          description: `${i18n.t('You still have to finish your task:')} ${title} ${addString}`,
           tripId,
           type: 'task_reminder',
         },
@@ -256,7 +259,7 @@ export default function ChecklistScreen() {
     });
   };
 
-  const HeaderChips = () => (
+  const getHeaderChips = () => (
     <View style={{ flexDirection: 'row', paddingHorizontal: PADDING.m, marginTop: 20 }}>
       {filterOption !== 2 && (
         <TouchableOpacity
@@ -334,7 +337,7 @@ export default function ChecklistScreen() {
         scrollY={scrollY}
         info={INFORMATION.dateScreen}
       >
-        <HeaderChips />
+        {getHeaderChips()}
         <ScrollView
           showsVerticalScrollIndicator={false}
           style={{ marginTop: 30 }}
@@ -428,7 +431,6 @@ export default function ChecklistScreen() {
         onRequestClose={() => setIsVisible(false)}
         onPress={(data) => handleChange(data)}
       />
-
       <FAButton
         icon="add"
         iconSize={28}

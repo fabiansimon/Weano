@@ -6,24 +6,10 @@ import {
   StyleSheet, View, Pressable, Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import months from '../constants/Months';
 import COLORS, { RADIUS } from '../constants/Theme';
 import Body from './typography/Body';
 import Headline from './typography/Headline';
-
-const monthNames = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-];
 
 const CalendarPicker = ({
   minDate,
@@ -31,6 +17,7 @@ const CalendarPicker = ({
   endDate,
   startEndDateChange,
 }) => {
+  // STATE & MISC
   const [dateList, setDateList] = useState([]);
   const currentMonthDate = useRef(new Date()).current;
   const minimumDate = useRef(minDate).current;
@@ -313,7 +300,7 @@ const CalendarPicker = ({
         <Headline
           type={4}
           style={styles.monthHeaderStyle}
-          text={`${monthNames[currentMonthDate.getMonth()]} ${currentMonthDate.getFullYear()}`}
+          text={`${months[currentMonthDate.getMonth()]} ${currentMonthDate.getFullYear()}`}
         />
         <View style={styles.arrowContainerStyle}>
           <Pressable

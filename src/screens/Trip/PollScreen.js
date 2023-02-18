@@ -18,16 +18,19 @@ import Headline from '../../components/typography/Headline';
 import DELETE_POLL from '../../mutations/deletePoll';
 
 export default function PollScreen() {
-  const scrollY = useRef(new Animated.Value(0)).current;
-  const { polls, id: tripId } = activeTripStore((state) => state.activeTrip);
-  const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
-  const { id: userId } = userStore((state) => state.user);
-  const user = userStore((state) => state.user);
-  const [isVisible, setIsVisible] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
+  // MUTATIONS
   const [addPoll, { loading, error }] = useMutation(ADD_POLL);
   const [deletePoll, { error: deleteError }] = useMutation(DELETE_POLL);
+
+  // STORES
+  const { polls, id: tripId } = activeTripStore((state) => state.activeTrip);
+  const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
+  const user = userStore((state) => state.user);
+
+  // STATE & MISC
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const [isVisible, setIsVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (error || deleteError) {
@@ -105,7 +108,7 @@ export default function PollScreen() {
 
       const newPoll = {
         createdAt: Date.now(),
-        creatorId: userId,
+        creatorId: user.id,
         title,
         options: newOptions,
         _id: id,
@@ -123,6 +126,7 @@ export default function PollScreen() {
     setIsLoading(false);
     setIsVisible(false);
   };
+
   return (
     <View style={styles.container}>
       <HybridHeader

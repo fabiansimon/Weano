@@ -9,6 +9,7 @@ import Headline from './typography/Headline';
 import FilterModal from './FilterModal';
 
 export default function FilterOption({ style, data }) {
+  // STATE & MISC
   const [isVisible, setIsVisible] = useState(false);
 
   return (

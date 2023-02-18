@@ -19,11 +19,15 @@ import userStore from '../../stores/UserStore';
 export default function ExpenseDetailModal({
   isVisible, onRequestClose, data, users, onDelete, onReminder,
 }) {
+  // STORES
   const { id: userId } = userStore((state) => state.user);
+
+  // STATE & MISC
   const [showModal, setShowModal] = useState(isVisible);
   const [members, setMembers] = useState([]);
   const [splitAmount, setSplitAmonut] = useState(null);
   const animatedScale = useRef(new Animated.Value(0)).current;
+
   const duration = 350;
 
   const isCreator = userId === data?.creatorId;
