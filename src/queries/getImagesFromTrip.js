@@ -11,6 +11,7 @@ const GET_IMAGES_FROM_TRIP = gql`
                 title
                 description
                 author {
+                    _id
                     firstName
                     lastName
                     avatarUri

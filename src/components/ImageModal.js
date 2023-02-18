@@ -259,6 +259,7 @@ export default function ImageModal({
           {!isShared && (
           <>
             <KeyboardView
+              behavior="padding"
               paddingBottom={20}
               style={styles.textinputs}
             >

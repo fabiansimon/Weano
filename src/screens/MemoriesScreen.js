@@ -1,15 +1,13 @@
 import {
-  FlatList, StyleSheet, View, TouchableOpacity, StatusBar, Image, Pressable, Dimensions, Platform,
+  FlatList, StyleSheet, View, StatusBar, Pressable, Platform, ScrollView,
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
-import Icon from 'react-native-vector-icons/AntDesign';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import EntIcon from 'react-native-vector-icons/Entypo';
-import React, { useRef, useState, useEffect } from 'react';
-import { PinchGestureHandler } from 'react-native-gesture-handler';
+import React, { useState, useEffect, useRef } from 'react';
 import Animated, {
   SensorType,
-  useAnimatedGestureHandler, useAnimatedSensor, useAnimatedStyle, useSharedValue, withSpring, withTiming,
+  useAnimatedSensor, useAnimatedStyle,
 } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import { useQuery } from '@apollo/client';
@@ -21,39 +19,37 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import Headline from '../components/typography/Headline';
 import i18n from '../utils/i18n';
-import Subtitle from '../components/typography/Subtitle';
 import ImageContainer from '../components/Trip/ImageContainer';
-import LoadingGif from '../../assets/images/loading.gif';
-import Camera3D from '../../assets/images/camera_3d.png';
 import Body from '../components/typography/Body';
 import GET_IMAGES_FROM_TRIP from '../queries/getImagesFromTrip';
 import StoryModal from '../components/StoryModal';
-import JourneyIcon from '../../assets/icons/journey_icon.svg';
 import ROUTES from '../constants/Routes';
 import Label from '../components/typography/Label';
 import Utils from '../utils';
+import BackButton from '../components/BackButton';
+import months from '../constants/Months';
+import AnimatedHeader from '../components/AnimatedHeader';
 
 export default function MemoriesScreen({ route }) {
   const { tripId } = route.params;
   const navigation = useNavigation();
 
-  const { loading, error, data } = useQuery(GET_IMAGES_FROM_TRIP, {
+  const { error, data } = useQuery(GET_IMAGES_FROM_TRIP, {
     variables: {
       tripId,
     },
   });
 
+  const scrollY = useRef(new Animated.Value(0)).current;
   const [images, setImages] = useState([]);
   const [freeImages, setFreeImage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [dateSelection, setDateSelection] = useState(null);
+  const [dateIndex, setDateIndex] = useState(0);
   const [storyVisible, setStoryVisible] = useState(false);
   const [initalIndex, setInitalIndex] = useState(0);
   const [downloadIndex, setDownloadIndex] = useState(null);
 
-  const gridRef = useRef();
-
-  const scale = useSharedValue(1);
-  const headerOpacity = useSharedValue(1);
   const animatedSensor = useAnimatedSensor(SensorType.ROTATION, {
     interval: 100,
   });
@@ -65,8 +61,6 @@ export default function MemoriesScreen({ route }) {
       transform: [{ translateX: pitchValue }, { translateY: yawValue }],
     };
   });
-
-  const { width } = Dimensions.get('window');
 
   useEffect(() => {
     if (data) {
@@ -85,7 +79,52 @@ export default function MemoriesScreen({ route }) {
     }
   }, [data, error]);
 
+  useEffect(() => {
+    if (images) {
+      setDateSelection([{
+        title: i18n.t('All images'),
+        images,
+      }, ...sortArr(images)]);
+    }
+  }, [images]);
+  const sortArr = (arr) => {
+    const dataSet = [];
+
+    for (let i = 0; i < arr.length; i += 1) {
+      const datestamp = Utils.getDateFromTimestamp(arr[i].createdAt / 1000, 'DDMMYY');
+      const setSection = getMonthString(datestamp);
+
+      const index = dataSet.findIndex((d) => d.title === setSection);
+
+      if (index < 0) {
+        dataSet.push({
+          title: setSection,
+          images: [arr[i]],
+        });
+      } else {
+        dataSet[index].images.push(arr[i]);
+      }
+    }
+    return dataSet;
+  };
+
+  const getMonthString = (month) => {
+    const day = month.slice(0, 2);
+    let mm;
+    if (month[2] === '0') {
+      mm = month.slice(3, 4);
+    } else {
+      mm = month.slice(2, 4);
+    }
+
+    return `${day} ${months[mm - 1]} 20${month.slice(3, 5)}`;
+  };
+
   const handleMenuOption = async ({ event }) => {
+    if (event === 'timeline') {
+      navigation.navigate(ROUTES.timelineScreen, { tripId });
+    }
+
     if (event === 'take') {
       navigation.navigate(ROUTES.cameraScreen, { tripId, onNavBack: () => navigation.goBack() });
     }
@@ -127,205 +166,126 @@ export default function MemoriesScreen({ route }) {
     }
   };
 
-  const numColumns = Math.round(Math.sqrt(images.length));
+  const getDateSelection = () => (
+    <ScrollView
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={{ paddingHorizontal: PADDING.m }}
+      style={{ marginHorizontal: -PADDING.m }}
+      horizontal
+    >
+      {dateSelection?.map((item, index) => {
+        const isSelected = dateIndex === index;
+        const backgroundColor = isSelected ? COLORS.shades[0] : 'transparent';
+        const color = isSelected ? COLORS.shades[100] : COLORS.neutral[50];
+        return (
+          <Pressable
+            onPress={() => setDateIndex(index)}
+            style={{
+              flex: null,
+              borderRadius: 100,
+              backgroundColor,
+              paddingHorizontal: 13,
+              paddingVertical: 8,
+              marginRight: 5,
+            }}
+          >
+            <Body
+              type={1}
+              color={color}
+              text={item.title}
+            />
+          </Pressable>
+        );
+      })}
+    </ScrollView>
+  );
 
-  const pinchHandler = useAnimatedGestureHandler({
-    onActive: (event) => {
-      scale.value = event.scale;
-      headerOpacity.value = withSpring(0);
-    },
-    onEnd: () => {
-      scale.value = withTiming(1);
-      headerOpacity.value = withSpring(1);
-    },
-  });
-
-  const gAnimated = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-  const hAnimated = useAnimatedStyle(() => ({
-    opacity: headerOpacity.value,
-  }));
-
-  const Header = () => {
+  const getHeader = () => {
     const shadow = {
       shadowOpacity: 1,
       shadowColor: COLORS.shades[100],
       shadowRadius: 10,
     };
     return (
-      <Animated.View style={[styles.header, hAnimated]}>
-        <TouchableOpacity
+      <SafeAreaView style={styles.header}>
+        <BackButton
+          iconColor={COLORS.shades[0]}
+          isClear
           onPress={() => downloadIndex === null && navigation.goBack()}
-          activeOpacity={0.9}
-          style={styles.roundButton}
-        >
-          <Icon
-            name="arrowleft"
-            color={COLORS.neutral[300]}
-            size={22}
-          />
-        </TouchableOpacity>
-        {!isLoading && (
-        <View style={{ flexDirection: 'row' }}>
+        />
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
           <Headline
-            type={1}
-            style={[{ fontWeight: '500', marginTop: -2 }, shadow]}
+            type={2}
+            style={shadow}
             color={COLORS.shades[0]}
-            text={images && images?.length}
+            text={i18n.t('Moments')}
           />
-          <View style={{ marginLeft: 12 }}>
-            <Headline
-              type={4}
-              style={shadow}
-              color={COLORS.shades[0]}
-              text={i18n.t('Moments captured')}
-            />
-            <Subtitle
-              type={2}
-              color={COLORS.shades[0]}
-              style={[{ opacity: 0.5 }, shadow]}
-              text="3 POV’s • 36 Photos • 7 Videos"
-            />
-          </View>
+          {images.length > 0 && (
+            <View style={{ flexDirection: 'row', top: -10 }}>
+              {!isLoading && (
+              <MenuView
+                style={styles.addIcon}
+                onPressAction={({ nativeEvent }) => handleMenuOption(nativeEvent)}
+                actions={[
+                  {
+                    id: 'timeline',
+                    title: i18n.t('See timeline'),
+
+                  },
+                  {
+                    id: 'share',
+                    title: i18n.t('Share Collage'),
+                    image: Platform.select({
+                      ios: 'square.and.arrow.up',
+                    }),
+                  },
+                  {
+                    id: 'download',
+                    title: i18n.t('Download Album'),
+                    image: Platform.select({
+                      ios: 'folder',
+                    }),
+                  },
+                ]}
+              >
+                <View
+                  style={styles.roundButton}
+                >
+                  <FeatherIcon
+                    name="more-vertical"
+                    color={COLORS.shades[0]}
+                    size={20}
+                  />
+                </View>
+              </MenuView>
+              )}
+              <Pressable
+                onPress={() => {
+                  setStoryVisible(true);
+                }}
+                style={[styles.roundButton, { marginLeft: 5 }]}
+              >
+                <EntIcon
+                  name="controller-play"
+                  style={{ marginRight: -2 }}
+                  color={COLORS.shades[0]}
+                  size={22}
+                />
+              </Pressable>
+            </View>
+          )}
+        </View>
+        {images.length > 0 && (
+        <View style={{ marginTop: 10 }}>
+          {getDateSelection()}
         </View>
         )}
-        {!isLoading && (
-        <MenuView
-          style={styles.addIcon}
-          onPressAction={({ nativeEvent }) => handleMenuOption(nativeEvent)}
-          actions={[
-            {
-              id: 'share',
-              title: i18n.t('Share Collage'),
-              image: Platform.select({
-                ios: 'square.and.arrow.up',
-              }),
-            },
-            {
-              id: 'download',
-              title: i18n.t('Download Album'),
-              image: Platform.select({
-                ios: 'square.and.arrow.down',
-              }),
-            },
-          ]}
-        >
-          <View
-            style={styles.roundButton}
-          >
-            <FeatherIcon
-              name="more-vertical"
-              color={COLORS.neutral[300]}
-              size={18}
-            />
-          </View>
-
-        </MenuView>
-        )}
-      </Animated.View>
+      </SafeAreaView>
     );
   };
-  const Buttons = () => (
-    <Animated.View style={[styles.buttonRow, hAnimated]}>
-      {freeImages > 0 ? (
-        <MenuView
-          style={styles.addIcon}
-          onPressAction={({ nativeEvent }) => handleMenuOption(nativeEvent)}
-          actions={[
-            {
-              id: 'take',
-              title: i18n.t('Take a picture'),
-              image: Platform.select({
-                ios: 'camera',
-              }),
-            },
-            {
-              id: 'select',
-              title: i18n.t('Select from Cameraroll'),
-              image: Platform.select({
-                ios: 'photo',
-              }),
-            },
-          ]}
-        >
-          <Animatable.View
-            animation="pulse"
-            iterationCount="infinite"
-            activeOpacity={0.5}
-            style={[styles.fab, { backgroundColor: COLORS.primary[700] }]}
-          >
-            <View
-              style={styles.imagesLeftContainer}
-            >
-              <Label
-                type={1}
-                color={COLORS.shades[0]}
-                style={{ marginRight: -1 }}
-                text={freeImages}
-              />
-            </View>
-            <EntIcon
-              name="camera"
-              size={22}
-              color={COLORS.shades[0]}
-            />
-          </Animatable.View>
-        </MenuView>
-      )
-        : (
-          <View
-            animation="pulse"
-            iterationCount="infinite"
-            activeOpacity={0.5}
-            style={[styles.fab, { backgroundColor: Utils.addAlpha(COLORS.primary[700], 0.3) }]}
-          >
-            <View
-              style={[styles.imagesLeftContainer, { backgroundColor: Utils.addAlpha(COLORS.error[900], 0.3) }]}
-            >
-              <Label
-                type={1}
-                color={COLORS.shades[0]}
-                style={{ marginRight: -1 }}
-                text={freeImages}
-              />
-            </View>
-            <EntIcon
-              name="camera"
-              size={22}
-              color={COLORS.shades[0]}
-            />
-          </View>
-        )}
-
-      {images.length > 0 && (
-      <View style={{ flexDirection: 'row' }}>
-        <Pressable
-          onPress={() => navigation.navigate(ROUTES.timelineScreen, { tripId })}
-          activeOpacity={0.5}
-          style={styles.fabSecondary}
-        >
-          <JourneyIcon height={28} />
-        </Pressable>
-        <Pressable
-          onPress={() => setStoryVisible(true)}
-          activeOpacity={0.5}
-          style={styles.fab}
-        >
-          <EntIcon
-            name="controller-play"
-            size={30}
-            style={{ marginRight: -3 }}
-            color={COLORS.shades[100]}
-          />
-        </Pressable>
-      </View>
-      )}
-    </Animated.View>
-  );
 
   const getImageTile = (image, index) => {
-    const isLeft = index === 0 || index % numColumns === 0;
+    const isLeft = index % 1;
 
     return (
       <ImageContainer
@@ -343,24 +303,6 @@ export default function MemoriesScreen({ route }) {
       />
     );
   };
-
-  const EmptyDataSet = () => (
-    <View style={{ width: width * 0.9, alignItems: 'center' }}>
-      <Image
-        source={Camera3D}
-        style={{ height: 140 }}
-        resizeMode="contain"
-      />
-      <Body
-        style={{ alignSelf: 'center', marginVertical: 10 }}
-        type={1}
-        text={i18n.t('No Memories added yet 😢')}
-        color={COLORS.neutral[300]}
-      />
-    </View>
-  );
-
-  const AnimatedFlatlist = Animated.createAnimatedComponent(FlatList);
 
   const getDownloadContainer = () => {
     const percentage = (downloadIndex / images.length) * 100;
@@ -389,70 +331,154 @@ export default function MemoriesScreen({ route }) {
     );
   };
 
-  return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
-      {images.length > 0 ? (
-        <>
-          <PinchGestureHandler onGestureEvent={pinchHandler}>
-            <AnimatedFlatlist
-              ref={gridRef}
-              style={gAnimated}
-              onScrollBeginDrag={() => headerOpacity.value = withSpring(0)}
-              onScrollEndDrag={() => headerOpacity.value = withSpring(1)}
-              data={images || null}
-              numColumns={numColumns}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ padding: 60 }}
-              showsHorizontalScrollIndicator={false}
-              renderItem={({ item, index }) => getImageTile(item, index)}
+  const getFAB = () => (
+    freeImages > 0 ? (
+      <MenuView
+        style={styles.fabContainer}
+        onPressAction={({ nativeEvent }) => handleMenuOption(nativeEvent)}
+        actions={[
+          {
+            id: 'take',
+            title: i18n.t('Take a picture'),
+            image: Platform.select({
+              ios: 'camera',
+            }),
+          },
+          {
+            id: 'select',
+            title: i18n.t('Select from Cameraroll'),
+            image: Platform.select({
+              ios: 'photo',
+            }),
+          },
+        ]}
+      >
+        <Animatable.View
+          animation="pulse"
+          iterationCount="infinite"
+          style={[styles.fab, { backgroundColor: COLORS.primary[700] }]}
+        >
+          <View
+            style={styles.imagesLeftContainer}
+          >
+            <Label
+              type={1}
+              color={COLORS.shades[0]}
+              style={{ marginRight: -1 }}
+              text={freeImages}
             />
-          </PinchGestureHandler>
-          {(loading || error) && (
-          <View style={styles.loading}>
-            <View style={{ justifyContent: 'center', alignItems: 'center', top: '40%' }}>
-              <Image
-                source={LoadingGif}
-                resizeMode="center"
-                style={styles.gif}
-              />
-              <Headline
-                type={4}
-                color={COLORS.shades[0]}
-                text={i18n.t('Fetching your memories')}
-              />
-              <Body
-                style={{ marginTop: 4 }}
-                type={2}
-                color={COLORS.neutral[500]}
-                text={i18n.t('Just give us a second...')}
-              />
-            </View>
           </View>
+          <EntIcon
+            name="camera"
+            size={22}
+            color={COLORS.shades[0]}
+          />
+        </Animatable.View>
+      </MenuView>
+    )
+      : (
+        <View
+          animation="pulse"
+          iterationCount="infinite"
+          activeOpacity={0.5}
+          style={[styles.fab, styles.fabContainer, { backgroundColor: Utils.addAlpha(COLORS.primary[700], 0.3) }]}
+        >
+          <View
+            style={[styles.imagesLeftContainer, { backgroundColor: Utils.addAlpha(COLORS.error[900], 0.3) }]}
+          >
+            <Label
+              type={1}
+              color={COLORS.shades[0]}
+              style={{ marginRight: -1 }}
+              text={freeImages}
+            />
+          </View>
+          <EntIcon
+            name="camera"
+            size={22}
+            color={COLORS.shades[0]}
+          />
+        </View>
+      )
+
+  );
+
+  return (
+    <>
+      <StatusBar barStyle="light-content" />
+
+      <View style={styles.container}>
+        {images.length > 0 && (
+        <AnimatedHeader
+          scrollY={scrollY}
+          maxHeight={110}
+          minHeight={10}
+          style={{ backgroundColor: COLORS.neutral[900], shadowOpacity: 0.85 }}
+        >
+          <SafeAreaView style={{
+            width: '100%',
+            paddingTop: 10,
+            paddingBottom: -24,
+            paddingHorizontal: PADDING.m,
+          }}
+          >
+            {getDateSelection()}
+          </SafeAreaView>
+        </AnimatedHeader>
+        )}
+        <Animated.ScrollView
+          showsVerticalScrollIndicator={false}
+          scrollEventThrottle={16}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            { useNativeDriver: true },
           )}
-        </>
-      ) : <EmptyDataSet />}
-      <Buttons />
-      <Header />
-      {downloadIndex !== null && getDownloadContainer()}
-      <StoryModal
-        initalIndex={initalIndex}
-        data={images}
-        onRequestClose={() => {
-          setStoryVisible(false);
-        }}
-        isVisible={storyVisible}
-      />
-    </View>
+        >
+          {getHeader()}
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            ListEmptyComponent={() => (
+              <View style={{ justifyContent: 'space-between', alignItems: 'center', marginTop: '50%' }}>
+                <Headline
+                  type={4}
+                  text={i18n.t('No memories captured yet')}
+                  color={COLORS.shades[0]}
+                />
+                <Body
+                  type={1}
+                  text={i18n.t("You will get a notification as soon as it's time to snap some memories 📸 ")}
+                  style={{ maxWidth: '80%', textAlign: 'center' }}
+                  color={COLORS.neutral[500]}
+                />
+              </View>
+            )}
+            data={dateSelection && dateSelection[dateIndex]?.images}
+            style={{ marginTop: -10, paddingBottom: 100 }}
+            renderItem={({ item }) => getImageTile(item)}
+            numColumns={2}
+          />
+        </Animated.ScrollView>
+
+        {downloadIndex !== null && getDownloadContainer()}
+        {getFAB()}
+        <StoryModal
+          initalIndex={initalIndex}
+          data={images}
+          onRequestClose={() => {
+            setStoryVisible(false);
+          }}
+          isVisible={storyVisible}
+        />
+      </View>
+
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.shades[100],
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: COLORS.neutral[900],
   },
   fab: {
     borderRadius: RADIUS.xl,
@@ -480,16 +506,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   header: {
-    top: 50,
-    position: 'absolute',
-    width: '98%',
-    alignSelf: 'center',
-    height: 55,
-    marginHorizontal: PADDING.s,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: PADDING.s,
+    width: '100%',
+    paddingTop: 10,
+    paddingHorizontal: PADDING.m,
   },
   roundButton: {
     borderRadius: RADIUS.xl,
@@ -514,6 +533,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
+    marginLeft: 30,
     position: 'absolute',
     bottom: 50,
   },
@@ -533,6 +553,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingHorizontal: PADDING.m,
     width: '100%',
+    zIndex: 10,
     backgroundColor: COLORS.primary[700],
     position: 'absolute',
     bottom: 0,
@@ -548,5 +569,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.shades[0],
     borderRadius: RADIUS.xl,
     height: 5,
+  },
+  fabContainer: {
+    height: 50,
+    width: 50,
+    bottom: 40,
+    right: PADDING.xl,
+    position: 'absolute',
   },
 });

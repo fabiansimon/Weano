@@ -1,7 +1,10 @@
 import {
+  Dimensions,
   Platform,
+  Pressable,
   StyleSheet, TouchableOpacity,
 } from 'react-native';
+import FeatherIcon from 'react-native-vector-icons/Feather';
 import Toast from 'react-native-toast-message';
 import React from 'react';
 import FastImage from 'react-native-fast-image';
@@ -9,14 +12,18 @@ import Animated from 'react-native-reanimated';
 import { MenuView } from '@react-native-menu/menu';
 import RNFetchBlob from 'rn-fetch-blob';
 import { useMutation } from '@apollo/client';
-import { RADIUS } from '../../constants/Theme';
+import COLORS, { RADIUS } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Utils from '../../utils';
 import DELETE_IMAGE from '../../mutations/deleteImage';
+import userStore from '../../stores/UserStore';
 
 export default function ImageContainer({
   style, image, onPress, tripId, onDelete,
 }) {
+  const {
+    id,
+  } = userStore((state) => state.user);
   const [deleteImage] = useMutation(DELETE_IMAGE);
   if (!image) {
     return;
@@ -76,55 +83,80 @@ export default function ImageContainer({
     }
   };
 
+  const actions = id === image.author._id ? [
+    {
+      id: 'download',
+      title: i18n.t('Download picture'),
+      image: Platform.select({
+        ios: 'square.and.arrow.down',
+      }),
+    },
+    {
+      id: 'delete',
+      title: i18n.t('Delete Image'),
+      attributes: {
+        destructive: true,
+      },
+      image: Platform.select({
+        ios: 'trash',
+      }),
+    },
+  ] : [
+    {
+      id: 'download',
+      title: i18n.t('Download picture'),
+      image: Platform.select({
+        ios: 'square.and.arrow.down',
+      }),
+    },
+  ];
+
   const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
   return (
-    <MenuView
-      style={styles.addIcon}
-      shouldOpenOnLongPress
-      onPressAction={({ nativeEvent }) => handleOption(nativeEvent)}
-      actions={[
-        {
-          id: 'download',
-          title: i18n.t('Download picture'),
-          image: Platform.select({
-            ios: 'square.and.arrow.down',
-          }),
-        },
-        {
-          id: 'delete',
-          title: i18n.t('Delete image'),
-          attributes: {
-            destructive: true,
-          },
-          image: Platform.select({
-            ios: 'trash',
-          }),
-        },
-      ]}
+    <AnimatedTouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.5}
+      style={[styles.container, style]}
     >
-      <AnimatedTouchableOpacity
-        onPress={onPress}
-        activeOpacity={0.5}
-        style={[styles.container, style]}
+      <MenuView
+        style={styles.optionIcon}
+        onPressAction={({ nativeEvent }) => handleOption(nativeEvent)}
+        actions={actions}
       >
-        <FastImage
-          source={{ uri }}
-          resizeMode="cover"
-          style={styles.image}
-        />
-      </AnimatedTouchableOpacity>
-    </MenuView>
+        <Pressable>
+          <FeatherIcon
+            name="more-vertical"
+            color={COLORS.shades[0]}
+            size={20}
+          />
+        </Pressable>
+      </MenuView>
+      <FastImage
+        source={{ uri }}
+        resizeMode="cover"
+        style={styles.image}
+      />
+    </AnimatedTouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    height: 300,
+    width: Dimensions.get('window').width * 0.46,
     aspectRatio: 9 / 16,
     borderRadius: RADIUS.s,
     overflow: 'hidden',
   },
   image: {
     flex: 1,
+  },
+  optionIcon: {
+    width: 30,
+    height: 30,
+    backgroundColor: 'transparent',
+    position: 'absolute',
+    bottom: 10,
+    zIndex: 100,
+    right: 0,
   },
 });

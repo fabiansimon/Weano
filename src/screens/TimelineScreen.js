@@ -19,6 +19,7 @@ import GET_TIMELINE_DATA from '../queries/getTimelineData';
 import ROUTES from '../constants/Routes';
 import TimelineSkeleton from '../components/Trip/TimelineSkeleton';
 import userManagement from '../utils/userManagement';
+import months from '../constants/Months';
 
 export default function TimelineScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -32,21 +33,6 @@ export default function TimelineScreen() {
 
   const navigation = useNavigation();
   const { height } = Dimensions.get('window');
-
-  const months = [
-    i18n.t('Januray'),
-    i18n.t('February'),
-    i18n.t('March'),
-    i18n.t('April'),
-    i18n.t('May'),
-    i18n.t('June'),
-    i18n.t('July'),
-    i18n.t('August'),
-    i18n.t('September'),
-    i18n.t('October'),
-    i18n.t('November'),
-    i18n.t('December'),
-  ];
 
   const setData = (d) => {
     const { expenses, images } = d;
