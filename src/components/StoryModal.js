@@ -160,6 +160,10 @@ export default function StoryModal({
   );
 
   const getImagePreview = (item) => {
+    if (!item) {
+      return;
+    }
+
     const {
       uri, title, description, author, createdAt,
     } = item;

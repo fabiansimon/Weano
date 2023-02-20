@@ -30,12 +30,7 @@ const GET_TIMELINE_DATA = gql`
             }
             mutualTasks {
                 assignee
-                creatorId
-                title
-                isDone
-            }
-                privateTasks {
-                assignee
+                createdAt
                 creatorId
                 title
                 isDone

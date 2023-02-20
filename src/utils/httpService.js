@@ -2,7 +2,7 @@ import 'react-native-get-random-values';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { v4 as uuidv4 } from 'uuid';
 import {
-  ACCESS_KEY_ID, SECRET_ACCESS_KEY, S3_BUCKET, MAPBOX_TOKEN,
+  ACCESS_KEY_ID, SECRET_ACCESS_KEY, S3_BUCKET, MAPBOX_TOKEN, APP_TOKEN,
   // eslint-disable-next-line import/no-unresolved
 } from '@env';
 import { S3 } from 'aws-sdk';
@@ -16,6 +16,7 @@ async function sendInvitations(invitees, tripId) {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'App-Token': APP_TOKEN,
       },
     })
       .then((res) => res.json())
@@ -34,6 +35,7 @@ async function getVerificationCode(phoneNumber) {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'App-Token': APP_TOKEN,
       },
     })
       .then((res) => res.json())
@@ -52,6 +54,7 @@ async function checkVerificationCode(phoneNumber, code) {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'App-Token': APP_TOKEN,
       },
     })
       .then((res) => res.json())

@@ -84,6 +84,8 @@
 		255B5035E24571E69682A6AD /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9AD4085254070A587C11756 /* ExpoModulesProvider.swift */; };
 		5096C07D7789B4DE86704F30 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E6425841D5FA9553DF8DA8 /* ExpoModulesProvider.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		EC8505EAC91B37927C6285E2 /* Pods_travelio_project_travelio_projectTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BC2B4974E45B9F61CF469C5A /* Pods_travelio_project_travelio_projectTests.framework */; };
+		EF0C8051315961131D5DFA14 /* Pods_travelio_project.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E17D3530B492B8683EA111CA /* Pods_travelio_project.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -100,6 +102,7 @@
 		00E356EE1AD99517003FC87E /* travelio_projectTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = travelio_projectTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* travelio_projectTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = travelio_projectTests.m; sourceTree = "<group>"; };
+		09D4ECD8E94B25DA64154B45 /* Pods-travelio_project-travelio_projectTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-travelio_project-travelio_projectTests.debug.xcconfig"; path = "Target Support Files/Pods-travelio_project-travelio_projectTests/Pods-travelio_project-travelio_projectTests.debug.xcconfig"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* travelio_project.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = travelio_project.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = travelio_project/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = travelio_project/AppDelegate.mm; sourceTree = "<group>"; };
@@ -143,8 +146,13 @@
 		1FAC4081285267B90089BDEE /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = FontAwesome5_Brands.ttf; path = "../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf"; sourceTree = "<group>"; };
 		22CC229C2972EB60006EEF1C /* travelio_project.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = travelio_project.entitlements; path = travelio_project/travelio_project.entitlements; sourceTree = "<group>"; };
 		40E6425841D5FA9553DF8DA8 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-travelio_project-travelio_projectTests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		6017055FF5B91F772FB8C9B5 /* Pods-travelio_project-travelio_projectTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-travelio_project-travelio_projectTests.release.xcconfig"; path = "Target Support Files/Pods-travelio_project-travelio_projectTests/Pods-travelio_project-travelio_projectTests.release.xcconfig"; sourceTree = "<group>"; };
+		7E09D84D737946314489262D /* Pods-travelio_project.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-travelio_project.release.xcconfig"; path = "Target Support Files/Pods-travelio_project/Pods-travelio_project.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = travelio_project/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		A064B9E7CA24AA8ADF83B6F2 /* Pods-travelio_project.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-travelio_project.debug.xcconfig"; path = "Target Support Files/Pods-travelio_project/Pods-travelio_project.debug.xcconfig"; sourceTree = "<group>"; };
 		A9AD4085254070A587C11756 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-travelio_project/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		BC2B4974E45B9F61CF469C5A /* Pods_travelio_project_travelio_projectTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_travelio_project_travelio_projectTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E17D3530B492B8683EA111CA /* Pods_travelio_project.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_travelio_project.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -153,6 +161,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EC8505EAC91B37927C6285E2 /* Pods_travelio_project_travelio_projectTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -160,6 +169,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EF0C8051315961131D5DFA14 /* Pods_travelio_project.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -243,6 +253,8 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
+				E17D3530B492B8683EA111CA /* Pods_travelio_project.framework */,
+				BC2B4974E45B9F61CF469C5A /* Pods_travelio_project_travelio_projectTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -308,6 +320,10 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
+				A064B9E7CA24AA8ADF83B6F2 /* Pods-travelio_project.debug.xcconfig */,
+				7E09D84D737946314489262D /* Pods-travelio_project.release.xcconfig */,
+				09D4ECD8E94B25DA64154B45 /* Pods-travelio_project-travelio_projectTests.debug.xcconfig */,
+				6017055FF5B91F772FB8C9B5 /* Pods-travelio_project-travelio_projectTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -319,9 +335,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "travelio_projectTests" */;
 			buildPhases = (
+				A316EA41602A87BD85561984 /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
+				326DE7D854D0A88EB6B7FCD4 /* [CP] Embed Pods Frameworks */,
+				E16680B713012EF45AC63A66 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -337,11 +356,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "travelio_project" */;
 			buildPhases = (
+				9556E448686C9201AE3EB331 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
+				2E0154679D0B8E041E1EBEF7 /* [CP] Embed Pods Frameworks */,
+				997514E8FCDB185EC7D0175C /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -492,6 +514,118 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nexport NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
+		2E0154679D0B8E041E1EBEF7 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-travelio_project/Pods-travelio_project-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-travelio_project/Pods-travelio_project-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-travelio_project/Pods-travelio_project-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		326DE7D854D0A88EB6B7FCD4 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-travelio_project-travelio_projectTests/Pods-travelio_project-travelio_projectTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-travelio_project-travelio_projectTests/Pods-travelio_project-travelio_projectTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-travelio_project-travelio_projectTests/Pods-travelio_project-travelio_projectTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		9556E448686C9201AE3EB331 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-travelio_project-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		997514E8FCDB185EC7D0175C /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-travelio_project/Pods-travelio_project-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-travelio_project/Pods-travelio_project-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-travelio_project/Pods-travelio_project-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		A316EA41602A87BD85561984 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-travelio_project-travelio_projectTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E16680B713012EF45AC63A66 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-travelio_project-travelio_projectTests/Pods-travelio_project-travelio_projectTests-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-travelio_project-travelio_projectTests/Pods-travelio_project-travelio_projectTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-travelio_project-travelio_projectTests/Pods-travelio_project-travelio_projectTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -546,6 +680,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 09D4ECD8E94B25DA64154B45 /* Pods-travelio_project-travelio_projectTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = STU7JVLU85;
@@ -575,6 +710,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6017055FF5B91F772FB8C9B5 /* Pods-travelio_project-travelio_projectTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
@@ -601,6 +737,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = A064B9E7CA24AA8ADF83B6F2 /* Pods-travelio_project.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -637,6 +774,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7E09D84D737946314489262D /* Pods-travelio_project.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;

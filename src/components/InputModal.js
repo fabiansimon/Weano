@@ -209,7 +209,11 @@ export default function InputModal({
         }}
         style={{ backgroundColor: 'rgba(0,0,0,0.1)', flex: 1 }}
       >
-        <KeyboardView paddingBottom={0} ignoreTouch>
+        <KeyboardView
+          behavior="padding"
+          paddingBottom={0}
+          ignoreTouch
+        >
           <Animated.View style={[styles.modalContainer, { transform: [{ translateY: animatedBottom }] }]}>
             {((geoMatching && suggestionData) || (suggestionsLoading && suggestionData)) && (
             <View style={styles.suggestionsContainer}>

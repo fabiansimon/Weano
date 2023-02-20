@@ -98,14 +98,14 @@ export default function LocationScreen({ isVisible, onRequestClose, onPress }) {
             <Headline type={3} text={i18n.t('Search')} />
             <View style={{ width: 50 }} />
           </SafeAreaView>
-          <ScrollView style={{ marginHorizontal: PADDING.m }}>
             <TextField
-              style={{ marginVertical: 10 }}
+              style={{ marginVertical: 10, marginHorizontal: PADDING.m  }}
               value={term || null}
               onChangeText={(val) => handleSearchTerm(val)}
               onDelete={() => handleSearchTerm('')}
               placeholder={i18n.t('Filter Trip')}
             />
+          <ScrollView style={{ marginHorizontal: PADDING.m }}>
             {term.length < 1 && (
             <SectionList
               scrollEnabled={false}
@@ -170,7 +170,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.neutral[50],
   },
-
   header: {
     paddingHorizontal: PADDING.s,
     alignItems: 'center',

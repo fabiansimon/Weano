@@ -2,13 +2,11 @@ import {
   FlatList, StyleSheet, View, StatusBar, Pressable, Platform, ScrollView,
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
+import IonIcon from 'react-native-vector-icons/Ionicons';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import EntIcon from 'react-native-vector-icons/Entypo';
 import React, { useState, useEffect, useRef } from 'react';
-import Animated, {
-  SensorType,
-  useAnimatedSensor, useAnimatedStyle,
-} from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import { useQuery } from '@apollo/client';
 import Toast from 'react-native-toast-message';
@@ -53,18 +51,6 @@ export default function MemoriesScreen({ route }) {
   const [downloadIndex, setDownloadIndex] = useState(null);
 
   const navigation = useNavigation();
-
-  const animatedSensor = useAnimatedSensor(SensorType.ROTATION, {
-    interval: 100,
-  });
-  const animatedStyle = useAnimatedStyle(() => {
-    const { pitch, yaw } = animatedSensor.sensor.value;
-    const yawValue = 20 * (yaw < 0 ? 2.5 * Number(yaw.toFixed(2)) : Number(yaw.toFixed(2)));
-    const pitchValue = 50 * pitch.toFixed(2);
-    return {
-      transform: [{ translateX: pitchValue }, { translateY: yawValue }],
-    };
-  });
 
   useEffect(() => {
     if (data) {
@@ -226,6 +212,19 @@ export default function MemoriesScreen({ route }) {
           />
           {images.length > 0 && (
             <View style={{ flexDirection: 'row', top: -10 }}>
+              <Pressable
+                onPress={() => {
+                  console.log('refresh');
+                }}
+                style={[styles.roundButton, { marginRight: 5 }]}
+              >
+                <IonIcon
+                  name="refresh"
+                  style={{ marginRight: -2 }}
+                  color={COLORS.shades[0]}
+                  size={22}
+                />
+              </Pressable>
               {!isLoading && (
               <MenuView
                 style={styles.addIcon}
@@ -233,7 +232,7 @@ export default function MemoriesScreen({ route }) {
                 actions={[
                   {
                     id: 'timeline',
-                    title: i18n.t('See timeline'),
+                    title: i18n.t('See Timeline'),
 
                   },
                   {
@@ -302,7 +301,7 @@ export default function MemoriesScreen({ route }) {
           setImages((prev) => prev.filter((i) => i._id !== id));
           setFreeImage((prev) => prev + 1);
         }}
-        style={[{ marginLeft: isLeft ? 0 : 10, marginTop: 10 }, animatedStyle]}
+        style={{ marginLeft: isLeft ? 0 : 10, marginTop: 10 }}
         image={image}
       />
     );
