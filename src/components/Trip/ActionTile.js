@@ -27,7 +27,7 @@ export default function ActionTile({ style, trip, type = 'active' }) {
   const isActive = type === 'active';
   const isUpcoming = type === 'upcoming';
   const isRecap = type === 'recap';
-  const height = isActive ? 150 : isUpcoming ? 180 : 120;
+  const height = isActive ? 150 : isUpcoming && !trip.openTasks ? 130 : isUpcoming && trip.openTasks?.length > 0 ? 180 : 120;
 
   const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -73,14 +73,25 @@ export default function ActionTile({ style, trip, type = 'active' }) {
     : isUpcoming ? `${i18n.t('Ready for')} ${place}?`
       : `${i18n.t('One year ago, you were in')} ${place} ⏳`;
 
-  const subtitle = isActive ? i18n.t('Don’t forget to capture some memories 📸')
-    : `${i18n.t('You still have')} ${trip.openTasks.length} ${i18n.t('tasks open ✅')}`;
+  const getSubtitle = () => {
+    if (isActive) {
+      return i18n.t('Don’t forget to capture some memories 📸');
+    }
+
+    if (isUpcoming) {
+      if (trip.openTasks && trip.openTasks.length > 0) {
+        return `${i18n.t('You still have')} ${trip.openTasks?.length} ${i18n.t('tasks open ✅')}`;
+      }
+      return i18n.t('You have no tasks open ✅');
+    }
+  };
+  const subtitle = getSubtitle();
 
   const getOpenTaskList = () => {
     const { openTasks } = trip;
     return (
       <ScrollView horizontal style={{ marginHorizontal: -PADDING.s, paddingHorizontal: 15, marginVertical: 10 }}>
-        {openTasks.map((task) => (
+        {openTasks?.map((task) => (
           <CheckboxTile
             onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: id })}
             item={task}

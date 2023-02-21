@@ -324,7 +324,10 @@ export default function CreateModal({ isVisible, onRequestClose }) {
       onRequestClose={onRequestClose}
       presentationStyle="pageSheet"
     >
-      <KeyboardView paddingBottom={40}>
+      <KeyboardView
+        behavior="padding"
+        paddingBottom={40}
+      >
         <View style={styles.container}>
           <Headline
             type={2}

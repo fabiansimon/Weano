@@ -50,7 +50,7 @@ export default function RecapCardMini({ data, style, onPress }) {
         <Body
           type={2}
           numberOfLines={1}
-          text={location.placeName}
+          text={location.placeName.split(',')[0]}
           color={COLORS.neutral[300]}
           isDense
         />

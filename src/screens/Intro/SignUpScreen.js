@@ -218,9 +218,11 @@ export default function SignUpScreen({ invitationId, route }) {
     </View>
   );
 
+  const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
   const getAuthContainer = () => (
-    <AnimatedScrollView
-      scrollEnabled={false}
+
+    <Animated.View
       contentContainerStyle={{
         justifyContent: 'space-between', flex: 1, paddingBottom: 50,
       }}
@@ -341,7 +343,8 @@ export default function SignUpScreen({ invitationId, route }) {
           />
         </Pressable>
       </View>
-    </AnimatedScrollView>
+    </Animated.View>
+
   );
 
   const AnimatedImage = Animated.createAnimatedComponent(Image);
@@ -523,16 +526,19 @@ export default function SignUpScreen({ invitationId, route }) {
 
 const styles = StyleSheet.create({
   mainContainer: {
+    justifyContent: 'space-between',
+    flex: 1,
+    paddingBottom: 50,
     backgroundColor: COLORS.shades[0],
     borderTopRightRadius: RADIUS.m,
     borderTopLeftRadius: RADIUS.m,
     paddingHorizontal: PADDING.l,
     paddingTop: PADDING.l,
     marginTop: 110,
-    paddingBottom: 50,
+    marginBottom: 50,
     position: 'absolute',
     width: '100%',
-    height: '95%',
+    height: '88%',
     bottom: 0,
   },
   validField: {

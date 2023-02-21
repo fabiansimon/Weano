@@ -164,7 +164,7 @@ export default function TripScreen({ route }) {
 
   const handleDeleteTrip = async () => {
     Utils.showConfirmationAlert(
-      i18n.t('Delete Expense'),
+      i18n.t('Delete Trip'),
       i18n.t(`Are you sure you want to delete '${data?.title}' as an expense?`),
       i18n.t('Delete'),
       async () => {
@@ -535,7 +535,7 @@ export default function TripScreen({ route }) {
                     },
                     {
                       id: 'delete',
-                      title: i18n.t('Delete trip'),
+                      title: i18n.t('Delete Trip'),
                       attributes: {
                         destructive: true,
                         disabled: !isHost,

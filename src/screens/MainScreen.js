@@ -60,6 +60,8 @@ export default function MainScreen() {
     getTripsForUser().then(() => setRefreshing(false)).catch(() => setRefreshing(false));
   };
 
+  const { height } = Dimensions.get('window');
+
   const now = Date.now() / 1000;
 
   let recapTimestamp = new Date();
@@ -159,29 +161,58 @@ export default function MainScreen() {
     </>
   );
 
-  const UpcomingTap = () => (
-    <View style={styles.tabStyle}>
-      {upcomingTrips.map((trip) => (
-        <RecapCardMini
-          onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: trip.id })}
-          style={{ marginTop: 15 }}
-          data={trip}
-        />
-      ))}
-    </View>
-  );
+  const UpcomingTap = () => {
+    if (upcomingTrips.length <= 0) {
+      return (
+        <View style={[styles.tabStyle, { marginTop: 20, marginLeft: 10 }]}>
+          <Body type={1} text={i18n.t('No upcoming trips 🥱')} style={{ marginBottom: 4 }} />
+          <Body
+            type={2}
+            color={COLORS.neutral[300]}
+            text={i18n.t('I’m sure it can’t hurt to add a new trip. You know, just to have something to look forward to 🤷‍♂️')}
+          />
+        </View>
+      );
+    }
 
-  const RecentTap = () => (
-    <View style={styles.tabStyle}>
-      {recentTrips.map((trip) => (
-        <RecapCardMini
-          onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: trip.id })}
-          style={{ marginTop: 15 }}
-          data={trip}
-        />
-      ))}
-    </View>
-  );
+    return (
+      <View style={styles.tabStyle}>
+        {upcomingTrips.map((trip) => (
+          <RecapCardMini
+            onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: trip.id })}
+            style={{ marginTop: 15 }}
+            data={trip}
+          />
+        ))}
+      </View>
+    );
+  };
+  const RecentTap = () => {
+    if (recentTrips.length <= 0) {
+      return (
+        <View style={[styles.tabStyle, { marginTop: 20, marginLeft: 10 }]}>
+          <Body type={1} text={i18n.t('No recent trips 👎🏻')} style={{ marginBottom: 4 }} />
+          <Body
+            type={2}
+            color={COLORS.neutral[300]}
+            text={i18n.t('I’m sure it can’t hurt to add a new trip. You know, just to have something to look forward to 🤷‍♂️')}
+          />
+        </View>
+      );
+    }
+
+    return (
+      <View style={styles.tabStyle}>
+        {recentTrips.map((trip) => (
+          <RecapCardMini
+            onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: trip.id })}
+            style={{ marginTop: 15 }}
+            data={trip}
+          />
+        ))}
+      </View>
+    );
+  };
 
   const renderScene = SceneMap({
     upcoming: UpcomingTap,
@@ -257,7 +288,10 @@ export default function MainScreen() {
             onAddTrip={() => setCreateVisible(true)}
             data={trips}
           />
-          <View style={{ marginHorizontal: -PADDING.l, height: getTabBarHeight() }}>
+          <View style={{
+            marginHorizontal: -PADDING.l, height: getTabBarHeight(), minHeight: height * 0.7,
+          }}
+          >
             <TabView
               navigationState={{ index, routes }}
               renderScene={renderScene}

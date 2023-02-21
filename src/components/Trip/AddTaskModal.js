@@ -1,5 +1,5 @@
 import {
-  Modal, StyleSheet, View, TouchableOpacity, Animated, TextInput, ScrollView,
+  Modal, StyleSheet, View, TouchableOpacity, Animated, TextInput, ScrollView, Pressable,
 } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -200,9 +200,13 @@ export default function AddTaskModal({
         onPress={onRequestClose}
         style={{ backgroundColor: 'rgba(0,0,0,0.6)', flex: 1 }}
       >
-        <KeyboardView paddingBottom={0} ignoreTouch>
+        <KeyboardView
+          behavior="padding"
+          paddingBottom={0}
+          ignoreTouch
+        >
           <Animated.View style={[styles.modalContainer, { transform: [{ translateY: animatedBottom }] }]}>
-            <View style={styles.innerContainer}>
+            <Pressable style={styles.innerContainer}>
               <TextInput
                 autoFocus
                 onChangeText={(val) => setTask(val)}
@@ -213,7 +217,7 @@ export default function AddTaskModal({
               <Divider style={{ marginTop: PADDING.m }} />
               {getMiddleRow()}
               {!isPrivate && getAssigneeRow()}
-            </View>
+            </Pressable>
           </Animated.View>
         </KeyboardView>
       </TouchableOpacity>
