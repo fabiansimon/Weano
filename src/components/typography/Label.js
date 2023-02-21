@@ -7,7 +7,7 @@ export default function Label({
 }) {
   const fontSize = type === 2 ? 9 : 12;
   const lineHeight = 16;
-  const fontWeight = type === 2 ? '400' : '600';
+  const fontWeight = type === 2 ? '400' : '500';
   const fontFamily = 'WorkSans-Regular';
   const textColor = color || COLORS.shades[100];
 

@@ -25,7 +25,17 @@ export default function RecapCardMini({ data, style, onPress }) {
     const difference = Math.round(moment.duration(toDate.diff(fromDate)).asDays());
     return difference;
   };
+
   const daysDifference = getDayDifference(dateRange);
+  const isRecent = daysDifference < 0;
+
+  const getDayString = () => {
+    if (isRecent) {
+      return `${Math.abs(daysDifference)} ${i18n.t('days ago')}`;
+    }
+    return `${i18n.t('in')} ${daysDifference} ${i18n.t('days')}`;
+  };
+
   return (
     <Pressable
       style={[styles.container, style]}
@@ -53,11 +63,11 @@ export default function RecapCardMini({ data, style, onPress }) {
         </View>
       </View>
       <View style={{ justifyContent: 'space-between', alignItems: 'flex-end' }}>
-        <View style={styles.daysContainer}>
+        <View style={[styles.daysContainer, { backgroundColor: Utils.addAlpha(!isRecent ? COLORS.success[700] : COLORS.primary[700], 0.15) }]}>
           <Subtitle
             type={1}
-            text={`${i18n.t('in')} ${daysDifference} ${i18n.t('days')}`}
-            color={COLORS.success[700]}
+            text={getDayString()}
+            color={!isRecent ? COLORS.success[900] : COLORS.primary[700]}
           />
         </View>
         <View style={{ flexDirection: 'row' }}>
@@ -80,22 +90,21 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     borderRadius: RADIUS.m,
     backgroundColor: COLORS.shades[0],
-    borderWidth: 0.5,
     borderColor: COLORS.neutral[100],
+    borderWidth: 0.5,
     padding: PADDING.s,
   },
   dateContainer: {
     marginTop: 10,
     borderRadius: RADIUS.xl,
     backgroundColor: COLORS.neutral[50],
-    borderWidth: 1,
     borderColor: COLORS.neutral[100],
+    borderWidth: 1,
     paddingVertical: 5,
     paddingHorizontal: 10,
   },
   daysContainer: {
     borderRadius: RADIUS.xl,
-    backgroundColor: Utils.addAlpha(COLORS.success[700], 0.15),
     paddingVertical: 7,
     paddingHorizontal: 10,
   },

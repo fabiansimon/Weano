@@ -12,7 +12,7 @@ import ContactDetailModal from './ContactDetailModal';
 import userStore from '../stores/UserStore';
 
 export default function Avatar({
-  style, size, data, onPress, backgroundColor, borderWidth, disabled, isSelf = false,
+  style, size, data, onPress, backgroundColor, borderWidth, disabled, isSelf = false, avatarUri,
 }) {
   // STORES
   const user = userStore((state) => state.user);
@@ -20,9 +20,9 @@ export default function Avatar({
   // STATE & MISC
   const [showDetails, setShowDetails] = useState(false);
 
-  const info = isSelf ? user : data;
+  const info = avatarUri ? null : isSelf ? user : data;
 
-  const hasAvatar = info?.avatarUri !== '';
+  const hasAvatar = info?.avatarUri !== '' || avatarUri;
 
   const height = size || 55;
   const width = size || 55;
@@ -46,7 +46,7 @@ export default function Avatar({
         )}
         {hasAvatar && (
         <FastImage
-          source={{ uri: info?.avatarUri }}
+          source={{ uri: info?.avatarUri || avatarUri }}
           style={{ height, width }}
         />
         )}

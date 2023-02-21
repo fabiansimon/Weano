@@ -1,4 +1,5 @@
 import {
+  Dimensions,
   Pressable,
   RefreshControl,
   StyleSheet, View,
@@ -14,6 +15,7 @@ import Icon from 'react-native-vector-icons/AntDesign';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import { useLazyQuery } from '@apollo/client';
 import Toast from 'react-native-toast-message';
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import Headline from '../components/typography/Headline';
 import i18n from '../utils/i18n';
@@ -44,6 +46,11 @@ export default function MainScreen() {
   const [createVisible, setCreateVisible] = useState(false);
   const [searchVisible, setSearchVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [index, setIndex] = React.useState(0);
+  const [routes] = React.useState([
+    { key: 'upcoming', title: i18n.t('Upcoming') },
+    { key: 'recent', title: i18n.t('Recent') },
+  ]);
   const scrollY = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation();
 
@@ -60,9 +67,18 @@ export default function MainScreen() {
   recapTimestamp = Date.parse(recapTimestamp) / 1000;
 
   const upcomingTrips = trips.filter((trip) => trip.dateRange.startDate > now && trip.dateRange.endDate > now);
+  const recentTrips = trips.filter((trip) => trip.dateRange.startDate < now && trip.dateRange.endDate < now);
   const activeTrip = trips.filter((trip) => trip.dateRange.startDate < now && trip.dateRange.endDate > now)[0];
   const recapTrip = trips.filter((trip) => trip.dateRange.startDate < recapTimestamp && trip.dateRange.endDate < now)[0];
   const upcomingTrip = upcomingTrips.length > 0 && upcomingTrips.filter((trip) => ((trip.dateRange.startDate - now) / 86400) < 7)[0];
+
+  const getTabBarHeight = () => {
+    const containerHeight = 400;
+    if (upcomingTrips.length > recentTrips.length) {
+      return upcomingTrips.length * containerHeight;
+    }
+    return recentTrips.length * containerHeight;
+  };
 
   useEffect(() => {
     if (data) {
@@ -120,13 +136,31 @@ export default function MainScreen() {
     </View>
   );
 
-  const getUpcomingTripSection = () => (
-    <View>
-      <Headline
-        type={4}
-        style={{ marginLeft: 5 }}
-        text={i18n.t('Upcoming Trips')}
+  const renderTabBar = (props) => (
+    <>
+      <Divider style={{ top: 57.5 }} />
+      <TabBar
+        {...props}
+        indicatorStyle={{
+          backgroundColor: COLORS.primary[500], width: 70, marginLeft: '12%', height: 3, borderRadius: 2,
+        }}
+        style={{ backgroundColor: 'transparent' }}
+        activeColor={COLORS.primary[700]}
+        inactiveColor={COLORS.neutral[300]}
+        renderLabel={({ color, route, focused }) => (
+          <Body
+            style={{ fontWeight: focused ? '500' : '400' }}
+            color={color}
+            type={1}
+            text={route.title}
+          />
+        )}
       />
+    </>
+  );
+
+  const UpcomingTap = () => (
+    <View style={styles.tabStyle}>
       {upcomingTrips.map((trip) => (
         <RecapCardMini
           onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: trip.id })}
@@ -136,6 +170,23 @@ export default function MainScreen() {
       ))}
     </View>
   );
+
+  const RecentTap = () => (
+    <View style={styles.tabStyle}>
+      {recentTrips.map((trip) => (
+        <RecapCardMini
+          onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: trip.id })}
+          style={{ marginTop: 15 }}
+          data={trip}
+        />
+      ))}
+    </View>
+  );
+
+  const renderScene = SceneMap({
+    upcoming: UpcomingTap,
+    recent: RecentTap,
+  });
 
   return (
     <View style={{ backgroundColor: COLORS.neutral[50], flex: 1 }}>
@@ -206,8 +257,16 @@ export default function MainScreen() {
             onAddTrip={() => setCreateVisible(true)}
             data={trips}
           />
-          <Divider color={COLORS.neutral[50]} vertical={20} />
-          {getUpcomingTripSection()}
+          <View style={{ marginHorizontal: -PADDING.l, height: getTabBarHeight() }}>
+            <TabView
+              navigationState={{ index, routes }}
+              renderScene={renderScene}
+              renderTabBar={renderTabBar}
+              onIndexChange={setIndex}
+              onLay
+              onLayout={(e) => console.log(e)}
+            />
+          </View>
         </SafeAreaView>
       </Animated.ScrollView>
       <CreateModal
@@ -242,6 +301,17 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.l,
     backgroundColor: COLORS.shades[0],
     justifyContent: 'center',
+    alignItems: 'center',
+  },
+  tabBar: {
+    flexDirection: 'row',
+  },
+  tabStyle: {
+    paddingHorizontal: PADDING.m,
+  },
+  tabItem: {
+    width: Dimensions.get('window').width / 2,
+    height: 30,
     alignItems: 'center',
   },
 });

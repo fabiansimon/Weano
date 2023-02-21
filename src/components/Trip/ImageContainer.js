@@ -1,10 +1,8 @@
 import {
   Dimensions,
   Platform,
-  Pressable,
   StyleSheet, TouchableOpacity,
 } from 'react-native';
-import FeatherIcon from 'react-native-vector-icons/Feather';
 import Toast from 'react-native-toast-message';
 import React from 'react';
 import FastImage from 'react-native-fast-image';
@@ -12,11 +10,12 @@ import Animated from 'react-native-reanimated';
 import { MenuView } from '@react-native-menu/menu';
 import RNFetchBlob from 'rn-fetch-blob';
 import { useMutation } from '@apollo/client';
-import COLORS, { RADIUS } from '../../constants/Theme';
+import { RADIUS } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Utils from '../../utils';
 import DELETE_IMAGE from '../../mutations/deleteImage';
 import userStore from '../../stores/UserStore';
+import Avatar from '../Avatar';
 
 export default function ImageContainer({
   style, image, onPress, tripId, onDelete,
@@ -32,7 +31,7 @@ export default function ImageContainer({
     return;
   }
 
-  const { uri } = image;
+  const { uri, author } = image;
 
   const handleOption = ({ event }) => {
     if (event === 'download') {
@@ -122,23 +121,24 @@ export default function ImageContainer({
       style={[styles.container, style]}
     >
       <MenuView
-        style={styles.optionIcon}
+        shouldOpenOnLongPress
+        style={{ flex: 1 }}
         onPressAction={({ nativeEvent }) => handleOption(nativeEvent)}
         actions={actions}
       >
-        <Pressable>
-          <FeatherIcon
-            name="more-vertical"
-            color={COLORS.shades[0]}
-            size={20}
-          />
-        </Pressable>
+        <FastImage
+          source={{ uri }}
+          resizeMode="cover"
+          style={styles.image}
+        />
+        <Avatar
+          size={30}
+          avatarUri={author.avatarUri}
+          style={{
+            position: 'absolute', bottom: 10, left: 10,
+          }}
+        />
       </MenuView>
-      <FastImage
-        source={{ uri }}
-        resizeMode="cover"
-        style={styles.image}
-      />
     </AnimatedTouchableOpacity>
   );
 }

@@ -47,6 +47,7 @@ import GET_TRIP_BY_ID from '../../queries/getTripById';
 import TripScreenSkeleton from './TripScreenSkeleton';
 import userManagement from '../../utils/userManagement';
 import DELETE_TRIP_BY_ID from '../../mutations/deleteTripById';
+import QRModal from '../../components/Trip/QRModal';
 
 export default function TripScreen({ route }) {
   // PARAMS
@@ -71,6 +72,7 @@ export default function TripScreen({ route }) {
   // STATE & MISC
   const [currentTab, setCurrentTab] = useState(0);
   const [inputOpen, setInputOpen] = useState(null);
+  const [showQR, setShowQR] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const scrollY = useRef(new Animated.Value(0)).current;
   const addImageRef = useRef();
@@ -125,6 +127,9 @@ export default function TripScreen({ route }) {
         break;
       case 'delete':
         handleDeleteTrip();
+        break;
+      case 'qr':
+        setShowQR(true);
         break;
 
       default:
@@ -504,7 +509,6 @@ export default function TripScreen({ route }) {
               onPressAction={({ nativeEvent }) => handleMenuOption(nativeEvent)}
               actions={[
                 {
-
                   id: 'edit',
                   title: i18n.t('Edit Trip'),
                   subactions: [
@@ -549,6 +553,13 @@ export default function TripScreen({ route }) {
                   image: Platform.select({
                     ios: 'square.and.arrow.up',
                     android: 'ic_menu_share',
+                  }),
+                },
+                {
+                  id: 'qr',
+                  title: i18n.t('Show QR Code'),
+                  image: Platform.select({
+                    ios: 'qrcode',
                   }),
                 },
 
@@ -792,7 +803,11 @@ export default function TripScreen({ route }) {
         maxLength={inputOpen === 'description' ? 100 : 20}
         onPress={(string) => (inputOpen === 'description' ? updateDescription(string) : updateTitle(string))}
       />
-
+      <QRModal
+        isVisible={showQR}
+        onRequestClose={() => setShowQR(false)}
+        value={`${META_DATA.baseUrl}/redirect/invitation/${tripId}`}
+      />
     </View>
   );
 }
