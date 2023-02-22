@@ -75,7 +75,7 @@ export default function MainScreen() {
   const upcomingTrip = upcomingTrips.length > 0 && upcomingTrips.filter((trip) => ((trip.dateRange.startDate - now) / 86400) < 7)[0];
 
   const getTabBarHeight = () => {
-    const containerHeight = 400;
+    const containerHeight = 150;
     if (upcomingTrips.length > recentTrips.length) {
       return upcomingTrips.length * containerHeight;
     }
@@ -140,7 +140,7 @@ export default function MainScreen() {
 
   const renderTabBar = (props) => (
     <>
-      <Divider style={{ top: 57.5 }} />
+      <Divider style={{ top: 57.5, marginHorizontal: PADDING.l }} />
       <TabBar
         {...props}
         indicatorStyle={{
@@ -289,7 +289,7 @@ export default function MainScreen() {
             data={trips}
           />
           <View style={{
-            marginHorizontal: -PADDING.l, height: getTabBarHeight(), minHeight: height * 0.7,
+            marginHorizontal: -PADDING.l, height: getTabBarHeight(), minHeight: height * 0.6,
           }}
           >
             <TabView

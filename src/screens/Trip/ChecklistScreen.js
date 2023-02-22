@@ -84,14 +84,15 @@ export default function ChecklistScreen() {
 
     let addString = '';
     if (difference > 0) {
-      addString = `. ${i18n.t('Only')} ${difference} ${i18n.t('days left')}⏳`;
+      // eslint-disable-next-line eqeqeq
+      addString = `\n${i18n.t('Only')} ${difference} ${difference == 1 ? i18n.t('day left') : i18n.t('days left')}⏳`;
     }
     await sendReminder({
       variables: {
         data: {
           receivers: [assignee],
           title: i18n.t("Don't forget! 💭"),
-          description: `${i18n.t('You still have to finish your task:')} ${title} ${addString}`,
+          description: `${i18n.t('You still have to finish your task:')} "${title}"${addString}`,
           tripId,
           type: 'task_reminder',
         },
@@ -121,6 +122,7 @@ export default function ChecklistScreen() {
       i18n.t('Yes'),
       async () => {
         const { _id, isPrivate } = task;
+        console.log(task);
 
         await deleteTask({
           variables: {
@@ -138,6 +140,7 @@ export default function ChecklistScreen() {
               text2: i18n.t('Task was succeessfully deleted!'),
             });
 
+            console.log('hello');
             if (isPrivate) {
               updateActiveTrip({ privateTasks: privateTasks.filter((p) => p._id !== _id) });
             } else {
@@ -162,6 +165,7 @@ export default function ChecklistScreen() {
     let oldMutualTasks;
     setIsVisible(false);
     const isPrivate = data.type === 'PRIVATE';
+    console.log(isPrivate);
 
     await addTask({
       variables: {
@@ -411,7 +415,7 @@ export default function ChecklistScreen() {
                 <CheckboxTile
                   onMorePress={(event) => handleMenuOption({
                     ...item,
-                    isPrivate: false,
+                    isPrivate: true,
                   }, event)}
                   style={{ paddingLeft: 5 }}
                   item={{

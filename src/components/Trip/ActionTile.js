@@ -23,11 +23,12 @@ export default function ActionTile({ style, trip, type = 'active' }) {
   const animatedBorderRadius = useRef(new Animated.Value(RADIUS.xl)).current;
 
   const duration = 300;
+  const noTasks = !(trip?.openTasks && trip?.openTasks.length > 0);
 
   const isActive = type === 'active';
   const isUpcoming = type === 'upcoming';
   const isRecap = type === 'recap';
-  const height = isActive ? 150 : isUpcoming && !trip.openTasks ? 130 : isUpcoming && trip.openTasks?.length > 0 ? 180 : 120;
+  const height = isActive ? 150 : isUpcoming && noTasks ? 130 : isUpcoming && !noTasks ? 180 : 130;
 
   const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -79,7 +80,7 @@ export default function ActionTile({ style, trip, type = 'active' }) {
     }
 
     if (isUpcoming) {
-      if (trip.openTasks && trip.openTasks.length > 0) {
+      if (!noTasks) {
         return `${i18n.t('You still have')} ${trip.openTasks?.length} ${i18n.t('tasks open ✅')}`;
       }
       return i18n.t('You have no tasks open ✅');
@@ -113,7 +114,7 @@ export default function ActionTile({ style, trip, type = 'active' }) {
       const date = isActive ? endDate : startDate;
       const toDate = moment(new Date(date * 1000));
       const fromDate = moment().startOf('day');
-      difference = Math.round(moment.duration(toDate.diff(fromDate)).asDays()) - 1;
+      difference = Math.round(moment.duration(toDate.diff(fromDate)).asDays());
       timeString = !isActive ? `${i18n.t('in')} ${difference} ${difference === 1 ? i18n.t('day') : i18n.t('days')}` : `${difference} ${i18n.t('days left')}`;
     }
 

@@ -12,6 +12,7 @@ import Logo from '../../../assets/images/logo_blue.png';
 import Utils from '../../utils';
 import i18n from '../../utils/i18n';
 import Body from '../typography/Body';
+import Divider from '../Divider';
 
 export default function QRModal({
   isVisible, onRequestClose, value,
@@ -76,11 +77,11 @@ export default function QRModal({
           />
           <Body
             style={{
-              maxWidth: width + 10, marginTop: 10, textAlign: 'center', fontWeight: '500',
+              maxWidth: width + 10, marginTop: 10,
             }}
-            type={1}
-            color={COLORS.neutral[500]}
-            text={i18n.t('Tell your friends to scan this QR to join the trip! 🌴')}
+            type={2}
+            color={COLORS.neutral[900]}
+            text={i18n.t('Scan this QR code to join')}
           />
         </Animated.View>
       </TouchableOpacity>

@@ -3,7 +3,7 @@ import {
 } from 'react-native';
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
-import COLORS, { PADDING } from '../../constants/Theme';
+import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Headline from '../typography/Headline';
 import TextField from '../TextField';
@@ -12,6 +12,7 @@ import tripsStore from '../../stores/TripsStore';
 import SearchResultTile from './SearchResultTile';
 import Body from '../typography/Body';
 import REGEX from '../../constants/Regex';
+import Utils from '../../utils';
 
 export default function LocationScreen({ isVisible, onRequestClose, onPress }) {
   // STORES
@@ -27,14 +28,17 @@ export default function LocationScreen({ isVisible, onRequestClose, onPress }) {
     {
       title: i18n.t('Active trips'),
       data: trips.filter((trip) => trip.dateRange.startDate < now && trip.dateRange.endDate > now),
+      type: 'active',
     },
     {
-      title: i18n.t('Successful trips'),
+      title: i18n.t('Recent trips'),
       data: trips.filter((trip) => trip.dateRange.startDate < now && trip.dateRange.endDate < now),
+      type: 'recent',
     },
     {
       title: i18n.t('Upcoming trips'),
       data: trips.filter((trip) => trip.dateRange.startDate > now && trip.dateRange.endDate > now),
+      type: 'upcoming',
     },
   ];
 
@@ -98,28 +102,33 @@ export default function LocationScreen({ isVisible, onRequestClose, onPress }) {
             <Headline type={3} text={i18n.t('Search')} />
             <View style={{ width: 50 }} />
           </SafeAreaView>
-            <TextField
-              style={{ marginVertical: 10, marginHorizontal: PADDING.m  }}
-              value={term || null}
-              onChangeText={(val) => handleSearchTerm(val)}
-              onDelete={() => handleSearchTerm('')}
-              placeholder={i18n.t('Filter Trip')}
-            />
-          <ScrollView style={{ marginHorizontal: PADDING.m }}>
+          <TextField
+            style={{ marginTop: 10, marginHorizontal: PADDING.m }}
+            value={term || null}
+            onChangeText={(val) => handleSearchTerm(val)}
+            onDelete={() => handleSearchTerm('')}
+            placeholder={i18n.t('Filter Trip')}
+          />
+          <ScrollView style={{ marginHorizontal: PADDING.m, paddingTop: 10 }}>
             {term.length < 1 && (
             <SectionList
               scrollEnabled={false}
               sections={data}
-              renderSectionHeader={({ section: { title, data: sectionData } }) => (
-                sectionData.length >= 1 && (
-                <Body
-                  type={2}
-                  color={COLORS.neutral[300]}
-                  text={title}
-                  style={{ marginVertical: 10, marginLeft: 4 }}
-                />
-                )
-              )}
+              renderSectionHeader={({ section: { title, data: sectionData, type } }) => {
+                const color = type === 'active' ? COLORS.error[700] : type === 'upcoming' ? COLORS.success[700] : COLORS.primary[700];
+                if (sectionData.length >= 1) {
+                  return (
+                    <View style={[styles.titleContainer, { backgroundColor: Utils.addAlpha(color, 0.2) }]}>
+                      <Body
+                        type={2}
+                        color={color}
+                        style={{ fontWeight: '500' }}
+                        text={title}
+                      />
+                    </View>
+                  );
+                }
+              }}
               renderItem={({ item }) => (
                 <SearchResultTile
                   onPress={() => handleNavigation(item.id)}
@@ -130,33 +139,35 @@ export default function LocationScreen({ isVisible, onRequestClose, onPress }) {
             />
             )}
             {term.length >= 1 && (
-            <FlatList
-              scrollEnabled={false}
-              ListEmptyComponent={() => (
-                <Body
-                  type={1}
-                  color={COLORS.neutral[300]}
-                  text={i18n.t('Sorry, there are no results')}
-                  style={{ textAlign: 'center', marginTop: 10 }}
+              <>
+                <View style={[styles.titleContainer, { backgroundColor: Utils.addAlpha(COLORS.neutral[500], 0.2) }]}>
+                  <Body
+                    type={2}
+                    color={COLORS.neutral[700]}
+                    style={{ fontWeight: '500' }}
+                    text={`${i18n.t('Results for')} "${term}"`}
+                  />
+                </View>
+                <FlatList
+                  scrollEnabled={false}
+                  ListEmptyComponent={() => (
+                    <Body
+                      type={1}
+                      color={COLORS.neutral[300]}
+                      text={i18n.t('Sorry, there are no results')}
+                      style={{ textAlign: 'center', marginTop: 10 }}
+                    />
+                  )}
+                  data={searchResult}
+                  renderItem={({ item }) => (
+                    <SearchResultTile
+                      onPress={() => handleNavigation(item.id)}
+                      data={item}
+                      style={{ marginBottom: 10 }}
+                    />
+                  )}
                 />
-              )}
-              data={searchResult}
-              renderSectionHeader={({ section: { title } }) => (
-                <Body
-                  type={2}
-                  color={COLORS.neutral[300]}
-                  text={title}
-                  style={{ marginVertical: 10, marginLeft: 4 }}
-                />
-              )}
-              renderItem={({ item }) => (
-                <SearchResultTile
-                  onPress={() => handleNavigation(item.id)}
-                  data={item}
-                  style={{ marginBottom: 10 }}
-                />
-              )}
-            />
+              </>
             )}
           </ScrollView>
         </View>
@@ -175,5 +186,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
+  },
+  titleContainer: {
+    marginRight: 'auto',
+    paddingVertical: 4,
+    marginLeft: 2,
+    paddingHorizontal: 6,
+    borderRadius: 6,
+    marginBottom: 10,
+    marginTop: 4,
   },
 });

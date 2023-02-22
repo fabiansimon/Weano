@@ -79,7 +79,7 @@ export default function TextField({
     <Icon name={icon} color={iconColor || COLORS.neutral[700]} size={20} />
   ));
 
-  const SuggestionTile = ({ item }) => (
+  const getSuggestionTile = (item) => (
     <Pressable
       onPress={() => {
         onSuggestionPress(item);
@@ -97,6 +97,7 @@ export default function TextField({
         type={1}
         color={COLORS.neutral[700]}
         text={item.string}
+        style={{ marginRight: 30 }}
       />
     </Pressable>
   );
@@ -177,7 +178,7 @@ export default function TextField({
                   color={COLORS.neutral[50]}
                 />
               )}
-              renderItem={({ item }) => <SuggestionTile item={item} />}
+              renderItem={({ item }) => getSuggestionTile(item)}
             />
           )}
       </View>
@@ -223,7 +224,8 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    fontSize: 18,
+    fontSize: 16,
+    marginRight: 30,
     fontFamily: 'WorkSans-Regular',
     letterSpacing: -1.0,
     paddingHorizontal: 12,
