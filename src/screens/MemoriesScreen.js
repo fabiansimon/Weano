@@ -55,6 +55,7 @@ export default function MemoriesScreen({ route }) {
   useEffect(() => {
     if (data) {
       const { getImagesFromTrip: imageData } = data;
+      // setImages(imageData.images.slice(0, 20));
       setImages(imageData.images);
       setFreeImage(imageData.userFreeImages);
     }
@@ -289,12 +290,11 @@ export default function MemoriesScreen({ route }) {
 
   const getImageTile = (image, index) => {
     const isLeft = index % 1;
-
     return (
       <ImageContainer
         tripId={tripId}
         onPress={() => {
-          setInitalIndex(index);
+          setInitalIndex(images.findIndex((img) => img._id === image._id));
           setStoryVisible(true);
         }}
         onDelete={(id) => {
@@ -457,8 +457,8 @@ export default function MemoriesScreen({ route }) {
             )}
             data={dateSelection && dateSelection[dateIndex]?.images}
             style={{ marginTop: -10, paddingBottom: 100 }}
-            renderItem={({ item }) => getImageTile(item)}
-            numColumns={2}
+            renderItem={({ item, index }) => getImageTile(item, index)}
+            numColumns={3}
           />
         </Animated.ScrollView>
 

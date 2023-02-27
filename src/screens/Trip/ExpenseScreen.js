@@ -70,7 +70,7 @@ export default function ExpenseScreen() {
     expenses.forEach((expense) => {
       amount += expense.amount;
     });
-    return amount;
+    return amount.toFixed(2);
   };
 
   const handleSendingReminder = async (data) => {

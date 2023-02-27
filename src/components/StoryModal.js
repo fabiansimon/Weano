@@ -188,7 +188,7 @@ export default function StoryModal({
             <Body
               type={2}
               color={Utils.addAlpha('#ffffff', 0.5)}
-              style={{ fontStyle: !description ? 'italic' : 'normal' }}
+              style={{ fontStyle: !description ? 'italic' : 'normal', maxWidth: '100%' }}
               text={description || i18n.t('No description')}
             />
           </View>
@@ -198,7 +198,7 @@ export default function StoryModal({
                 type={1}
                 style={{ textAlign: 'right' }}
                 color={COLORS.shades[0]}
-                text={`${author?.firstName || ''} ${author?.lastName || i18n.t('Deleted user')}`}
+                text={`${author?.firstName || i18n.t('Deleted user')}`}
               />
               <Body
                 type={2}

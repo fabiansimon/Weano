@@ -132,7 +132,7 @@ export default function ImageContainer({
           style={styles.image}
         />
         <Avatar
-          size={30}
+          size={26}
           avatarUri={author.avatarUri}
           style={{
             position: 'absolute', bottom: 10, left: 10,
@@ -145,7 +145,7 @@ export default function ImageContainer({
 
 const styles = StyleSheet.create({
   container: {
-    width: Dimensions.get('window').width * 0.46,
+    width: Dimensions.get('window').width * 0.295,
     aspectRatio: 9 / 16,
     borderRadius: RADIUS.s,
     overflow: 'hidden',
