@@ -123,7 +123,11 @@ export default function App() {
               <Stack.Screen name={ROUTES.individualExpenseScreen} component={IndividualExpenseScreen} />
               <Stack.Screen name={ROUTES.expenseScreen} component={ExpenseScreen} />
               <Stack.Screen name={ROUTES.checklistScreen} component={ChecklistScreen} />
-              <Stack.Screen name={ROUTES.memoriesScreen} component={MemoriesScreen} />
+              <Stack.Screen
+                name={ROUTES.memoriesScreen}
+                initialParams={{ initShowStory: false }}
+                component={MemoriesScreen}
+              />
               <Stack.Screen
                 name={ROUTES.cameraScreen}
                 initialParams={{ onNavBack: () => navigationRef.current?.navigate(ROUTES.mainScreen), preselectedImage: null }}

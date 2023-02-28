@@ -74,6 +74,8 @@ export default function MainScreen() {
   const recapTrip = trips.filter((trip) => trip.dateRange.startDate < recapTimestamp && trip.dateRange.endDate < now)[0];
   const upcomingTrip = upcomingTrips.length > 0 && upcomingTrips.filter((trip) => ((trip.dateRange.startDate - now) / 86400) < 7)[0];
 
+  const highlightTrip = activeTrip || upcomingTrip || recapTrip || null;
+
   const getTabBarHeight = () => {
     const containerHeight = 150;
     if (upcomingTrips.length > recentTrips.length) {
@@ -97,10 +99,7 @@ export default function MainScreen() {
   }, [data, error]);
 
   const getHeaderSection = () => (
-    <View style={{
-      flexDirection: 'row', alignItems: 'center',
-    }}
-    >
+    <SafeAreaView style={[styles.header, { paddingBottom: highlightTrip ? 40 : 16, borderBottomWidth: highlightTrip ? 1 : 0 }]} edges={['top']}>
       <View style={{ flex: 1 }}>
         <Headline
           type={3}
@@ -135,7 +134,7 @@ export default function MainScreen() {
           size={20}
         />
       </Pressable>
-    </View>
+    </SafeAreaView>
   );
 
   const renderTabBar = (props) => (
@@ -180,7 +179,7 @@ export default function MainScreen() {
         {upcomingTrips.map((trip) => (
           <RecapCardMini
             onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: trip.id })}
-            style={{ marginTop: 15 }}
+            style={{ marginTop: 10 }}
             data={trip}
           />
         ))}
@@ -206,7 +205,7 @@ export default function MainScreen() {
         {recentTrips.map((trip) => (
           <RecapCardMini
             onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: trip.id })}
-            style={{ marginTop: 15 }}
+            style={{ marginTop: 10 }}
             data={trip}
           />
         ))}
@@ -275,16 +274,16 @@ export default function MainScreen() {
           { useNativeDriver: true },
         )}
       >
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
           {getHeaderSection()}
           <ActionTile
             type={activeTrip ? 'active' : upcomingTrip ? 'upcoming' : recapTrip ? 'recap' : null}
-            trip={activeTrip || upcomingTrip || recapTrip || null}
-            style={{ marginTop: 20 }}
+            trip={highlightTrip}
+            style={{ top: -25 }}
           />
           <StorySection
             contentContainerStyle={{ marginHorizontal: PADDING.l }}
-            style={{ marginHorizontal: -PADDING.l, marginTop: 20 }}
+            style={{ marginHorizontal: -PADDING.l, marginTop: !highlightTrip ? 18 : 0, marginBottom: -8 }}
             onAddTrip={() => setCreateVisible(true)}
             data={trips}
           />
@@ -297,11 +296,9 @@ export default function MainScreen() {
               renderScene={renderScene}
               renderTabBar={renderTabBar}
               onIndexChange={setIndex}
-              onLay
-              onLayout={(e) => console.log(e)}
             />
           </View>
-        </SafeAreaView>
+        </View>
       </Animated.ScrollView>
       <CreateModal
         isVisible={createVisible}
@@ -313,9 +310,9 @@ export default function MainScreen() {
         onPress={(id) => navigation.navigate(ROUTES.tripScreen, { tripId: id })}
       />
       <FAButton
-        icon="map"
-        iconSize={22}
-        onPress={() => navigation.navigate(ROUTES.mapScreen)}
+        icon="add"
+        iconSize={28}
+        onPress={() => setCreateVisible(true)}
       />
     </View>
   );
@@ -324,7 +321,6 @@ export default function MainScreen() {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: PADDING.l,
-    marginTop: 20,
     flex: 1,
   },
   searchButton: {
@@ -347,5 +343,15 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width / 2,
     height: 30,
     alignItems: 'center',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 14,
+    borderBottomColor: COLORS.neutral[100],
+    borderBottomWidth: 1,
+    marginHorizontal: -PADDING.l,
+    paddingHorizontal: PADDING.l,
+    backgroundColor: COLORS.shades[0],
   },
 });

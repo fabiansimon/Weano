@@ -3,7 +3,6 @@ import {
   ScrollView, StyleSheet, View,
 } from 'react-native';
 import React from 'react';
-import Icon from 'react-native-vector-icons/AntDesign';
 import FastImage from 'react-native-fast-image';
 import { useNavigation } from '@react-navigation/native';
 import COLORS from '../constants/Theme';
@@ -13,9 +12,10 @@ import ROUTES from '../constants/Routes';
 import Utils from '../utils';
 import Label from './typography/Label';
 import DefaultImage from '../../assets/images/default_trip.png';
+import Headline from './typography/Headline';
 
 export default function StorySection({
-  style, contentContainerStyle, data, onAddTrip,
+  style, contentContainerStyle, data,
 }) {
   const navigation = useNavigation();
 
@@ -24,12 +24,15 @@ export default function StorySection({
       location, thumbnailUri: uri, id: tripId, dateRange,
     } = trip;
     const type = Utils.convertDateToType(dateRange);
-    const borderColor = type === 'active' ? COLORS.error[700] : type === 'soon' || type === 'upcoming' ? COLORS.success[700] : COLORS.primary[500];
+    if (type === 'upcoming' || type === 'soon') {
+      return;
+    }
+    const borderColor = type === 'active' ? COLORS.error[700] : COLORS.primary[500];
 
     return (
       <Pressable
-        style={{ width: 68, marginRight: 10 }}
-        onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId })}
+        style={{ width: 68, marginRight: 14 }}
+        onPress={() => navigation.navigate(ROUTES.memoriesScreen, { tripId, initShowStory: true })}
       >
         <View style={[styles.outerTripContainer, { borderColor }]}>
           <FastImage
@@ -60,20 +63,24 @@ export default function StorySection({
         contentContainerStyle={contentContainerStyle}
       >
         <Pressable
-          onPress={onAddTrip}
-          style={{ marginRight: 20 }}
+          onPress={() => navigation.navigate(ROUTES.mapScreen)}
+          style={{ marginRight: 14 }}
         >
-          <View style={styles.addButton}>
-            <Icon
-              name="plus"
-              size={20}
-              color={COLORS.neutral[300]}
-            />
+          <View style={styles.mapButton}>
+            <Headline type={1} text="🌍" />
           </View>
           <Body
-            style={{ alignSelf: 'center', marginTop: 9 }}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={{ marginTop: 6, marginBottom: -2, textAlign: 'center' }}
             type={2}
-            text={i18n.t('Add Trip')}
+            text={i18n.t('See Map')}
+          />
+          <Label
+            style={{ textAlign: 'center' }}
+            type={1}
+            color={COLORS.neutral[300]}
+            text={`${data.length} ${i18n.t('Trips')}`}
           />
         </Pressable>
         {data.map((trip) => getTripContainer(trip))}
@@ -94,9 +101,9 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     padding: 1.5,
   },
-  addButton: {
-    height: 65,
-    width: 65,
+  mapButton: {
+    height: 68,
+    width: 68,
     borderWidth: 1,
     borderColor: COLORS.neutral[100],
     backgroundColor: COLORS.shades[0],

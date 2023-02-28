@@ -12,7 +12,6 @@ import Logo from '../../../assets/images/logo_blue.png';
 import Utils from '../../utils';
 import i18n from '../../utils/i18n';
 import Body from '../typography/Body';
-import Divider from '../Divider';
 
 export default function QRModal({
   isVisible, onRequestClose, value,
@@ -81,7 +80,7 @@ export default function QRModal({
             }}
             type={2}
             color={COLORS.neutral[900]}
-            text={i18n.t('Scan this QR code to join')}
+            text={i18n.t('Scan this QR code to join 🎉')}
           />
         </Animated.View>
       </TouchableOpacity>
@@ -98,7 +97,8 @@ const styles = StyleSheet.create({
   innerContainer: {
     alignItems: 'center',
     paddingHorizontal: PADDING.m,
-    paddingVertical: PADDING.l - 2,
+    paddingVertical: PADDING.l,
+    paddingBottom: 10,
     backgroundColor: COLORS.shades[0],
     borderRadius: RADIUS.l,
     alignSelf: 'center',

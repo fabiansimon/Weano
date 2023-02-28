@@ -258,10 +258,9 @@ export default function ExpenseScreen() {
             text={`$${getTotal()}`}
           />
           <Headline
-            style={{ maringBottom: 26 }}
             type={4}
             text={i18n.t('total expenses')}
-            color={COLORS.neutral[500]}
+            color={COLORS.neutral[300]}
           />
           <ExpensesContainer
             style={{ marginTop: 30 }}
@@ -277,6 +276,7 @@ export default function ExpenseScreen() {
                   color={COLORS.neutral[300]}
                 />
               )}
+              inverted
               style={{ paddingTop: 20 }}
               contentContainerStyle={{ paddingBottom: 20 }}
               data={showTotal ? expenses : myData}

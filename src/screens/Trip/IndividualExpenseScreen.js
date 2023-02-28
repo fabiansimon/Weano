@@ -11,6 +11,7 @@ import Headline from '../../components/typography/Headline';
 import ExpenseTile from '../../components/Trip/ExpenseTile';
 import Divider from '../../components/Divider';
 import ExpenseDetailModal from '../../components/Trip/ExpenseDetailModal';
+import Body from '../../components/typography/Body';
 
 export default function IndividualExpenseScreen({ route }) {
   // PARAMS
@@ -40,14 +41,15 @@ export default function IndividualExpenseScreen({ route }) {
             type={1}
             text={`$${data.amount}`}
           />
-          <Headline
-            style={{ maringBottom: 26 }}
-            type={4}
+          <Body
+            style={{ marginBottom: 16 }}
+            type={1}
             text={i18n.t('total expenses')}
-            color={COLORS.neutral[500]}
+            color={COLORS.neutral[300]}
           />
 
           <FlatList
+            inverted
             style={{ paddingTop: 50 }}
             contentContainerStyle={{ paddingBottom: 20 }}
             data={data.expenses || null}

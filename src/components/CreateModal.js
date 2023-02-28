@@ -294,11 +294,11 @@ export default function CreateModal({ isVisible, onRequestClose }) {
 
   const getCreateView = (item) => (
     <View style={{ paddingHorizontal: 20 }}>
-      <Headline
-        type={4}
+      <Body
+        type={1}
         text={item.title}
-        color={COLORS.neutral[700]}
-        style={{ marginTop: 6 }}
+        color={COLORS.neutral[300]}
+        style={{ marginTop: 2 }}
       />
       <View style={{
         flexDirection: 'row',
@@ -306,10 +306,10 @@ export default function CreateModal({ isVisible, onRequestClose }) {
         marginTop: 45,
       }}
       >
-        <Headline
-          type={4}
+        <Body
+          type={1}
           text={item.subtitle}
-          color={COLORS.neutral[700]}
+          color={COLORS.shades[100]}
         />
         {item.trailing}
       </View>

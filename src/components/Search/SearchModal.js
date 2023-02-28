@@ -3,7 +3,7 @@ import {
 } from 'react-native';
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
-import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
+import COLORS, { PADDING } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Headline from '../typography/Headline';
 import TextField from '../TextField';
@@ -152,9 +152,9 @@ export default function LocationScreen({ isVisible, onRequestClose, onPress }) {
                   scrollEnabled={false}
                   ListEmptyComponent={() => (
                     <Body
-                      type={1}
+                      type={2}
                       color={COLORS.neutral[300]}
-                      text={i18n.t('Sorry, there are no results')}
+                      text={i18n.t('Sorry, there are no results 🫤')}
                       style={{ textAlign: 'center', marginTop: 10 }}
                     />
                   )}

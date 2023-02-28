@@ -31,7 +31,7 @@ export default function ExpenseIndividualCard({
         />
         <Headline
           type={3}
-          text={`$${data.amount}`}
+          text={`$${data.amount.toFixed(2)}`}
           color={COLORS.neutral[900]}
         />
       </View>

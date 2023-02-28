@@ -30,7 +30,7 @@ import AnimatedHeader from '../components/AnimatedHeader';
 
 export default function MemoriesScreen({ route }) {
   // PARAMS
-  const { tripId } = route.params;
+  const { tripId, initShowStory } = route.params;
 
   // QUERIES
   const { error, data } = useQuery(GET_IMAGES_FROM_TRIP, {
@@ -53,10 +53,16 @@ export default function MemoriesScreen({ route }) {
   const navigation = useNavigation();
 
   useEffect(() => {
+    if (initShowStory) {
+      setStoryVisible(true);
+    }
+  }, [initShowStory]);
+
+  useEffect(() => {
     if (data) {
       const { getImagesFromTrip: imageData } = data;
-      // setImages(imageData.images.slice(0, 20));
-      setImages(imageData.images);
+      setImages(imageData.images.slice(0, 20));
+      // setImages(imageData.images);
       setFreeImage(imageData.userFreeImages);
     }
 
@@ -112,12 +118,16 @@ export default function MemoriesScreen({ route }) {
   };
 
   const handleMenuOption = async ({ event }) => {
+    if (event === 'trip') {
+      return navigation.navigate(ROUTES.tripScreen, { tripId });
+    }
+
     if (event === 'timeline') {
-      navigation.navigate(ROUTES.timelineScreen, { tripId });
+      return navigation.navigate(ROUTES.timelineScreen, { tripId });
     }
 
     if (event === 'take') {
-      navigation.navigate(ROUTES.cameraScreen, { tripId, onNavBack: () => navigation.goBack() });
+      return navigation.navigate(ROUTES.cameraScreen, { tripId, onNavBack: () => navigation.goBack() });
     }
 
     if (event === 'select') {
@@ -234,7 +244,10 @@ export default function MemoriesScreen({ route }) {
                   {
                     id: 'timeline',
                     title: i18n.t('See Timeline'),
-
+                  },
+                  {
+                    id: 'trip',
+                    title: i18n.t('Go to Trip'),
                   },
                   {
                     id: 'share',
