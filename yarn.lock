@@ -10109,6 +10109,11 @@ react-native-contacts@^7.0.4:
   resolved "https://registry.yarnpkg.com/react-native-contacts/-/react-native-contacts-7.0.4.tgz#6f084f651bb5dde433acc22553c6d1ca909e46b7"
   integrity sha512-x6K9TMC0XBH/yyfqYh5BGS9JI1PpA2Ac/XHVVFVP8F8lPLNexQ0qPsNBo1cy9l2pPqlijpC33+FU0ty/N5iOWA==
 
+react-native-context-menu-view@^1.9.1:
+  version "1.9.1"
+  resolved "https://registry.yarnpkg.com/react-native-context-menu-view/-/react-native-context-menu-view-1.9.1.tgz#7feb5321839adf85ae7c7a8510682df3399e89d4"
+  integrity sha512-mkRzC0RpGw1xPNh9tNLejpfEyGwSGI+2SCgxgfa+1YRBXxA7RfRvHJOAakItKnDH8zMqDj5CxZybIks+qhxT5A==
+
 react-native-country-picker-modal@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/react-native-country-picker-modal/-/react-native-country-picker-modal-2.0.0.tgz#005421303349a81fedf5975e465405bb4b7312d5"

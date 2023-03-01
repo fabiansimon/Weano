@@ -265,6 +265,8 @@ PODS:
     - React-Core
   - react-native-contacts (7.0.4):
     - React-Core
+  - react-native-context-menu-view (1.9.1):
+    - React
   - react-native-get-random-values (1.8.0):
     - React-Core
   - react-native-mapbox-gl (8.6.0-beta.0):
@@ -474,6 +476,7 @@ DEPENDENCIES:
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
   - "react-native-cameraroll (from `../node_modules/@react-native-camera-roll/camera-roll`)"
   - react-native-contacts (from `../node_modules/react-native-contacts`)
+  - react-native-context-menu-view (from `../node_modules/react-native-context-menu-view`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - "react-native-mapbox-gl (from `../node_modules/@react-native-mapbox-gl/maps`)"
   - "react-native-menu (from `../node_modules/@react-native-menu/menu`)"
@@ -589,6 +592,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-camera-roll/camera-roll"
   react-native-contacts:
     :path: "../node_modules/react-native-contacts"
+  react-native-context-menu-view:
+    :path: "../node_modules/react-native-context-menu-view"
   react-native-get-random-values:
     :path: "../node_modules/react-native-get-random-values"
   react-native-mapbox-gl:
@@ -699,6 +704,7 @@ SPEC CHECKSUMS:
   react-native-blur: 50c9feabacbc5f49b61337ebc32192c6be7ec3c3
   react-native-cameraroll: a40b082318eb1ecd0336a2f29d9f74b7f2c8cae8
   react-native-contacts: 1bff4c47816d611f26b06fa8b3eaf2db4d1b2c86
+  react-native-context-menu-view: a54a97ead7e44b0671a8c2b48ac70b9e4e2a19fb
   react-native-get-random-values: a6ea6a8a65dc93e96e24a11105b1a9c8cfe1d72a
   react-native-mapbox-gl: b92795f61ff130323e6d25693bd68b081e105455
   react-native-menu: 9d7d6f819cc7fa14a15cf86888c53f3240d86f1b

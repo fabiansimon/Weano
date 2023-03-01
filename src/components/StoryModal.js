@@ -120,7 +120,7 @@ export default function StoryModal({
       <View style={styles.progressBar}>
         {data.map((_, index) => (
           <View style={{
-            height: 3, flex: 1, backgroundColor: index <= imageIndex ? COLORS.shades[0] : Utils.addAlpha('#ffffff', 0.1), marginLeft: index !== 0 ? 4 : 0, borderRadius: 10,
+            height: 3, flex: 1, backgroundColor: index <= imageIndex ? COLORS.shades[0] : Utils.addAlpha('#ffffff', 0.1), marginLeft: index !== 0 ? 3 : 0, borderRadius: 10,
           }}
           />
         ))}

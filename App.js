@@ -111,7 +111,11 @@ export default function App() {
                 options={{ gestureEnabled: false }}
               />
               <Stack.Screen name={ROUTES.profileScreen} component={ProfileScreen} />
-              <Stack.Screen name={ROUTES.mapScreen} component={MapScreen} />
+              <Stack.Screen
+                name={ROUTES.mapScreen}
+                initialParams={{ initTrip: null }}
+                component={MapScreen}
+              />
               <Stack.Screen
                 name={ROUTES.tripScreen}
                 options={{ gestureEnabled: false }}

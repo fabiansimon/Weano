@@ -61,8 +61,8 @@ export default function MemoriesScreen({ route }) {
   useEffect(() => {
     if (data) {
       const { getImagesFromTrip: imageData } = data;
-      setImages(imageData.images.slice(0, 20));
-      // setImages(imageData.images);
+      // setImages(imageData.images.slice(0, 20));
+      setImages(imageData.images);
       setFreeImage(imageData.userFreeImages);
     }
 
@@ -278,6 +278,7 @@ export default function MemoriesScreen({ route }) {
               )}
               <Pressable
                 onPress={() => {
+                  setInitalIndex(0);
                   setStoryVisible(true);
                 }}
                 style={[styles.roundButton, { marginLeft: 5 }]}
@@ -305,6 +306,7 @@ export default function MemoriesScreen({ route }) {
     const isLeft = index % 1;
     return (
       <ImageContainer
+        cacheImage={index < 30}
         tripId={tripId}
         onPress={() => {
           setInitalIndex(images.findIndex((img) => img._id === image._id));
@@ -451,6 +453,7 @@ export default function MemoriesScreen({ route }) {
         >
           {getHeader()}
           <FlatList
+            removeClippedSubviews
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={() => (
               <View style={{ justifyContent: 'space-between', alignItems: 'center', marginTop: '60%' }}>

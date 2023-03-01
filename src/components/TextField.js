@@ -223,9 +223,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   textInput: {
+    // backgroundColor: 'red',
+    height: 50,
     flex: 1,
     fontSize: 16,
-    marginRight: 30,
+    paddingRight: 30,
     fontFamily: 'WorkSans-Regular',
     letterSpacing: -1.0,
     paddingHorizontal: 12,

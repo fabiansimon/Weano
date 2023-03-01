@@ -1,5 +1,6 @@
 import {
   Dimensions,
+  Image,
   Platform,
   StyleSheet, TouchableOpacity,
 } from 'react-native';
@@ -18,7 +19,7 @@ import userStore from '../../stores/UserStore';
 import Avatar from '../Avatar';
 
 export default function ImageContainer({
-  style, image, onPress, tripId, onDelete,
+  style, image, onPress, tripId, onDelete, cacheImage = true,
 }) {
   // MUTATIONS
   const [deleteImage] = useMutation(DELETE_IMAGE);
@@ -126,11 +127,19 @@ export default function ImageContainer({
         onPressAction={({ nativeEvent }) => handleOption(nativeEvent)}
         actions={actions}
       >
-        <FastImage
-          source={{ uri }}
-          resizeMode="cover"
-          style={styles.image}
-        />
+        {cacheImage ? (
+          <FastImage
+            source={{ uri }}
+            resizeMode="cover"
+            style={styles.image}
+          />
+        ) : (
+          <Image
+            source={{ uri }}
+            resizeMode="cover"
+            style={styles.image}
+          />
+        )}
         <Avatar
           size={26}
           avatarUri={author.avatarUri}

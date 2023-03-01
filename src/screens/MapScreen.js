@@ -1,5 +1,6 @@
 import React, {
   useMemo, useRef, useState,
+  useEffect,
 } from 'react';
 import {
   Pressable, StyleSheet, View,
@@ -9,21 +10,23 @@ import BottomSheet from '@gorhom/bottom-sheet';
 // eslint-disable-next-line import/no-unresolved
 import { MAPBOX_TOKEN } from '@env';
 import { useNavigation } from '@react-navigation/native';
-import FastImage from 'react-native-fast-image';
 import BackButton from '../components/BackButton';
 import CountriesVisited from '../components/Map/CountriesVisited';
 import tripsStore from '../stores/TripsStore';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
-import DefaultImage from '../../assets/images/default_trip.png';
 import Body from '../components/typography/Body';
 import i18n from '../utils/i18n';
 import Utils from '../utils';
 import ROUTES from '../constants/Routes';
 import SearchModal from '../components/Search/SearchModal';
+import TripContainer from '../components/Trip/TripContainer';
 
 MapboxGL.setAccessToken(MAPBOX_TOKEN);
 
-export default function MapScreen() {
+export default function MapScreen({ route }) {
+  // PARAMS
+  const { initTrip } = route.params;
+
   // STORES
   const trips = tripsStore((state) => state.trips);
 
@@ -36,10 +39,15 @@ export default function MapScreen() {
 
   const navigation = useNavigation();
 
-  const ICON_WIDTH = 40;
-  const ICON_HEIGHT = 50;
-
   const now = Date.now() / 1000;
+
+  useEffect(() => {
+    if (initTrip) {
+      setTimeout(() => {
+        handleSearch(initTrip);
+      }, 500);
+    }
+  }, [initTrip]);
 
   const handleSearch = (id) => {
     sheetRef.current.snapToIndex(0);
@@ -64,25 +72,18 @@ export default function MapScreen() {
   const recentTrips = trips.filter((trip) => trip.dateRange.endDate < now);
 
   const renderTripPins = (trip) => {
-    const { location, thumbnailUri: uri } = trip;
-    const source = uri ? { uri } : DefaultImage;
+    const { location } = trip;
 
     return (
       <MapboxGL.MarkerView
         coordinate={location.latlon}
       >
-        <Pressable
+        <TripContainer
           onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: trip.id })}
-          style={styles.imageContainer}
-        >
-          <FastImage
-            source={source}
-            style={{
-              height: ICON_HEIGHT, width: ICON_WIDTH, borderRadius: RADIUS.s, zIndex: 100,
-            }}
-          />
-          <View style={styles.pinShape} />
-        </Pressable>
+          isDense
+          size={50}
+          trip={trip}
+        />
       </MapboxGL.MarkerView>
     );
   };

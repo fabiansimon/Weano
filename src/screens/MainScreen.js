@@ -2,6 +2,7 @@ import {
   Dimensions,
   Pressable,
   RefreshControl,
+  Share,
   StyleSheet, View,
 } from 'react-native';
 import React, {
@@ -32,6 +33,7 @@ import ActionTile from '../components/Trip/ActionTile';
 import FAButton from '../components/FAButton';
 import StorySection from '../components/StorySection';
 import Divider from '../components/Divider';
+import META_DATA from '../constants/MetaData';
 
 export default function MainScreen() {
   // QUERIES
@@ -97,6 +99,20 @@ export default function MainScreen() {
       });
     }
   }, [data, error]);
+
+  const handleLongPress = ({ nativeEvent: { name } }, { id }) => {
+    if (name === i18n.t('Invite Friends')) {
+      return Share.share({
+        message: `Hey! You've been invited to join a trip! Click the link below to join! ${META_DATA.baseUrl}/redirect/invitation/${id}`,
+      });
+    }
+    if (name === i18n.t('See memories')) {
+      return navigation.navigate(ROUTES.memoriesScreen, { tripId: id, initShowStory: true });
+    }
+    if (name === i18n.t('Visit on Map')) {
+      return navigation.navigate(ROUTES.mapScreen, { initTrip: id });
+    }
+  };
 
   const getHeaderSection = () => (
     <SafeAreaView style={[styles.header, { paddingBottom: highlightTrip ? 40 : 16, borderBottomWidth: highlightTrip ? 1 : 0 }]} edges={['top']}>
@@ -179,6 +195,7 @@ export default function MainScreen() {
         {upcomingTrips.map((trip) => (
           <RecapCardMini
             onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: trip.id })}
+            onLongPress={(e) => handleLongPress(e, trip)}
             style={{ marginTop: 10 }}
             data={trip}
           />
@@ -204,6 +221,7 @@ export default function MainScreen() {
       <View style={styles.tabStyle}>
         {recentTrips.map((trip) => (
           <RecapCardMini
+            onLongPress={(e) => handleLongPress(e, trip)}
             onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: trip.id })}
             style={{ marginTop: 10 }}
             data={trip}
@@ -282,9 +300,9 @@ export default function MainScreen() {
             style={{ top: -25 }}
           />
           <StorySection
+            onLongPress={(e, id) => handleLongPress(e, id)}
             contentContainerStyle={{ marginHorizontal: PADDING.l }}
             style={{ marginHorizontal: -PADDING.l, marginTop: !highlightTrip ? 18 : 0, marginBottom: -8 }}
-            onAddTrip={() => setCreateVisible(true)}
             data={trips}
           />
           <View style={{
