@@ -17,6 +17,7 @@ const activeTripStore = create((set) => ({
       polls: data.polls || null,
       mutualTasks: data.mutualTasks || null,
       privateTasks: data.privateTasks || null,
+      userFreeImages: data.userFreeImages || null,
     },
   })),
   updateActiveTrip: (data) => set((state) => ({
@@ -34,6 +35,7 @@ const activeTripStore = create((set) => ({
       polls: data.polls || state.activeTrip.polls,
       mutualTasks: data.mutualTasks || state.activeTrip.mutualTasks,
       privateTasks: data.privateTasks || state.activeTrip.privateTasks,
+      userFreeImages: data.userFreeImages || state.activeTrip.userFreeImages,
     },
   })),
 }));

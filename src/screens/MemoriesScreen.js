@@ -27,6 +27,7 @@ import Utils from '../utils';
 import BackButton from '../components/BackButton';
 import months from '../constants/Months';
 import AnimatedHeader from '../components/AnimatedHeader';
+import activeTripStore from '../stores/ActiveTripStore';
 
 export default function MemoriesScreen({ route }) {
   // PARAMS
@@ -39,10 +40,14 @@ export default function MemoriesScreen({ route }) {
     },
   });
 
+  // STORES
+  const activeTrip = activeTripStore((state) => state.activeTrip);
+  const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
+
+  const { images, userFreeImages } = activeTrip;
+
   // STATE & MISC
   const scrollY = useRef(new Animated.Value(0)).current;
-  const [images, setImages] = useState([]);
-  const [freeImages, setFreeImage] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [dateSelection, setDateSelection] = useState(null);
   const [dateIndex, setDateIndex] = useState(0);
@@ -61,9 +66,7 @@ export default function MemoriesScreen({ route }) {
   useEffect(() => {
     if (data) {
       const { getImagesFromTrip: imageData } = data;
-      // setImages(imageData.images.slice(0, 20));
-      setImages(imageData.images);
-      setFreeImage(imageData.userFreeImages);
+      updateActiveTrip({ images: imageData.images, userFreeImages: imageData.userFreeImages });
     }
 
     if (error) {
@@ -221,7 +224,7 @@ export default function MemoriesScreen({ route }) {
             color={COLORS.shades[0]}
             text={i18n.t('Moments')}
           />
-          {images.length > 0 && (
+          {images && images.length > 0 && (
             <View style={{ flexDirection: 'row', top: -10 }}>
               <Pressable
                 onPress={() => {
@@ -249,13 +252,13 @@ export default function MemoriesScreen({ route }) {
                     id: 'trip',
                     title: i18n.t('Go to Trip'),
                   },
-                  {
-                    id: 'share',
-                    title: i18n.t('Share Collage'),
-                    image: Platform.select({
-                      ios: 'square.and.arrow.up',
-                    }),
-                  },
+                  // {
+                  //   id: 'share',
+                  //   title: i18n.t('Share Collage'),
+                  //   image: Platform.select({
+                  //     ios: 'square.and.arrow.up',
+                  //   }),
+                  // },
                   {
                     id: 'download',
                     title: i18n.t('Download Album'),
@@ -293,7 +296,7 @@ export default function MemoriesScreen({ route }) {
             </View>
           )}
         </View>
-        {images.length > 0 && (
+        {images && images.length > 0 && (
         <View style={{ marginTop: 10 }}>
           {getDateSelection()}
         </View>
@@ -306,15 +309,14 @@ export default function MemoriesScreen({ route }) {
     const isLeft = index % 1;
     return (
       <ImageContainer
-        cacheImage={index < 30}
+        cacheImage={index < 20}
         tripId={tripId}
         onPress={() => {
           setInitalIndex(images.findIndex((img) => img._id === image._id));
           setStoryVisible(true);
         }}
         onDelete={(id) => {
-          setImages((prev) => prev.filter((i) => i._id !== id));
-          setFreeImage((prev) => prev + 1);
+          updateActiveTrip({ images: images.filter((i) => i._id !== id), userFreeImages: userFreeImages + 1 });
         }}
         style={{ marginLeft: isLeft ? 0 : 10, marginTop: 10 }}
         image={image}
@@ -350,7 +352,7 @@ export default function MemoriesScreen({ route }) {
   };
 
   const getFAB = () => (
-    freeImages > 0 ? (
+    userFreeImages > 0 ? (
       <MenuView
         style={styles.fabContainer}
         onPressAction={({ nativeEvent }) => handleMenuOption(nativeEvent)}
@@ -383,7 +385,7 @@ export default function MemoriesScreen({ route }) {
               type={1}
               color={COLORS.shades[0]}
               style={{ marginRight: -1 }}
-              text={freeImages}
+              text={userFreeImages}
             />
           </View>
           <EntIcon
@@ -408,7 +410,7 @@ export default function MemoriesScreen({ route }) {
               type={1}
               color={COLORS.shades[0]}
               style={{ marginRight: -1 }}
-              text={freeImages}
+              text={userFreeImages}
             />
           </View>
           <EntIcon
@@ -425,7 +427,7 @@ export default function MemoriesScreen({ route }) {
     <>
       <StatusBar barStyle="light-content" />
       <View style={styles.container}>
-        {images.length > 0 && (
+        {images && images.length > 0 && (
         <AnimatedHeader
           scrollY={scrollY}
           maxHeight={110}

@@ -19,7 +19,7 @@ import userStore from '../../stores/UserStore';
 import Avatar from '../Avatar';
 
 export default function ImageContainer({
-  style, image, onPress, tripId, onDelete, cacheImage = true,
+  style, image, onPress, tripId, onDelete, cacheImage = false,
 }) {
   // MUTATIONS
   const [deleteImage] = useMutation(DELETE_IMAGE);

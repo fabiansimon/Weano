@@ -92,6 +92,7 @@ export default function RecapCardMini({
           <View style={{ flexDirection: 'row' }}>
             {activeMembers && activeMembers.map((member) => (
               <Avatar
+                key={member.id}
                 data={member}
                 size={24}
                 style={{ marginLeft: -8 }}

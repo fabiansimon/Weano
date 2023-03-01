@@ -176,7 +176,7 @@ export default function MainScreen() {
     </>
   );
 
-  const UpcomingTap = () => {
+  const UpcomingTab = () => {
     if (upcomingTrips.length <= 0) {
       return (
         <View style={[styles.tabStyle, { marginTop: 20, marginLeft: 10 }]}>
@@ -194,6 +194,7 @@ export default function MainScreen() {
       <View style={styles.tabStyle}>
         {upcomingTrips.map((trip) => (
           <RecapCardMini
+            key={trip.id}
             onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: trip.id })}
             onLongPress={(e) => handleLongPress(e, trip)}
             style={{ marginTop: 10 }}
@@ -203,7 +204,7 @@ export default function MainScreen() {
       </View>
     );
   };
-  const RecentTap = () => {
+  const RecentTab = () => {
     if (recentTrips.length <= 0) {
       return (
         <View style={[styles.tabStyle, { marginTop: 20, marginLeft: 10 }]}>
@@ -221,6 +222,7 @@ export default function MainScreen() {
       <View style={styles.tabStyle}>
         {recentTrips.map((trip) => (
           <RecapCardMini
+            key={trip.id}
             onLongPress={(e) => handleLongPress(e, trip)}
             onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: trip.id })}
             style={{ marginTop: 10 }}
@@ -232,8 +234,8 @@ export default function MainScreen() {
   };
 
   const renderScene = SceneMap({
-    upcoming: UpcomingTap,
-    recent: RecentTap,
+    upcoming: UpcomingTab,
+    recent: RecentTab,
   });
 
   return (

@@ -53,6 +53,7 @@ export default function StorySection({
           }
           return (
             <TripContainer
+              key={trip.id}
               disabled={false}
               onPress={() => navigation.navigate(ROUTES.memoriesScreen, { tripId: trip.id, initShowStory: true })}
               onLongPress={onLongPress}

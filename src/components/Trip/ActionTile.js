@@ -38,22 +38,26 @@ export default function ActionTile({ style, trip, type = 'active' }) {
         toValue: height,
         duration,
         bounciness: 0.2,
+        useNativeDriver: false,
       }).start();
       Animated.timing(animatedBorderRadius, {
         toValue: RADIUS.m,
         bounciness: 0.2,
         duration,
+        useNativeDriver: false,
       }).start();
     } else {
       Animated.spring(animatedHeight, {
         toValue: 50,
         bounciness: 0.2,
         duration,
+        useNativeDriver: false,
       }).start();
       Animated.timing(animatedBorderRadius, {
         toValue: 30,
         bounciness: 0.2,
         duration,
+        useNativeDriver: false,
       }).start();
     }
   }, [isExpanded]);
@@ -94,6 +98,7 @@ export default function ActionTile({ style, trip, type = 'active' }) {
       <ScrollView horizontal style={{ marginHorizontal: -PADDING.s, paddingHorizontal: 15, marginVertical: 10 }}>
         {openTasks?.map((task) => (
           <CheckboxTile
+            key={task.id}
             onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: id })}
             item={task}
             style={{ marginRight: 20 }}
@@ -137,6 +142,7 @@ export default function ActionTile({ style, trip, type = 'active' }) {
           <View style={{ flexDirection: 'row', marginLeft: 6 }}>
             {activeMembers.map((user) => (
               <Avatar
+                key={user.id}
                 size={20}
                 style={{ marginLeft: -6 }}
                 data={user}

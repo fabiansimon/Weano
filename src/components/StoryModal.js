@@ -255,8 +255,8 @@ export default function StoryModal({
           backgroundColor: COLORS.neutral[900],
         }, modalStyle]}
         >
-          {getImagePreview(data[imageIndex])}
-          {getProgressHeader()}
+          {data && getImagePreview(data[imageIndex])}
+          {data && getProgressHeader()}
         </Animated.View>
       </PanGestureHandler>
       <Toast config={toastConfig} />
