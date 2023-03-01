@@ -16,7 +16,6 @@ import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import Button from './Button';
 import KeyboardView from './KeyboardView';
 import ImageSharedView from './ImageSharedView';
-import ROUTES from '../constants/Routes';
 import httpService from '../utils/httpService';
 import userStore from '../stores/UserStore';
 import toastConfig from '../constants/ToastConfig';
@@ -32,7 +31,7 @@ export default function ImageModal({
 
   // STORES
   const user = userStore((state) => state.user);
-  const activeTrip = activeTripStore((state) => state.activeTrip);
+  const { images, userFreeImages, id } = activeTripStore((state) => state.activeTrip);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
 
   // STATE & MISC
@@ -54,7 +53,7 @@ export default function ImageModal({
   const duration = 300;
 
   useEffect(() => {
-    console.log(activeTrip.id);
+    console.log(id);
     console.log(tripId);
   }, []);
 
@@ -135,7 +134,23 @@ export default function ImageModal({
           },
         },
       }).then((res) => {
-        console.log(res);
+        if (id === tripId) {
+          const _image = res.data.uploadTripImage;
+          const author = {
+            _id: user.id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            avatarUri: user.avatarUri,
+          };
+
+          updateActiveTrip({
+            images: [...images, {
+              ..._image,
+              author,
+            }],
+            userFreeImages: userFreeImages - 1,
+          });
+        }
         setIsShared(true);
         setIsLoading(false);
       });
@@ -145,12 +160,13 @@ export default function ImageModal({
         text1: i18n.t('Whoops!'),
         text2: e.message,
       });
+      console.log(e);
       setIsLoading(false);
     }
   };
 
   const handleDone = () => {
-    navigation.navigate(ROUTES.mainScreen);
+    navigation.goBack();
     setIsShared(false);
     setTimeout(() => {
       onRequestClose();

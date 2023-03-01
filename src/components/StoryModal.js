@@ -16,6 +16,7 @@ import Animated, {
   useAnimatedGestureHandler, useAnimatedStyle, useDerivedValue, useSharedValue, withSpring,
 } from 'react-native-reanimated';
 import RNFetchBlob from 'rn-fetch-blob';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import BackButton from './BackButton';
 import Utils from '../utils';
@@ -221,12 +222,20 @@ export default function StoryModal({
         >
           <Pressable
             onPress={() => setImageIndex((index) => (index !== 0 ? index - 1 : 0))}
+            onLongPress={() => {
+              setImageIndex(0);
+              ReactNativeHapticFeedback.trigger('impactLight');
+            }}
             style={{
               flex: 1,
             }}
           />
           <Pressable
             onPress={() => setImageIndex((index) => (index !== data.length - 1 ? index + 1 : data.length - 1))}
+            onLongPress={() => {
+              setImageIndex(data.length - 1);
+              ReactNativeHapticFeedback.trigger('impactLight');
+            }}
             style={{
               flex: 1,
             }}

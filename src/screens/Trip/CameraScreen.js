@@ -43,6 +43,9 @@ export default function CameraScreen({ route }) {
     if (preselectedImage) {
       setCapturedImage(preselectedImage);
     }
+    return () => {
+      setCapturedImage(null);
+    };
   }, [preselectedImage]);
 
   let lastPress = 0;

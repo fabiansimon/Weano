@@ -41,10 +41,8 @@ export default function MemoriesScreen({ route }) {
   });
 
   // STORES
-  const activeTrip = activeTripStore((state) => state.activeTrip);
+  const { images, userFreeImages } = activeTripStore((state) => state.activeTrip);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
-
-  const { images, userFreeImages } = activeTrip;
 
   // STATE & MISC
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -190,11 +188,11 @@ export default function MemoriesScreen({ route }) {
               backgroundColor,
               paddingHorizontal: 13,
               paddingVertical: 8,
-              marginRight: 5,
+              marginRight: 2,
             }}
           >
             <Body
-              type={1}
+              type={2}
               color={color}
               text={item.title}
             />
@@ -252,13 +250,7 @@ export default function MemoriesScreen({ route }) {
                     id: 'trip',
                     title: i18n.t('Go to Trip'),
                   },
-                  // {
-                  //   id: 'share',
-                  //   title: i18n.t('Share Collage'),
-                  //   image: Platform.select({
-                  //     ios: 'square.and.arrow.up',
-                  //   }),
-                  // },
+
                   {
                     id: 'download',
                     title: i18n.t('Download Album'),
@@ -398,8 +390,6 @@ export default function MemoriesScreen({ route }) {
     )
       : (
         <View
-          animation="pulse"
-          iterationCount="infinite"
           activeOpacity={0.5}
           style={[styles.fab, styles.fabContainer, { backgroundColor: Utils.addAlpha(COLORS.primary[700], 0.3) }]}
         >
@@ -410,7 +400,7 @@ export default function MemoriesScreen({ route }) {
               type={1}
               color={COLORS.shades[0]}
               style={{ marginRight: -1 }}
-              text={userFreeImages}
+              text={userFreeImages || '0'}
             />
           </View>
           <EntIcon
@@ -487,6 +477,7 @@ export default function MemoriesScreen({ route }) {
           data={images}
           onRequestClose={() => {
             setStoryVisible(false);
+            setInitalIndex(0);
           }}
           isVisible={storyVisible}
         />

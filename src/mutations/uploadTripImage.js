@@ -2,7 +2,19 @@ import { gql } from '@apollo/client';
 
 const UPLOAD_TRIP_IMAGE = gql`
     mutation UploadTripImage($image: ImageInput!) {
-        uploadTripImage(image: $image) 
+        uploadTripImage(image: $image) {
+            _id
+            author {
+                _id
+                avatarUri
+                lastName
+                firstName
+            }
+            createdAt
+            uri
+            title
+            description
+        } 
     }
 `;
 
