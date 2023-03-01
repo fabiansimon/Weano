@@ -16,7 +16,7 @@ import Utils from '../../utils';
 import CheckboxTile from './CheckboxTile';
 import Avatar from '../Avatar';
 
-export default function ActionTile({ style, trip, type = 'active' }) {
+export default function ActionTile({ style, trip }) {
   // STATE & MISC
   const [isExpanded, setIsExpanded] = useState(false);
   const animatedHeight = useRef(new Animated.Value(50)).current;
@@ -25,9 +25,9 @@ export default function ActionTile({ style, trip, type = 'active' }) {
   const duration = 300;
   const noTasks = !(trip?.openTasks && trip?.openTasks.length > 0);
 
-  const isActive = type === 'active';
-  const isUpcoming = type === 'upcoming';
-  const isRecap = type === 'recap';
+  const isActive = trip?.type === 'active';
+  const isUpcoming = trip?.type === 'upcoming';
+  const isRecap = trip?.type === 'recap';
   const height = isActive ? 150 : isUpcoming && noTasks ? 130 : isUpcoming && !noTasks ? 180 : 130;
 
   const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -157,7 +157,7 @@ export default function ActionTile({ style, trip, type = 'active' }) {
               />
               <Body
                 type={1}
-                text={images.length}
+                text={images?.length || 0}
                 style={{ marginLeft: 2 }}
                 color={COLORS.neutral[300]}
               />
@@ -196,7 +196,7 @@ export default function ActionTile({ style, trip, type = 'active' }) {
         type={1}
         text={tripTitle}
       />
-      {tripTitle.length < 18 && (
+      {tripTitle?.length < 18 && (
       <Body
         style={{ fontWeight: '400' }}
         type={1}

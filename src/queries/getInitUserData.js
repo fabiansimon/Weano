@@ -19,6 +19,7 @@ const GET_INIT_USER_DATA = gql`
                 }
             }
             trips {
+                type
                 id
                 thumbnailUri
                 title
@@ -42,16 +43,6 @@ const GET_INIT_USER_DATA = gql`
                     firstName
                     lastName
                 }
-                images {
-                    _id
-                    uri
-                }
-            }
-            images {
-                uri
-                title
-                description
-                author
             }
         }
     }

@@ -8,7 +8,6 @@ import COLORS from '../constants/Theme';
 import Body from './typography/Body';
 import i18n from '../utils/i18n';
 import ROUTES from '../constants/Routes';
-import Utils from '../utils';
 import Label from './typography/Label';
 import Headline from './typography/Headline';
 import TripContainer from './Trip/TripContainer';
@@ -46,8 +45,7 @@ export default function StorySection({
           />
         </Pressable>
         {data.map((trip) => {
-          const { dateRange } = trip;
-          const type = Utils.convertDateToType(dateRange);
+          const { type } = trip;
           if (type === 'upcoming' || type === 'soon') {
             return;
           }

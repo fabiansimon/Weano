@@ -8,6 +8,7 @@ import i18n from '../../utils/i18n';
 import Headline from '../typography/Headline';
 import COLORS, { PADDING } from '../../constants/Theme';
 import Subtitle from '../typography/Subtitle';
+import toastConfig from '../../constants/ToastConfig';
 
 export default function AddExpenseModal({
   isVisible, onRequestClose, onPress, isLoading,
@@ -99,9 +100,9 @@ export default function AddExpenseModal({
               />
             </View>
           </View>
-
         </View>
       </KeyboardView>
+      <Toast config={toastConfig} />
     </TitleModal>
   );
 }

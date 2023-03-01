@@ -10,14 +10,17 @@ import Button from '../Button';
 import userStore from '../../stores/UserStore';
 import Body from '../typography/Body';
 import SearchResultTile from '../Search/SearchResultTile';
+import Utils from '../../utils';
 
 export default function CountriesVisited({
-  showUpcoming, upcomingTrips, recentTrips, onSearchPress, onPress,
+  onSearchPress, onPress, data,
 }) {
   // STORES
   const { firstName } = userStore((state) => state.user);
 
-  const title = !showUpcoming ? `${i18n.t("You've completed")} ${recentTrips?.length} ${i18n.t('Trips')}` : `${i18n.t("You've planned")} ${upcomingTrips?.length} ${i18n.t('Trips')}`;
+  const recentTrips = data.filter((trip) => trip.type === 'recent').length;
+  const activeTrips = data.filter((trip) => trip.type === 'active').length;
+  const upcomingTrips = data.filter((trip) => trip.type === 'upcoming' || trip.type === 'soon').length;
 
   return (
     <View style={{ flex: 1 }}>
@@ -25,7 +28,7 @@ export default function CountriesVisited({
       <View style={styles.container}>
         <View style={styles.header}>
           <View style={{ flexDirection: 'column' }}>
-            <View style={{ flexDirection: 'row', marginBottom: 2 }}>
+            <View style={{ flexDirection: 'row', marginBottom: 4 }}>
               <Headline
                 type={3}
                 style={{ fontWeight: '400', marginRight: 4 }}
@@ -36,10 +39,32 @@ export default function CountriesVisited({
                 text={firstName}
               />
             </View>
-            <Body
-              type={1}
-              text={title}
-            />
+            <View style={{ flexDirection: 'row' }}>
+              <View style={[styles.titleContainer, { backgroundColor: Utils.addAlpha(COLORS.error[700], 0.2) }]}>
+                <Body
+                  type={2}
+                  color={COLORS.error[700]}
+                  style={{ fontWeight: '500' }}
+                  text={`${activeTrips} ${i18n.t('Active')}`}
+                />
+              </View>
+              <View style={[styles.titleContainer, { backgroundColor: Utils.addAlpha(COLORS.success[700], 0.2) }]}>
+                <Body
+                  type={2}
+                  color={COLORS.success[700]}
+                  style={{ fontWeight: '500' }}
+                  text={`${upcomingTrips} ${i18n.t('Upcoming')}`}
+                />
+              </View>
+              <View style={[styles.titleContainer, { backgroundColor: Utils.addAlpha(COLORS.primary[700], 0.2) }]}>
+                <Body
+                  type={2}
+                  color={COLORS.primary[700]}
+                  style={{ fontWeight: '500' }}
+                  text={`${recentTrips} ${i18n.t('Recent')}`}
+                />
+              </View>
+            </View>
           </View>
           <Button
             style={[styles.searchButton, styles.buttonShadow]}
@@ -60,7 +85,7 @@ export default function CountriesVisited({
               color={COLORS.neutral[300]}
             />
           )}
-          data={showUpcoming ? upcomingTrips : recentTrips}
+          data={data}
           ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
           renderItem={({ item }) => (
             <SearchResultTile
@@ -103,5 +128,13 @@ const styles = StyleSheet.create({
   searchButton: {
     borderWidth: 1,
     borderColor: COLORS.neutral[100],
+  },
+  titleContainer: {
+    paddingVertical: 4,
+    paddingHorizontal: 6,
+    borderRadius: 6,
+    marginBottom: 10,
+    marginTop: 4,
+    marginRight: 8,
   },
 });

@@ -64,19 +64,12 @@ export default function MainScreen() {
 
   const { height } = Dimensions.get('window');
 
-  const now = Date.now() / 1000;
+  const upcomingTrips = trips.filter((trip) => trip.type === 'upcoming');
+  const soonTrip = trips.filter((trip) => trip.type === 'soon')[0];
+  const recentTrips = trips.filter((trip) => trip.type === 'recent');
+  const activeTrip = trips.filter((trip) => trip.type === 'active')[0];
 
-  let recapTimestamp = new Date();
-  recapTimestamp.setFullYear(recapTimestamp.getFullYear() - 1);
-  recapTimestamp = Date.parse(recapTimestamp) / 1000;
-
-  const upcomingTrips = trips.filter((trip) => trip.dateRange.startDate > now && trip.dateRange.endDate > now);
-  const recentTrips = trips.filter((trip) => trip.dateRange.startDate < now && trip.dateRange.endDate < now);
-  const activeTrip = trips.filter((trip) => trip.dateRange.startDate < now && trip.dateRange.endDate > now)[0];
-  const recapTrip = trips.filter((trip) => trip.dateRange.startDate < recapTimestamp && trip.dateRange.endDate < now)[0];
-  const upcomingTrip = upcomingTrips.length > 0 && upcomingTrips.filter((trip) => ((trip.dateRange.startDate - now) / 86400) < 7)[0];
-
-  const highlightTrip = activeTrip || upcomingTrip || recapTrip || null;
+  const highlightTrip = activeTrip || soonTrip || null;
 
   const getTabBarHeight = () => {
     const containerHeight = 150;
@@ -297,12 +290,11 @@ export default function MainScreen() {
         <View style={styles.container}>
           {getHeaderSection()}
           <ActionTile
-            type={activeTrip ? 'active' : upcomingTrip ? 'upcoming' : recapTrip ? 'recap' : null}
             trip={highlightTrip}
             style={{ top: -25 }}
           />
           <StorySection
-            onLongPress={(e, id) => handleLongPress(e, id)}
+            onLongPress={(e, id) => handleLongPress(e, { id })}
             contentContainerStyle={{ marginHorizontal: PADDING.l }}
             style={{ marginHorizontal: -PADDING.l, marginTop: !highlightTrip ? 18 : 0, marginBottom: -8 }}
             data={trips}

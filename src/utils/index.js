@@ -221,28 +221,4 @@ export default class Utils {
       console.log(error);
     }
   }
-
-  /**
-     * Return type of trip | 'active', 'upcoming', 'successful'
-     * @param {Object} dateRange - dateRange
-     */
-  static convertDateToType(dateRange) {
-    const now = Date.now() / 1000;
-
-    if (dateRange.startDate < now && dateRange.endDate < now) {
-      return 'recent';
-    }
-
-    if (dateRange.startDate < now && dateRange.endDate > now) {
-      return 'active';
-    }
-
-    if (((dateRange.startDate - now) / 86400) < 7) {
-      return 'soon';
-    }
-
-    if (dateRange.startDate > now && dateRange.endDate > now) {
-      return 'upcoming';
-    }
-  }
 }

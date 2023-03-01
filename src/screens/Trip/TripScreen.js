@@ -48,6 +48,7 @@ import TripScreenSkeleton from './TripScreenSkeleton';
 import userManagement from '../../utils/userManagement';
 import DELETE_TRIP_BY_ID from '../../mutations/deleteTripById';
 import QRModal from '../../components/Trip/QRModal';
+import tripsStore from '../../stores/TripsStore';
 
 export default function TripScreen({ route }) {
   // PARAMS
@@ -68,6 +69,7 @@ export default function TripScreen({ route }) {
   const activeTrip = activeTripStore((state) => state.activeTrip);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
   const setActiveTrip = activeTripStore((state) => state.setActiveTrip);
+  const removeTrip = tripsStore((state) => state.removeTrip);
 
   // STATE & MISC
   const [currentTab, setCurrentTab] = useState(0);
@@ -177,9 +179,10 @@ export default function TripScreen({ route }) {
             Toast.show({
               type: 'success',
               text1: i18n.t('Whooray!'),
-              text2: i18n.t('Expense was succeessfully deleted!'),
+              text2: i18n.t('Trip was succeessfully deleted!'),
             });
 
+            removeTrip(data.id);
             navigation.navigate(ROUTES.mainScreen);
           })
           .catch((e) => {
@@ -198,7 +201,7 @@ export default function TripScreen({ route }) {
     setCurrentTab(index);
     const headerHeight = 460;
     const ref = contentRefs[index];
-    ref?.current.measure((fx, fy) => {
+    ref?.current.measure((_, fy) => {
       scrollRef.current?.scrollTo({ y: fy + headerHeight, animated: true });
     });
   };

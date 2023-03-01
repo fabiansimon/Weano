@@ -8,6 +8,9 @@ const tripsStore = create((set) => ({
   addTrip: (trip) => set((state) => ({
     trips: [...state.trips, trip],
   })),
+  removeTrip: (id) => set((state) => ({
+    trips: state.trips.filter((trip) => trip.id !== id),
+  })),
 }));
 
 export default tripsStore;

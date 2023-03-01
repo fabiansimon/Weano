@@ -17,10 +17,9 @@ export default function TripContainer({
   trip, onLongPress, disabled = true, size, isDense = false, onPress,
 }) {
   const {
-    location, thumbnailUri: uri, dateRange,
+    location, thumbnailUri: uri, dateRange, type,
   } = trip;
 
-  const type = Utils.convertDateToType(dateRange);
   const height = size || 62;
   const width = size || 62;
   const borderRadius = size < 55 ? 16 : 20;

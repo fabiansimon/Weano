@@ -10,7 +10,7 @@ import { useMutation } from '@apollo/client';
 import Toast from 'react-native-toast-message';
 import i18n from '../utils/i18n';
 import Headline from './typography/Headline';
-import COLORS from '../constants/Theme';
+import COLORS, { PADDING } from '../constants/Theme';
 import TextField from './TextField';
 import Button from './Button';
 import KeyboardView from './KeyboardView';
@@ -26,6 +26,7 @@ import tripsStore from '../stores/TripsStore';
 import InputModal from './InputModal';
 import httpService from '../utils/httpService';
 import userStore from '../stores/UserStore';
+import toastConfig from '../constants/ToastConfig';
 
 export default function CreateModal({ isVisible, onRequestClose }) {
   const addTripState = tripsStore((state) => state.addTrip);
@@ -67,8 +68,8 @@ export default function CreateModal({ isVisible, onRequestClose }) {
   const getDateValue = () => {
     let start = '--';
     let end = '--';
-    start = startDate && Utils.getDateFromTimestamp(startDate, 'Do.MM YY');
-    end = endDate && Utils.getDateFromTimestamp(endDate, 'DD.MM YY');
+    start = startDate && Utils.getDateFromTimestamp(startDate, 'Do MMM YYYY');
+    end = endDate && Utils.getDateFromTimestamp(endDate, 'Do MMM YYYY');
 
     return `${start} - ${end}`;
   };
@@ -81,11 +82,11 @@ export default function CreateModal({ isVisible, onRequestClose }) {
     }
 
     if (isBack) {
+      setPageIndex((prev) => prev - 1);
       pageRef.current?.setPage(pageIndex - 1);
-      setPageIndex(pageIndex - 1);
     } else {
+      setPageIndex((prev) => prev + 1);
       pageRef.current?.setPage(pageIndex + 1);
-      setPageIndex(pageIndex + 1);
     }
   };
 
@@ -136,6 +137,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
           endDate,
           startDate,
         },
+        type: 'upcoming',
       });
     });
 
@@ -158,7 +160,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
         onPrefixPress={() => setCalendarVisible(true)}
         focusable={false}
         disabled
-        style={{ marginTop: 18, marginBottom: 10 }}
+        style={{ marginTop: 10, marginBottom: 10 }}
         value={getDateValue()}
         icon="calendar"
         placeholder={i18n.t('Select a date')}
@@ -188,7 +190,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
   const getLocationContent = () => (
     <View>
       <TextField
-        style={{ marginTop: 18, marginBottom: 10 }}
+        style={{ marginTop: 10, marginBottom: 10 }}
         value={location.placeName || null}
         onChangeText={(val) => setLocation({
           placeName: val,
@@ -237,7 +239,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
 
   const getTitleContent = () => (
     <TextField
-      style={{ marginTop: 18, marginBottom: 10 }}
+      style={{ marginTop: 10, marginBottom: 10 }}
       value={tripName || null}
       onChangeText={(val) => setTripName(val)}
       placeholder={i18n.t('Epic Summer Trip 2021 ✈️')}
@@ -255,8 +257,8 @@ export default function CreateModal({ isVisible, onRequestClose }) {
     {
       title: i18n.t('Right tribe - right vibe 🎉'),
       subtitle: i18n.t('Let’s invite some people'),
-      trailing: <Headline
-        type={4}
+      trailing: <Body
+        type={1}
         text={i18n.t('Add more')}
         color={COLORS.primary[700]}
         style={{ textDecorationLine: 'underline' }}
@@ -373,6 +375,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
         onPress={(input) => setInvitees((prev) => prev.concat(input))}
         autoClose
       />
+      <Toast config={toastConfig} />
     </Modal>
   );
 }
@@ -380,7 +383,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
 const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
-    marginHorizontal: 25,
+    marginHorizontal: PADDING.l,
     marginBottom: 10,
   },
   container: {

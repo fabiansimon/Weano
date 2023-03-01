@@ -56,7 +56,7 @@ export default function MemoriesScreen({ route }) {
   const navigation = useNavigation();
 
   useEffect(() => {
-    if (initShowStory) {
+    if (initShowStory && images?.length > 0) {
       setStoryVisible(true);
     }
   }, [initShowStory]);

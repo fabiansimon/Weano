@@ -80,7 +80,7 @@ export default function LocationScreen({ isVisible, onRequestClose, onPress }) {
       transparent
       onRequestClose={onRequestClose}
     >
-      <KeyboardView>
+      <KeyboardView paddingBottom={0}>
         <View style={styles.container}>
           <SafeAreaView style={styles.header}>
             <Pressable
