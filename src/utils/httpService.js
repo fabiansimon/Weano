@@ -67,7 +67,8 @@ async function checkVerificationCode(phoneNumber, code) {
   });
 }
 
-async function uploadToS3(image, transformToBase64 = false) {
+// eslint-disable-next-line default-param-last
+async function uploadToS3(image, transformToBase64 = false, document) {
   const key = uuidv4();
 
   const bucket = new S3({
@@ -77,9 +78,26 @@ async function uploadToS3(image, transformToBase64 = false) {
     signatureVersion: 'v4',
   });
 
+  let arrayBuffer;
+
+  if (document) {
+    const type = 'application/pdf';
+
+    const base64 = await readFile(document, 'base64');
+    arrayBuffer = decode(base64);
+
+    // eslint-disable-next-line no-return-await
+    return await bucket.upload({
+      Bucket: S3_BUCKET,
+      Key: `${key}/helloworld.pdf`,
+      ContentDisposition: 'attachment',
+      Body: arrayBuffer,
+      ContentType: type,
+    }).promise();
+  }
+
   const type = 'image/jpeg';
 
-  let arrayBuffer;
   if (transformToBase64) {
     const path = image.uri;
     const base64 = await readFile(path, 'base64');

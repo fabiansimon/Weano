@@ -58,7 +58,7 @@ export default function ChecklistContainer({
         : (
           <Body
             color={COLORS.neutral[300]}
-            type={1}
+            type={2}
             text={i18n.t('No private tasks yet')}
             style={{ alignSelf: 'center' }}
           />
@@ -67,7 +67,7 @@ export default function ChecklistContainer({
         : (
           <Body
             color={COLORS.neutral[300]}
-            type={1}
+            type={2}
             text={i18n.t('No mutual tasks yet')}
             style={{ alignSelf: 'center' }}
           />

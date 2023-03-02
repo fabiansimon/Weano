@@ -19,6 +19,7 @@ const activeTripStore = create((set) => ({
       privateTasks: data.privateTasks || null,
       userFreeImages: data.userFreeImages || null,
       type: data.type || null,
+      documents: data.documents || null,
     },
   })),
   updateActiveTrip: (data) => set((state) => ({
@@ -38,6 +39,7 @@ const activeTripStore = create((set) => ({
       privateTasks: data.privateTasks || state.activeTrip.privateTasks,
       userFreeImages: data.userFreeImages || state.activeTrip.userFreeImages,
       type: data.type || state.activeTrip.type,
+      documents: data.documents || state.activeTrip.documents,
     },
   })),
 }));

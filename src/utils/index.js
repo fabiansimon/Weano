@@ -1,7 +1,11 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import 'react-native-get-random-values';
 import moment from 'moment';
+import RNFS from 'react-native-fs';
+import FileViewer from 'react-native-file-viewer';
+
 import { Alert, Linking } from 'react-native';
+
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 import Toast from 'react-native-toast-message';
 import Contacts from 'react-native-contacts';
@@ -220,5 +224,30 @@ export default class Utils {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  /**
+     * Open Document from an URL locally on the phone
+     * @param {String} URL - URL
+     */
+  static openDocumentFromUrl(url, title) {
+    const extension = url.split(/[#?]/)[0].split('.').pop().trim();
+
+    const localFile = `${RNFS.DocumentDirectoryPath}/${title}.${extension}`;
+
+    const options = {
+      fromUrl: url,
+      toFile: localFile,
+    };
+    RNFS.downloadFile(options)
+      .promise.then(() => FileViewer.open(localFile))
+      .catch((error) => {
+        console.error(error);
+        Toast.show({
+          type: 'error',
+          text1: i18n.t('Whoops!'),
+          text2: i18n.t('Sorry something went wrong...'),
+        });
+      });
   }
 }

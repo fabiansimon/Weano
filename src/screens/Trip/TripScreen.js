@@ -49,6 +49,7 @@ import userManagement from '../../utils/userManagement';
 import DELETE_TRIP_BY_ID from '../../mutations/deleteTripById';
 import QRModal from '../../components/Trip/QRModal';
 import tripsStore from '../../stores/TripsStore';
+import DocumentsContainer from '../../components/Trip/DocumentsContainer';
 
 export default function TripScreen({ route }) {
   // PARAMS
@@ -79,7 +80,7 @@ export default function TripScreen({ route }) {
   const scrollY = useRef(new Animated.Value(0)).current;
   const addImageRef = useRef();
   const scrollRef = useRef();
-  // const documentsRef = useRef();
+  const documentsRef = useRef();
   const expensesRef = useRef();
   const pollsRef = useRef();
   const checklistRef = useRef();
@@ -88,7 +89,7 @@ export default function TripScreen({ route }) {
   const navigation = useNavigation();
 
   const contentRefs = [
-    // documentsRef,
+    documentsRef,
     expensesRef,
     checklistRef,
     pollsRef,
@@ -100,7 +101,6 @@ export default function TripScreen({ route }) {
   const inactive = !data || loading;
 
   const isHost = userManagement.isHost();
-  console.log(activeTrip);
 
   const themeColor = activeTrip.type === 'active' ? COLORS.error[900] : COLORS.primary[700];
 
@@ -404,24 +404,23 @@ export default function TripScreen({ route }) {
   ];
 
   const contentItems = [
-    // {
-    //   title: i18n.t('Documents'),
-    //   trailing: <Headline
-    //     onPress={() => navigation.navigate(ROUTES.pollScreen)}
-    //     type={4}
-    //     style={{ textDecorationLine: 'underline' }}
-    //     text={i18n.t('see all')}
-    //     color={COLORS.neutral[300]}
-    //   />,
-    //   ref: documentsRef,
-    //   omitPadding: true,
-    //   content: data?.polls && (
-    //   <PollCarousel
-    //     onPress={() => navigation.navigate(ROUTES.pollScreen)}
-    //     data={data?.polls}
-    //   />
-    //   ),
-    // },
+    {
+      title: i18n.t('Documents'),
+      trailing: <Headline
+        onPress={() => navigation.navigate(ROUTES.documentsScreen)}
+        type={4}
+        style={{ textDecorationLine: 'underline' }}
+        text={i18n.t('see all')}
+        color={COLORS.neutral[300]}
+      />,
+      ref: documentsRef,
+      omitPadding: true,
+      content: data?.documents && (
+        <DocumentsContainer
+          data={data?.documents}
+        />
+      ),
+    },
     {
       title: i18n.t('Expenses'),
       trailing: <Headline

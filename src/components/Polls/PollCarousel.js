@@ -33,8 +33,8 @@ export default function PollCarousel({
     ) : (
       <View style={styles.emptyContainer}>
         <Body
-          type={1}
-          text={i18n.t('Be the first one to add a poll 📊')}
+          type={2}
+          text={i18n.t('No polls to show ')}
           color={COLORS.neutral[300]}
         />
       </View>
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 14,
-    height: 80,
+    paddingVertical: 10,
     borderColor: COLORS.neutral[100],
     borderWidth: 1,
     backgroundColor: COLORS.shades[0],

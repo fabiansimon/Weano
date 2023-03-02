@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Pressable,
   StyleSheet,
 } from 'react-native';
@@ -8,23 +9,31 @@ import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import Headline from './typography/Headline';
 
 export default function FAButton({
-  style, onPress, icon, iconSize = 22, string,
+  style, onPress, icon, iconSize = 22, string, isLoading = false,
 }) {
   return (
     <Pressable
+      disabled={isLoading}
       onPress={onPress}
       style={[styles.fab, { paddingHorizontal: string ? PADDING.l : 0 }, style]}
     >
-      <Headline
-        type={4}
-        color={COLORS.shades[0]}
-        text={string}
-      />
-      <Icon
-        name={icon}
-        color={COLORS.shades[0]}
-        size={iconSize}
-      />
+      {isLoading
+        ? <ActivityIndicator color={COLORS.shades[0]} />
+        : (
+          <>
+            <Headline
+              type={4}
+              color={COLORS.shades[0]}
+              text={string}
+            />
+            <Icon
+              name={icon}
+              color={COLORS.shades[0]}
+              size={iconSize}
+            />
+
+          </>
+        )}
 
     </Pressable>
   );

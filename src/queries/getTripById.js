@@ -65,6 +65,14 @@ const GET_TRIP_BY_ID = gql`
                 title
                 isDone
             }
+            documents {
+                _id
+                title
+                createdAt
+                creatorId
+                type
+                uri
+            }
         }
     }
 `;
