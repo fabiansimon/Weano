@@ -30,7 +30,7 @@ export default function MapScreen({ route }) {
 
   // STATE & MISC
   const [showSearch, setShowSearch] = useState(false);
-  const snapPoints = useMemo(() => ['17%', '88%'], []);
+  const snapPoints = useMemo(() => ['22%', '88%'], []);
   const sheetRef = useRef(null);
 
   const mapCamera = useRef();

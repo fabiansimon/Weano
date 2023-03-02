@@ -27,18 +27,17 @@ export default function CountriesVisited({
       <View style={styles.handler} />
       <View style={styles.container}>
         <View style={styles.header}>
-          <View style={{ flexDirection: 'column' }}>
-            <View style={{ flexDirection: 'row', marginBottom: 4 }}>
-              <Headline
-                type={3}
-                style={{ fontWeight: '400', marginRight: 4 }}
-                text={i18n.t('Hey')}
-              />
-              <Headline
-                type={3}
-                text={firstName}
-              />
-            </View>
+          <View>
+            <Headline
+              type={4}
+              text={`${i18n.t('Hey there')} ${firstName}!`}
+            />
+            <Body
+              type={1}
+              color={COLORS.neutral[300]}
+              style={{ marginTop: 2, marginBottom: 6 }}
+              text={i18n.t("Let's take look at your trips 🍹")}
+            />
             <View style={{ flexDirection: 'row' }}>
               <View style={[styles.titleContainer, { backgroundColor: Utils.addAlpha(COLORS.error[700], 0.2) }]}>
                 <Body
@@ -123,7 +122,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 22,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
   searchButton: {
     borderWidth: 1,

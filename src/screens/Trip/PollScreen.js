@@ -1,4 +1,6 @@
-import { View, StyleSheet, FlatList } from 'react-native';
+import {
+  View, StyleSheet, FlatList, Dimensions,
+} from 'react-native';
 import React, { useState, useRef, useEffect } from 'react';
 import Animated from 'react-native-reanimated';
 import { useMutation } from '@apollo/client';
@@ -14,8 +16,8 @@ import FAButton from '../../components/FAButton';
 import AddPollModal from '../../components/Trip/AddPollModal';
 import ADD_POLL from '../../mutations/addPoll';
 import userStore from '../../stores/UserStore';
-import Headline from '../../components/typography/Headline';
 import DELETE_POLL from '../../mutations/deletePoll';
+import Body from '../../components/typography/Body';
 
 export default function PollScreen() {
   // MUTATIONS
@@ -31,6 +33,8 @@ export default function PollScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const { height } = Dimensions.get('window');
 
   useEffect(() => {
     if (error || deleteError) {
@@ -137,14 +141,28 @@ export default function PollScreen() {
         <View style={styles.innerContainer}>
           <FlatList
             ListEmptyComponent={(
-              <Headline
-                type={4}
+              <View
                 style={{
-                  textAlign: 'center', alignSelf: 'center', marginTop: 18,
+                  flex: 1,
+                  height: height * 0.65,
+                  justifyContent: 'center',
                 }}
-                text={i18n.t('No polls yet. \nBe the first one to add one 😎')}
-                color={COLORS.neutral[300]}
-              />
+              >
+                <Body
+                  type={1}
+                  style={{ alignSelf: 'center' }}
+                  color={COLORS.shades[100]}
+                  text={i18n.t('There are no polls yet 😕')}
+                />
+                <Body
+                  type={2}
+                  style={{
+                    alignSelf: 'center', textAlign: 'center', width: '85%', marginTop: 4,
+                  }}
+                  color={COLORS.neutral[300]}
+                  text={i18n.t('Use polls to figure out what the majority wants. Once created all the polls will be shown here.')}
+                />
+              </View>
           )}
             data={polls}
             ItemSeparatorComponent={() => (

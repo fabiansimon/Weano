@@ -26,7 +26,7 @@ export default function ActionTile({ style, trip }) {
   const noTasks = !(trip?.openTasks && trip?.openTasks.length > 0);
 
   const isActive = trip?.type === 'active';
-  const isUpcoming = trip?.type === 'upcoming';
+  const isUpcoming = trip?.type === 'upcoming' || trip?.type === 'soon';
   const isRecap = trip?.type === 'recap';
   const height = isActive ? 150 : isUpcoming && noTasks ? 130 : isUpcoming && !noTasks ? 180 : 130;
 

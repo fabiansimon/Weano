@@ -100,9 +100,9 @@ export default function TripScreen({ route }) {
   const inactive = !data || loading;
 
   const isHost = userManagement.isHost();
+  console.log(activeTrip);
 
-  const now = Date.now() / 1000;
-  const isActive = data && data?.dateRange.startDate < now && activeTrip?.dateRange.endDate > now;
+  const themeColor = activeTrip.type === 'active' ? COLORS.error[900] : COLORS.primary[700];
 
   const { width } = Dimensions.get('window');
 
@@ -356,7 +356,7 @@ export default function TripScreen({ route }) {
   };
 
   const getDayDifference = () => {
-    if (isActive) {
+    if (activeTrip.type === 'isActive') {
       return i18n.t('• live');
     }
     // eslint-disable-next-line no-unsafe-optional-chaining
@@ -633,9 +633,9 @@ export default function TripScreen({ route }) {
             text={i18n.t('Status')}
           />
           <Animatable.View
-            style={[styles.dateDifferenceStyle, { backgroundColor: isActive ? COLORS.error[900] : COLORS.primary[700] }]}
+            style={[styles.dateDifferenceStyle, { backgroundColor: themeColor }]}
             animation="pulse"
-            iterationCount={isActive ? 'infinite' : 1}
+            iterationCount={activeTrip.type === 'active' ? 'infinite' : 1}
           >
             <Headline
               type={4}
@@ -744,7 +744,7 @@ export default function TripScreen({ route }) {
         <TripHeader
           title={!inactive ? data?.title : i18n.t('Loading...')}
           id={data?.id}
-          isActive={isActive}
+          isActive={activeTrip.type === 'active'}
           subtitle={`${data?.location.placeName.split(',')[0]}`}
           items={contentItems}
           onPress={(index) => handleTabPress(index)}

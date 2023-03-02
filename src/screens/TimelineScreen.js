@@ -251,11 +251,19 @@ export default function TimelineScreen() {
                     justifyContent: 'center',
                   }}
                 >
-                  <Headline
-                    type={4}
+                  <Body
+                    type={1}
                     style={{ alignSelf: 'center' }}
-                    color={COLORS.neutral[700]}
-                    text={i18n.t('No entries yet 😢')}
+                    color={COLORS.shades[100]}
+                    text={i18n.t('There are no entries yet 😕')}
+                  />
+                  <Body
+                    type={2}
+                    style={{
+                      alignSelf: 'center', textAlign: 'center', width: '85%', marginTop: 4,
+                    }}
+                    color={COLORS.neutral[300]}
+                    text={i18n.t('When the groups adds new polls, tasks, expenses or memories, they will be listed here.')}
                   />
                 </View>
               )}

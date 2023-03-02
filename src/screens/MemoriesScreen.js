@@ -118,6 +118,31 @@ export default function MemoriesScreen({ route }) {
     return `${day} ${months[mm - 1]} 20${month.slice(3, 5)}`;
   };
 
+  const getActions = () => {
+    const timeline = {
+      id: 'timeline',
+      title: i18n.t('See Timeline'),
+    };
+
+    const trip = {
+      id: 'trip',
+      title: i18n.t('Go to Trip'),
+    };
+
+    const download = {
+      id: 'download',
+      title: i18n.t('Download Album'),
+      image: Platform.select({
+        ios: 'folder',
+      }),
+    };
+
+    if (images && images.length <= 0) {
+      return [timeline, trip];
+    }
+    return [timeline, trip, download];
+  };
+
   const handleMenuOption = async ({ event }) => {
     if (event === 'trip') {
       return navigation.navigate(ROUTES.tripScreen, { tripId });
@@ -222,43 +247,25 @@ export default function MemoriesScreen({ route }) {
             color={COLORS.shades[0]}
             text={i18n.t('Moments')}
           />
-          {images && images.length > 0 && (
-            <View style={{ flexDirection: 'row', top: -10 }}>
-              <Pressable
-                onPress={() => {
-                  console.log('refresh');
-                }}
-                style={[styles.roundButton, { marginRight: 5 }]}
-              >
-                <IonIcon
-                  name="refresh"
-                  style={{ marginRight: -2 }}
-                  color={COLORS.shades[0]}
-                  size={22}
-                />
-              </Pressable>
-              {!isLoading && (
+          <View style={{ flexDirection: 'row', top: -10 }}>
+            <Pressable
+              onPress={() => {
+                console.log('refresh');
+              }}
+              style={[styles.roundButton, { marginRight: 5 }]}
+            >
+              <IonIcon
+                name="refresh"
+                style={{ marginRight: -2 }}
+                color={COLORS.shades[0]}
+                size={22}
+              />
+            </Pressable>
+            {!isLoading && (
               <MenuView
                 style={styles.addIcon}
                 onPressAction={({ nativeEvent }) => handleMenuOption(nativeEvent)}
-                actions={[
-                  {
-                    id: 'timeline',
-                    title: i18n.t('See Timeline'),
-                  },
-                  {
-                    id: 'trip',
-                    title: i18n.t('Go to Trip'),
-                  },
-
-                  {
-                    id: 'download',
-                    title: i18n.t('Download Album'),
-                    image: Platform.select({
-                      ios: 'folder',
-                    }),
-                  },
-                ]}
+                actions={getActions()}
               >
                 <View
                   style={styles.roundButton}
@@ -270,23 +277,24 @@ export default function MemoriesScreen({ route }) {
                   />
                 </View>
               </MenuView>
-              )}
-              <Pressable
-                onPress={() => {
-                  setInitalIndex(0);
-                  setStoryVisible(true);
-                }}
-                style={[styles.roundButton, { marginLeft: 5 }]}
-              >
-                <EntIcon
-                  name="controller-play"
-                  style={{ marginRight: -2 }}
-                  color={COLORS.shades[0]}
-                  size={22}
-                />
-              </Pressable>
-            </View>
-          )}
+            )}
+            {images && images.length > 0 && (
+            <Pressable
+              onPress={() => {
+                setInitalIndex(0);
+                setStoryVisible(true);
+              }}
+              style={[styles.roundButton, { marginLeft: 5 }]}
+            >
+              <EntIcon
+                name="controller-play"
+                style={{ marginRight: -2 }}
+                color={COLORS.shades[0]}
+                size={22}
+              />
+            </Pressable>
+            )}
+          </View>
         </View>
         {images && images.length > 0 && (
         <View style={{ marginTop: 10 }}>

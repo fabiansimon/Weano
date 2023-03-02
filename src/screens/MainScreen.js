@@ -64,7 +64,7 @@ export default function MainScreen() {
 
   const { height } = Dimensions.get('window');
 
-  const upcomingTrips = trips.filter((trip) => trip.type === 'upcoming');
+  const upcomingTrips = trips.filter((trip) => trip.type === 'upcoming' || trip.type === 'soon');
   const soonTrip = trips.filter((trip) => trip.type === 'soon')[0];
   const recentTrips = trips.filter((trip) => trip.type === 'recent');
   const activeTrip = trips.filter((trip) => trip.type === 'active')[0];

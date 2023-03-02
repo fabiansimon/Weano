@@ -8,6 +8,7 @@ const GET_TRIP_BY_ID = gql`
             thumbnailUri
             title
             description
+            type
             location {
                 placeName
                 latlon
