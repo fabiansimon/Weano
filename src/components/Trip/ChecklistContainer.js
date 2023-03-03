@@ -8,6 +8,8 @@ import CheckboxTile from './CheckboxTile';
 import activeTripStore from '../../stores/ActiveTripStore';
 import Body from '../typography/Body';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
+import EmptyDataContainer from '../EmptyDataContainer';
+import ROUTES from '../../constants/Routes';
 
 export default function ChecklistContainer({
   onPress, onLayout, sender,
@@ -17,6 +19,17 @@ export default function ChecklistContainer({
 
   // STATE & MISC
   const [isPrivate, setIsPrivate] = useState(false);
+
+  if (mutualTasks?.length <= 0 && privateTasks?.length <= 0) {
+    return (
+      <EmptyDataContainer
+        style={{ marginTop: -6, marginHorizontal: -4 }}
+        title={i18n.t('There are no tasks to show yet.')}
+        subtitle={i18n.t('Be the first one to add one.')}
+        route={ROUTES.checklistScreen}
+      />
+    );
+  }
 
   const getChecklistItem = (item) => (
     <View

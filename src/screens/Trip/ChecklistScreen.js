@@ -356,8 +356,8 @@ export default function ChecklistScreen() {
                 : mutualTasks.filter((task) => !task.isDone)}
               ListEmptyComponent={() => (
                 <Body
-                  style={{ alignSelf: 'center', marginTop: 10 }}
-                  type={1}
+                  style={{ marginBottom: 10 }}
+                  type={2}
                   text={emptyString}
                   color={COLORS.neutral[300]}
                 />
@@ -399,8 +399,8 @@ export default function ChecklistScreen() {
                 : privateTasks.filter((task) => !task.isDone)}
               ListEmptyComponent={() => (
                 <Body
-                  style={{ alignSelf: 'center', marginTop: 10 }}
-                  type={1}
+                  style={{ marginBottom: 10 }}
+                  type={2}
                   text={emptyString}
                   color={COLORS.neutral[300]}
                 />

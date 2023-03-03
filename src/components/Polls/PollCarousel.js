@@ -1,12 +1,13 @@
 import {
-  FlatList, StyleSheet, View,
+  FlatList, StyleSheet,
 } from 'react-native';
 import React from 'react';
 import PollView from './PollView';
 import Utils from '../../utils';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
-import Body from '../typography/Body';
+import EmptyDataContainer from '../EmptyDataContainer';
+import ROUTES from '../../constants/Routes';
 
 export default function PollCarousel({
   data, onPress,
@@ -31,29 +32,17 @@ export default function PollCarousel({
         )}
       />
     ) : (
-      <View style={styles.emptyContainer}>
-        <Body
-          type={2}
-          text={i18n.t('No polls to show ')}
-          color={COLORS.neutral[300]}
-        />
-      </View>
+      <EmptyDataContainer
+        style={{ marginTop: -6 }}
+        title={i18n.t('No polls to show yet!')}
+        subtitle={i18n.t('Be the first one to add one.')}
+        route={ROUTES.pollScreen}
+      />
     )
   );
 }
 
 const styles = StyleSheet.create({
-  emptyContainer: {
-    flex: 1,
-    marginHorizontal: PADDING.l,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 14,
-    paddingVertical: 10,
-    borderColor: COLORS.neutral[100],
-    borderWidth: 1,
-    backgroundColor: COLORS.shades[0],
-  },
   view: {
     width: 300,
     marginLeft: PADDING.l,

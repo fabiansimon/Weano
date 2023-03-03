@@ -5,28 +5,30 @@ import React from 'react';
 import COLORS, { PADDING } from '../../constants/Theme';
 import Utils from '../../utils';
 import DocumentTile from './DocumentTile';
-import Body from '../typography/Body';
 import i18n from '../../utils/i18n';
+import EmptyDataContainer from '../EmptyDataContainer';
+import ROUTES from '../../constants/Routes';
 
 export default function DocumentsContainer({ style, data }) {
+  if (data.length <= 0) {
+    return (
+      <EmptyDataContainer
+        style={{ marginTop: -6 }}
+        title={i18n.t('No documents added yet!')}
+        subtitle={i18n.t('Be the first one to add one.')}
+        route={ROUTES.documentsScreen}
+      />
+    );
+  }
   return (
     <View style={[styles.container, style]}>
-      {
-        data && data.length > 0 ? data.map((doc, index) => (
-          <DocumentTile
-            style={{ marginTop: index !== 0 && 14 }}
-            data={doc}
-            onPress={() => Utils.openDocumentFromUrl(doc.uri, doc.title)}
-          />
-        )) : (
-          <Body
-            style={{ alignSelf: 'center', marginVertical: 6 }}
-            type={2}
-            color={COLORS.neutral[300]}
-            text={i18n.t('No documents to show 🥱')}
-          />
-        )
-      }
+      {data.map((doc, index) => (
+        <DocumentTile
+          style={{ marginTop: index !== 0 && 14 }}
+          data={doc}
+          onPress={() => Utils.openDocumentFromUrl(doc.uri, doc.title)}
+        />
+      ))}
     </View>
   );
 }

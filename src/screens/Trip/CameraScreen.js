@@ -23,6 +23,7 @@ import Button from '../../components/Button';
 import Utils from '../../utils';
 import ImageModal from '../../components/ImageModal';
 import Body from '../../components/typography/Body';
+import Label from '../../components/typography/Label';
 
 let camera;
 export default function CameraScreen({ route }) {
@@ -38,6 +39,8 @@ export default function CameraScreen({ route }) {
   const [zoom, setZoom] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
   const [timer] = useState(120);
+
+  const AnimatableTouchableOpacity = Animatable.createAnimatableComponent(TouchableOpacity);
 
   useEffect(() => {
     if (preselectedImage) {
@@ -161,7 +164,7 @@ export default function CameraScreen({ route }) {
   );
 
   const getCaptureContainer = () => (
-    <View style={{ position: 'absolute', width: Dimensions.get('window').width }}>
+    <View style={{ position: 'absolute', width: Dimensions.get('window').width, alignItems: 'center' }}>
       {isRecording
         ? (
           <View
@@ -179,32 +182,36 @@ export default function CameraScreen({ route }) {
             </View>
           </View>
         ) : (
-          <View
+          <AnimatableTouchableOpacity
+            animation="pulse"
+            easing="ease-out"
+            iterationCount="infinite"
+            activeOpacity={1}
             style={styles.captureContainer}
           >
-            <View style={{
-              textAlign: 'center', flexDirection: 'row', alignItems: 'center',
-            }}
-            >
-              <Headline
-                type={4}
-                isDense
-                style={{ marginTop: -2 }}
+            <View style={{ alignItems: 'center' }}>
+              <Body
+                type={1}
+                style={{ marginTop: -2, fontWeight: '500' }}
                 text={i18n.t('Capture now')}
                 color={COLORS.shades[0]}
               />
+              <Label
+                type={1}
+                style={{ fontWeight: '400' }}
+                text={i18n.t("Don't be shy now 📸")}
+                color={Utils.addAlpha(COLORS.neutral[50], 0.9)}
+              />
             </View>
-          </View>
+          </AnimatableTouchableOpacity>
         )}
 
     </View>
   );
 
-  const getFooterContainer = () => {
-    const AnimatableTouchableOpacity = Animatable.createAnimatableComponent(TouchableOpacity);
-    return (
-      <View>
-        {!isRecording && (
+  const getFooterContainer = () => (
+    <View>
+      {!isRecording && (
         <View style={styles.countdown}>
           <Headline
             type={3}
@@ -212,16 +219,16 @@ export default function CameraScreen({ route }) {
             text={moment.utc(timer * 1000).format('mm:ss')}
           />
         </View>
-        )}
-        <BlurView
-          style={styles.blurView}
-          blurType="dark"
-          blurAmount={4}
-          reducedTransparencyFallbackColor={COLORS.shades[0]}
-        />
+      )}
+      <BlurView
+        style={styles.blurView}
+        blurType="dark"
+        blurAmount={4}
+        reducedTransparencyFallbackColor={COLORS.shades[0]}
+      />
 
-        <View style={styles.recordUnit}>
-          {!isRecording && (
+      <View style={styles.recordUnit}>
+        {!isRecording && (
           <TouchableOpacity
             activeOpacity={0.9}
             style={[styles.flashButton, flashMode === FlashMode.on ? styles.flashOn : styles.flashOff]}
@@ -233,26 +240,26 @@ export default function CameraScreen({ route }) {
               size={18}
             />
           </TouchableOpacity>
-          )}
-          <AnimatableTouchableOpacity
-            onPress={handleCapture}
+        )}
+        <AnimatableTouchableOpacity
+          onPress={handleCapture}
             // onLongPress={startCaptureVideo}
-            animation="pulse"
-            easing="ease-out"
-            iterationCount="infinite"
-            activeOpacity={0.9}
-            style={[styles.recordButton, { borderColor: isRecording ? COLORS.error[900] : COLORS.shades[0] }]}
-          >
-            <View
-              style={{
-                backgroundColor: isRecording ? COLORS.error[900] : COLORS.shades[0],
-                height: 54,
-                width: 54,
-                borderRadius: RADIUS.xl,
-              }}
-            />
-          </AnimatableTouchableOpacity>
-          {!isRecording && (
+          animation="pulse"
+          easing="ease-out"
+          iterationCount="infinite"
+          activeOpacity={0.9}
+          style={[styles.recordButton, { borderColor: isRecording ? COLORS.error[900] : COLORS.shades[0] }]}
+        >
+          <View
+            style={{
+              backgroundColor: isRecording ? COLORS.error[900] : COLORS.shades[0],
+              height: 54,
+              width: 54,
+              borderRadius: RADIUS.xl,
+            }}
+          />
+        </AnimatableTouchableOpacity>
+        {!isRecording && (
           <TouchableOpacity
             onPress={rotateCamera}
             activeOpacity={0.9}
@@ -264,11 +271,10 @@ export default function CameraScreen({ route }) {
               size={22}
             />
           </TouchableOpacity>
-          )}
-        </View>
+        )}
       </View>
-    );
-  };
+    </View>
+  );
 
   const VideoPreview = () => (
     <TouchableOpacity
@@ -353,8 +359,8 @@ const styles = StyleSheet.create({
   },
   captureContainer: {
     alignSelf: 'center',
-    height: 35,
-    borderRadius: 100,
+    borderRadius: RADIUS.s,
+    paddingVertical: 6,
     backgroundColor: COLORS.primary[700],
     paddingHorizontal: 12,
     justifyContent: 'center',
@@ -427,6 +433,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   countdown: {
+    opacity: 0,
     borderWidth: 0.5,
     borderColor: Utils.addAlpha(COLORS.neutral[300], 0.5),
     alignSelf: 'center',
