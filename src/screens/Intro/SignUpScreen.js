@@ -1,5 +1,5 @@
 import {
-  Animated, View, StyleSheet, Image, Pressable, ScrollView,
+  Animated, View, StyleSheet, Image, Pressable,
 } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
@@ -8,7 +8,7 @@ import Headline from '../../components/typography/Headline';
 import Body from '../../components/typography/Body';
 import TextField from '../../components/TextField';
 import AuthModal from '../../components/AuthModal';
-import GoogleIcon from '../../../assets/icons/google_icon.svg';
+// import GoogleIcon from '../../../assets/icons/google_icon.svg';
 import Button from '../../components/Button';
 import REGEX from '../../constants/Regex';
 import Logo from '../../../assets/images/logo_temp.png';
@@ -18,6 +18,7 @@ import WebViewModal from '../../components/WebViewModal';
 import META_DATA from '../../constants/MetaData';
 import SensorView from '../../components/SensorView';
 import BackButton from '../../components/BackButton';
+import KeyboardView from '../../components/KeyboardView';
 
 const errorColors = {
   error: COLORS.error[700],
@@ -53,7 +54,6 @@ export default function SignUpScreen({ invitationId, route }) {
   const emailRef = useRef();
   const [loginVisible, setLoginVisible] = useState(false);
   const [registerVisible, setRegisterVisible] = useState(false);
-  const [allValid, setAllValid] = useState(false);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -65,7 +65,6 @@ export default function SignUpScreen({ invitationId, route }) {
   const animatedImageY = useRef(new Animated.Value(0)).current;
   const animatedBackButtonX = useRef(new Animated.Value(-100)).current;
   const duration = 300;
-  const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
   useEffect(() => {
     if (initIntro) {
@@ -185,8 +184,6 @@ export default function SignUpScreen({ invitationId, route }) {
         },
       }));
     }
-
-    setAllValid(errorChecks.firstName.isValid && errorChecks.lastName.isValid && errorChecks.email.isValid);
   };
 
   const getCheckList = () => (
@@ -218,131 +215,130 @@ export default function SignUpScreen({ invitationId, route }) {
     </View>
   );
 
-  const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-
   const getAuthContainer = () => (
-
     <Animated.View
       contentContainerStyle={{
         justifyContent: 'space-between', flex: 1, paddingBottom: 50,
       }}
       style={[styles.mainContainer, { transform: [{ translateY: animatedTranslateY }] }]}
     >
-      <>
-        <Headline
-          type={2}
-          text={i18n.t('Sign up 👋')}
-        />
-        <Body
-          style={{ marginTop: 4 }}
-          color={COLORS.neutral[300]}
-          type={1}
-          text={i18n.t('Are you ready to make some memories?')}
-        />
-        <View style={{ marginTop: 20 }}>
-          <View style={{ flexDirection: 'row' }}>
-            <View style={{ flex: 1, paddingRight: 8 }}>
-              <Body
-                color={COLORS.neutral[700]}
-                type={2}
-                style={{ marginBottom: 6, marginLeft: 5 }}
-                text={i18n.t('First name')}
-              />
-              <TextField
-                onDelete={() => setFirstName('')}
-                // autoFocus
-                returnKeyType="next"
-                label={i18n.t('First name')}
-                value={firstName || null}
-                onChangeText={(val) => setFirstName(val)}
-                style={firstName.length > 0 ? errorChecks.firstName.isValid ? styles.validField : styles.invalidField : null}
-                placeholder={i18n.t('John')}
-                autoComplete={false}
-                autoCorrect
-              />
-            </View>
-
-            <View style={{ flex: 1 }}>
-              <Body
-                color={COLORS.neutral[700]}
-                type={2}
-                style={{ marginBottom: 6, marginLeft: 5 }}
-                text={i18n.t('Last name')}
-              />
-              <TextField
-                ref={lastNameRef}
-                onDelete={() => setLastName('')}
-                returnKeyType="next"
-                label={i18n.t('Last name')}
-                style={lastName.length > 0 ? errorChecks.lastName.isValid ? styles.validField : styles.invalidField : null}
-                value={lastName || null}
-                onChangeText={(val) => setLastName(val)}
-                placeholder={i18n.t('Doe')}
-                autoComplete={false}
-                autoCorrect={false}
-              />
-            </View>
-          </View>
-          <View style={{ marginTop: 12 }}>
-            <Body
-              color={COLORS.neutral[700]}
-              type={2}
-              style={{ marginBottom: 6, marginLeft: 5 }}
-              text={i18n.t('Email')}
-            />
-            <TextField
-              ref={emailRef}
-              onDelete={() => setEmail('')}
-              keyboardType="email-address"
-              autoCapitalize={false}
-              label={i18n.t('Email')}
-              value={email || null}
-              returnKeyType="done"
-              autoComplete={false}
-              style={email.length > 0 ? errorChecks.email.isValid ? styles.validField : styles.invalidField : null}
-              autoCorrect={false}
-              onChangeText={(val) => setEmail(val)}
-              placeholder={i18n.t('Your Email')}
-            />
-          </View>
-        </View>
-        {getCheckList()}
-      </>
-      <View style={{
-        width: '100%', height: 160, marginTop: 'auto',
-      }}
-      >
-        <Button
-          fullWidth
-          onPress={() => setRegisterVisible(true)}
-          text={i18n.t('Next')}
-          isDisabled={!allValid}
-        />
-        <Button
-          style={{ marginTop: 15 }}
-          fullWidth
-          icon={<GoogleIcon height={22} style={{ left: -20 }} />}
-          isSecondary
-          onPress={() => console.log('Google')}
-          text={i18n.t('Sign up with Google')}
-        />
-        <Pressable
-          onPress={() => setLoginVisible(true)}
-          style={{ flexDirection: 'row', marginTop: 20, justifyContent: 'center' }}
-        >
+      <KeyboardView paddingBottom={65}>
+        <>
+          <Headline
+            type={2}
+            text={i18n.t('Sign up 👋')}
+          />
           <Body
-            type={1}
+            style={{ marginTop: 4 }}
             color={COLORS.neutral[300]}
-            text={i18n.t('Already have an account?')}
-          />
-          <Body
             type={1}
-            color={COLORS.primary[500]}
-            text={i18n.t('Log in instead')}
-            style={{ marginLeft: 4, fontWeight: '600' }}
+            text={i18n.t('Are you ready to make some memories?')}
           />
-        </Pressable>
-      </View>
+          <View style={{ marginTop: 20 }}>
+            <View style={{ flexDirection: 'row' }}>
+              <View style={{ flex: 1, paddingRight: 8 }}>
+                <Body
+                  color={COLORS.neutral[700]}
+                  type={2}
+                  style={{ marginBottom: 6, marginLeft: 5 }}
+                  text={i18n.t('First name')}
+                />
+                <TextField
+                  onDelete={() => setFirstName('')}
+                // autoFocus
+                  returnKeyType="next"
+                  label={i18n.t('First name')}
+                  value={firstName || null}
+                  onChangeText={(val) => setFirstName(val)}
+                  style={firstName.length > 0 ? errorChecks.firstName.isValid ? styles.validField : styles.invalidField : null}
+                  placeholder={i18n.t('John')}
+                  autoComplete={false}
+                  autoCorrect
+                />
+              </View>
+
+              <View style={{ flex: 1 }}>
+                <Body
+                  color={COLORS.neutral[700]}
+                  type={2}
+                  style={{ marginBottom: 6, marginLeft: 5 }}
+                  text={i18n.t('Last name')}
+                />
+                <TextField
+                  ref={lastNameRef}
+                  onDelete={() => setLastName('')}
+                  returnKeyType="next"
+                  label={i18n.t('Last name')}
+                  style={lastName.length > 0 ? errorChecks.lastName.isValid ? styles.validField : styles.invalidField : null}
+                  value={lastName || null}
+                  onChangeText={(val) => setLastName(val)}
+                  placeholder={i18n.t('Doe')}
+                  autoComplete={false}
+                  autoCorrect={false}
+                />
+              </View>
+            </View>
+            <View style={{ marginTop: 12 }}>
+              <Body
+                color={COLORS.neutral[700]}
+                type={2}
+                style={{ marginBottom: 6, marginLeft: 5 }}
+                text={i18n.t('Email')}
+              />
+              <TextField
+                ref={emailRef}
+                onDelete={() => setEmail('')}
+                keyboardType="email-address"
+                autoCapitalize={false}
+                label={i18n.t('Email')}
+                value={email || null}
+                returnKeyType="done"
+                autoComplete={false}
+                style={email.length > 0 ? errorChecks.email.isValid ? styles.validField : styles.invalidField : null}
+                autoCorrect={false}
+                onChangeText={(val) => setEmail(val)}
+                placeholder={i18n.t('Your Email')}
+              />
+            </View>
+          </View>
+          {getCheckList()}
+        </>
+        <View style={{
+          width: '100%', height: 90, marginTop: 'auto',
+        }}
+        >
+          <Button
+            fullWidth
+            onPress={() => setRegisterVisible(true)}
+            text={i18n.t('Next')}
+            isDisabled={!(errorChecks.firstName.isValid && errorChecks.lastName.isValid && errorChecks.email.isValid)}
+          />
+          {/* <Button
+            style={{ marginTop: 15 }}
+            fullWidth
+            icon={<GoogleIcon height={22} style={{ left: -20 }} />}
+            isSecondary
+            onPress={() => console.log('Google')}
+            text={i18n.t('Sign up with Google')}
+          /> */}
+          <Pressable
+            onPress={() => setLoginVisible(true)}
+            style={{ flexDirection: 'row', marginTop: 15, justifyContent: 'center' }}
+          >
+            <Body
+              type={1}
+              color={COLORS.neutral[300]}
+              text={i18n.t('Already have an account?')}
+            />
+            <Body
+              type={1}
+              color={COLORS.primary[500]}
+              text={i18n.t('Log in instead')}
+              style={{ marginLeft: 4, fontWeight: '600' }}
+            />
+          </Pressable>
+        </View>
+      </KeyboardView>
     </Animated.View>
 
   );

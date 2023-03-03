@@ -46,6 +46,7 @@ export default function ChecklistScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
   const [filterOption, setFilterOption] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const emptyString = filterOption === 0 ? i18n.t('No task added yet') : filterOption === 1 ? i18n.t('No done tasks') : i18n.t('No open tasks');
 
@@ -161,11 +162,9 @@ export default function ChecklistScreen() {
   };
 
   const handleChange = async (data) => {
-    let oldPrivateTasks;
-    let oldMutualTasks;
     setIsVisible(false);
     const isPrivate = data.type === 'PRIVATE';
-    console.log(isPrivate);
+    setIsLoading(true);
 
     await addTask({
       variables: {
@@ -183,7 +182,6 @@ export default function ChecklistScreen() {
       .then((res) => {
         const id = res.data.createTask;
         if (isPrivate) {
-          oldPrivateTasks = privateTasks;
           const newTask = {
             creatorId: userId,
             isDone: false,
@@ -192,7 +190,6 @@ export default function ChecklistScreen() {
           };
           updateActiveTrip({ privateTasks: [...privateTasks, newTask] });
         } else {
-          oldMutualTasks = mutualTasks;
           const newTask = {
             assignee: data.assignee.id,
             creatorId: userId,
@@ -202,18 +199,15 @@ export default function ChecklistScreen() {
           };
           updateActiveTrip({ mutualTasks: [...mutualTasks, newTask] });
         }
+        setIsLoading(false);
       })
       .catch((e) => {
+        setIsLoading(false);
         Toast.show({
           type: 'error',
           text1: i18n.t('Whoops!'),
           text2: e.message,
         });
-        if (isPrivate) {
-          updateActiveTrip({ privateTasks: oldPrivateTasks });
-        } else {
-          updateActiveTrip({ mutualTasks: oldMutualTasks });
-        }
         console.log(`ERROR: ${e.message}`);
       });
   };
@@ -436,6 +430,7 @@ export default function ChecklistScreen() {
         onPress={(data) => handleChange(data)}
       />
       <FAButton
+        isLoading={isLoading}
         icon="add"
         iconSize={28}
         onPress={() => setIsVisible(true)}

@@ -3,8 +3,10 @@ import React, {
   useEffect,
 } from 'react';
 import {
+  Pressable,
   StyleSheet, View,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/AntDesign';
 import MapboxGL from '@react-native-mapbox-gl/maps';
 import BottomSheet from '@gorhom/bottom-sheet';
 // eslint-disable-next-line import/no-unresolved
@@ -96,7 +98,15 @@ export default function MapScreen({ route }) {
         />
         {trips && trips.map((trip) => renderTripPins(trip))}
       </MapboxGL.MapView>
-      <BackButton style={styles.backButton} />
+      <View style={styles.header}>
+        <BackButton style={styles.backButton} />
+        <Pressable
+          style={styles.searchButton}
+          onPress={() => setShowSearch(true)}
+        >
+          <Icon name="search1" size={20} />
+        </Pressable>
+      </View>
       <BottomSheet
         handleIndicatorStyle={{ opacity: 0 }}
         backgroundStyle={{
@@ -112,7 +122,6 @@ export default function MapScreen({ route }) {
       >
         <CountriesVisited
           data={trips}
-          onSearchPress={() => setShowSearch(true)}
           onPress={(id) => handleSearch(id)}
         />
       </BottomSheet>
@@ -126,17 +135,20 @@ export default function MapScreen({ route }) {
 }
 
 const styles = StyleSheet.create({
-  backButton: {
+  header: {
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
     position: 'absolute',
     top: 60,
-    left: PADDING.l,
+    paddingHorizontal: PADDING.m,
   },
   container: {
     width: '100%',
     height: '100%',
   },
   map: {
-    backgroundColor: COLORS.neutral[900],
+    backgroundColor: COLORS.shades[0],
     flex: 1,
   },
   pinShape: {
@@ -183,5 +195,15 @@ const styles = StyleSheet.create({
     margin: -1,
     borderRadius: RADIUS.xl,
     backgroundColor: COLORS.primary[700],
+  },
+  searchButton: {
+    borderWidth: 1,
+    height: 45,
+    width: 45,
+    borderColor: COLORS.neutral[100],
+    borderRadius: RADIUS.l,
+    backgroundColor: COLORS.shades[0],
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

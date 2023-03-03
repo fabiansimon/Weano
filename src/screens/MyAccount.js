@@ -279,7 +279,7 @@ export default function MyAccountScreen() {
       <InputModal
         maxLength={(inputState?.state === 'firstName' || inputState?.state === 'lastName') && 15}
         isVisible={inputState}
-        placeholder={inputState?.placeholder}
+        initalValue={inputState?.placeholder}
         onRequestClose={() => setInputState(null)}
         onPress={(input) => handleInput(input)}
         keyboardType={inputState?.keyboardType}

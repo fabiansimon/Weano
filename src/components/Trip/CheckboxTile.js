@@ -8,6 +8,7 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 import EntIcon from 'react-native-vector-icons/Entypo';
 
 import { MenuView } from '@react-native-menu/menu';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import COLORS from '../../constants/Theme';
 import Body from '../typography/Body';
 import userManagement from '../../utils/userManagement';
@@ -74,7 +75,13 @@ export default function CheckboxTile({
           flex: 1, flexDirection: 'row', alignItems: 'center',
         }}
         disabled={disabled}
-        onPress={onPress}
+        onPress={() => {
+          onPress();
+          ReactNativeHapticFeedback.trigger('impactLight', {
+            enableVibrateFallback: true,
+            ignoreAndroidSystemSettings: true,
+          });
+        }}
       >
         <View style={[styles.checkbox, {
           backgroundColor, borderWidth, height, width,

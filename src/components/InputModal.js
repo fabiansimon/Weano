@@ -20,7 +20,7 @@ import toastConfig from '../constants/ToastConfig';
 import REGEX from '../constants/Regex';
 
 export default function InputModal({
-  isVisible, onRequestClose, placeholder, onPress, geoMatching = false, topContent, emailInput, autoClose, multiline, maxLength, ...rest
+  isVisible, onRequestClose, placeholder, onPress, geoMatching = false, topContent, emailInput, autoClose, multiline, maxLength, initalValue, ...rest
 }) {
   // STATE & MISC
   const [showModal, setShowModal] = useState(isVisible);
@@ -32,6 +32,12 @@ export default function InputModal({
 
   const animatedBottom = useRef(new Animated.Value(900)).current;
   const duration = 300;
+
+  useEffect(() => {
+    if (showModal && initalValue) {
+      setInput(initalValue);
+    }
+  }, [initalValue, showModal]);
 
   useEffect(() => {
     if (!input) {

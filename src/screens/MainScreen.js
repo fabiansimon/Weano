@@ -37,7 +37,7 @@ import META_DATA from '../constants/MetaData';
 
 export default function MainScreen() {
   // QUERIES
-  const [getTripsForUser, { error, data }] = useLazyQuery(GET_TRIPS_FOR_USER);
+  const [getTripsForUser, { error, data }] = useLazyQuery(GET_TRIPS_FOR_USER, { fetchPolicy: 'network-only' });
 
   // STORES
   const user = userStore((state) => state.user);

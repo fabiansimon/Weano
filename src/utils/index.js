@@ -250,4 +250,19 @@ export default class Utils {
         });
       });
   }
+
+  /**
+     * Get days difference to trip
+     * @param {Number} date - e.g. startDate of Trip
+     */
+  static getDaysDifference(date) {
+    if (!date) {
+      return;
+    }
+
+    const toDate = moment(new Date(date * 1000));
+    const fromDate = moment().startOf('day');
+
+    return Math.floor(moment.duration(toDate.diff(fromDate)).asDays());
+  }
 }

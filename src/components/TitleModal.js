@@ -21,7 +21,7 @@ export default function TitleModal({
       <View style={styles.container}>
         <View style={styles.headerContainer}>
           <View style={{ position: 'absolute', width: Dimensions.get('window').width }}>
-            <Headline type={3} text={title} style={{ alignSelf: 'center' }} />
+            <Headline type={4} text={title} style={{ alignSelf: 'center' }} />
           </View>
           <TouchableOpacity hitSlop={20} onPress={onRequestClose}>
             <Icon name="close" size={20} />
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
   headerContainer: {
     paddingHorizontal: 20,
     flexDirection: 'row',
-    height: 65,
+    height: 60,
     borderBottomColor: COLORS.neutral[100],
     borderBottomWidth: 1,
     alignItems: 'center',

@@ -22,7 +22,7 @@ export default function DocumentTile({
     <TouchableHighlight
       onPress={() => {
         onPress();
-        ReactNativeHapticFeedback.trigger('impactHeavy', {
+        ReactNativeHapticFeedback.trigger('impactLight', {
           enableVibrateFallback: true,
           ignoreAndroidSystemSettings: true,
         });

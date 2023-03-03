@@ -1,19 +1,17 @@
 import {
-  View, StyleSheet, FlatList,
+  View, StyleSheet, FlatList, Dimensions,
 } from 'react-native';
 import React from 'react';
-import Icon from 'react-native-vector-icons/AntDesign';
 import COLORS, { PADDING } from '../../constants/Theme';
 import Headline from '../typography/Headline';
 import i18n from '../../utils/i18n';
-import Button from '../Button';
 import userStore from '../../stores/UserStore';
 import Body from '../typography/Body';
 import SearchResultTile from '../Search/SearchResultTile';
 import Utils from '../../utils';
 
 export default function CountriesVisited({
-  onSearchPress, onPress, data,
+  onPress, data,
 }) {
   // STORES
   const { firstName } = userStore((state) => state.user);
@@ -21,6 +19,8 @@ export default function CountriesVisited({
   const recentTrips = data.filter((trip) => trip.type === 'recent').length;
   const activeTrips = data.filter((trip) => trip.type === 'active').length;
   const upcomingTrips = data.filter((trip) => trip.type === 'upcoming' || trip.type === 'soon').length;
+
+  const { width } = Dimensions.get('window');
 
   return (
     <View style={{ flex: 1 }}>
@@ -35,10 +35,13 @@ export default function CountriesVisited({
             <Body
               type={1}
               color={COLORS.neutral[300]}
-              style={{ marginTop: 2, marginBottom: 6 }}
+              style={{ marginTop: 2, marginBottom: 8 }}
               text={i18n.t("Let's take look at your trips 🍹")}
             />
-            <View style={{ flexDirection: 'row' }}>
+            <View style={{
+              flexDirection: 'row', width, marginHorizontal: -PADDING.s, paddingLeft: PADDING.s, paddingRight: PADDING.s + 2,
+            }}
+            >
               <View style={[styles.titleContainer, { backgroundColor: Utils.addAlpha(COLORS.error[700], 0.2) }]}>
                 <Body
                   type={2}
@@ -65,17 +68,9 @@ export default function CountriesVisited({
               </View>
             </View>
           </View>
-          <Button
-            style={[styles.searchButton, styles.buttonShadow]}
-            backgroundColor={COLORS.shades[0]}
-            onPress={onSearchPress}
-            icon={<Icon name="search1" size={20} />}
-            fullWidth={false}
-            color={COLORS.neutral[900]}
-          />
         </View>
         <FlatList
-          style={{ marginTop: 20, paddingHorizontal: PADDING.m }}
+          style={{ paddingTop: 14, paddingHorizontal: PADDING.m }}
           ListEmptyComponent={() => (
             <Body
               style={{ alignSelf: 'center', marginTop: 10 }}
@@ -108,7 +103,7 @@ const styles = StyleSheet.create({
     shadowColor: COLORS.shades[100],
     shadowOpacity: 0.06,
     shadowRadius: 10,
-    paddingVertical: 15,
+    paddingVertical: PADDING.m,
   },
   handler: {
     alignSelf: 'center',
@@ -119,21 +114,18 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   header: {
-    paddingHorizontal: 22,
+    paddingHorizontal: PADDING.m,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
   },
-  searchButton: {
-    borderWidth: 1,
-    borderColor: COLORS.neutral[100],
-  },
   titleContainer: {
     paddingVertical: 4,
     paddingHorizontal: 6,
+    flex: 1,
     borderRadius: 6,
-    marginBottom: 10,
     marginTop: 4,
     marginRight: 8,
+    alignItems: 'center',
   },
 });

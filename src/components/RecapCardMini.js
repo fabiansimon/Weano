@@ -22,10 +22,9 @@ export default function RecapCardMini({
       return;
     }
 
-    const toDate = moment(Utils.getDateFromTimestamp(dates.startDate));
-    const fromDate = moment().startOf('day');
+    const toDate = moment(Utils.getDateFromTimestamp(dates.startDate / 1000));
 
-    const difference = Math.round(moment.duration(toDate.diff(fromDate)).asDays());
+    const difference = Utils.getDaysDifference(toDate);
     return difference;
   };
 
@@ -36,7 +35,7 @@ export default function RecapCardMini({
     if (isRecent) {
       return `${Math.abs(daysDifference)} ${i18n.t('days ago')}`;
     }
-    return `${i18n.t('in')} ${daysDifference} ${i18n.t('days')}`;
+    return `${i18n.t('in')} ${daysDifference} ${daysDifference === 1 ? i18n.t('day') : i18n.t('days')}`;
   };
 
   const getActions = () => {

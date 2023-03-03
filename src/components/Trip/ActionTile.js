@@ -118,8 +118,7 @@ export default function ActionTile({ style, trip }) {
     if (isActive || isUpcoming) {
       const date = isActive ? endDate : startDate;
       const toDate = moment(new Date(date * 1000));
-      const fromDate = moment().startOf('day');
-      difference = Math.round(moment.duration(toDate.diff(fromDate)).asDays());
+      difference = Utils.getDaysDifference(toDate / 1000);
       timeString = !isActive ? `${i18n.t('in')} ${difference} ${difference === 1 ? i18n.t('day') : i18n.t('days')}` : `${difference} ${i18n.t('days left')}`;
     }
 

@@ -1,5 +1,5 @@
 import {
-  FlatList, StyleSheet, View, StatusBar, Pressable, Platform, ScrollView,
+  FlatList, StyleSheet, View, StatusBar, Pressable, Platform, ScrollView, ActivityIndicator,
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import IonIcon from 'react-native-vector-icons/Ionicons';
@@ -8,7 +8,7 @@ import EntIcon from 'react-native-vector-icons/Entypo';
 import React, { useState, useEffect, useRef } from 'react';
 import Animated from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
-import { useQuery } from '@apollo/client';
+import { useLazyQuery, useQuery } from '@apollo/client';
 import Toast from 'react-native-toast-message';
 import { MenuView } from '@react-native-menu/menu';
 import ImageCropPicker from 'react-native-image-crop-picker';
@@ -38,6 +38,13 @@ export default function MemoriesScreen({ route }) {
     variables: {
       tripId,
     },
+    fetchPolicy: 'network-only',
+  });
+  const [getImagesFromTrip, { data: updatedData }] = useLazyQuery(GET_IMAGES_FROM_TRIP, {
+    variables: {
+      tripId,
+    },
+    fetchPolicy: 'network-only',
   });
 
   // STORES
@@ -52,6 +59,7 @@ export default function MemoriesScreen({ route }) {
   const [storyVisible, setStoryVisible] = useState(false);
   const [initalIndex, setInitalIndex] = useState(0);
   const [downloadIndex, setDownloadIndex] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   const navigation = useNavigation();
 
@@ -67,6 +75,11 @@ export default function MemoriesScreen({ route }) {
       updateActiveTrip({ images: imageData.images, userFreeImages: imageData.userFreeImages });
     }
 
+    if (updatedData) {
+      const { getImagesFromTrip: imageData } = updatedData;
+      updateActiveTrip({ images: imageData.images, userFreeImages: imageData.userFreeImages });
+    }
+
     if (error) {
       Toast.show({
         type: 'error',
@@ -75,7 +88,7 @@ export default function MemoriesScreen({ route }) {
       });
       setIsLoading(false);
     }
-  }, [data, error]);
+  }, [data, error, updatedData]);
 
   useEffect(() => {
     if (images) {
@@ -169,6 +182,9 @@ export default function MemoriesScreen({ route }) {
     }
 
     if (event === 'download') {
+      if (images?.length <= 0) {
+        return;
+      }
       setDownloadIndex(0);
       for (let i = 0; i < images.length; i += 1) {
         const { uri } = images[i];
@@ -250,16 +266,19 @@ export default function MemoriesScreen({ route }) {
           <View style={{ flexDirection: 'row', top: -10 }}>
             <Pressable
               onPress={() => {
-                console.log('refresh');
+                setRefreshing(true);
+                getImagesFromTrip().then(() => setRefreshing(false)).catch(() => setRefreshing(false));
               }}
               style={[styles.roundButton, { marginRight: 5 }]}
             >
-              <IonIcon
-                name="refresh"
-                style={{ marginRight: -2 }}
-                color={COLORS.shades[0]}
-                size={22}
-              />
+              {refreshing ? <ActivityIndicator color={COLORS.shades[0]} /> : (
+                <IonIcon
+                  name="refresh"
+                  style={{ marginRight: -2 }}
+                  color={COLORS.shades[0]}
+                  size={22}
+                />
+              )}
             </Pressable>
             {!isLoading && (
               <MenuView

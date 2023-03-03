@@ -16,7 +16,6 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import ActionSheet from 'react-native-actionsheet';
 import FastImage from 'react-native-fast-image';
-import moment from 'moment';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import { MenuView } from '@react-native-menu/menu';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
@@ -60,6 +59,7 @@ export default function TripScreen({ route }) {
     variables: {
       tripId,
     },
+    fetchPolicy: 'network-only',
   });
 
   // MUTATIONS
@@ -98,7 +98,7 @@ export default function TripScreen({ route }) {
 
   const IMAGE_HEIGHT = 240;
   const data = activeTrip.title !== undefined ? activeTrip : null;
-  const inactive = !data || loading;
+  const inactive = !data || (loading && !refreshing);
 
   const isHost = userManagement.isHost();
 
@@ -359,15 +359,13 @@ export default function TripScreen({ route }) {
     if (activeTrip.type === 'isActive') {
       return i18n.t('• live');
     }
-    // eslint-disable-next-line no-unsafe-optional-chaining
-    const toDate = moment(new Date(data?.dateRange.startDate * 1000));
-    const fromDate = moment().startOf('day');
 
-    const difference = Math.round(moment.duration(toDate.diff(fromDate)).asDays());
+    const difference = Utils.getDaysDifference(data?.dateRange.startDate);
+
     if (difference < 0) {
       return `${difference * -1} ${i18n.t('days ago')}`;
     }
-    return `${i18n.t('In')} ${difference} ${i18n.t('days')}`;
+    return `${i18n.t('In')} ${difference} ${difference === 1 ? i18n.t('day') : i18n.t('days')}`;
   };
 
   const checkTasksStatus = () => {
@@ -800,6 +798,7 @@ export default function TripScreen({ route }) {
       <InputModal
         isVisible={inputOpen}
         placeholder={inputOpen === 'description' ? i18n.t('Enter description') : i18n.t('Enter title')}
+        initalValue={inputOpen === 'description' ? data?.description : data?.title}
         onRequestClose={() => setInputOpen(null)}
         multiline={inputOpen === 'description'}
         maxLength={inputOpen === 'description' ? 100 : 20}
@@ -825,6 +824,7 @@ const styles = StyleSheet.create({
   },
   bodyContainer: {
     top: -20,
+    marginBottom: -20,
     zIndex: 100,
     paddingTop: 16,
     backgroundColor: COLORS.shades[0],

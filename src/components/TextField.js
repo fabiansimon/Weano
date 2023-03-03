@@ -7,7 +7,6 @@ import Icon from 'react-native-vector-icons/AntDesign';
 import EntIcon from 'react-native-vector-icons/Entypo';
 import { debounce } from 'lodash';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
-import Headline from './typography/Headline';
 import Divider from './Divider';
 import Body from './typography/Body';
 import i18n from '../utils/i18n';
@@ -115,8 +114,8 @@ export default function TextField({
           onPress={onPrefixPress}
           style={styles.prefixContainer}
         >
-          <Headline
-            type={4}
+          <Body
+            type={1}
             text={`+ ${prefix}`}
             color={COLORS.neutral[700]}
           />
