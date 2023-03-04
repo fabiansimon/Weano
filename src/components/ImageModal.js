@@ -134,23 +134,23 @@ export default function ImageModal({
           },
         },
       }).then((res) => {
-        if (id === tripId) {
-          const _image = res.data.uploadTripImage;
-          const author = {
-            _id: user.id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            avatarUri: user.avatarUri,
-          };
+        // if (id === tripId) {
+        //   const _image = res.data.uploadTripImage;
+        //   const author = {
+        //     _id: user.id,
+        //     firstName: user.firstName,
+        //     lastName: user.lastName,
+        //     avatarUri: user.avatarUri,
+        //   };
 
-          updateActiveTrip({
-            images: [...images, {
-              ..._image,
-              author,
-            }],
-            userFreeImages: userFreeImages - 1,
-          });
-        }
+        //   updateActiveTrip({
+        //     images: [...images, {
+        //       ..._image,
+        //       author,
+        //     }],
+        //     userFreeImages: userFreeImages - 1,
+        //   });
+        // }
         setIsShared(true);
         setIsLoading(false);
       });
