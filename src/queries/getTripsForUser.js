@@ -4,6 +4,7 @@ const GET_TRIPS_FOR_USER = gql`
     query GetTripsForUser {
         getTripsForUser {
             type
+            userFreeImages
             id
             thumbnailUri
             title

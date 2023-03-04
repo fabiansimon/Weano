@@ -105,6 +105,9 @@ export default function MainScreen() {
     if (name === i18n.t('Visit on Map')) {
       return navigation.navigate(ROUTES.mapScreen, { initTrip: id });
     }
+    if (name === i18n.t('Capture a memory')) {
+      return navigation.navigate(ROUTES.cameraScreen, { tripId: id });
+    }
   };
 
   const getHeaderSection = () => (

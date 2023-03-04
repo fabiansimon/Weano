@@ -12,12 +12,13 @@ import Body from '../typography/Body';
 import Label from '../typography/Label';
 import COLORS from '../../constants/Theme';
 import i18n from '../../utils/i18n';
+import AccentBubble from './AccentBubble';
 
 export default function TripContainer({
   trip, onLongPress, disabled = true, size, isDense = false, onPress,
 }) {
   const {
-    location, thumbnailUri: uri, dateRange, type,
+    location, thumbnailUri: uri, dateRange, type, userFreeImages,
   } = trip;
 
   const height = size || 62;
@@ -36,12 +37,24 @@ export default function TripContainer({
     return COLORS.primary[500];
   };
 
+  const getActions = () => {
+    const map = { title: i18n.t('Visit on Map'), systemIcon: 'map' };
+    const camera = { title: i18n.t('Capture a memory'), systemIcon: 'camera' };
+
+    if (userFreeImages > 0) {
+      return [map, camera];
+    }
+
+    return [camera];
+  };
+
   const borderColor = getBorderColor();
+  const actions = getActions();
 
   return (
     <ContextMenu
       previewBackgroundColor={COLORS.neutral[50]}
-      actions={[{ title: i18n.t('Visit on Map'), systemIcon: 'map' }]}
+      actions={actions}
       onPress={(e) => onLongPress(e, trip.id)}
       disabled={disabled}
     >
@@ -49,11 +62,18 @@ export default function TripContainer({
         style={{ marginRight: 14 }}
         onPress={onPress}
       >
+
         <View style={[styles.outerTripContainer, { borderColor, borderRadius: borderRadius + 2 }]}>
           <FastImage
             style={[styles.tripContainer, { height, width, borderRadius }]}
             source={uri ? { uri } : DefaultImage}
           />
+          {userFreeImages > 0 && (
+          <AccentBubble
+            style={{ position: 'absolute', right: 0, bottom: 0 }}
+            text={userFreeImages}
+          />
+          )}
         </View>
         {!isDense && (
         <>
@@ -72,6 +92,7 @@ export default function TripContainer({
           />
         </>
         )}
+
       </Pressable>
     </ContextMenu>
   );

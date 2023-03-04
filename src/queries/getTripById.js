@@ -3,6 +3,7 @@ import gql from 'graphql-tag';
 const GET_TRIP_BY_ID = gql`
     query GetTripById($tripId: String) {
         getTripById(tripId: $tripId) {
+            userFreeImages
             id
             hostId
             thumbnailUri

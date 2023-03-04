@@ -49,6 +49,7 @@ import DELETE_TRIP_BY_ID from '../../mutations/deleteTripById';
 import QRModal from '../../components/Trip/QRModal';
 import tripsStore from '../../stores/TripsStore';
 import DocumentsContainer from '../../components/Trip/DocumentsContainer';
+import AccentBubble from '../../components/Trip/AccentBubble';
 
 export default function TripScreen({ route }) {
   // PARAMS
@@ -781,6 +782,12 @@ export default function TripScreen({ route }) {
         onPress={() => (data ? navigation.navigate(ROUTES.memoriesScreen, { tripId: data.id }) : null)}
         style={styles.memoryButton}
       >
+        {data?.type === 'active' && (
+        <AccentBubble
+          style={{ position: 'absolute', right: -4, top: -6 }}
+          text={data?.userFreeImages}
+        />
+        )}
         <Icon
           name="image"
           color={COLORS.neutral[700]}

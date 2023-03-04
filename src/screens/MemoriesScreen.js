@@ -22,12 +22,12 @@ import Body from '../components/typography/Body';
 import GET_IMAGES_FROM_TRIP from '../queries/getImagesFromTrip';
 import StoryModal from '../components/StoryModal';
 import ROUTES from '../constants/Routes';
-import Label from '../components/typography/Label';
 import Utils from '../utils';
 import BackButton from '../components/BackButton';
 import months from '../constants/Months';
 import AnimatedHeader from '../components/AnimatedHeader';
 import activeTripStore from '../stores/ActiveTripStore';
+import AccentBubble from '../components/Trip/AccentBubble';
 
 export default function MemoriesScreen({ route }) {
   // PARAMS
@@ -397,16 +397,10 @@ export default function MemoriesScreen({ route }) {
           iterationCount="infinite"
           style={[styles.fab, { backgroundColor: COLORS.primary[700] }]}
         >
-          <View
-            style={styles.imagesLeftContainer}
-          >
-            <Label
-              type={1}
-              color={COLORS.shades[0]}
-              style={{ marginRight: -1 }}
-              text={userFreeImages}
-            />
-          </View>
+          <AccentBubble
+            style={{ position: 'absolute', right: -2, top: -2 }}
+            text={userFreeImages}
+          />
           <EntIcon
             name="camera"
             size={22}
@@ -420,16 +414,10 @@ export default function MemoriesScreen({ route }) {
           activeOpacity={0.5}
           style={[styles.fab, styles.fabContainer, { backgroundColor: Utils.addAlpha(COLORS.primary[700], 0.3) }]}
         >
-          <View
-            style={[styles.imagesLeftContainer, { backgroundColor: Utils.addAlpha(COLORS.error[900], 0.3) }]}
-          >
-            <Label
-              type={1}
-              color={COLORS.shades[0]}
-              style={{ marginRight: -1 }}
-              text={userFreeImages || '0'}
-            />
-          </View>
+          <AccentBubble
+            disabled
+            style={{ position: 'absolute', right: -2, top: -2 }}
+          />
           <EntIcon
             name="camera"
             size={22}
@@ -542,17 +530,6 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     backgroundColor: COLORS.shades[100],
-  },
-  imagesLeftContainer: {
-    position: 'absolute',
-    top: -2,
-    right: -2,
-    borderRadius: 100,
-    backgroundColor: COLORS.error[900],
-    height: 18,
-    width: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   loadingContainer: {
     height: 105,

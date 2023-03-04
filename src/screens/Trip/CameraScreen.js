@@ -18,6 +18,7 @@ import { PinchGestureHandler } from 'react-native-gesture-handler';
 import Video from 'react-native-video';
 import { BlurView } from '@react-native-community/blur';
 import { useQuery } from '@apollo/client';
+import { useNavigation } from '@react-navigation/native';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import Headline from '../../components/typography/Headline';
 import i18n from '../../utils/i18n';
@@ -27,6 +28,7 @@ import ImageModal from '../../components/ImageModal';
 import Body from '../../components/typography/Body';
 import Label from '../../components/typography/Label';
 import CHECK_FREE_IMAGES from '../../queries/checkFreeImages';
+import AccentBubble from '../../components/Trip/AccentBubble';
 
 let camera;
 export default function CameraScreen({ route }) {
@@ -34,7 +36,7 @@ export default function CameraScreen({ route }) {
   const { tripId, onNavBack, preselectedImage } = route.params;
 
   // QUERIES
-  const { error, data } = useQuery(CHECK_FREE_IMAGES, {
+  const { data } = useQuery(CHECK_FREE_IMAGES, {
     variables: {
       tripId,
     },
@@ -52,6 +54,8 @@ export default function CameraScreen({ route }) {
   const [timer] = useState(120);
   const [freeImages, setFreeImages] = useState(0);
 
+  const navigation = useNavigation();
+
   useEffect(() => {
     if (data) {
       const { userFreeImages } = data.getImagesFromTrip;
@@ -65,11 +69,12 @@ export default function CameraScreen({ route }) {
         [
           {
             text: i18n.t('Go back'),
+            onPress: () => navigation.goBack(),
             style: 'cancel',
           },
           {
             text: i18n.t('Upgrade'),
-            onPress: () => console.log('hello'),
+            onPress: () => navigation.goBack(),
           },
         ],
       );
@@ -233,16 +238,10 @@ export default function CameraScreen({ route }) {
                   text={i18n.t('Capture now')}
                   color={COLORS.shades[0]}
                 />
-                <View
-                  style={styles.imagesLeftContainer}
-                >
-                  <Label
-                    type={1}
-                    color={COLORS.shades[0]}
-                    style={{ marginRight: -1 }}
-                    text={freeImages}
-                  />
-                </View>
+                <AccentBubble
+                  style={{ position: 'absolute', right: -22, top: -12 }}
+                  text={freeImages}
+                />
               </View>
               <Label
                 type={1}
@@ -506,17 +505,5 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '75%',
     bottom: 0,
-  },
-  imagesLeftContainer: {
-    position: 'absolute',
-    top: -10,
-    right: -23,
-    borderRadius: 100,
-    marginLeft: 8,
-    backgroundColor: COLORS.error[900],
-    height: 18,
-    width: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });

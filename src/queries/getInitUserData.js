@@ -19,8 +19,12 @@ const GET_INIT_USER_DATA = gql`
                 }
             }
             trips {
+                userFreeImages
                 type
                 id
+                images {
+                    _id
+                }
                 thumbnailUri
                 title
                 location {

@@ -272,7 +272,7 @@ export default function ExpenseScreen() {
               ListEmptyComponent={(
                 <Body
                   style={{ textAlign: 'center', marginTop: 0 }}
-                  text={i18n.t('No expenses yet')}
+                  text={i18n.t('No expenses yet 😕')}
                   color={COLORS.neutral[300]}
                 />
               )}

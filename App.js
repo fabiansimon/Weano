@@ -88,7 +88,7 @@ export default function App() {
             >
               {/* <Stack.Screen
                 name={ROUTES.cameraScreen}
-                initialParams={{ tripId: '63c3e95eafa1d7827eb9c3bd' }}
+                initialParams={{ onNavBack: () => navigationRef.current?.navigate(ROUTES.mainScreen), preselectedImage: null, tripId: '63f764d955f79038c99eb65d' }}
                 component={CameraScreen}
               /> */}
               <Stack.Screen
