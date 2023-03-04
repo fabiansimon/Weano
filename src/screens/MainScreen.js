@@ -59,9 +59,7 @@ export default function MainScreen() {
   // ----------- //
   const onRefresh = () => {
     setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 2000);
+
     getTripsForUser().then(() => setRefreshing(false)).catch(() => setRefreshing(false));
   };
 

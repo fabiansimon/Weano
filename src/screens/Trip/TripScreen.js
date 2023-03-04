@@ -782,11 +782,11 @@ export default function TripScreen({ route }) {
         onPress={() => (data ? navigation.navigate(ROUTES.memoriesScreen, { tripId: data.id }) : null)}
         style={styles.memoryButton}
       >
-        {data?.type === 'active' && (
-        <AccentBubble
-          style={{ position: 'absolute', right: -4, top: -6 }}
-          text={data?.userFreeImages}
-        />
+        {data?.type === 'active' && data?.userFreeImages > 0 && (
+          <AccentBubble
+            style={{ position: 'absolute', right: -4, top: -6 }}
+            text={data?.userFreeImages}
+          />
         )}
         <Icon
           name="image"

@@ -6,6 +6,7 @@ import Utils from '../../utils';
 
 export default function AccentBubble({ style, text, disabled = false }) {
   const backgroundColor = disabled ? Utils.addAlpha(COLORS.error[900], 0.3) : COLORS.error[900];
+
   return (
     <View
       style={[styles.imagesLeftContainer, { backgroundColor }, style]}

@@ -3,7 +3,7 @@ import React from 'react';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Icon from 'react-native-vector-icons/Entypo';
 import COLORS, { RADIUS } from '../constants/Theme';
-import Headline from './typography/Headline';
+import Body from './typography/Body';
 
 export default function Button({
   style,
@@ -12,6 +12,7 @@ export default function Button({
   backgroundColor,
   onPress,
   isSecondary = false,
+  isOutlined = false,
   isDisabled,
   icon,
   color,
@@ -20,9 +21,9 @@ export default function Button({
   isLoading,
 }) {
   const flex = fullWidth ? 1 : 0;
-  const bg = isDisabled ? COLORS.primary[50] : backgroundColor || COLORS.primary[700];
-  const borderColor = isSecondary && COLORS.neutral[100];
-  const borderWidth = isSecondary && 1;
+  const bg = isDisabled ? COLORS.primary[50] : isOutlined ? 'transparent' : backgroundColor || COLORS.primary[700];
+  const borderColor = isSecondary ? COLORS.neutral[100] : isOutlined ? COLORS.shades[0] : null;
+  const borderWidth = (isSecondary || isOutlined) && 1;
 
   const getIcon = () => (typeof icon.type === 'function' ? (
     React.cloneElement(icon, { fill: color })
@@ -55,8 +56,8 @@ export default function Button({
     >
       {icon && !isLoading && getIcon()}
       {text && !isLoading && (
-      <Headline
-        type={4}
+      <Body
+        type={1}
         text={text}
         color={textColor || (isSecondary ? COLORS.shades[100] : COLORS.shades[0])}
         style={{ marginLeft: icon ? 6 : 0 }}

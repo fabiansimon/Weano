@@ -1,6 +1,8 @@
 import {
   Alert,
   Dimensions,
+  Linking,
+  Platform,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -169,12 +171,27 @@ export default function CameraScreen({ route }) {
             text="Without it you won't be able to capture moments of your trip to revisit later."
           />
         </View>
-        <Button
-          style={{ width: '100%' }}
-          fullWidth
-          onPress={requestPermission}
-          text="Grant permission"
-        />
+        <View style={{ width: '100%', flex: 1 }}>
+          <Button
+            style={{ width: '100%', marginTop: 'auto' }}
+            fullWidth
+            onPress={requestPermission}
+            text={i18n.t('Grant permission')}
+          />
+          <Button
+            isOutlined
+            style={{ width: '100%', marginTop: 8 }}
+            fullWidth
+            onPress={() => {
+              if (Platform.OS === 'ios') {
+                Linking.openURL('app-settings:Bluetooth');
+              } else {
+                Linking.openSettings();
+              }
+            }}
+            text={i18n.t('Open in Settings')}
+          />
+        </View>
       </SafeAreaView>
     );
   }

@@ -1,5 +1,5 @@
 import {
-  View, StyleSheet,
+  View, StyleSheet, Keyboard,
 } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import CountryPicker from 'react-native-country-picker-modal';
@@ -10,7 +10,7 @@ import Toast from 'react-native-toast-message';
 import TitleModal from './TitleModal';
 import i18n from '../utils/i18n';
 import Headline from './typography/Headline';
-import COLORS from '../constants/Theme';
+import COLORS, { PADDING } from '../constants/Theme';
 import TextField from './TextField';
 import Body from './typography/Body';
 import Button from './Button';
@@ -54,7 +54,6 @@ export default function AuthModal({
     primaryColorVariant: COLORS.neutral[100],
     onBackgroundTextColor: COLORS.shades[100],
     fontSize: 14,
-    filterPlaceholderTextColor: 'red',
     activeOpacity: 0.7,
     itemHeight: 60,
     marginHorizontal: 10,
@@ -79,6 +78,14 @@ export default function AuthModal({
       handleLogin();
     }
   }, [code]);
+
+  const navigatePage = (index) => {
+    Keyboard.dismiss();
+
+    setTimeout(() => {
+      pageRef.current?.setPage(index);
+    }, 100);
+  };
 
   const handleJoinTrip = async () => {
     await joinTrip({
@@ -149,6 +156,8 @@ export default function AuthModal({
         },
       },
     }).catch((e) => {
+      navigatePage(0);
+      setCode('');
       Toast.show({
         type: 'error',
         text1: i18n.t('Whoops!'),
@@ -190,6 +199,8 @@ export default function AuthModal({
         },
       },
     }).catch((e) => {
+      navigatePage(0);
+      setCode('');
       Toast.show({
         type: 'error',
         text1: i18n.t('Whoops!'),
@@ -233,7 +244,7 @@ export default function AuthModal({
             ref={pageRef}
             scrollEnabled
           >
-            <View style={{ padding: 25, justifyContent: 'space-between' }}>
+            <View style={{ padding: PADDING.l, justifyContent: 'space-between' }}>
               <View>
                 <Headline
                   type={4}
@@ -281,18 +292,16 @@ export default function AuthModal({
               </View>
               <Button
                 isDisabled={phoneNr.length < 8}
-                isLoading={isLoading}
+                isLoading={false}
                 fullWidth
                 text={i18n.t('Next')}
                 onPress={() => {
-                  requestCode();
-                  setTimeout(() => {
-                    pageRef.current?.setPage(1);
-                  }, 500);
+                  // requestCode();
+                  navigatePage(1);
                 }}
               />
             </View>
-            <View style={{ padding: 25 }}>
+            <View style={{ padding: PADDING.l }}>
               <Headline
                 type={4}
                 text={i18n.t('We’ve sent you the code by SMS to')}
@@ -321,7 +330,7 @@ export default function AuthModal({
                   i18n.t('Go back'),
                   () => {
                     setCode('');
-                    pageRef.current?.setPage(0);
+                    navigatePage(0);
                   },
                   false,
                 )}
@@ -331,7 +340,6 @@ export default function AuthModal({
               />
             </View>
           </PagerView>
-
         </View>
       </KeyboardView>
       <CountryPicker

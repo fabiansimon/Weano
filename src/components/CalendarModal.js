@@ -43,8 +43,8 @@ const CalendarModal = ({
   const [endDate, setEndDate] = useState(initialEndDate);
 
   const formattedDate = (date) => (date
-    ? `${WEEKS[date?.getDay()]}, ${String(date.getDate()).padStart(2, '0')} ${
-      HALF_MONTHS[date.getMonth()]
+    ? `${WEEKS[date?.getDay()]}, ${String(date?.getDate()).padStart(2, '0')} ${
+      HALF_MONTHS[date?.getMonth()]
     }`
     : '--/--');
 

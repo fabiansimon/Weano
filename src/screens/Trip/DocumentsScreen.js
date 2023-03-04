@@ -95,7 +95,8 @@ export default function DocumentsScreen() {
         type, name, size, uri,
       } = res[0];
 
-      if (size > 100000) {
+      if (size > 500000) {
+        setIsLoading(false);
         return Toast.show({
           type: 'error',
           text1: i18n.t('Whoops!'),
@@ -103,6 +104,7 @@ export default function DocumentsScreen() {
         });
       }
       if (type !== 'application/pdf') {
+        setIsLoading(false);
         return Toast.show({
           type: 'error',
           text1: i18n.t('Whoops!'),

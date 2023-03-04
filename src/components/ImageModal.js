@@ -21,7 +21,7 @@ import userStore from '../stores/UserStore';
 import toastConfig from '../constants/ToastConfig';
 import UPLOAD_TRIP_IMAGE from '../mutations/uploadTripImage';
 import LoadingModal from './LoadingModal';
-import activeTripStore from '../stores/ActiveTripStore';
+// import activeTripStore from '../stores/ActiveTripStore';
 
 export default function ImageModal({
   style, image, isVisible, onRetake, onRequestClose, tripId, isPreselected = false,
@@ -31,8 +31,6 @@ export default function ImageModal({
 
   // STORES
   const user = userStore((state) => state.user);
-  const { images, userFreeImages, id } = activeTripStore((state) => state.activeTrip);
-  const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
 
   // STATE & MISC
   const navigation = useNavigation();
@@ -51,11 +49,6 @@ export default function ImageModal({
   const imageBottomMargin = useRef(new Animated.Value(0)).current;
 
   const duration = 300;
-
-  useEffect(() => {
-    console.log(id);
-    console.log(tripId);
-  }, []);
 
   useEffect(() => {
     toggleShareView();
@@ -290,11 +283,11 @@ export default function ImageModal({
           <>
             <KeyboardView
               behavior="padding"
-              paddingBottom={20}
+              paddingBottom={-60}
               style={styles.textinputs}
             >
               <View style={{ flex: 1 }} />
-              <View style={{ marginLeft: PADDING.m }}>
+              <View style={{ marginLeft: PADDING.m, bottom: '17%' }}>
                 <TextInput
                   maxLength={20}
                   placeholder={i18n.t('Add a title')}

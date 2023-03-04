@@ -37,7 +37,7 @@ const activeTripStore = create((set) => ({
       polls: data.polls || state.activeTrip.polls,
       mutualTasks: data.mutualTasks || state.activeTrip.mutualTasks,
       privateTasks: data.privateTasks || state.activeTrip.privateTasks,
-      userFreeImages: data.userFreeImages || state.activeTrip.userFreeImages,
+      userFreeImages: data.userFreeImages !== undefined ? data.userFreeImages : state.activeTrip.userFreeImages,
       type: data.type || state.activeTrip.type,
       documents: data.documents || state.activeTrip.documents,
     },

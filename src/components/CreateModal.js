@@ -1,5 +1,5 @@
 import {
-  View, StyleSheet, Modal,
+  View, StyleSheet, Modal, Keyboard,
 } from 'react-native';
 import React, {
   useRef, useState, useEffect,
@@ -29,24 +29,23 @@ import userStore from '../stores/UserStore';
 import toastConfig from '../constants/ToastConfig';
 
 export default function CreateModal({ isVisible, onRequestClose }) {
+  // MUTATIONS
+  const [addTrip, { loading, error }] = useMutation(ADD_TRIP);
+
+  // STORES
   const addTripState = tripsStore((state) => state.addTrip);
   const {
     avatarUri, firstName, lastName, id: userId,
   } = userStore((state) => state.user);
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(() => {
-    const date = new Date();
-    date.setDate(date.getDate() + 5);
-    return date;
-  });
-  const [addTrip, { loading, error }] = useMutation(ADD_TRIP);
 
+  // STATE & MISC
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const [location, setLocation] = useState({
     placeName: '',
     latlon: [],
   });
-  const [tripName, setTripName] = useState([]);
-
+  const [tripName, setTripName] = useState('');
   // MODALS
   const [inputVisible, setInputVisible] = useState(false);
   const [calendarVisible, setCalendarVisible] = useState(false);
@@ -66,10 +65,12 @@ export default function CreateModal({ isVisible, onRequestClose }) {
   }, [error]);
 
   const getDateValue = () => {
-    let start = '--';
-    let end = '--';
-    start = startDate && Utils.getDateFromTimestamp(startDate, 'Do MMM YYYY');
-    end = endDate && Utils.getDateFromTimestamp(endDate, 'Do MMM YYYY');
+    if (!startDate || !endDate) {
+      return;
+    }
+
+    const start = startDate && Utils.getDateFromTimestamp(startDate, 'Do MMM YYYY');
+    const end = endDate && Utils.getDateFromTimestamp(endDate, 'Do MMM YYYY');
 
     return `${start} - ${end}`;
   };
@@ -81,16 +82,71 @@ export default function CreateModal({ isVisible, onRequestClose }) {
       return;
     }
 
+    let index;
     if (isBack) {
-      setPageIndex((prev) => prev - 1);
-      pageRef.current?.setPage(pageIndex - 1);
+      index = pageIndex - 1;
     } else {
-      setPageIndex((prev) => prev + 1);
-      pageRef.current?.setPage(pageIndex + 1);
+      index = pageIndex + 1;
     }
+    navigatePage(index);
+  };
+
+  const navigatePage = (index) => {
+    Keyboard.dismiss();
+
+    setTimeout(() => {
+      pageRef.current?.setPage(index);
+      setPageIndex(index);
+    }, 100);
+  };
+
+  const cleanData = () => {
+    setTripName('');
+    setLocation({
+      string: '',
+      latlon: [],
+    });
+    setStartDate();
+    setEndDate();
+    setInvitees([]);
+    onRequestClose();
+    setPageIndex(0);
+  };
+
+  const checkInputs = () => {
+    if (tripName.trim().length <= 0) {
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('Whoops!'),
+        text2: i18n.t('Make sure to enter a trip name first'),
+      });
+      return navigatePage(0);
+    }
+    if (!startDate && !endDate) {
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('Whoops!'),
+        text2: i18n.t('Make sure to enter some dates. You can always come back later'),
+      });
+      return navigatePage(2);
+    }
+    if (location.placeName.trim() <= 0 || location.latlon.length <= 1) {
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('Whoops!'),
+        text2: i18n.t('Make sure to enter a location. You can always come back later'),
+      });
+      return navigatePage(3);
+    }
+
+    return true;
   };
 
   const handleData = async () => {
+    if (!checkInputs()) {
+      return;
+    }
+
     const { placeName, latlon } = location;
     const param = invitees.toString().replace(',', '&');
 
@@ -141,16 +197,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
       });
     });
 
-    setTripName('');
-    setLocation({
-      string: '',
-      latlon: [],
-    });
-    setStartDate();
-    setEndDate();
-    setInvitees([]);
-    onRequestClose();
-    setPageIndex(0);
+    cleanData();
   };
 
   const getDateContent = () => (
@@ -222,9 +269,9 @@ export default function CreateModal({ isVisible, onRequestClose }) {
       {!invitees || invitees?.length < 1 ? (
         <Body
           type={2}
-          style={{ textAlign: 'center', flex: 1 }}
+          style={{ flex: 1, maxWidth: '80%' }}
           color={COLORS.neutral[300]}
-          text={i18n.t('No one invited yet, Start inviting people!')}
+          text={i18n.t("Don't worry, you can also invite people once the trip is created 🤷‍♂️")}
         />
       ) : invitees.map((email, index) => (
         <ContactChip
@@ -261,7 +308,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
         type={1}
         text={i18n.t('Add more')}
         color={COLORS.primary[700]}
-        style={{ textDecorationLine: 'underline' }}
+        style={{ textDecorationLine: 'underline', fontWeight: '500' }}
         onPress={() => setInputVisible(true)}
       />,
       content: getInviteContent(),
@@ -323,7 +370,10 @@ export default function CreateModal({ isVisible, onRequestClose }) {
     <Modal
       animationType="slide"
       visible={isVisible}
-      onRequestClose={onRequestClose}
+      onRequestClose={() => {
+        onRequestClose();
+        cleanData();
+      }}
       presentationStyle="pageSheet"
     >
       <KeyboardView
@@ -340,7 +390,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
           <PagerView
             style={{ flex: 1 }}
             ref={pageRef}
-            scrollEnabled
+            scrollEnabled={false}
           >
             {createData.map((item) => getCreateView(item))}
           </PagerView>
@@ -393,7 +443,7 @@ const styles = StyleSheet.create({
     paddingVertical: 25,
   },
   wrapContainer: {
-    marginTop: 20,
+    marginTop: 10,
     flexDirection: 'row',
     flexWrap: 'wrap',
   },

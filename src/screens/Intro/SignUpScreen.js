@@ -334,7 +334,7 @@ export default function SignUpScreen({ invitationId, route }) {
               type={1}
               color={COLORS.primary[500]}
               text={i18n.t('Log in instead')}
-              style={{ marginLeft: 4, fontWeight: '600' }}
+              style={{ marginLeft: 4, fontWeight: '500' }}
             />
           </Pressable>
         </View>
@@ -433,7 +433,7 @@ export default function SignUpScreen({ invitationId, route }) {
           type={2}
           style={{ marginTop: 10 }}
           color={COLORS.shades[0]}
-          text={i18n.t("(Yes, it's that easy)")}
+          text={i18n.t('(Hey Sophia und Julia ihr hübschen 🇿🇦)')}
         />
         <View style={{
           width: '100%', height: 170, marginTop: '25%', marginBottom: 40,

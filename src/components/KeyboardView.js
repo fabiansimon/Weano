@@ -29,7 +29,7 @@ export default function KeyboardView({
     >
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? behavior : null}
-        style={[style, { flex: 1, backgroundColor: 'transparent' }]}
+        style={[{ flex: 1, backgroundColor: 'transparent' }]}
         keyboardVerticalOffset={Platform.select({ ios: paddingBottom, android: 500 })}
       >
         {children}

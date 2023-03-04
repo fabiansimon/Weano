@@ -145,6 +145,7 @@ export default function InviteeScreen() {
         <Pressable
           onPress={() => setShowUser(item)}
           style={{
+            flex: 1,
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -167,8 +168,8 @@ export default function InviteeScreen() {
               text={`${email}`}
             />
           </View>
+          <RoleChip isHost={item.id === hostId} />
         </Pressable>
-        <RoleChip isHost={item.id === hostId} />
       </MenuView>
 
     );

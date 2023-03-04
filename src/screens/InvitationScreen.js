@@ -158,13 +158,18 @@ export default function InvitationScreen({ route }) {
 
       </ScrollView>
       <View style={{
-        marginTop: 18, padding: 10, backgroundColor: COLORS.neutral[50], borderRadius: 10,
+        marginTop: 18,
+        padding: 10,
+        backgroundColor: COLORS.neutral[50],
+        borderRadius: 10,
+        borderWidth: 0.5,
+        borderColor: COLORS.neutral[100],
       }}
       >
         <Body
           type={1}
           text={tripData?.description || i18n.t('No description yet for this trip ✒️')}
-          style={{ marginLeft: 4, color: COLORS.neutral[300], fontStyle: 'italic' }}
+          style={{ marginLeft: 4, color: COLORS.neutral[300] }}
         />
       </View>
     </View>
@@ -181,7 +186,7 @@ export default function InvitationScreen({ route }) {
           <PagerView
             style={{ flex: 1, backgroundColor: COLORS.neutral[50] }}
             ref={pageRef}
-            scrollEnable={false}
+            scrollEnabled={false}
           >
             <SafeAreaView style={{ flex: 1, marginRight: 2 }}>
               <KeyboardView paddingBottom={40}>
@@ -206,8 +211,8 @@ export default function InvitationScreen({ route }) {
                       text={i18n.t('Continue')}
                       onPress={handlePress}
                     />
-                    <Headline
-                      type={4}
+                    <Body
+                      type={1}
                       text={i18n.t('Decline Invitation')}
                       onPress={handleDecline}
                       style={{ marginTop: 18, textAlign: 'center' }}

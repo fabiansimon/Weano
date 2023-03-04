@@ -202,8 +202,8 @@ export default function ProfileScreen() {
         {item.icon}
       </View>
       <View>
-        <Headline
-          type={4}
+        <Body
+          type={1}
           text={item.title}
         />
       </View>

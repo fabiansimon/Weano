@@ -1,8 +1,7 @@
 import {
-  FlatList, StyleSheet, View, StatusBar, Pressable, Platform, ScrollView, ActivityIndicator, RefreshControl,
+  FlatList, StyleSheet, View, StatusBar, Pressable, Platform, ScrollView, RefreshControl,
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
-import IonIcon from 'react-native-vector-icons/Ionicons';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import EntIcon from 'react-native-vector-icons/Entypo';
 import React, { useState, useEffect, useRef } from 'react';
@@ -63,7 +62,11 @@ export default function MemoriesScreen({ route }) {
 
   const onRefresh = () => {
     setRefreshing(true);
-    getImagesFromTrip().then(() => setRefreshing(false)).catch(() => setRefreshing(false));
+    getImagesFromTrip().then(() => {
+      const { getImagesFromTrip: imageData } = updatedData;
+      updateActiveTrip({ images: imageData.images, userFreeImages: imageData.userFreeImages });
+      setRefreshing(false);
+    }).catch(() => setRefreshing(false));
   };
 
   const navigation = useNavigation();
@@ -80,11 +83,6 @@ export default function MemoriesScreen({ route }) {
       updateActiveTrip({ images: imageData.images, userFreeImages: imageData.userFreeImages });
     }
 
-    if (updatedData) {
-      const { getImagesFromTrip: imageData } = updatedData;
-      updateActiveTrip({ images: imageData.images, userFreeImages: imageData.userFreeImages });
-    }
-
     if (error) {
       Toast.show({
         type: 'error',
@@ -93,10 +91,11 @@ export default function MemoriesScreen({ route }) {
       });
       setIsLoading(false);
     }
-  }, [data, error, updatedData]);
+  }, [data, error]);
 
   useEffect(() => {
     if (images) {
+      console.log(images);
       setDateSelection([{
         title: i18n.t('All images'),
         images,
@@ -133,7 +132,7 @@ export default function MemoriesScreen({ route }) {
       mm = month.slice(2, 4);
     }
 
-    return `${day} ${months[mm - 1]} 20${month.slice(3, 5)}`;
+    return `${day} ${months[mm - 1]} 20${month.slice(4, 6)}`;
   };
 
   const getActions = () => {

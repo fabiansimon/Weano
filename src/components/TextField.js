@@ -93,7 +93,7 @@ export default function TextField({
         style={{ marginRight: 6 }}
       />
       <Body
-        type={1}
+        type={2}
         color={COLORS.neutral[700]}
         text={item.string}
         style={{ marginRight: 30 }}
