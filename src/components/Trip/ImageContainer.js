@@ -154,7 +154,7 @@ export default function ImageContainer({
 
 const styles = StyleSheet.create({
   container: {
-    width: Dimensions.get('window').width * 0.295,
+    width: Dimensions.get('window').width * 0.2975,
     aspectRatio: 9 / 16,
     borderRadius: RADIUS.s,
     overflow: 'hidden',

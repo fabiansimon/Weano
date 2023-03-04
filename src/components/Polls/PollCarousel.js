@@ -34,7 +34,7 @@ export default function PollCarousel({
     ) : (
       <EmptyDataContainer
         style={{ marginTop: -6 }}
-        title={i18n.t('No polls to show yet!')}
+        title={i18n.t('There are no polls to show yet.')}
         subtitle={i18n.t('Be the first one to add one.')}
         route={ROUTES.pollScreen}
       />

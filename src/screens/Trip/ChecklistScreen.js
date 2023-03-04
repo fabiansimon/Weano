@@ -48,7 +48,7 @@ export default function ChecklistScreen() {
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const emptyString = filterOption === 0 ? i18n.t('No task added yet') : filterOption === 1 ? i18n.t('No done tasks') : i18n.t('No open tasks');
+  const emptyString = filterOption === 0 ? i18n.t('No tasks added yet') : filterOption === 1 ? i18n.t('No done tasks') : i18n.t('No open tasks');
 
   useEffect(() => {
     if (error) {

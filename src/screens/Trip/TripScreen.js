@@ -356,7 +356,7 @@ export default function TripScreen({ route }) {
   };
 
   const getDayDifference = () => {
-    if (activeTrip.type === 'isActive') {
+    if (activeTrip.type === 'active') {
       return i18n.t('• live');
     }
 

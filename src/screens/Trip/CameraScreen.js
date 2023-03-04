@@ -1,4 +1,5 @@
 import {
+  Alert,
   Dimensions,
   StyleSheet,
   TouchableOpacity,
@@ -16,6 +17,7 @@ import { manipulateAsync, FlipType } from 'expo-image-manipulator';
 import { PinchGestureHandler } from 'react-native-gesture-handler';
 import Video from 'react-native-video';
 import { BlurView } from '@react-native-community/blur';
+import { useQuery } from '@apollo/client';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import Headline from '../../components/typography/Headline';
 import i18n from '../../utils/i18n';
@@ -24,11 +26,20 @@ import Utils from '../../utils';
 import ImageModal from '../../components/ImageModal';
 import Body from '../../components/typography/Body';
 import Label from '../../components/typography/Label';
+import CHECK_FREE_IMAGES from '../../queries/checkFreeImages';
 
 let camera;
 export default function CameraScreen({ route }) {
   // PARAMS
   const { tripId, onNavBack, preselectedImage } = route.params;
+
+  // QUERIES
+  const { error, data } = useQuery(CHECK_FREE_IMAGES, {
+    variables: {
+      tripId,
+    },
+    fetchPolicy: 'network-only',
+  });
 
   // STATE & MISC
   const [cameraType, setCameraType] = useState(CameraType.back);
@@ -39,6 +50,31 @@ export default function CameraScreen({ route }) {
   const [zoom, setZoom] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
   const [timer] = useState(120);
+  const [freeImages, setFreeImages] = useState(0);
+
+  useEffect(() => {
+    if (data) {
+      const { userFreeImages } = data.getImagesFromTrip;
+      if (userFreeImages && userFreeImages > 0) {
+        return setFreeImages(userFreeImages);
+      }
+
+      return Alert.alert(
+        i18n.t('Oops, sorry'),
+        i18n.t("It seems like you don't have any free images left right now. Do you want to upgrade your account?"),
+        [
+          {
+            text: i18n.t('Go back'),
+            style: 'cancel',
+          },
+          {
+            text: i18n.t('Upgrade'),
+            onPress: () => console.log('hello'),
+          },
+        ],
+      );
+    }
+  }, [data]);
 
   const AnimatableTouchableOpacity = Animatable.createAnimatableComponent(TouchableOpacity);
 
@@ -190,12 +226,24 @@ export default function CameraScreen({ route }) {
             style={styles.captureContainer}
           >
             <View style={{ alignItems: 'center' }}>
-              <Body
-                type={1}
-                style={{ marginTop: -2, fontWeight: '500' }}
-                text={i18n.t('Capture now')}
-                color={COLORS.shades[0]}
-              />
+              <View style={{ flexDirection: 'row' }}>
+                <Body
+                  type={1}
+                  style={{ marginTop: -2, fontWeight: '500' }}
+                  text={i18n.t('Capture now')}
+                  color={COLORS.shades[0]}
+                />
+                <View
+                  style={styles.imagesLeftContainer}
+                >
+                  <Label
+                    type={1}
+                    color={COLORS.shades[0]}
+                    style={{ marginRight: -1 }}
+                    text={freeImages}
+                  />
+                </View>
+              </View>
               <Label
                 type={1}
                 style={{ fontWeight: '400' }}
@@ -458,5 +506,17 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '75%',
     bottom: 0,
+  },
+  imagesLeftContainer: {
+    position: 'absolute',
+    top: -10,
+    right: -23,
+    borderRadius: 100,
+    marginLeft: 8,
+    backgroundColor: COLORS.error[900],
+    height: 18,
+    width: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
     letterSpacing: -1,
     fontFamily: 'WorkSans-Regular',
     color: COLORS.shades[100],
-    fontSize: 20,
+    fontSize: 18,
   },
   innerContainer: {
     borderTopRightRadius: RADIUS.s,

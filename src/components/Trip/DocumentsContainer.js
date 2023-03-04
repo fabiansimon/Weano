@@ -10,11 +10,11 @@ import EmptyDataContainer from '../EmptyDataContainer';
 import ROUTES from '../../constants/Routes';
 
 export default function DocumentsContainer({ style, data }) {
-  if (data.length <= 0) {
+  if (data.length <= 0) {
     return (
       <EmptyDataContainer
         style={{ marginTop: -6 }}
-        title={i18n.t('No documents added yet!')}
+        title={i18n.t('There are no documents to show yet.')}
         subtitle={i18n.t('Be the first one to add one.')}
         route={ROUTES.documentsScreen}
       />
