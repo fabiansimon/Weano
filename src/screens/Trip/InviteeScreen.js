@@ -23,6 +23,7 @@ import META_DATA from '../../constants/MetaData';
 import userManagement from '../../utils/userManagement';
 import REMOVE_USER_FROM_TRIP from '../../mutations/removeUserFromTrip';
 import Utils from '../../utils';
+import ContactDetailModal from '../../components/ContactDetailModal';
 
 export default function InviteeScreen() {
   // MUTATIONS
@@ -35,6 +36,7 @@ export default function InviteeScreen() {
   // STATE & MISC
   const scrollY = useRef(new Animated.Value(0)).current;
   const [inputVisible, setInputVisible] = useState(false);
+  const [showUser, setShowUser] = useState(null);
 
   const isHost = userManagement.isHost();
 
@@ -122,6 +124,7 @@ export default function InviteeScreen() {
     return (
 
       <MenuView
+        shouldOpenOnLongPress
         style={styles.tileContainer}
         onPressAction={({ nativeEvent }) => handleMenuOption(nativeEvent, item)}
         actions={[
@@ -139,11 +142,13 @@ export default function InviteeScreen() {
           },
         ]}
       >
-        <View style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
+        <Pressable
+          onPress={() => setShowUser(item)}
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
         >
           <Avatar
             data={item}
@@ -162,7 +167,7 @@ export default function InviteeScreen() {
               text={`${email}`}
             />
           </View>
-        </View>
+        </Pressable>
         <RoleChip isHost={item.id === hostId} />
       </MenuView>
 
@@ -247,7 +252,11 @@ export default function InviteeScreen() {
         onPress={(input) => handleInvitations(input)}
         autoClose
       />
-
+      <ContactDetailModal
+        isVisible={showUser}
+        onRequestClose={() => setShowUser(null)}
+        data={showUser}
+      />
     </View>
   );
 }
@@ -266,7 +275,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: 8,
     borderRadius: RADIUS.xl,
-    backgroundColor: COLORS.success[700],
+    backgroundColor: COLORS.primary[700],
     paddingVertical: 6,
   },
   copyButton: {

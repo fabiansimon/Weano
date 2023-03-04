@@ -91,6 +91,7 @@ export default function RecapCardMini({
           <View style={{ flexDirection: 'row' }}>
             {activeMembers && activeMembers.map((member) => (
               <Avatar
+                disabled
                 key={member.id}
                 data={member}
                 size={24}

@@ -1,5 +1,5 @@
 import {
-  FlatList, StyleSheet, View, StatusBar, Pressable, Platform, ScrollView, ActivityIndicator,
+  FlatList, StyleSheet, View, StatusBar, Pressable, Platform, ScrollView, ActivityIndicator, RefreshControl,
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import IonIcon from 'react-native-vector-icons/Ionicons';
@@ -61,11 +61,16 @@ export default function MemoriesScreen({ route }) {
   const [downloadIndex, setDownloadIndex] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
 
+  const onRefresh = () => {
+    setRefreshing(true);
+    getImagesFromTrip().then(() => setRefreshing(false)).catch(() => setRefreshing(false));
+  };
+
   const navigation = useNavigation();
 
   useEffect(() => {
     if (initShowStory && images?.length > 0) {
-      setStoryVisible(true);
+      // setStoryVisible(true);
     }
   }, [initShowStory]);
 
@@ -264,22 +269,6 @@ export default function MemoriesScreen({ route }) {
             text={i18n.t('Moments')}
           />
           <View style={{ flexDirection: 'row', top: -10 }}>
-            <Pressable
-              onPress={() => {
-                setRefreshing(true);
-                getImagesFromTrip().then(() => setRefreshing(false)).catch(() => setRefreshing(false));
-              }}
-              style={[styles.roundButton, { marginRight: 5 }]}
-            >
-              {refreshing ? <ActivityIndicator color={COLORS.shades[0]} /> : (
-                <IonIcon
-                  name="refresh"
-                  style={{ marginRight: -2 }}
-                  color={COLORS.shades[0]}
-                  size={22}
-                />
-              )}
-            </Pressable>
             {!isLoading && (
               <MenuView
                 style={styles.addIcon}
@@ -451,6 +440,13 @@ export default function MemoriesScreen({ route }) {
         </AnimatedHeader>
         )}
         <Animated.ScrollView
+          refreshControl={(
+            <RefreshControl
+              progressViewOffset={50}
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+            />
+          )}
           showsVerticalScrollIndicator={false}
           scrollEventThrottle={16}
           onScroll={Animated.event(

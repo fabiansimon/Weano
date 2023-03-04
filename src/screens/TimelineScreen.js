@@ -29,6 +29,7 @@ export default function TimelineScreen() {
     variables: {
       tripId,
     },
+    fetchPolicy: 'network-only',
   });
 
   // STATE & MISC
