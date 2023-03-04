@@ -81,14 +81,13 @@ export default class Utils {
      * @param {String} action - action
      * @return {boolean} isFuture
      */
-  // eslint-disable-next-line default-param-last
-  static showConfirmationAlert(title, subtitle, cancelMessage = i18n.t('Cancel'), actionMessage, action, isDestructive = true) {
+  static showConfirmationAlert(title, subtitle, actionMessage, action, isDestructive = true) {
     Alert.alert(
       title,
       subtitle,
       [
         {
-          text: cancelMessage,
+          text: i18n.t('Cancel'),
           style: 'cancel',
         },
         {
