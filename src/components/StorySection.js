@@ -2,7 +2,7 @@ import {
   Pressable,
   ScrollView, StyleSheet, View,
 } from 'react-native';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import COLORS from '../constants/Theme';
 import Body from './typography/Body';
@@ -16,6 +16,20 @@ export default function StorySection({
   style, contentContainerStyle, data, onLongPress,
 }) {
   const navigation = useNavigation();
+  const [sortedData, setSortedData] = useState([]);
+
+  useEffect(() => {
+    if (!data) {
+      return;
+    }
+
+    setSortedData(data.slice().sort((a, b) => {
+      if (a.type === 'active' && b.type !== 'active') {
+        return -1;
+      }
+      return 0;
+    }));
+  }, [data]);
 
   return (
     <View style={style}>
@@ -44,7 +58,7 @@ export default function StorySection({
             text={`${data.length} ${i18n.t('Trips')}`}
           />
         </Pressable>
-        {data.map((trip) => {
+        {sortedData.map((trip, index) => {
           const { type } = trip;
           if (type === 'upcoming' || type === 'soon') {
             return;
@@ -53,6 +67,7 @@ export default function StorySection({
             <TripContainer
               key={trip.id}
               disabled={false}
+              index={index}
               onPress={() => navigation.navigate(ROUTES.memoriesScreen, { tripId: trip.id, initShowStory: true })}
               onLongPress={onLongPress}
               trip={trip}

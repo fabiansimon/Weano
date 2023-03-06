@@ -168,7 +168,7 @@ export default function TripScreen({ route }) {
   const handleDeleteTrip = async () => {
     Utils.showConfirmationAlert(
       i18n.t('Delete Trip'),
-      i18n.t(`Are you sure you want to delete '${data?.title}' as an expense?`),
+      i18n.t(`Are you sure you want to delete '${data?.title}'?`),
       i18n.t('Delete'),
       async () => {
         await deleteTrip({
@@ -580,7 +580,7 @@ export default function TripScreen({ route }) {
             contentContainerStyle={{ paddingRight: 30 }}
             style={{
               flexDirection: 'row',
-              marginTop: 12,
+              marginTop: 8,
               marginHorizontal: -PADDING.l,
               paddingLeft: PADDING.m,
             }}

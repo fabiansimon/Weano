@@ -159,7 +159,7 @@ export default function CameraScreen({ route }) {
       <SafeAreaView style={styles.noPermission}>
         <View>
           <Headline
-            type={2}
+            type={4}
             style={{ marginRight: PADDING.xl }}
             color={COLORS.shades[0]}
             text={i18n.t('Please allow us to access your camera 📸')}
@@ -167,7 +167,7 @@ export default function CameraScreen({ route }) {
           <Body
             type={2}
             color={COLORS.neutral[300]}
-            style={{ marginTop: 10, marginRight: 40 }}
+            style={{ marginTop: 6, marginRight: 40 }}
             text="Without it you won't be able to capture moments of your trip to revisit later."
           />
         </View>

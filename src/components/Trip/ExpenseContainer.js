@@ -55,7 +55,7 @@ export default function ExpensesContainer({
           const individualData = extractIndividualData(user);
           return (
             <ExpenseIndividualCard
-              onPress={() => navigation.navigate(ROUTES.individualExpenseScreen, { data: individualData, users })}
+              onPress={() => navigation.navigate(ROUTES.expenseScreen)}
               data={individualData}
               user={user}
               style={{ marginRight: index === users.length - 1 ? 40 : 10, backgroundColor: tileBackground }}

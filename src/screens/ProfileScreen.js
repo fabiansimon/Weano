@@ -10,6 +10,7 @@ import { useMutation } from '@apollo/client';
 import Toast from 'react-native-toast-message';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import ActionSheet from 'react-native-actionsheet';
+import VersionCheck from 'react-native-version-check';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import i18n from '../utils/i18n';
 import HybridHeader from '../components/HybridHeader';
@@ -271,7 +272,12 @@ export default function ProfileScreen() {
           {getHeader()}
           {getStatsContainer()}
           {profileLinks.map((link, index) => <ListTile item={link} index={index} />)}
-
+          <Body
+            type={2}
+            style={{ marginTop: 20 }}
+            color={COLORS.neutral[300]}
+            text={`Version ${VersionCheck.getCurrentVersion()}`}
+          />
         </View>
       </HybridHeader>
       <WebViewModal

@@ -36,6 +36,7 @@ import TimelineScreen from './src/screens/TimelineScreen';
 import MyAccountScreen from './src/screens/MyAccount';
 import META_DATA from './src/constants/MetaData';
 import DocumentsScreen from './src/screens/Trip/DocumentsScreen';
+import InternetCheckProvider from './src/Providers/InternetCheckProvider';
 
 const Stack = createNativeStackNavigator();
 
@@ -77,74 +78,75 @@ export default function App() {
   return (
     <>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <ApolloProvider client={client}>
-          <NavigationContainer
-            ref={navigationRef}
-
-          >
-            <StatusBar barStyle="dark-content" />
-            <Stack.Navigator
-              screenOptions={{ headerShown: false }}
+        <InternetCheckProvider>
+          <ApolloProvider client={client}>
+            <NavigationContainer
+              ref={navigationRef}
             >
-              {/* <Stack.Screen
+              <StatusBar barStyle="dark-content" />
+              <Stack.Navigator
+                screenOptions={{ headerShown: false }}
+              >
+                {/* <Stack.Screen
                 name={ROUTES.cameraScreen}
-                initialParams={{ onNavBack: () => navigationRef.current?.navigate(ROUTES.mainScreen), preselectedImage: null, tripId: '63f764d955f79038c99eb65d' }}
+                initialParams={{ tripId: '63c3e95eafa1d7827eb9c3bd' }}
                 component={CameraScreen}
               /> */}
-              <Stack.Screen
-                name={ROUTES.initDataCrossroads}
-                component={InitDataCrossroads}
-              />
-              <Stack.Screen
-                name={ROUTES.signUpScreen}
-                component={SignUpScreen}
-                initialParams={{ uploadReminderId: null }}
-                options={{ gestureEnabled: false }}
-              />
-              <Stack.Screen
-                name={ROUTES.mainScreen}
-                component={MainScreen}
-                options={{ gestureEnabled: false }}
-              />
-              <Stack.Screen
-                name={ROUTES.invitationScreen}
-                component={InvitationScreen}
-                options={{ gestureEnabled: false }}
-              />
-              <Stack.Screen name={ROUTES.profileScreen} component={ProfileScreen} />
-              <Stack.Screen
-                name={ROUTES.mapScreen}
-                initialParams={{ initTrip: null }}
-                component={MapScreen}
-              />
-              <Stack.Screen
-                name={ROUTES.tripScreen}
-                options={{ gestureEnabled: false }}
-                component={TripScreen}
-              />
-              <Stack.Screen name={ROUTES.dateScreen} component={DateScreen} />
-              <Stack.Screen name={ROUTES.inviteeScreen} component={InviteeScreen} />
-              <Stack.Screen name={ROUTES.locationScreen} component={LocationScreen} />
-              <Stack.Screen name={ROUTES.individualExpenseScreen} component={IndividualExpenseScreen} />
-              <Stack.Screen name={ROUTES.expenseScreen} component={ExpenseScreen} />
-              <Stack.Screen name={ROUTES.checklistScreen} component={ChecklistScreen} />
-              <Stack.Screen
-                name={ROUTES.memoriesScreen}
-                initialParams={{ initShowStory: false }}
-                component={MemoriesScreen}
-              />
-              <Stack.Screen
-                name={ROUTES.cameraScreen}
-                initialParams={{ onNavBack: () => navigationRef.current?.navigate(ROUTES.mainScreen), preselectedImage: null }}
-                component={CameraScreen}
-              />
-              <Stack.Screen name={ROUTES.pollScreen} component={PollScreen} />
-              <Stack.Screen name={ROUTES.documentsScreen} component={DocumentsScreen} />
-              <Stack.Screen name={ROUTES.timelineScreen} component={TimelineScreen} />
-              <Stack.Screen name={ROUTES.myAccountScreen} component={MyAccountScreen} />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </ApolloProvider>
+                <Stack.Screen
+                  name={ROUTES.initDataCrossroads}
+                  component={InitDataCrossroads}
+                />
+                <Stack.Screen
+                  name={ROUTES.signUpScreen}
+                  component={SignUpScreen}
+                  initialParams={{ uploadReminderId: null }}
+                  options={{ gestureEnabled: false }}
+                />
+                <Stack.Screen
+                  name={ROUTES.mainScreen}
+                  component={MainScreen}
+                  options={{ gestureEnabled: false }}
+                />
+                <Stack.Screen
+                  name={ROUTES.invitationScreen}
+                  component={InvitationScreen}
+                  options={{ gestureEnabled: false }}
+                />
+                <Stack.Screen name={ROUTES.profileScreen} component={ProfileScreen} />
+                <Stack.Screen
+                  name={ROUTES.mapScreen}
+                  initialParams={{ initTrip: null }}
+                  component={MapScreen}
+                />
+                <Stack.Screen
+                  name={ROUTES.tripScreen}
+                  options={{ gestureEnabled: false }}
+                  component={TripScreen}
+                />
+                <Stack.Screen name={ROUTES.dateScreen} component={DateScreen} />
+                <Stack.Screen name={ROUTES.inviteeScreen} component={InviteeScreen} />
+                <Stack.Screen name={ROUTES.locationScreen} component={LocationScreen} />
+                <Stack.Screen name={ROUTES.individualExpenseScreen} component={IndividualExpenseScreen} />
+                <Stack.Screen name={ROUTES.expenseScreen} component={ExpenseScreen} />
+                <Stack.Screen name={ROUTES.checklistScreen} component={ChecklistScreen} />
+                <Stack.Screen
+                  name={ROUTES.memoriesScreen}
+                  initialParams={{ initShowStory: false }}
+                  component={MemoriesScreen}
+                />
+                <Stack.Screen
+                  name={ROUTES.cameraScreen}
+                  initialParams={{ onNavBack: () => navigationRef.current?.navigate(ROUTES.mainScreen), preselectedImage: null }}
+                  component={CameraScreen}
+                />
+                <Stack.Screen name={ROUTES.pollScreen} component={PollScreen} />
+                <Stack.Screen name={ROUTES.documentsScreen} component={DocumentsScreen} />
+                <Stack.Screen name={ROUTES.timelineScreen} component={TimelineScreen} />
+                <Stack.Screen name={ROUTES.myAccountScreen} component={MyAccountScreen} />
+              </Stack.Navigator>
+            </NavigationContainer>
+          </ApolloProvider>
+        </InternetCheckProvider>
       </GestureHandlerRootView>
       <Toast
         topOffset={60}

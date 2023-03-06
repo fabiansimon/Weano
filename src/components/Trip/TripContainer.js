@@ -15,7 +15,7 @@ import i18n from '../../utils/i18n';
 import AccentBubble from './AccentBubble';
 
 export default function TripContainer({
-  trip, onLongPress, disabled = true, size, isDense = false, onPress,
+  trip, onLongPress, disabled = true, size, isDense = false, onPress, index,
 }) {
   const {
     location, thumbnailUri: uri, dateRange, type, userFreeImages,
@@ -41,11 +41,7 @@ export default function TripContainer({
     const map = { title: i18n.t('Visit on Map'), systemIcon: 'map' };
     const camera = { title: i18n.t('Capture a memory'), systemIcon: 'camera' };
 
-    if (userFreeImages > 0) {
-      return [map, camera];
-    }
-
-    return [camera];
+    return [map, camera];
   };
 
   const borderColor = getBorderColor();
@@ -59,11 +55,14 @@ export default function TripContainer({
       disabled={disabled}
     >
       <Pressable
-        style={{ marginRight: 14 }}
+        style={{ marginRight: 14, maxWidth: width + 6 }}
         onPress={onPress}
       >
 
-        <View style={[styles.outerTripContainer, { borderColor, borderRadius: borderRadius + 2 }]}>
+        <View style={[styles.outerTripContainer, {
+          borderColor, borderRadius: borderRadius + 2, height: height + 6, width: width + 6,
+        }]}
+        >
           <FastImage
             style={[styles.tripContainer, { height, width, borderRadius }]}
             source={uri ? { uri } : DefaultImage}
@@ -78,7 +77,7 @@ export default function TripContainer({
         {!isDense && (
         <>
           <Body
-            numberOfLines={1}
+            numberOfLines={2}
             ellipsizeMode="tail"
             style={{ marginTop: 6, marginBottom: -2, textAlign: 'center' }}
             type={2}

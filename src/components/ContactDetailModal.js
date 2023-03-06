@@ -59,7 +59,7 @@ function ContactDetailModal({
       <View style={styles.roundButton}>
         <Icon
           name={icon}
-          size={30}
+          size={24}
           color={COLORS.shades[0]}
         />
       </View>
@@ -175,8 +175,8 @@ const styles = StyleSheet.create({
     opacity: 0.82,
   },
   roundButton: {
-    height: 60,
-    width: 60,
+    height: 50,
+    width: 50,
     backgroundColor: COLORS.primary[700],
     borderRadius: RADIUS.xl,
     alignItems: 'center',
