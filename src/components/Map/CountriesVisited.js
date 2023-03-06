@@ -14,7 +14,7 @@ export default function CountriesVisited({
   onPress, data,
 }) {
   // STORES
-  const { firstName } = userStore((state) => state.user);
+  const { firstName, countriesVisited } = userStore((state) => state.user);
 
   const recentTrips = data.filter((trip) => trip.type === 'recent').length;
   const activeTrips = data.filter((trip) => trip.type === 'active').length;
@@ -36,7 +36,7 @@ export default function CountriesVisited({
               type={1}
               color={COLORS.neutral[300]}
               style={{ marginTop: 2, marginBottom: 8 }}
-              text={i18n.t("Let's take look at your trips 🍹")}
+              text={`${i18n.t('You visitied')} ${countriesVisited.length} ${i18n.t('countries so far 🍹')}`}
             />
             <View style={{
               flexDirection: 'row', width, marginHorizontal: -PADDING.s, paddingLeft: PADDING.s, paddingRight: PADDING.s + 2,

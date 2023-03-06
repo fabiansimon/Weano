@@ -65,11 +65,11 @@ export default function ProfileScreen() {
     },
     {
       title: i18n.t('Countries'),
-      amount: 12,
+      amount: user.countriesVisited && user.countriesVisited.length,
     },
     {
       title: i18n.t('Friends'),
-      amount: 12,
+      amount: user.friends && user.friends.length - 1,
     },
   ];
 
@@ -322,14 +322,15 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-around',
-    padding: 10,
     borderRadius: RADIUS.s,
     backgroundColor: COLORS.neutral[50],
+    paddingVertical: 10,
     borderWidth: 0.5,
     borderColor: COLORS.neutral[100],
   },
   stat: {
     alignItems: 'center',
+    flex: 1,
   },
   listItem: {
     marginHorizontal: PADDING.l,

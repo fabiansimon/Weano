@@ -17,6 +17,8 @@ const GET_INIT_USER_DATA = gql`
                     expense
                     trip
                 }
+                friends
+                countriesVisited
             }
             trips {
                 userFreeImages

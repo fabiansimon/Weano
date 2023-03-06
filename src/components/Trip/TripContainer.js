@@ -15,7 +15,7 @@ import i18n from '../../utils/i18n';
 import AccentBubble from './AccentBubble';
 
 export default function TripContainer({
-  trip, onLongPress, disabled = true, size, isDense = false, onPress, index,
+  trip, onLongPress, disabled = true, size, isDense = false, onPress,
 }) {
   const {
     location, thumbnailUri: uri, dateRange, type, userFreeImages,

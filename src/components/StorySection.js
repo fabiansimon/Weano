@@ -58,7 +58,7 @@ export default function StorySection({
             text={`${data.length} ${i18n.t('Trips')}`}
           />
         </Pressable>
-        {sortedData.map((trip, index) => {
+        {sortedData.map((trip) => {
           const { type } = trip;
           if (type === 'upcoming' || type === 'soon') {
             return;
@@ -67,7 +67,6 @@ export default function StorySection({
             <TripContainer
               key={trip.id}
               disabled={false}
-              index={index}
               onPress={() => navigation.navigate(ROUTES.memoriesScreen, { tripId: trip.id, initShowStory: true })}
               onLongPress={onLongPress}
               trip={trip}
