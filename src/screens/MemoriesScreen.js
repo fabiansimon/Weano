@@ -27,6 +27,10 @@ import months from '../constants/Months';
 import AnimatedHeader from '../components/AnimatedHeader';
 import activeTripStore from '../stores/ActiveTripStore';
 import AccentBubble from '../components/Trip/AccentBubble';
+import AsyncStorageDAO from '../utils/AsyncStorageDAO';
+import PremiumController from '../PremiumController';
+
+const asyncStorageDAO = new AsyncStorageDAO();
 
 export default function MemoriesScreen({ route }) {
   // PARAMS
@@ -64,7 +68,7 @@ export default function MemoriesScreen({ route }) {
     setRefreshing(true);
     getImagesFromTrip().then(() => {
       const { getImagesFromTrip: imageData } = updatedData;
-      updateActiveTrip({ images: imageData.images, userFreeImages: imageData.userFreeImages });
+      updateTripState(imageData.images, imageData.userFreeImages);
       setRefreshing(false);
     }).catch(() => setRefreshing(false));
   };
@@ -80,7 +84,7 @@ export default function MemoriesScreen({ route }) {
   useEffect(() => {
     if (data) {
       const { getImagesFromTrip: imageData } = data;
-      updateActiveTrip({ images: imageData.images, userFreeImages: imageData.userFreeImages });
+      updateTripState(imageData.images, imageData.userFreeImages);
     }
 
     if (error) {
@@ -95,13 +99,15 @@ export default function MemoriesScreen({ route }) {
 
   useEffect(() => {
     if (images) {
-      console.log(images);
       setDateSelection([{
         title: i18n.t('All images'),
         images,
       }, ...sortArr(images)]);
     }
   }, [images]);
+
+  const updateTripState = (imageData, freeImagesData) => updateActiveTrip({ images: imageData, userFreeImages: freeImagesData });
+
   const sortArr = (arr) => {
     const dataSet = [];
 
@@ -169,22 +175,6 @@ export default function MemoriesScreen({ route }) {
       return navigation.navigate(ROUTES.timelineScreen, { tripId });
     }
 
-    if (event === 'take') {
-      return navigation.navigate(ROUTES.cameraScreen, { tripId, onNavBack: () => navigation.goBack() });
-    }
-
-    if (event === 'select') {
-      const options = {
-        compressImageQuality: 0.2,
-        mediaType: 'photo',
-        includeBase64: true,
-      };
-
-      ImageCropPicker.openPicker(options).then(async (image) => {
-        navigation.navigate(ROUTES.cameraScreen, { tripId, onNavBack: () => navigation.goBack(), preselectedImage: image });
-      });
-    }
-
     if (event === 'download') {
       if (images?.length <= 0) {
         return;
@@ -210,6 +200,27 @@ export default function MemoriesScreen({ route }) {
           setDownloadIndex(null);
         });
       }
+    }
+
+    const usageLimit = JSON.parse(await asyncStorageDAO.getFreeTierLimits()).images;
+    if (images?.length >= usageLimit) {
+      return PremiumController.showModal();
+    }
+
+    if (event === 'take') {
+      return navigation.navigate(ROUTES.cameraScreen, { tripId, onNavBack: () => navigation.goBack() });
+    }
+
+    if (event === 'select') {
+      const options = {
+        compressImageQuality: 0.2,
+        mediaType: 'photo',
+        includeBase64: true,
+      };
+
+      ImageCropPicker.openPicker(options).then(async (image) => {
+        navigation.navigate(ROUTES.cameraScreen, { tripId, onNavBack: () => navigation.goBack(), preselectedImage: image });
+      });
     }
   };
 
@@ -319,7 +330,7 @@ export default function MemoriesScreen({ route }) {
         cacheImage={index < 20}
         tripId={tripId}
         onPress={() => {
-          setInitalIndex(images.findIndex((img) => img._id === image._id));
+          setInitalIndex(images?.findIndex((img) => img._id === image._id) || 0);
           setStoryVisible(true);
         }}
         onDelete={(id) => {

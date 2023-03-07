@@ -150,10 +150,15 @@ export default function InitDataCrossroads() {
     }
   };
 
-  const populateState = () => {
+  const populateState = async () => {
     setInit(true);
     const res = data.getUserInitData;
-    const { userData, trips } = res;
+    const {
+      userData, trips, freeTierLimits, premiumTierLimits,
+    } = res;
+
+    await asyncStorageDAO.setFreeTierLimits(freeTierLimits);
+    await asyncStorageDAO.setPremiumTierLimits(premiumTierLimits);
 
     if (trips) {
       setTrips(trips);

@@ -31,6 +31,7 @@ import Body from '../../components/typography/Body';
 import Label from '../../components/typography/Label';
 import CHECK_FREE_IMAGES from '../../queries/checkFreeImages';
 import AccentBubble from '../../components/Trip/AccentBubble';
+import PremiumController from '../../PremiumController';
 
 let camera;
 export default function CameraScreen({ route }) {
@@ -76,7 +77,12 @@ export default function CameraScreen({ route }) {
           },
           {
             text: i18n.t('Upgrade'),
-            onPress: () => navigation.goBack(),
+            onPress: () => {
+              navigation.goBack();
+              setTimeout(() => {
+                PremiumController.showModal();
+              }, 300);
+            },
           },
         ],
       );

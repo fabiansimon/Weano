@@ -169,7 +169,7 @@ export default function LocationScreen() {
       <HybridHeader
         title={i18n.t('Find location')}
         scrollY={scrollY}
-        info={INFORMATION.dateScreen}
+        info={INFORMATION.locationScreen}
       >
         <View style={styles.innerContainer}>
           {!location ? (

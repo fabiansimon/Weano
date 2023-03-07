@@ -326,12 +326,12 @@ export default function SignUpScreen({ invitationId, route }) {
             style={{ flexDirection: 'row', marginTop: 15, justifyContent: 'center' }}
           >
             <Body
-              type={1}
+              type={2}
               color={COLORS.neutral[300]}
               text={i18n.t('Already have an account?')}
             />
             <Body
-              type={1}
+              type={2}
               color={COLORS.primary[500]}
               text={i18n.t('Log in instead')}
               style={{ marginLeft: 4, fontWeight: '500' }}

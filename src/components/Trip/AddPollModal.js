@@ -12,9 +12,13 @@ import i18n from '../../utils/i18n';
 import COLORS, { PADDING } from '../../constants/Theme';
 import Body from '../typography/Body';
 import toastConfig from '../../constants/ToastConfig';
+import AsyncStorageDAO from '../../utils/AsyncStorageDAO';
+import PremiumController from '../../PremiumController';
+
+const asyncStorageDAO = new AsyncStorageDAO();
 
 export default function AddPollModal({
-  isVisible, onRequestClose, onPress, isLoading,
+  isVisible, onRequestClose, onPress, isLoading, polls,
 }) {
   // STATE & MISC
   const [title, setTitle] = useState('');
@@ -24,6 +28,18 @@ export default function AddPollModal({
     setTitle('');
     setOptions([]);
   }, [isVisible]);
+
+  const handleAdd = async () => {
+    const usageLimit = JSON.parse(await asyncStorageDAO.getFreeTierLimits()).polls;
+
+    if (polls?.length >= usageLimit) {
+      onRequestClose();
+      setTimeout(() => PremiumController.showModal(), 500);
+      return;
+    }
+
+    onPress({ title, options });
+  };
 
   const handleInput = (val, index) => {
     setOptions((prev) => {
@@ -133,7 +149,7 @@ export default function AddPollModal({
       onRequestClose={onRequestClose}
       title={i18n.t('Add Poll')}
       actionLabel={i18n.t('Create')}
-      onPress={() => onPress({ title, options })}
+      onPress={() => handleAdd()}
       isLoading={isLoading}
       isDisabled={title.trim().length <= 0 || options.length <= 0}
     >

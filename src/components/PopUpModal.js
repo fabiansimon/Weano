@@ -1,8 +1,7 @@
 import {
   Modal, StyleSheet, TouchableOpacity,
 } from 'react-native';
-import React, { useState, useRef, useEffect } from 'react';
-import Animated from 'react-native-reanimated';
+import React from 'react';
 import COLORS from '../constants/Theme';
 import Headline from './typography/Headline';
 import Body from './typography/Body';
@@ -10,34 +9,6 @@ import Body from './typography/Body';
 export default function PopUpModal({
   style, isVisible, onRequestClose, title, subtitle, children,
 }) {
-  // STATE & MISC
-  const [showModal, setShowModal] = useState(isVisible);
-
-  const animatedBottom = useRef(new Animated.Value(900)).current;
-  const duration = 300;
-
-  useEffect(() => {
-    toggleModal();
-  }, [isVisible]);
-
-  const toggleModal = () => {
-    if (isVisible) {
-      setShowModal(true);
-      Animated.spring(animatedBottom, {
-        toValue: 100,
-        duration,
-        useNativeDriver: true,
-      }).start();
-    } else {
-      setTimeout(() => setShowModal(false), duration);
-      Animated.spring(animatedBottom, {
-        toValue: 900,
-        duration,
-        useNativeDriver: true,
-      }).start();
-    }
-  };
-
   return (
     <Modal
       animationType="fade"

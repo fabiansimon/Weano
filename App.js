@@ -37,6 +37,7 @@ import MyAccountScreen from './src/screens/MyAccount';
 import META_DATA from './src/constants/MetaData';
 import DocumentsScreen from './src/screens/Trip/DocumentsScreen';
 import InternetCheckProvider from './src/Providers/InternetCheckProvider';
+import PremiumModal from './src/components/PremiumModal';
 
 const Stack = createNativeStackNavigator();
 
@@ -148,6 +149,7 @@ export default function App() {
           </ApolloProvider>
         </InternetCheckProvider>
       </GestureHandlerRootView>
+      <PremiumModal />
       <Toast
         topOffset={60}
         position="top"

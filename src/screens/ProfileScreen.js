@@ -186,7 +186,19 @@ export default function ProfileScreen() {
       i18n.t('Are you sure you want to sign out of your Account?'),
       i18n.t('Sign out'),
       async () => {
-        await asyncStorageDAO.clearAccessToken();
+        const updatedUser = {};
+        updatedUser.pushToken = '';
+
+        try {
+          await updateUser({
+            variables: {
+              user: updatedUser,
+            },
+          });
+        } catch (e) {
+          console.log(e);
+        }
+        await asyncStorageDAO.logout();
         updateUserState({ authToken: '' });
         navigation.navigate(ROUTES.signUpScreen);
       },

@@ -14,6 +14,7 @@ const UPLOAD_TRIP_IMAGE = gql`
             uri
             title
             description
+            userFreeImages
         } 
     }
 `;

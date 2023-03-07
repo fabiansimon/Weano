@@ -21,6 +21,8 @@ import userStore from '../stores/UserStore';
 import toastConfig from '../constants/ToastConfig';
 import UPLOAD_TRIP_IMAGE from '../mutations/uploadTripImage';
 import LoadingModal from './LoadingModal';
+import activeTripStore from '../stores/ActiveTripStore';
+import tripsStore from '../stores/TripsStore';
 // import activeTripStore from '../stores/ActiveTripStore';
 
 export default function ImageModal({
@@ -31,6 +33,10 @@ export default function ImageModal({
 
   // STORES
   const user = userStore((state) => state.user);
+  const { id, images } = activeTripStore((state) => state.activeTrip);
+  const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
+  const trips = tripsStore((state) => state.trips);
+  const setTrips = tripsStore((state) => state.setTrips);
 
   // STATE & MISC
   const navigation = useNavigation();
@@ -127,23 +133,34 @@ export default function ImageModal({
           },
         },
       }).then((res) => {
-        // if (id === tripId) {
-        //   const _image = res.data.uploadTripImage;
-        //   const author = {
-        //     _id: user.id,
-        //     firstName: user.firstName,
-        //     lastName: user.lastName,
-        //     avatarUri: user.avatarUri,
-        //   };
+        const {
+          _id, author, createdAt, description: _description, title: _title, uri, userFreeImages: _userFreeImages,
+        } = res.data.uploadTripImage;
 
-        //   updateActiveTrip({
-        //     images: [...images, {
-        //       ..._image,
-        //       author,
-        //     }],
-        //     userFreeImages: userFreeImages - 1,
-        //   });
-        // }
+        setTrips(trips.map((trip) => {
+          if (trip.id === tripId) {
+            return {
+              ...trip,
+              userFreeImages: _userFreeImages - 1,
+            };
+          }
+          return trip;
+        }));
+        if (id === tripId) {
+          const newImage = {
+            author,
+            createdAt,
+            _id,
+            description: _description,
+            title: _title,
+            uri,
+          };
+          if (images?.length > 0) {
+            updateActiveTrip({ images: [...images, newImage], userFreeImages: _userFreeImages - 1 });
+          } else {
+            updateActiveTrip({ images: [newImage], userFreeImages: _userFreeImages - 1 });
+          }
+        }
         setIsShared(true);
         setIsLoading(false);
       });

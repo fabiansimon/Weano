@@ -217,7 +217,8 @@ export default function InviteeScreen() {
       <HybridHeader
         title={i18n.t('Travelers')}
         scrollY={scrollY}
-        info={INFORMATION.dateScreen}
+        info={INFORMATION.inviteesScreen}
+        subtitle={i18n.t('To edit a traveler, tap and hold on the user')}
       >
         <View style={{ marginHorizontal: PADDING.l }}>
           <FlatList

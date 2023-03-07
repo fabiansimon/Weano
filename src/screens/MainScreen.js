@@ -34,6 +34,10 @@ import FAButton from '../components/FAButton';
 import StorySection from '../components/StorySection';
 import Divider from '../components/Divider';
 import META_DATA from '../constants/MetaData';
+import AsyncStorageDAO from '../utils/AsyncStorageDAO';
+import PremiumController from '../PremiumController';
+
+const asyncStorageDAO = new AsyncStorageDAO();
 
 export default function MainScreen() {
   // QUERIES
@@ -71,6 +75,15 @@ export default function MainScreen() {
   const activeTrip = trips.filter((trip) => trip.type === 'active')[0];
 
   const highlightTrip = activeTrip || soonTrip || null;
+
+  const createTrip = async () => {
+    const usageLimit = JSON.parse(await asyncStorageDAO.getFreeTierLimits()).totalTrips;
+    if (trips?.length >= usageLimit) {
+      return PremiumController.showModal();
+    }
+
+    setCreateVisible(true);
+  };
 
   const getTabBarHeight = () => {
     const containerHeight = 150;
@@ -328,8 +341,9 @@ export default function MainScreen() {
       <FAButton
         icon="add"
         iconSize={28}
-        onPress={() => setCreateVisible(true)}
+        onPress={() => createTrip()}
       />
+
     </View>
   );
 }

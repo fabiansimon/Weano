@@ -27,6 +27,10 @@ import DELETE_TASK from '../../mutations/deleteTask';
 import FAButton from '../../components/FAButton';
 import UPDATE_TASK from '../../mutations/updateTask';
 import SEND_REMINDER from '../../mutations/sendReminder';
+import AsyncStorageDAO from '../../utils/AsyncStorageDAO';
+import PremiumController from '../../PremiumController';
+
+const asyncStorageDAO = new AsyncStorageDAO();
 
 export default function ChecklistScreen() {
   // MUTATIONS
@@ -163,6 +167,15 @@ export default function ChecklistScreen() {
 
   const handleChange = async (data) => {
     setIsVisible(false);
+
+    const usageLimit = JSON.parse(await asyncStorageDAO.getFreeTierLimits()).checklist;
+    if ([...mutualTasks, ...privateTasks].length >= usageLimit) {
+      setTimeout(() => {
+        PremiumController.showModal();
+      }, 300);
+      return;
+    }
+
     const isPrivate = data.type === 'PRIVATE';
     setIsLoading(true);
 
@@ -333,7 +346,7 @@ export default function ChecklistScreen() {
       <HybridHeader
         title={i18n.t('Checklist')}
         scrollY={scrollY}
-        info={INFORMATION.dateScreen}
+        info={INFORMATION.checklistScreen}
       >
         {getHeaderChips()}
         <ScrollView

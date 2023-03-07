@@ -19,6 +19,10 @@ import DELETE_DOCUMENT from '../../mutations/deleteDocument';
 import UPLOAD_DOCUMENT from '../../mutations/uploadDocument';
 import DocumentTile from '../../components/Trip/DocumentTile';
 import httpService from '../../utils/httpService';
+import AsyncStorageDAO from '../../utils/AsyncStorageDAO';
+import PremiumController from '../../PremiumController';
+
+const asyncStorageDAO = new AsyncStorageDAO();
 
 export default function DocumentsScreen() {
   // MUTATIONS
@@ -86,6 +90,11 @@ export default function DocumentsScreen() {
   };
 
   const handleAddDocument = async () => {
+    const usageLimit = JSON.parse(await asyncStorageDAO.getFreeTierLimits()).documents;
+    if (documents?.length >= usageLimit) {
+      return PremiumController.showModal();
+    }
+
     setIsLoading(true);
     try {
       const res = await DocumentPicker.pick({
@@ -146,7 +155,7 @@ export default function DocumentsScreen() {
       <HybridHeader
         title={i18n.t('Documents')}
         scrollY={scrollY}
-        info={INFORMATION.dateScreen}
+        info={INFORMATION.documentScreen}
       >
         <View style={styles.innerContainer}>
           <FlatList

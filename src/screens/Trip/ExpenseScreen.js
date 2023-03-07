@@ -249,7 +249,7 @@ export default function ExpenseScreen() {
       <HybridHeader
         title={i18n.t('Expenses')}
         scrollY={scrollY}
-        info={INFORMATION.dateScreen}
+        info={INFORMATION.expensesScreen}
       >
         <View style={{ marginHorizontal: PADDING.l }}>
           <Headline
@@ -303,6 +303,7 @@ export default function ExpenseScreen() {
         onRequestClose={() => setShowModal(false)}
         onPress={(data) => handleAddExpense(data)}
         isLoading={isLoading || loading}
+        expenses={expenses}
       />
       <ExpenseDetailModal
         onReminder={(data) => handleSendingReminder(data)}

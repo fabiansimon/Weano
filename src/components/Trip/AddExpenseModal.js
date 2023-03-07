@@ -9,9 +9,13 @@ import Headline from '../typography/Headline';
 import COLORS, { PADDING } from '../../constants/Theme';
 import Subtitle from '../typography/Subtitle';
 import toastConfig from '../../constants/ToastConfig';
+import AsyncStorageDAO from '../../utils/AsyncStorageDAO';
+import PremiumController from '../../PremiumController';
+
+const asyncStorageDAO = new AsyncStorageDAO();
 
 export default function AddExpenseModal({
-  isVisible, onRequestClose, onPress, isLoading,
+  isVisible, onRequestClose, onPress, isLoading, expenses,
 }) {
   // STATE & MISC
   const [amount, setAmount] = useState('');
@@ -25,7 +29,7 @@ export default function AddExpenseModal({
     });
   };
 
-  const handlePress = () => {
+  const handlePress = async () => {
     const regVal = /^[0-9]*(,[0-9]{0,2})?$/;
     const amountString = amount.toString();
 
@@ -45,6 +49,13 @@ export default function AddExpenseModal({
       showWarning(i18n.t('Please enter a description'));
       return;
     }
+    const usageLimit = JSON.parse(await asyncStorageDAO.getFreeTierLimits()).expenses;
+    if (expenses?.length >= usageLimit) {
+      onRequestClose();
+      setTimeout(() => PremiumController.showModal(), 500);
+      return;
+    }
+
     onPress({ amount, title });
   };
 

@@ -20,6 +20,8 @@ const GET_INIT_USER_DATA = gql`
                 friends
                 countriesVisited
             }
+            freeTierLimits 
+            premiumTierLimits
             trips {
                 userFreeImages
                 type

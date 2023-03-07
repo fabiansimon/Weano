@@ -18,6 +18,10 @@ import ADD_POLL from '../../mutations/addPoll';
 import userStore from '../../stores/UserStore';
 import DELETE_POLL from '../../mutations/deletePoll';
 import Body from '../../components/typography/Body';
+import AsyncStorageDAO from '../../utils/AsyncStorageDAO';
+import PremiumController from '../../PremiumController';
+
+const asyncStorageDAO = new AsyncStorageDAO();
 
 export default function PollScreen() {
   // MUTATIONS
@@ -85,6 +89,11 @@ export default function PollScreen() {
   };
 
   const handleAddPoll = async (data) => {
+    const usageLimit = JSON.parse(await asyncStorageDAO.getFreeTierLimits()).checklist;
+    if (polls.length >= usageLimit) {
+      return PremiumController.showModal();
+    }
+
     const { title } = data;
     const { options: optionsData } = data;
 
@@ -136,7 +145,7 @@ export default function PollScreen() {
       <HybridHeader
         title={i18n.t('Polls')}
         scrollY={scrollY}
-        info={INFORMATION.dateScreen}
+        info={INFORMATION.pollScreen}
       >
         <View style={styles.innerContainer}>
           <FlatList
@@ -192,6 +201,7 @@ export default function PollScreen() {
         onPress={() => setIsVisible(true)}
       />
       <AddPollModal
+        polls={polls}
         isVisible={isVisible}
         onRequestClose={() => setIsVisible(false)}
         onPress={(data) => handleAddPoll(data)}
