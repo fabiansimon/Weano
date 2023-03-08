@@ -62,6 +62,7 @@
     "react-native-gesture-handler": "^2.5.0",
     "react-native-get-random-values": "^1.8.0",
     "react-native-haptic-feedback": "^1.14.0",
+    "react-native-iap": "^12.8.1",
     "react-native-image-crop-picker": "^0.39.0",
     "react-native-inset-shadow": "^1.0.3",
     "react-native-linear-gradient": "^2.6.2",

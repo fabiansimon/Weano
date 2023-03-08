@@ -6,6 +6,9 @@ import * as Notifications from 'expo-notifications';
 import { useNavigation } from '@react-navigation/native';
 import { useLazyQuery, useMutation } from '@apollo/client';
 import Toast from 'react-native-toast-message';
+import {
+  flushFailedPurchasesCachedAsPendingAndroid, initConnection, purchaseErrorListener, purchaseUpdatedListener,
+} from 'react-native-iap';
 import i18n from '../utils/i18n';
 import ROUTES from '../constants/Routes';
 import GET_INIT_USER_DATA from '../queries/getInitUserData';
@@ -226,6 +229,7 @@ export default function InitDataCrossroads() {
     }
     handleNavigation();
   }, [notification]);
+
   useEffect(() => {
     if (!deepLink) {
       return;
@@ -236,6 +240,7 @@ export default function InitDataCrossroads() {
   const handleOpenUrl = (event) => {
     navigateHandler(event.url);
   };
+
   const navigateHandler = async (url) => {
     if (url) {
       const route = url.match(/[\d\w]+$/);
@@ -266,6 +271,35 @@ export default function InitDataCrossroads() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    let purchaseUpdateSubscription;
+    let purchaseErrorSubscription;
+    (() => {
+      initConnection().then(() => {
+        flushFailedPurchasesCachedAsPendingAndroid()
+          .catch((err) => console.log(err))
+          .then(() => {
+            purchaseUpdateSubscription = purchaseUpdatedListener((purchase) => {
+              console.log(`purchase${purchase}`);
+            });
+          });
+        purchaseErrorSubscription = purchaseErrorListener(
+          (err) => {
+            console.warn('purchaseErrorListener', err);
+          },
+        );
+      });
+    })();
+
+    return () => {
+      purchaseUpdateSubscription.remove();
+      purchaseUpdateSubscription = null;
+      purchaseErrorSubscription.remove();
+      purchaseErrorSubscription = null;
+    };
+  }, []);
+
   return (
     <View style={styles.container}>
       <Image

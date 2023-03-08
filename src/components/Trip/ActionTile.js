@@ -220,7 +220,7 @@ export default function ActionTile({ style, trip }) {
             flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
           }}
         >
-          <View style={{ flexDirection: 'row' }}>
+          <View style={{ flexDirection: 'row', flex: 1, marginRight: 28 }}>
             <EntIcon
               name={isExpanded ? 'chevron-up' : 'chevron-down'}
               size={20}
@@ -230,6 +230,8 @@ export default function ActionTile({ style, trip }) {
             {isExpanded ? (
               <Body
                 type={1}
+                numberOfLines={1}
+                ellipsizeMode="tail"
                 style={{ maxWidth: '100%', fontWeight: '500' }}
                 text={title}
                 color={COLORS.shades[100]}
