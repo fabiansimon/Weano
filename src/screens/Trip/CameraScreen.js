@@ -32,11 +32,15 @@ import Label from '../../components/typography/Label';
 import CHECK_FREE_IMAGES from '../../queries/checkFreeImages';
 import AccentBubble from '../../components/Trip/AccentBubble';
 import PremiumController from '../../PremiumController';
+import userStore from '../../stores/UserStore';
 
 let camera;
 export default function CameraScreen({ route }) {
   // PARAMS
   const { tripId, onNavBack, preselectedImage } = route.params;
+
+  // STORES
+  const { isProMember } = userStore((state) => state.user);
 
   // QUERIES
   const { data } = useQuery(CHECK_FREE_IMAGES, {
@@ -64,6 +68,10 @@ export default function CameraScreen({ route }) {
       const { userFreeImages } = data.getImagesFromTrip;
       if (userFreeImages && userFreeImages > 0) {
         return setFreeImages(userFreeImages);
+      }
+
+      if (isProMember) {
+        return;
       }
 
       return Alert.alert(

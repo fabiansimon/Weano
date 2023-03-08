@@ -26,6 +26,7 @@ import httpService from '../utils/httpService';
 import UPDATE_USER from '../mutations/updateUser';
 import WebViewModal from '../components/WebViewModal';
 import META_DATA from '../constants/MetaData';
+import ProUserBubble from '../components/ProUserBubble';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
@@ -241,6 +242,7 @@ export default function ProfileScreen() {
           name="square-edit-outline"
         />
       </Pressable>
+
       <Headline
         type={2}
         text={`${user?.firstName} ${user?.lastName}`}
@@ -250,6 +252,7 @@ export default function ProfileScreen() {
         text={user?.phoneNumber}
         color={COLORS.neutral[300]}
       />
+      {user?.isProMember && <ProUserBubble style={{ marginTop: 4 }} />}
     </>
   );
 

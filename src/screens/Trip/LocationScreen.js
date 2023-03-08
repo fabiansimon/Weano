@@ -139,6 +139,7 @@ export default function LocationScreen() {
       </View>
       <View style={styles.mapContainer}>
         <MapboxGL.MapView
+          styleURL="mapbox://styles/fabiansimon/clezrm6w7002g01p9eu1n0aos"
           scrollEnabled={false}
           logoEnabled={false}
           zoomEnabled={false}

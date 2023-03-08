@@ -90,6 +90,7 @@ export default function MapScreen({ route }) {
       <MapboxGL.MapView
         rotateEnabled={false}
         style={styles.map}
+        styleURL="mapbox://styles/fabiansimon/clezrm6w7002g01p9eu1n0aos"
       >
         <MapboxGL.Camera
           animationMode="moveTo"

@@ -36,6 +36,7 @@ import Divider from '../components/Divider';
 import META_DATA from '../constants/MetaData';
 import AsyncStorageDAO from '../utils/AsyncStorageDAO';
 import PremiumController from '../PremiumController';
+import ProUserBubble from '../components/ProUserBubble';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
@@ -127,10 +128,13 @@ export default function MainScreen() {
   const getHeaderSection = () => (
     <SafeAreaView style={[styles.header, { paddingBottom: highlightTrip ? 40 : 16, borderBottomWidth: highlightTrip ? 1 : 0 }]} edges={['top']}>
       <View style={{ flex: 1 }}>
-        <Headline
-          type={3}
-          text={`${i18n.t('Hey')} ${user?.firstName} 👋🏻`}
-        />
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Headline
+            type={3}
+            text={`${i18n.t('Hey')} ${user?.firstName} 👋🏻`}
+          />
+          {user?.isProMember && <ProUserBubble style={{ marginLeft: 4 }} />}
+        </View>
         <Body
           type={1}
           style={{ marginTop: -2 }}
