@@ -15,7 +15,7 @@ import PremiumController from '../../PremiumController';
 const asyncStorageDAO = new AsyncStorageDAO();
 
 export default function AddExpenseModal({
-  isVisible, onRequestClose, onPress, isLoading, expenses,
+  isVisible, onRequestClose, onPress, isLoading, expenses, isProMember,
 }) {
   // STATE & MISC
   const [amount, setAmount] = useState('');
@@ -49,7 +49,7 @@ export default function AddExpenseModal({
       showWarning(i18n.t('Please enter a description'));
       return;
     }
-    const usageLimit = JSON.parse(await asyncStorageDAO.getFreeTierLimits()).expenses;
+    const usageLimit = JSON.parse(isProMember ? await asyncStorageDAO.getPremiumTierLimits() : await asyncStorageDAO.getFreeTierLimits()).expenses;
     if (expenses?.length >= usageLimit) {
       onRequestClose();
       setTimeout(() => PremiumController.showModal(), 500);

@@ -35,7 +35,7 @@ export default function ExpenseScreen() {
     expenses, activeMembers: users, id: tripId, location,
   } = activeTripStore((state) => state.activeTrip);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
-  const { id, firstName } = userStore((state) => state.user);
+  const { id, firstName, isProMember } = userStore((state) => state.user);
 
   // STATE & MISC
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -300,6 +300,7 @@ export default function ExpenseScreen() {
       />
       <AddExpenseModal
         isVisible={showModal}
+        isProMember={isProMember}
         onRequestClose={() => setShowModal(false)}
         onPress={(data) => handleAddExpense(data)}
         isLoading={isLoading || loading}

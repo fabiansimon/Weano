@@ -16,6 +16,7 @@ const userStore = create((set) => ({
       pushToken: data.pushToken || null,
       friends: data.friends || null,
       countriesVisited: data.countriesVisited || null,
+      isProMember: data.isProMember || null,
     },
   })),
   updateUserData: (data) => set((state) => ({
@@ -33,6 +34,7 @@ const userStore = create((set) => ({
       pushToken: data.pushToken || state.user.pushToken,
       friends: data.friends || state.user.friends,
       countriesVisited: data.countriesVisited || state.user.countriesVisited,
+      isProMember: data.isProMember || state.user.isProMember,
     },
   })),
 }));

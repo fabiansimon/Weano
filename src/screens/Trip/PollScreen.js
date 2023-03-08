@@ -89,7 +89,7 @@ export default function PollScreen() {
   };
 
   const handleAddPoll = async (data) => {
-    const usageLimit = JSON.parse(await asyncStorageDAO.getFreeTierLimits()).checklist;
+    const usageLimit = JSON.parse(user?.isProMember ? await asyncStorageDAO.getPremiumTierLimits() : await asyncStorageDAO.getFreeTierLimits()).polls;
     if (polls.length >= usageLimit) {
       return PremiumController.showModal();
     }

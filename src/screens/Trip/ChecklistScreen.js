@@ -43,7 +43,7 @@ export default function ChecklistScreen() {
   const {
     mutualTasks, privateTasks, id: tripId, dateRange,
   } = activeTripStore((state) => state.activeTrip);
-  const { id: userId } = userStore((state) => state.user);
+  const { id: userId, isProMember } = userStore((state) => state.user);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
 
   // STATE & MISC
@@ -168,7 +168,7 @@ export default function ChecklistScreen() {
   const handleChange = async (data) => {
     setIsVisible(false);
 
-    const usageLimit = JSON.parse(await asyncStorageDAO.getFreeTierLimits()).checklist;
+    const usageLimit = JSON.parse(isProMember ? await asyncStorageDAO.getPremiumTierLimits() : await asyncStorageDAO.getFreeTierLimits()).checklist;
     if ([...mutualTasks, ...privateTasks].length >= usageLimit) {
       setTimeout(() => {
         PremiumController.showModal();

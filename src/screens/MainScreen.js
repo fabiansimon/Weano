@@ -77,7 +77,7 @@ export default function MainScreen() {
   const highlightTrip = activeTrip || soonTrip || null;
 
   const createTrip = async () => {
-    const usageLimit = JSON.parse(await asyncStorageDAO.getFreeTierLimits()).totalTrips;
+    const usageLimit = JSON.parse(user.isProMember ? await asyncStorageDAO.getPremiumTierLimits() : await asyncStorageDAO.getFreeTierLimits()).totalTrips;
     if (trips?.length >= usageLimit) {
       return PremiumController.showModal();
     }

@@ -19,6 +19,7 @@ const GET_INIT_USER_DATA = gql`
                 }
                 friends
                 countriesVisited
+                isProMember
             }
             freeTierLimits 
             premiumTierLimits

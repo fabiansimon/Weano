@@ -32,7 +32,7 @@ export default function DocumentsScreen() {
   // STORES
   const { documents, id: tripId } = activeTripStore((state) => state.activeTrip);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
-  const { id } = userStore((state) => state.user);
+  const { id, isProMember } = userStore((state) => state.user);
 
   // STATE & MISC
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -90,7 +90,7 @@ export default function DocumentsScreen() {
   };
 
   const handleAddDocument = async () => {
-    const usageLimit = JSON.parse(await asyncStorageDAO.getFreeTierLimits()).documents;
+    const usageLimit = JSON.parse(isProMember ? await asyncStorageDAO.getPremiumTierLimits() : await asyncStorageDAO.getFreeTierLimits()).documents;
     if (documents?.length >= usageLimit) {
       return PremiumController.showModal();
     }

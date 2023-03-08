@@ -29,6 +29,7 @@ import activeTripStore from '../stores/ActiveTripStore';
 import AccentBubble from '../components/Trip/AccentBubble';
 import AsyncStorageDAO from '../utils/AsyncStorageDAO';
 import PremiumController from '../PremiumController';
+import userStore from '../stores/UserStore';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
@@ -53,6 +54,7 @@ export default function MemoriesScreen({ route }) {
   // STORES
   const { images, userFreeImages } = activeTripStore((state) => state.activeTrip);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
+  const { isProMember } = userStore((state) => state.user);
 
   // STATE & MISC
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -202,7 +204,7 @@ export default function MemoriesScreen({ route }) {
       }
     }
 
-    const usageLimit = JSON.parse(await asyncStorageDAO.getFreeTierLimits()).images;
+    const usageLimit = JSON.parse(isProMember ? await asyncStorageDAO.getPremiumTierLimits() : await asyncStorageDAO.getFreeTierLimits()).images;
     if (images?.length >= usageLimit) {
       return PremiumController.showModal();
     }

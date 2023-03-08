@@ -293,9 +293,9 @@ export default function InitDataCrossroads() {
     })();
 
     return () => {
-      purchaseUpdateSubscription.remove();
+      purchaseUpdateSubscription?.remove();
       purchaseUpdateSubscription = null;
-      purchaseErrorSubscription.remove();
+      purchaseErrorSubscription?.remove();
       purchaseErrorSubscription = null;
     };
   }, []);
