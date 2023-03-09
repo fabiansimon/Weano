@@ -1,5 +1,5 @@
 import {
-  View, StyleSheet, Image, Dimensions, Pressable, RefreshControl, Platform,
+  View, StyleSheet, Image, Dimensions, Pressable, RefreshControl, Platform, StatusBar,
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import Toast from 'react-native-toast-message';
@@ -50,6 +50,7 @@ import QRModal from '../../components/Trip/QRModal';
 import tripsStore from '../../stores/TripsStore';
 import DocumentsContainer from '../../components/Trip/DocumentsContainer';
 import AccentBubble from '../../components/Trip/AccentBubble';
+import PacklistContainer from '../../components/Trip/PacklistContainer';
 
 export default function TripScreen({ route }) {
   // PARAMS
@@ -446,8 +447,8 @@ export default function TripScreen({ route }) {
         color={COLORS.neutral[300]}
       />,
       ref: packlistRef,
-      content: <ExpensesContainer
-        tileBackground={COLORS.shades[0]}
+      content: <PacklistContainer
+        data={data?.packingItems.filter((item) => !item.isPacked)}
       />,
     },
     {
@@ -749,6 +750,7 @@ export default function TripScreen({ route }) {
 
   return (
     <View style={{ backgroundColor: COLORS.shades[0], flex: 1 }}>
+      <StatusBar barStyle="dark-content" />
       <AnimatedHeader
         style={{ height: 170 }}
         scrollDistance={480}

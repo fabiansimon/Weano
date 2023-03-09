@@ -10,6 +10,7 @@ import EntIcon from 'react-native-vector-icons/Entypo';
 import { debounce } from 'lodash';
 import { FlatList } from 'react-native-gesture-handler';
 import AntIcon from 'react-native-vector-icons/AntDesign';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import KeyboardView from './KeyboardView';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import httpService from '../utils/httpService';
@@ -209,15 +210,17 @@ export default function InputModal({
 
   const getPackingContainer = () => (
     <Pressable style={styles.packingContainer}>
-      <View style={{ flexDirection: 'row' }}>
+      <View style={{ flexDirection: 'row', flex: 1 }}>
         <Body
           type={1}
           color={COLORS.neutral[300]}
           text={i18n.t('How many')}
         />
         <Body
+          numberOfLines={1}
+          ellipsizeMode="tail"
           type={1}
-          style={{ marginLeft: 4 }}
+          style={{ marginLeft: 4, marginRight: 90 }}
           color={COLORS.neutral[900]}
           text={`${input}?`}
         />
@@ -227,7 +230,13 @@ export default function InputModal({
       }}
       >
         <Pressable
-          onPress={() => setPackingAmount((prev) => prev - 1)}
+          onPress={() => {
+            setPackingAmount((prev) => prev - 1);
+            ReactNativeHapticFeedback.trigger('impactLight', {
+              enableVibrateFallback: true,
+              ignoreAndroidSystemSettings: true,
+            });
+          }}
           style={styles.counterContainer}
         >
           <Icon
@@ -244,7 +253,13 @@ export default function InputModal({
           text={packingAmount}
         />
         <Pressable
-          onPress={() => setPackingAmount((prev) => prev + 1)}
+          onPress={() => {
+            setPackingAmount((prev) => prev + 1);
+            ReactNativeHapticFeedback.trigger('impactLight', {
+              enableVibrateFallback: true,
+              ignoreAndroidSystemSettings: true,
+            });
+          }}
           style={styles.counterContainer}
         >
           <Icon
@@ -260,13 +275,13 @@ export default function InputModal({
   const getCounter = () => {
     const isMax = input.length === maxLength;
     return (
-      <View style={[styles.counter, { borderColor: isMax ? COLORS.error[900] : COLORS.neutral[100] }]}>
+      <Pressable style={[styles.counter, { borderColor: isMax ? COLORS.error[900] : COLORS.neutral[100] }]}>
         <Body
           type={2}
           color={isMax ? COLORS.error[900] : COLORS.neutral[500]}
           text={`${input.length}/${maxLength}`}
         />
-      </View>
+      </Pressable>
     );
   };
 
@@ -337,19 +352,6 @@ export default function InputModal({
                 placeholderTextColor={COLORS.neutral[300]}
                 placeholder={placeholder}
               />
-              {(multipleInputs && input.length >= 1) && (
-              <TouchableOpacity
-                onPress={handleAdding}
-                activeOpacity={0.9}
-                style={styles.secondaryButton}
-              >
-                <Icon
-                  color={COLORS.neutral[500]}
-                  name="plus"
-                  size={20}
-                />
-              </TouchableOpacity>
-              )}
               {((multipleInputs && multiValues.length > 0) || (!multipleInputs && input.length >= 1)) && (
               <TouchableOpacity
                 onPress={handleOnPress}
@@ -359,6 +361,19 @@ export default function InputModal({
                 <Icon
                   color={COLORS.shades[0]}
                   name="check"
+                  size={20}
+                />
+              </TouchableOpacity>
+              )}
+              {(multipleInputs && input.length >= 1) && (
+              <TouchableOpacity
+                onPress={handleAdding}
+                activeOpacity={0.9}
+                style={styles.secondaryButton}
+              >
+                <Icon
+                  color={COLORS.neutral[900]}
+                  name="plus"
                   size={20}
                 />
               </TouchableOpacity>
@@ -390,15 +405,15 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary[700],
     width: 35,
     height: 35,
-    marginLeft: 6,
     marginBottom: -20,
     alignItems: 'center',
     justifyContent: 'center',
   },
   secondaryButton: {
     borderRadius: 100,
-    backgroundColor: COLORS.neutral[50],
+    backgroundColor: COLORS.neutral[100],
     width: 35,
+    marginLeft: 6,
     height: 35,
     marginBottom: -20,
     borderWidth: 0.5,

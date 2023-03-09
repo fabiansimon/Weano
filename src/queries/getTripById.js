@@ -21,11 +21,6 @@ const GET_TRIP_BY_ID = gql`
                 email
                 firstName
                 lastName
-                trips
-                expenses {
-                    expense
-                    trip
-                }
             }
             dateRange {
                 startDate
@@ -74,6 +69,12 @@ const GET_TRIP_BY_ID = gql`
                 type
                 uri
             }
+            packingItems {
+                title
+                isPacked
+                amount
+                _id
+            }   
         }
     }
 `;

@@ -20,6 +20,7 @@ const activeTripStore = create((set) => ({
       userFreeImages: data.userFreeImages || null,
       type: data.type || null,
       documents: data.documents || null,
+      packingItems: data.packingItems || null,
     },
   })),
   updateActiveTrip: (data) => set((state) => ({
@@ -40,6 +41,7 @@ const activeTripStore = create((set) => ({
       userFreeImages: data.userFreeImages !== undefined ? data.userFreeImages : state.activeTrip.userFreeImages,
       type: data.type || state.activeTrip.type,
       documents: data.documents || state.activeTrip.documents,
+      packingItems: data.packingItems || state.activeTrip.packingItems,
     },
   })),
 }));

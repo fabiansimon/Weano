@@ -8,6 +8,7 @@ import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Entypo';
 import { useMutation } from '@apollo/client';
 import Toast from 'react-native-toast-message';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import HybridHeader from '../../components/HybridHeader';
@@ -15,59 +16,31 @@ import INFORMATION from '../../constants/Information';
 import CheckboxTile from '../../components/Trip/CheckboxTile';
 import Body from '../../components/typography/Body';
 import activeTripStore from '../../stores/ActiveTripStore';
-import ADD_TASK from '../../mutations/addTask';
 import userStore from '../../stores/UserStore';
 import Utils from '../../utils';
-import DELETE_TASK from '../../mutations/deleteTask';
 import FAButton from '../../components/FAButton';
-import UPDATE_TASK from '../../mutations/updateTask';
 import AsyncStorageDAO from '../../utils/AsyncStorageDAO';
-import PremiumController from '../../PremiumController';
 import Headline from '../../components/typography/Headline';
 import InputModal from '../../components/InputModal';
 import SwipeView from '../../components/SwipeView';
+import ADD_PACKING_LIST from '../../mutations/addPackingList';
+import DELETE_PACKING_ITEM from '../../mutations/deletePackingitem';
+import UPDATE_PACKING_ITEM from '../../mutations/updatePackingItem';
+import PremiumController from '../../PremiumController';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
 export default function PacklistScreen() {
-  const mockData = [
-    {
-      title: 'Socks',
-      isPacked: false,
-      amount: 12,
-    },
-    {
-      title: 'Underwear',
-      isPacked: false,
-      amount: 12,
-    },
-    {
-      title: 'Passport',
-      isPacked: true,
-      amount: 1,
-    },
-    {
-      title: 'Hawaii Shirt',
-      isPacked: true,
-      amount: 4,
-    },
-    {
-      title: 'Sunglasses',
-      isPacked: true,
-      amount: 1,
-    },
-  ];
-
   // MUTATIONS
-  const [addTask, { error }] = useMutation(ADD_TASK);
-  const [deleteTask] = useMutation(DELETE_TASK);
-  const [updateTask] = useMutation(UPDATE_TASK);
+  const [addPackingList] = useMutation(ADD_PACKING_LIST);
+  const [deletePackingItem] = useMutation(DELETE_PACKING_ITEM);
+  const [updatePackingItem] = useMutation(UPDATE_PACKING_ITEM);
 
   // STORES
   const {
-    mutualTasks, privateTasks, id: tripId,
+    packingItems, id: tripId,
   } = activeTripStore((state) => state.activeTrip);
-  const { id: userId, isProMember } = userStore((state) => state.user);
+  const { isProMember } = userStore((state) => state.user);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
 
   // STATE & MISC
@@ -83,60 +56,34 @@ export default function PacklistScreen() {
       [
         {
           title: i18n.t('Done'),
-          data: mockData.filter((item) => item.isPacked),
+          data: packingItems.filter((item) => item.isPacked),
         },
         {
           title: i18n.t('Open'),
-          data: mockData.filter((item) => !item.isPacked),
+          data: packingItems.filter((item) => !item.isPacked),
         },
       ],
     );
-  }, []);
+  }, [packingItems]);
 
-  useEffect(() => {
-    if (error) {
-      setTimeout(() => {
-        Toast.show({
-          type: 'error',
-          text1: i18n.t('Whoops!'),
-          text2: error.message,
-        });
-      }, 500);
-    }
-  }, [error]);
-
-  const handleDeletion = (task) => {
-    return;
+  const handleDeletion = (item) => {
     Utils.showConfirmationAlert(
-      i18n.t('Delete Task'),
-      i18n.t('Are you sure you want to delete your task?'),
+      i18n.t('Delete Packing Item'),
+      i18n.t('Are you sure you want to delete your Packing Item?'),
       i18n.t('Yes'),
       async () => {
-        const { _id, isPrivate } = task;
-        console.log(task);
+        const { _id } = item;
 
-        await deleteTask({
+        await deletePackingItem({
           variables: {
             data: {
               id: _id,
               tripId,
-              isPrivate,
             },
           },
         })
           .then(() => {
-            Toast.show({
-              type: 'success',
-              text1: i18n.t('Whooray!'),
-              text2: i18n.t('Task was succeessfully deleted!'),
-            });
-
-            console.log('hello');
-            if (isPrivate) {
-              updateActiveTrip({ privateTasks: privateTasks.filter((p) => p._id !== _id) });
-            } else {
-              updateActiveTrip({ mutualTasks: mutualTasks.filter((p) => p._id !== _id) });
-            }
+            updateActiveTrip({ packingItems: packingItems.filter((p) => p._id !== _id) });
           })
           .catch((e) => {
             Toast.show({
@@ -144,7 +91,6 @@ export default function PacklistScreen() {
               text1: i18n.t('Whoops!'),
               text2: e.message,
             });
-
             console.log(`ERROR: ${e.message}`);
           });
       },
@@ -152,52 +98,46 @@ export default function PacklistScreen() {
   };
 
   const handleChange = async (data) => {
-    return;
+    if (!data) {
+      return;
+    }
     setIsVisible(false);
 
-    const usageLimit = JSON.parse(isProMember ? await asyncStorageDAO.getPremiumTierLimits() : await asyncStorageDAO.getFreeTierLimits()).checklist;
-    if ([...mutualTasks, ...privateTasks].length >= usageLimit) {
+    const items = data.map((input) => {
+      const amount = input.split(' ')[0].trim();
+      const index = amount.length;
+      const title = input.slice(index).trim();
+      return {
+        title,
+        amount: parseInt(amount, 10),
+      };
+    });
+
+    const usageLimit = JSON.parse(!isProMember ? await asyncStorageDAO.getPremiumTierLimits() : await asyncStorageDAO.getFreeTierLimits()).packingItems;
+    if (packingItems.length + items.length > usageLimit) {
       setTimeout(() => {
         PremiumController.showModal();
       }, 300);
       return;
     }
 
-    const isPrivate = data.type === 'PRIVATE';
     setIsLoading(true);
 
-    await addTask({
+    await addPackingList({
       variables: {
-        task: isPrivate ? {
-          title: data.task,
-          tripId,
-          isPrivate: true,
-        } : {
-          title: data.task,
-          tripId,
-          assignee: data.assignee.id,
+        packingData: {
+          items,
+          tripId: '6407ab7ea1d242a3469e1da2',
         },
       },
     })
       .then((res) => {
-        const id = res.data.createTask;
-        if (isPrivate) {
-          const newTask = {
-            creatorId: userId,
-            isDone: false,
-            title: data.task,
-            _id: id,
-          };
-          updateActiveTrip({ privateTasks: [...privateTasks, newTask] });
+        const newItems = res.data.createPackingList;
+
+        if (packingItems?.length > 0) {
+          updateActiveTrip({ packingItems: [...packingItems, ...newItems] });
         } else {
-          const newTask = {
-            assignee: data.assignee.id,
-            creatorId: userId,
-            isDone: false,
-            title: data.task,
-            _id: id,
-          };
-          updateActiveTrip({ mutualTasks: [...mutualTasks, newTask] });
+          updateActiveTrip({ packingItems: newItems });
         }
         setIsLoading(false);
       })
@@ -212,34 +152,40 @@ export default function PacklistScreen() {
       });
   };
 
-  const handleUpdate = async (item) => {
-    return;
-    // const { _id: taskId, isDone } = item;
+  const handleUpdate = async (data, newAmount) => {
+    if (newAmount === 0) {
+      return;
+    }
 
-    // let oldData;
-    // if (isPrivate) {
-    //   oldData = privateTasks;
-    //   updateActiveTrip({
-    //     privateTasks: privateTasks.map((task) => ({
-    //       ...task,
-    //       isDone: task._id === taskId ? !task.isDone : task.isDone,
-    //     })),
-    //   });
-    // } else {
-    //   oldData = mutualTasks;
-    //   updateActiveTrip({
-    //     mutualTasks: mutualTasks.map((task) => ({
-    //       ...task,
-    //       isDone: task._id === taskId ? !task.isDone : task.isDone,
-    //     })),
-    //   });
-    // }
+    ReactNativeHapticFeedback.trigger('impactLight', {
+      enableVibrateFallback: true,
+      ignoreAndroidSystemSettings: true,
+    });
+    const { _id, isPacked, amount } = data;
 
-    await updateTask({
+    const oldData = packingItems;
+    updateActiveTrip({
+
+      packingItems: packingItems.map((item) => {
+        if (item._id === _id) {
+          const _amount = newAmount || item.amount;
+          const _isPacked = newAmount ? item.isPacked : !item.isPacked;
+          return {
+            ...item,
+            isPacked: _isPacked,
+            amount: _amount,
+          };
+        }
+        return item;
+      }),
+    });
+
+    await updatePackingItem({
       variables: {
         data: {
-          // isDone: !isDone,
-          // taskId,
+          id: _id,
+          isPacked: newAmount ? isPacked : !isPacked,
+          amount: newAmount || amount,
         },
       },
     }).catch((e) => {
@@ -249,19 +195,15 @@ export default function PacklistScreen() {
         text2: e.message,
       });
 
-      // updateActiveTrip({ privateTasks: oldData });
+      updateActiveTrip({ packingItems: oldData });
       console.log(`ERROR: ${e.message}`);
     });
-  };
-
-  const handleCounterInput = (amount) => {
-    console.log(amount);
   };
 
   const getItem = (item) => {
     const { isPacked, amount } = item;
     return (
-      <SwipeView onDelete={() => console.log('deleted')}>
+      <SwipeView onDelete={() => handleDeletion(item)}>
         <CheckboxTile
           style={{ paddingHorizontal: PADDING.xl, backgroundColor: COLORS.shades[0] }}
           trailing={(
@@ -270,7 +212,7 @@ export default function PacklistScreen() {
             }}
             >
               <Pressable
-                onPress={() => handleCounterInput(amount - 1)}
+                onPress={() => (amount <= 1 ? handleDeletion(item) : handleUpdate(item, amount - 1))}
                 style={styles.counterContainer}
               >
                 <Icon
@@ -287,7 +229,7 @@ export default function PacklistScreen() {
                 text={amount}
               />
               <Pressable
-                onPress={() => handleCounterInput(amount + 1)}
+                onPress={() => handleUpdate(item, amount + 1)}
                 style={styles.counterContainer}
               >
                 <Icon
@@ -318,7 +260,7 @@ export default function PacklistScreen() {
         scrollEnabled={false}
       >
         <SectionList
-          // style={{ marginHorizontal: PADDING.l }}
+          style={{ paddingBottom: '100%' }}
           stickySectionHeadersEnabled
           sections={packData}
           ListEmptyComponent={(
@@ -348,30 +290,41 @@ export default function PacklistScreen() {
           contentContainerStyle={{ paddingBottom: 80 }}
           keyExtractor={(item, index) => item + index}
           renderItem={({ item }) => getItem(item)}
-          renderSectionHeader={({ section: { title } }) => {
+          renderSectionHeader={({ section: { title, data } }) => {
+            const isEmpty = data?.length <= 0;
             const color = title === i18n.t('Done') ? COLORS.success[700] : COLORS.error[700];
             return (
-              <View style={[styles.titleContainer, { backgroundColor: Utils.addAlpha(color, 0.2) }]}>
-                <Body
-                  type={2}
-                  color={color}
-                  style={{ fontWeight: '500' }}
-                  text={title}
-                />
-              </View>
+              <>
+                <View style={[styles.titleContainer, { backgroundColor: Utils.addAlpha(color, 0.2) }]}>
+                  <Body
+                    type={2}
+                    color={color}
+                    style={{ fontWeight: '500' }}
+                    text={title}
+                  />
+                </View>
+                {isEmpty && (
+                  <Body
+                    style={{ marginLeft: PADDING.xl }}
+                    type={2}
+                    text={i18n.t('No open items')}
+                    color={COLORS.neutral[300]}
+                  />
+                )}
+              </>
             );
           }}
         />
       </HybridHeader>
       <InputModal
+        maxLength={20}
         packingInput
         isVisible={isVisible}
         autoCorrect={false}
-        autoCapitalize={false}
         multipleInputs
         placeholder={i18n.t('Add items to pack')}
         onRequestClose={() => setIsVisible(false)}
-        onPress={(input) => console.log(input)}
+        onPress={(input) => handleChange(input)}
         autoClose
       />
       <FAButton
