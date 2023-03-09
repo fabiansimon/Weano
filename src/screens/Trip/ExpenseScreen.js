@@ -35,7 +35,9 @@ export default function ExpenseScreen() {
     expenses, activeMembers: users, id: tripId, location,
   } = activeTripStore((state) => state.activeTrip);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
-  const { id, firstName, isProMember } = userStore((state) => state.user);
+  const {
+    id, firstName, isProMember,
+  } = userStore((state) => state.user);
 
   // STATE & MISC
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -119,6 +121,8 @@ export default function ExpenseScreen() {
   };
 
   const handleAddExpense = async (data) => {
+    console.log(data);
+    return;
     setIsLoading(true);
 
     let { amount } = data;
@@ -263,6 +267,7 @@ export default function ExpenseScreen() {
             color={COLORS.neutral[300]}
           />
           <ExpensesContainer
+            showIndividual
             style={{ marginTop: 30 }}
             data={expenses}
           />
@@ -305,6 +310,8 @@ export default function ExpenseScreen() {
         onPress={(data) => handleAddExpense(data)}
         isLoading={isLoading || loading}
         expenses={expenses}
+        userId={id}
+        activeMembers={users}
       />
       <ExpenseDetailModal
         onReminder={(data) => handleSendingReminder(data)}

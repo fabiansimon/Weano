@@ -24,6 +24,7 @@ export default function DocumentsContainer({ style, data }) {
     <View style={[styles.container, style]}>
       {data.map((doc, index) => (
         <DocumentTile
+          deleteEnabled={false}
           style={{ marginTop: index !== 0 && 14 }}
           data={doc}
           onPress={() => Utils.openDocumentFromUrl(doc.uri, doc.title)}

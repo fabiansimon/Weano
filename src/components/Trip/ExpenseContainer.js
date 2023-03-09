@@ -9,7 +9,7 @@ import ROUTES from '../../constants/Routes';
 import activeTripStore from '../../stores/ActiveTripStore';
 
 export default function ExpensesContainer({
-  style, tileBackground = COLORS.neutral[50],
+  style, tileBackground = COLORS.neutral[50], showIndividual,
 }) {
   // STORES
   const { expenses: data, activeMembers: users } = activeTripStore((state) => state.activeTrip);
@@ -55,7 +55,7 @@ export default function ExpensesContainer({
           const individualData = extractIndividualData(user);
           return (
             <ExpenseIndividualCard
-              onPress={() => navigation.navigate(ROUTES.expenseScreen)}
+              onPress={() => (showIndividual ? navigation.navigate(ROUTES.individualExpenseScreen, { data: individualData, users }) : navigation.navigate(ROUTES.expenseScreen))}
               data={individualData}
               user={user}
               style={{ marginRight: index === users.length - 1 ? 40 : 10, backgroundColor: tileBackground }}

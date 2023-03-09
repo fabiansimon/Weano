@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 import React from 'react';
 import COLORS from '../constants/Theme';
 import Body from './typography/Body';
@@ -10,13 +10,12 @@ export default function TabIndicator({
   const color = isActive ? COLORS.shades[0] : COLORS.neutral[300];
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.8}
+    <Pressable
       style={[styles.container, style, { backgroundColor }]}
       onPress={onPress}
     >
       <Body type={1} text={text} color={color} />
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 

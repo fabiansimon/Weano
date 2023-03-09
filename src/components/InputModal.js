@@ -18,17 +18,32 @@ import i18n from '../utils/i18n';
 import Divider from './Divider';
 import toastConfig from '../constants/ToastConfig';
 import REGEX from '../constants/Regex';
+import Headline from './typography/Headline';
 
 export default function InputModal({
-  isVisible, onRequestClose, placeholder, onPress, geoMatching = false, topContent, emailInput, autoClose, multiline, maxLength, initalValue, ...rest
+  isVisible,
+  onRequestClose,
+  placeholder,
+  onPress,
+  geoMatching = false,
+  topContent,
+  multipleInputs,
+  emailInput,
+  packingInput,
+  autoClose,
+  multiline,
+  maxLength,
+  initalValue,
+  ...rest
 }) {
   // STATE & MISC
   const [showModal, setShowModal] = useState(isVisible);
   const [input, setInput] = useState('');
-  const [emailValues, setEmailValues] = useState([]);
+  const [multiValues, setMultiValues] = useState([]);
   const [suggestionData, setSuggestionData] = useState(null);
   const [suggestion, setSuggestion] = useState(null);
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
+  const [packingAmount, setPackingAmount] = useState(1);
 
   const animatedBottom = useRef(new Animated.Value(900)).current;
   const duration = 300;
@@ -78,21 +93,28 @@ export default function InputModal({
   const handleAdding = () => {
     const val = input.trim().toLowerCase();
 
-    if (val.match(REGEX.email)) {
-      setInput('');
-      setEmailValues((prev) => [...prev, input]);
-    } else {
-      Toast.show({
+    if (emailInput && !val.match(REGEX.email)) {
+      return Toast.show({
         type: 'error',
         text1: i18n.t('Whoops!'),
         text2: i18n.t('Not an email '),
       });
     }
+
+    if (packingInput) {
+      setInput('');
+      setMultiValues((prev) => [...prev, `${packingAmount} ${input}`]);
+      setPackingAmount(1);
+      return;
+    }
+
+    setInput('');
+    setMultiValues((prev) => [...prev, input]);
   };
 
   const handleOnPress = () => {
-    if (emailInput) {
-      onPress(emailValues);
+    if (multipleInputs) {
+      onPress(multiValues);
       clearData();
       return;
     }
@@ -111,10 +133,11 @@ export default function InputModal({
     if (autoClose) {
       onRequestClose();
     }
+    setPackingAmount(1);
     setInput('');
     setSuggestion(null);
     setSuggestionData(null);
-    setEmailValues([]);
+    setMultiValues([]);
   };
 
   useEffect(() => {
@@ -163,8 +186,8 @@ export default function InputModal({
   );
 
   const getMultipleValuesContainer = () => (
-    <View style={styles.wrapContainer}>
-      {emailValues.map((value, index) => (
+    <Pressable style={styles.wrapContainer}>
+      {multiValues.map((value, index) => (
         <View style={styles.chip}>
           <Body
             type={1}
@@ -176,12 +199,62 @@ export default function InputModal({
             color={COLORS.neutral[300]}
             size={18}
             style={{ marginLeft: 6 }}
-            onPress={() => setEmailValues((prev) => prev.filter((_, i) => index !== i))}
+            onPress={() => setMultiValues((prev) => prev.filter((_, i) => index !== i))}
             suppressHighlighting
           />
         </View>
       ))}
-    </View>
+    </Pressable>
+  );
+
+  const getPackingContainer = () => (
+    <Pressable style={styles.packingContainer}>
+      <View style={{ flexDirection: 'row' }}>
+        <Body
+          type={1}
+          color={COLORS.neutral[300]}
+          text={i18n.t('How many')}
+        />
+        <Body
+          type={1}
+          style={{ marginLeft: 4 }}
+          color={COLORS.neutral[900]}
+          text={`${input}?`}
+        />
+      </View>
+      <View style={{
+        flexDirection: 'row', alignItems: 'center',
+      }}
+      >
+        <Pressable
+          onPress={() => setPackingAmount((prev) => prev - 1)}
+          style={styles.counterContainer}
+        >
+          <Icon
+            name="minus"
+            size={16}
+            color={COLORS.neutral[700]}
+          />
+        </Pressable>
+        <Headline
+          style={{
+            marginHorizontal: 6, minWidth: 20, textAlign: 'center',
+          }}
+          type={4}
+          text={packingAmount}
+        />
+        <Pressable
+          onPress={() => setPackingAmount((prev) => prev + 1)}
+          style={styles.counterContainer}
+        >
+          <Icon
+            name="plus"
+            size={16}
+            color={COLORS.neutral[700]}
+          />
+        </Pressable>
+      </View>
+    </Pressable>
   );
 
   const getCounter = () => {
@@ -250,8 +323,8 @@ export default function InputModal({
                 )}
             </View>
             )}
-            {emailInput && emailValues.length > 0 && getMultipleValuesContainer()}
-            {topContent && !emailValues.length > 0 && !suggestionData && topContent}
+            {multipleInputs && multiValues.length > 0 && getMultipleValuesContainer()}
+            {topContent && !multiValues.length > 0 && !suggestionData && topContent}
             <View style={styles.innerContainer}>
               <TextInput
                 {...rest}
@@ -264,7 +337,7 @@ export default function InputModal({
                 placeholderTextColor={COLORS.neutral[300]}
                 placeholder={placeholder}
               />
-              {(emailInput && input.length >= 1) && (
+              {(multipleInputs && input.length >= 1) && (
               <TouchableOpacity
                 onPress={handleAdding}
                 activeOpacity={0.9}
@@ -277,7 +350,7 @@ export default function InputModal({
                 />
               </TouchableOpacity>
               )}
-              {((emailInput && emailValues.length > 0) || (!emailInput && input.length >= 1)) && (
+              {((multipleInputs && multiValues.length > 0) || (!multipleInputs && input.length >= 1)) && (
               <TouchableOpacity
                 onPress={handleOnPress}
                 activeOpacity={0.9}
@@ -291,6 +364,7 @@ export default function InputModal({
               </TouchableOpacity>
               )}
             </View>
+            {multipleInputs && packingInput && input.length >= 1 && getPackingContainer()}
             {maxLength && getCounter()}
           </Animated.View>
         </KeyboardView>
@@ -408,5 +482,23 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     borderWidth: 1,
     borderColor: COLORS.neutral[100],
+  },
+  packingContainer: {
+    height: 50,
+    top: -101,
+    borderTopColor: COLORS.neutral[100],
+    borderTopWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: PADDING.l,
+  },
+  counterContainer: {
+    borderRadius: RADIUS.s,
+    backgroundColor: COLORS.neutral[100],
+    height: 25,
+    width: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

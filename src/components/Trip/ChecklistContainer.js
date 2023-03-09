@@ -18,7 +18,7 @@ export default function ChecklistContainer({
   const { mutualTasks, privateTasks } = activeTripStore((state) => state.activeTrip);
 
   // STATE & MISC
-  const [isPrivate, setIsPrivate] = useState(false);
+  const [isPrivate, setIsPrivate] = useState(privateTasks?.length > mutualTasks?.length);
 
   if (mutualTasks?.length <= 0 && privateTasks?.length <= 0) {
     return (

@@ -1,15 +1,16 @@
 import {
-  View, StyleSheet, ScrollView, FlatList,
+  View, StyleSheet, ScrollView, FlatList, Platform,
 } from 'react-native';
 import React, {
   useEffect, useRef, useState,
 } from 'react';
 import Animated from 'react-native-reanimated';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-
+import FeatherIcon from 'react-native-vector-icons/Feather';
 import { useMutation } from '@apollo/client';
 import Toast from 'react-native-toast-message';
 import Icon from 'react-native-vector-icons/AntDesign';
+import { MenuView } from '@react-native-menu/menu';
 import COLORS, { PADDING } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Divider from '../../components/Divider';
@@ -127,7 +128,6 @@ export default function ChecklistScreen() {
       i18n.t('Yes'),
       async () => {
         const { _id, isPrivate } = task;
-        console.log(task);
 
         await deleteTask({
           variables: {
@@ -145,7 +145,6 @@ export default function ChecklistScreen() {
               text2: i18n.t('Task was succeessfully deleted!'),
             });
 
-            console.log('hello');
             if (isPrivate) {
               updateActiveTrip({ privateTasks: privateTasks.filter((p) => p._id !== _id) });
             } else {
@@ -270,6 +269,34 @@ export default function ChecklistScreen() {
     });
   };
 
+  const getActions = (isPrivate, isCreator) => {
+    const deleteAction = {
+      id: 'delete',
+      attributes: {
+        destructive: true,
+      },
+      title: i18n.t('Delete Task'),
+      image: Platform.select({
+        ios: 'trash',
+        android: 'ic_menu_delete',
+      }),
+    };
+    const reminder = {
+      id: 'reminder',
+      title: i18n.t('Remind assignee'),
+    };
+
+    if (isPrivate) {
+      return [deleteAction];
+    }
+
+    if (isCreator) {
+      return [reminder, deleteAction];
+    }
+
+    return [reminder];
+  };
+
   const getHeaderChips = () => (
     <View style={{ flexDirection: 'row', paddingHorizontal: PADDING.m, marginTop: 20 }}>
       {filterOption !== 2 && (
@@ -382,10 +409,19 @@ export default function ChecklistScreen() {
 
                 return (
                   <CheckboxTile
-                    onMorePress={(event) => handleMenuOption({
-                      ...item,
-                      isPrivate: false,
-                    }, event)}
+                    trailing={(
+                      <MenuView
+                        style={styles.addIcon}
+                        onPressAction={({ nativeEvent }) => handleMenuOption(item, nativeEvent)}
+                        actions={getActions(false, isCreator)}
+                      >
+                        <FeatherIcon
+                          name="more-vertical"
+                          size={20}
+                          color={COLORS.neutral[700]}
+                        />
+                      </MenuView>
+                    )}
                     disabled={!isAssignee && !isCreator}
                     isCreator={isCreator}
                     style={{ marginVertical: 4, paddingLeft: 5 }}
@@ -420,10 +456,22 @@ export default function ChecklistScreen() {
               )}
               renderItem={({ item }) => (
                 <CheckboxTile
-                  onMorePress={(event) => handleMenuOption({
-                    ...item,
-                    isPrivate: true,
-                  }, event)}
+                  trailing={(
+                    <MenuView
+                      style={styles.addIcon}
+                      onPressAction={({ nativeEvent }) => handleMenuOption({
+                        ...item,
+                        isPrivate: true,
+                      }, nativeEvent)}
+                      actions={getActions(true)}
+                    >
+                      <FeatherIcon
+                        name="more-vertical"
+                        size={20}
+                        color={COLORS.neutral[700]}
+                      />
+                    </MenuView>
+                )}
                   style={{ paddingLeft: 5 }}
                   item={{
                     ...item,
@@ -473,5 +521,11 @@ const styles = StyleSheet.create({
     width: 30,
     marginLeft: 12,
   },
-
+  addIcon: {
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+    backgroundColor: 'transparent',
+    height: 35,
+    width: 35,
+  },
 });

@@ -38,6 +38,7 @@ import META_DATA from './src/constants/MetaData';
 import DocumentsScreen from './src/screens/Trip/DocumentsScreen';
 import InternetCheckProvider from './src/Providers/InternetCheckProvider';
 import PremiumModal from './src/components/PremiumModal';
+import PacklistScreen from './src/screens/Trip/PacklistScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -144,6 +145,7 @@ export default function App() {
                 <Stack.Screen name={ROUTES.documentsScreen} component={DocumentsScreen} />
                 <Stack.Screen name={ROUTES.timelineScreen} component={TimelineScreen} />
                 <Stack.Screen name={ROUTES.myAccountScreen} component={MyAccountScreen} />
+                <Stack.Screen name={ROUTES.packlistScreen} component={PacklistScreen} />
               </Stack.Navigator>
             </NavigationContainer>
           </ApolloProvider>

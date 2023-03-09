@@ -19,6 +19,7 @@ const ROUTES = {
   timelineScreen: 'timelineScreen',
   myAccountScreen: 'myAccountScreen',
   documentsScreen: 'documentsScreen',
+  packlistScreen: 'packlistScreen',
 };
 
 export default ROUTES;

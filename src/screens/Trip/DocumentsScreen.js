@@ -52,10 +52,7 @@ export default function DocumentsScreen() {
     }
   }, [error, deleteError]);
 
-  const handleDelete = ({ event }, { _id }) => {
-    if (event !== 'delete') {
-      return;
-    }
+  const handleDelete = ({ _id }) => {
     Utils.showConfirmationAlert(
       i18n.t('Delete Document'),
       i18n.t('Are you sure you want to delete your Document?'),
@@ -191,9 +188,10 @@ export default function DocumentsScreen() {
               />
             )}
             renderItem={({ item }) => {
-              const onPress = item.creatorId === id ? (e) => handleDelete(e, item) : null;
+              const onPress = item.creatorId === id ? () => handleDelete(item) : null;
               return (
                 <DocumentTile
+                  style={{ paddingHorizontal: PADDING.s, backgroundColor: COLORS.shades[0] }}
                   onPress={() => Utils.openDocumentFromUrl(item.uri, item.title)}
                   onDelete={onPress}
                   showMenu
@@ -220,7 +218,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.shades[0],
   },
   innerContainer: {
-    paddingHorizontal: PADDING.m,
     paddingTop: 10,
     paddingBottom: 120,
   },

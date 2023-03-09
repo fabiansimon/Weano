@@ -420,6 +420,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
         autoCorrect={false}
         autoCapitalize={false}
         emailInput
+        multipleInputs
         placeholder={i18n.t('Invite friends')}
         onRequestClose={() => setInputVisible(false)}
         onPress={(input) => setInvitees((prev) => prev.concat(input))}

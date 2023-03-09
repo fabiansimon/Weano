@@ -1,25 +1,20 @@
 import {
-  Platform,
   Pressable, StyleSheet, View,
 } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
-import FeatherIcon from 'react-native-vector-icons/Feather';
 import EntIcon from 'react-native-vector-icons/Entypo';
-
-import { MenuView } from '@react-native-menu/menu';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import COLORS from '../../constants/Theme';
 import Body from '../typography/Body';
 import userManagement from '../../utils/userManagement';
-import Avatar from '../Avatar';
 import i18n from '../../utils/i18n';
 
 export default function CheckboxTile({
-  style, item, disableLabel, onPress, disabled = false, onMorePress, showMorePress = true, userList, isDense, isCreator,
+  style, item, disableLabel, onPress, disabled = false, trailing, userList, isDense,
 }) {
   const {
-    isDone, assignee, title, isPrivate,
+    isDone, assignee, title,
   } = item;
   const user = userManagement.convertIdToUser(assignee, userList);
 
@@ -28,43 +23,6 @@ export default function CheckboxTile({
 
   const height = isDense ? 22 : 26;
   const width = isDense ? 22 : 26;
-
-  const actions = isPrivate ? [
-    {
-      id: 'delete',
-      attributes: {
-        destructive: true,
-      },
-      title: i18n.t('Delete Task'),
-      image: Platform.select({
-        ios: 'trash',
-        android: 'ic_menu_delete',
-      }),
-    },
-  ] : isCreator ? [
-    {
-      id: 'reminder',
-      title: `${i18n.t('Remind')} ${user?.firstName}`,
-
-    },
-    {
-      id: 'delete',
-      attributes: {
-        destructive: true,
-      },
-      title: i18n.t('Delete Task'),
-      image: Platform.select({
-        ios: 'trash',
-        android: 'ic_menu_delete',
-      }),
-    },
-  ] : [
-    {
-      id: 'reminder',
-      title: `${i18n.t('Remind')} ${user?.firstName}`,
-
-    },
-  ];
 
   return (
     <View
@@ -90,7 +48,7 @@ export default function CheckboxTile({
           <EntIcon name="check" color={COLORS.shades[0]} size={18} />
         </View>
         <View style={{
-          marginLeft: 8,
+          marginLeft: 4,
           flex: 1,
           flexDirection: 'row',
           justifyContent: 'space-between',
@@ -120,32 +78,8 @@ export default function CheckboxTile({
           </View>
         </View>
       </Pressable>
-
-      {!isDense && (
-        // eslint-disable-next-line react/jsx-no-useless-fragment
-        <>
-          {onMorePress && showMorePress ? (
-            <MenuView
-              style={styles.addIcon}
-              onPressAction={({ nativeEvent }) => onMorePress(nativeEvent)}
-              actions={actions}
-            >
-              <FeatherIcon
-                name="more-vertical"
-                size={20}
-                color={COLORS.neutral[700]}
-              />
-            </MenuView>
-          ) : (
-            item.assignee && (
-            <Avatar
-              disabled
-              size={35}
-              data={user}
-            />
-            )
-          )}
-        </>
+      {!isDense && trailing && (
+        trailing
       )}
     </View>
 
@@ -166,12 +100,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 4,
-  },
-  addIcon: {
-    justifyContent: 'center',
-    alignItems: 'flex-end',
-    backgroundColor: 'transparent',
-    height: 35,
-    width: 35,
   },
 });

@@ -9,7 +9,7 @@ import BasicHeader from './BasicHeader';
 import COLORS from '../constants/Theme';
 
 export default function HybridHeader({
-  style, title, subtitle, onPressBack, info, children, scrollY, content, backButton = true, backgroundColor = COLORS.shades[0],
+  style, title, subtitle, onPressBack, info, children, scrollY, content, backButton = true, backgroundColor = COLORS.shades[0], scrollEnabled,
 }) {
   return (
     <View style={{ flex: 1 }}>
@@ -39,6 +39,7 @@ export default function HybridHeader({
       </AnimatedHeader>
       <Animated.ScrollView
         ref={scrollY}
+        scrollEnabled={scrollEnabled}
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
         onScroll={Animated.event(

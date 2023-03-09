@@ -83,6 +83,7 @@ export default function TripScreen({ route }) {
   const scrollRef = useRef();
   const documentsRef = useRef();
   const expensesRef = useRef();
+  const packlistRef = useRef();
   const pollsRef = useRef();
   const checklistRef = useRef();
   const travelersRef = useRef();
@@ -92,6 +93,7 @@ export default function TripScreen({ route }) {
   const contentRefs = [
     documentsRef,
     expensesRef,
+    packlistRef,
     checklistRef,
     pollsRef,
     travelersRef,
@@ -202,7 +204,7 @@ export default function TripScreen({ route }) {
     setCurrentTab(index);
     const headerHeight = 460;
     const ref = contentRefs[index];
-    ref?.current.measure((_, fy) => {
+    ref?.current?.measure((_, fy) => {
       scrollRef.current?.scrollTo({ y: fy + headerHeight, animated: true });
     });
   };
@@ -423,13 +425,27 @@ export default function TripScreen({ route }) {
     {
       title: i18n.t('Expenses'),
       trailing: <Headline
-        onPress={() => navigation.navigate(ROUTES.expenseScreen, { expenses: data?.expenses || {}, tripId: data.id || '' })}
+        onPress={() => navigation.navigate(ROUTES.expenseScreen)}
         type={4}
         style={{ textDecorationLine: 'underline' }}
         text={i18n.t('see all')}
         color={COLORS.neutral[300]}
       />,
       ref: expensesRef,
+      content: <ExpensesContainer
+        tileBackground={COLORS.shades[0]}
+      />,
+    },
+    {
+      title: i18n.t('Packlist'),
+      trailing: <Headline
+        onPress={() => navigation.navigate(ROUTES.packlistScreen)}
+        type={4}
+        style={{ textDecorationLine: 'underline' }}
+        text={i18n.t('see all')}
+        color={COLORS.neutral[300]}
+      />,
+      ref: packlistRef,
       content: <ExpensesContainer
         tileBackground={COLORS.shades[0]}
       />,

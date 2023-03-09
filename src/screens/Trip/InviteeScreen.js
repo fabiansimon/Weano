@@ -1,12 +1,11 @@
 import {
-  View, StyleSheet, FlatList, Pressable, Share, Platform,
+  View, StyleSheet, FlatList, Pressable, Share,
 } from 'react-native';
 import React, { useRef, useState } from 'react';
 import Animated from 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { MenuView } from '@react-native-menu/menu';
 import { useMutation } from '@apollo/client';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
@@ -24,6 +23,7 @@ import userManagement from '../../utils/userManagement';
 import REMOVE_USER_FROM_TRIP from '../../mutations/removeUserFromTrip';
 import Utils from '../../utils';
 import ContactDetailModal from '../../components/ContactDetailModal';
+import SwipeView from '../../components/SwipeView';
 
 export default function InviteeScreen() {
   // MUTATIONS
@@ -79,73 +79,58 @@ export default function InviteeScreen() {
       });
   };
 
-  const handleMenuOption = ({ event }, user) => {
-    const { id: removeUserId } = user;
-
-    if (event === 'remove') {
-      Utils.showConfirmationAlert(
-        i18n.t('Remove user'),
-        i18n.t('Are you sure you want to remove'),
-        i18n.t('Yes'),
-        async () => {
-          await removeUser({
-            variables: {
-              data: {
-                id: removeUserId,
-                tripId: id,
-              },
+  const handleDelete = (removeUserId) => {
+    Utils.showConfirmationAlert(
+      i18n.t('Remove user'),
+      i18n.t('Are you sure you want to remove the user'),
+      i18n.t('Yes'),
+      async () => {
+        await removeUser({
+          variables: {
+            data: {
+              id: removeUserId,
+              tripId: id,
             },
-          }).then(() => {
-            Toast.show({
-              type: 'success',
-              text1: i18n.t('Whooray!'),
-              text2: i18n.t('User was succeessfully removed!'),
-            });
+          },
+        }).then(() => {
+          Toast.show({
+            type: 'success',
+            text1: i18n.t('Whooray!'),
+            text2: i18n.t('User was succeessfully removed!'),
+          });
 
-            updateActiveTrip({ activeMembers: activeMembers.filter((a) => a.id !== removeUserId) });
-          })
-            .catch((e) => {
-              Toast.show({
-                type: 'error',
-                text1: i18n.t('Whoops!'),
-                text2: e.message,
-              });
-              console.log(`ERROR: ${e.message}`);
+          updateActiveTrip({ activeMembers: activeMembers.filter((a) => a.id !== removeUserId) });
+        })
+          .catch((e) => {
+            Toast.show({
+              type: 'error',
+              text1: i18n.t('Whoops!'),
+              text2: e.message,
             });
-        },
-      );
-    }
+            console.log(`ERROR: ${e.message}`);
+          });
+      },
+    );
   };
 
   const getTile = ({ item }) => {
     const {
-      firstName, lastName, email,
+      firstName, lastName, email, id: userId,
     } = item;
     return (
 
-      <MenuView
-        shouldOpenOnLongPress
-        style={styles.tileContainer}
-        onPressAction={({ nativeEvent }) => handleMenuOption(nativeEvent, item)}
-        actions={[
-          {
-            id: 'remove',
-            attributes: {
-              disabled: !isHost,
-              destructive: true,
-            },
-            title: i18n.t('Remove user'),
-            image: Platform.select({
-              ios: 'trash',
-              android: 'ic_menu_delete',
-            }),
-          },
-        ]}
+      <SwipeView
+        enabled={isHost}
+        string={i18n.t('Remove')}
+        onDelete={() => handleDelete(userId)}
       >
         <Pressable
           onPress={() => setShowUser(item)}
           style={{
             flex: 1,
+            paddingHorizontal: PADDING.l,
+            backgroundColor: COLORS.shades[0],
+            height: 58,
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -170,7 +155,8 @@ export default function InviteeScreen() {
           </View>
           <RoleChip isHost={item.id === hostId} />
         </Pressable>
-      </MenuView>
+
+      </SwipeView>
 
     );
   };
@@ -218,22 +204,20 @@ export default function InviteeScreen() {
         title={i18n.t('Travelers')}
         scrollY={scrollY}
         info={INFORMATION.inviteesScreen}
-        subtitle={i18n.t('To edit a traveler, tap and hold on the user')}
       >
-        <View style={{ marginHorizontal: PADDING.l }}>
-          <FlatList
-            ListEmptyComponent={(
-              <Body
-                style={{ textAlign: 'center', marginTop: 18 }}
-                text={i18n.t('No active Members yet')}
-                color={COLORS.neutral[300]}
-              />
+        <FlatList
+          style={{ marginTop: 6 }}
+          ListEmptyComponent={(
+            <Body
+              style={{ textAlign: 'center', marginTop: 18 }}
+              text={i18n.t('No active Members yet')}
+              color={COLORS.neutral[300]}
+            />
             )}
-            contentContainerStyle={{ paddingBottom: 60 }}
-            data={activeMembers}
-            renderItem={(item, index) => getTile(item, index)}
-          />
-        </View>
+          contentContainerStyle={{ paddingBottom: 60 }}
+          data={activeMembers}
+          renderItem={(item, index) => getTile(item, index)}
+        />
       </HybridHeader>
       <FAButton
         icon="add"
@@ -249,6 +233,7 @@ export default function InviteeScreen() {
         autoCorrect={false}
         autoCapitalize={false}
         emailInput
+        multipleInputs
         placeholder={i18n.t('Invite friends')}
         onRequestClose={() => setInputVisible(false)}
         onPress={(input) => handleInvitations(input)}
@@ -293,9 +278,11 @@ const styles = StyleSheet.create({
   },
   tileContainer: {
     flex: 1,
+    paddingHorizontal: PADDING.l,
+    backgroundColor: COLORS.shades[0],
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 20,
+    paddingTop: 20,
   },
 });
