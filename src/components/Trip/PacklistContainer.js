@@ -6,7 +6,6 @@ import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import COLORS, { PADDING } from '../../constants/Theme';
 import Utils from '../../utils';
-import DocumentTile from './DocumentTile';
 import i18n from '../../utils/i18n';
 import EmptyDataContainer from '../EmptyDataContainer';
 import ROUTES from '../../constants/Routes';
@@ -35,13 +34,14 @@ export default function PacklistContainer({ style, data }) {
           type={2}
           color={COLORS.error[700]}
           style={{ fontWeight: '500' }}
-          text={i18n.t('Open')}
+          text={i18n.t('Open items to pack')}
         />
       </View>
       {data.map((item) => (
         <CheckboxTile
+          trailing={<Body color={COLORS.neutral[500]} type={1} text={`${item.amount}x`} />}
           disabled
-          style={{ paddingHorizontal: PADDING.m }}
+          style={{ paddingHorizontal: PADDING.m, marginVertical: -4 }}
           item={item}
           disableLabel
         />
@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     marginHorizontal: -4,
     borderRadius: 14,
+    paddingBottom: 4,
     borderColor: COLORS.neutral[100],
     borderWidth: 1,
     backgroundColor: COLORS.shades[0],
@@ -65,5 +66,6 @@ const styles = StyleSheet.create({
     marginLeft: PADDING.s,
     paddingHorizontal: 6,
     borderRadius: 6,
+    marginBottom: 6,
   },
 });

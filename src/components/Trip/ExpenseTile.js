@@ -8,7 +8,7 @@ import Utils from '../../utils';
 import i18n from '../../utils/i18n';
 
 export default function ExpenseTile({
-  style, data, user, onPress,
+  style, data, user, onPress, currency,
 }) {
   const getFullName = () => {
     if (user?.firstName) {
@@ -50,7 +50,7 @@ export default function ExpenseTile({
           <Headline
             type={4}
             style={{ textAlign: 'right' }}
-            text={`$${data.amount}`}
+            text={`${currency?.symbol}${data.amount}`}
           />
           <Body
             type={2}

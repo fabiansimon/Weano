@@ -1,8 +1,6 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 import React, { useState } from 'react';
-import Headline from '../typography/Headline';
 import i18n from '../../utils/i18n';
-import Divider from '../Divider';
 import Switch from '../Switch';
 import CheckboxTile from './CheckboxTile';
 import activeTripStore from '../../stores/ActiveTripStore';
@@ -35,7 +33,8 @@ export default function ChecklistContainer({
     <View
       onLayout={onLayout}
       style={{
-        marginHorizontal: PADDING.l,
+        marginHorizontal: PADDING.m,
+        marginVertical: -4,
       }}
     >
       <CheckboxTile
@@ -56,16 +55,16 @@ export default function ChecklistContainer({
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginHorizontal: 15,
+        marginBottom: 6,
       }}
       >
-        <Headline
-          type={4}
-          style={{ alignSelf: 'center' }}
+        <Body
+          type={1}
+          style={{ alignSelf: 'center', fontWeight: '500' }}
           text={isPrivate ? i18n.t('Private list') : i18n.t('Mutual list')}
         />
         {!sender && <Switch bool={isPrivate} onPress={() => setIsPrivate(!isPrivate)} />}
       </View>
-      <Divider top={12} />
       {isPrivate ? privateTasks?.length > 0
         ? privateTasks?.map((item) => getChecklistItem(item))
         : (
@@ -73,7 +72,7 @@ export default function ChecklistContainer({
             color={COLORS.neutral[300]}
             type={2}
             text={i18n.t('No private tasks yet')}
-            style={{ alignSelf: 'center' }}
+            style={{ marginLeft: PADDING.m }}
           />
         ) : mutualTasks?.length > 0
         ? mutualTasks?.map((item) => getChecklistItem(item))
@@ -81,8 +80,8 @@ export default function ChecklistContainer({
           <Body
             color={COLORS.neutral[300]}
             type={2}
+            style={{ marginLeft: PADDING.m }}
             text={i18n.t('No mutual tasks yet')}
-            style={{ alignSelf: 'center' }}
           />
         )}
     </Pressable>
@@ -95,7 +94,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.shades[0],
     borderColor: COLORS.neutral[100],
     borderWidth: 1,
-    paddingVertical: 15,
+    marginHorizontal: -5,
+    paddingVertical: 10,
     paddingBottom: 14,
   },
 });

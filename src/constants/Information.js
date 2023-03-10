@@ -9,6 +9,7 @@ const INFORMATION = {
   checklistScreen: i18n.t('Cras vehicula orci neque, eget maximus nunc consequat eget. Suspendisse sagittis metus quis mi ultricies, non maximus erat vehicula. Phasellus vel dui at nibh efficitur laoreet.'),
   pollScreen: i18n.t('Cras vehicula orci neque, eget maximus nunc consequat eget. Suspendisse sagittis metus quis mi ultricies, non maximus erat vehicula. Phasellus vel dui at nibh efficitur laoreet.'),
   inviteesScreen: i18n.t('Cras vehicula orci neque, eget maximus nunc consequat eget. Suspendisse sagittis metus quis mi ultricies, non maximus erat vehicula. Phasellus vel dui at nibh efficitur laoreet.'),
+  packlistScreen: i18n.t('Cras vehicula orci neque, eget maximus nunc consequat eget. Suspendisse sagittis metus quis mi ultricies, non maximus erat vehicula. Phasellus vel dui at nibh efficitur laoreet.'),
 };
 
 export default INFORMATION;

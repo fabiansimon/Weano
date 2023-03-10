@@ -17,7 +17,7 @@ import Utils from '../../utils';
 import userStore from '../../stores/UserStore';
 
 export default function ExpenseDetailModal({
-  isVisible, onRequestClose, data, users, onDelete, onReminder,
+  isVisible, onRequestClose, data, users, onDelete, onReminder, currency,
 }) {
   // STORES
   const { id: userId } = userStore((state) => state.user);
@@ -30,7 +30,7 @@ export default function ExpenseDetailModal({
 
   const duration = 350;
 
-  const isCreator = userId === data?.creatorId;
+  const isCreator = userId === data?.paidBy;
   const splitees = members.filter((member) => member.isIncluded);
 
   useEffect(() => {
@@ -124,7 +124,7 @@ export default function ExpenseDetailModal({
             type={4}
           />
           <Headline
-            text={`${data?.currency}${data?.amount}`}
+            text={`${currency?.symbol}${data?.amount}`}
             color={COLORS.neutral[700]}
             type={1}
           />

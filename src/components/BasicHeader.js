@@ -22,7 +22,7 @@ export default function BasicHeader({
             type={3}
             text={title}
           />
-          {info && (
+          {info && !trailing && (
             <Icon
               onPress={() => setInfoVisible(true)}
               suppressHighlighting
@@ -31,8 +31,8 @@ export default function BasicHeader({
               color={COLORS.neutral[100]}
             />
           )}
+          {trailing || null}
         </View>
-        {trailing || <View width={55} />}
         {subtitle && (
           <Body
             type={1}
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-end',
   },
   heading: {
     paddingHorizontal: PADDING.l,

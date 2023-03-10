@@ -236,6 +236,7 @@ export default function TimelineScreen() {
         title={i18n.t('Timeline Recap')}
         scrollY={scrollY}
         info={INFORMATION.dateScreen}
+        scrollEnabled={false}
       >
         <View style={styles.innerContainer}>
           {loading ? <TimelineSkeleton /> : (
@@ -295,7 +296,6 @@ const styles = StyleSheet.create({
   },
   innerContainer: {
     paddingHorizontal: PADDING.s,
-    paddingTop: 15,
     paddingBottom: 36,
   },
   tile: {

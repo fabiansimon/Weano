@@ -15,7 +15,7 @@ import Body from '../../components/typography/Body';
 
 export default function IndividualExpenseScreen({ route }) {
   // PARAMS
-  const { data, users } = route.params;
+  const { data, users, currency } = route.params;
 
   // STATE & MISC
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -23,6 +23,7 @@ export default function IndividualExpenseScreen({ route }) {
 
   const getExpenseTile = (expense) => (
     <ExpenseTile
+      currency={currency}
       data={expense}
       user={data.user}
     />
@@ -39,7 +40,7 @@ export default function IndividualExpenseScreen({ route }) {
           <Headline
             style={{ marginTop: 26 }}
             type={1}
-            text={`$${data.amount}`}
+            text={`${currency?.symbol}${data.amount}`}
           />
           <Body
             style={{ marginBottom: 16 }}
@@ -66,6 +67,7 @@ export default function IndividualExpenseScreen({ route }) {
         </View>
       </HybridHeader>
       <ExpenseDetailModal
+        currency={currency}
         isVisible={selectedExpense.isVisible}
         onRequestClose={() => setSelectedExpense((prev) => ({
           ...prev,

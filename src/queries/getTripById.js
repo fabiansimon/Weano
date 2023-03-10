@@ -3,6 +3,10 @@ import gql from 'graphql-tag';
 const GET_TRIP_BY_ID = gql`
     query GetTripById($tripId: String) {
         getTripById(tripId: $tripId) {
+            currency {
+                symbol
+                string
+            }
             userFreeImages
             id
             hostId
@@ -29,6 +33,7 @@ const GET_TRIP_BY_ID = gql`
             expenses {
                 _id
                 creatorId
+                paidBy
                 title
                 amount
                 currency

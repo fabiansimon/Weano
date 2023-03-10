@@ -38,7 +38,7 @@ export default function PacklistScreen() {
 
   // STORES
   const {
-    packingItems, id: tripId,
+    packingItems, id: tripId, dateRange,
   } = activeTripStore((state) => state.activeTrip);
   const { isProMember } = userStore((state) => state.user);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
@@ -127,7 +127,7 @@ export default function PacklistScreen() {
       variables: {
         packingData: {
           items,
-          tripId: '6407ab7ea1d242a3469e1da2',
+          tripId,
         },
       },
     })
@@ -205,7 +205,7 @@ export default function PacklistScreen() {
     return (
       <SwipeView onDelete={() => handleDeletion(item)}>
         <CheckboxTile
-          style={{ paddingHorizontal: PADDING.xl, backgroundColor: COLORS.shades[0] }}
+          style={{ paddingHorizontal: PADDING.xl, backgroundColor: COLORS.shades[0], marginVertical: -4 }}
           trailing={(
             <View style={{
               flexDirection: 'row', alignItems: 'center',
@@ -259,6 +259,24 @@ export default function PacklistScreen() {
         info={INFORMATION.packlistScreen}
         scrollEnabled={false}
       >
+        <View style={styles.stayContainer}>
+          <Icon
+            name="stopwatch"
+            size={16}
+            style={{ marginRight: 6 }}
+          />
+          <Body
+            type={2}
+            color={COLORS.neutral[500]}
+            text={i18n.t("Don't forget, you will stay there for")}
+          />
+          <Body
+            type={2}
+            style={{ marginLeft: 4, fontWeight: '500' }}
+            color={COLORS.neutral[900]}
+            text={`${Utils.getDaysDifference(dateRange.startDate, dateRange.endDate, true) - 1} ${i18n.t('nights')}`}
+          />
+        </View>
         <SectionList
           style={{ paddingBottom: '100%' }}
           stickySectionHeadersEnabled
@@ -358,5 +376,16 @@ const styles = StyleSheet.create({
     width: 25,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  stayContainer: {
+    alignItems: 'center',
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    marginHorizontal: PADDING.m,
+    marginTop: 10,
+    borderRadius: RADIUS.s,
+    backgroundColor: COLORS.neutral[50],
+    flexDirection: 'row',
+    marginRight: 'auto',
   },
 });

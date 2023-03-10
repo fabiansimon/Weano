@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Animated, Pressable, StyleSheet } from 'react-native';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import COLORS from '../constants/Theme';
@@ -11,6 +11,7 @@ export default function SwipeView({
   onDelete, string, children, enabled,
 }) {
   const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+  const swipeRef = useRef();
 
   const renderRightAction = (_, dragX) => {
     const translateX = dragX.interpolate({
@@ -18,7 +19,13 @@ export default function SwipeView({
       outputRange: [50, WIDTH],
     });
     return (
-      <AnimatedPressable style={[styles.rightAction, { transform: [{ translateX }] }]} onPress={onDelete}>
+      <AnimatedPressable
+        style={[styles.rightAction, { transform: [{ translateX }] }]}
+        onPress={() => {
+          onDelete();
+          swipeRef.current?.close();
+        }}
+      >
         <Body
           type={1}
           color={COLORS.shades[0]}
@@ -30,6 +37,7 @@ export default function SwipeView({
 
   return (
     <Swipeable
+      ref={swipeRef}
       enabled={enabled}
       friction={2}
       enableTrackpadTwoFingerGesture

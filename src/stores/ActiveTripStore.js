@@ -21,6 +21,10 @@ const activeTripStore = create((set) => ({
       type: data.type || null,
       documents: data.documents || null,
       packingItems: data.packingItems || null,
+      currency: !data.currency.string ? {
+        symbol: '$',
+        string: 'USD',
+      } : data.currency,
     },
   })),
   updateActiveTrip: (data) => set((state) => ({
@@ -42,6 +46,7 @@ const activeTripStore = create((set) => ({
       type: data.type || state.activeTrip.type,
       documents: data.documents || state.activeTrip.documents,
       packingItems: data.packingItems || state.activeTrip.packingItems,
+      currency: data.currency || state.activeTrip.currency,
     },
   })),
 }));

@@ -400,7 +400,6 @@ export default function MemoriesScreen({ route }) {
           <AccentBubble
             disabled
             style={{ position: 'absolute', right: -2, top: -2 }}
-            text={isProMember ? '∞' : ''}
           />
           <EntIcon
             name="camera"

@@ -35,7 +35,7 @@ export default function MembersModal({
         />
       </View>
       <View style={user?.id === initalMemberId ? styles.activeBox : styles.inactiveBox}>
-        <Icon name="check" color={COLORS.shades[0]} size={18} />
+        <Icon name="check" color={COLORS.shades[0]} size={16} />
       </View>
     </Pressable>
   );

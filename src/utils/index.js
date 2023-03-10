@@ -253,16 +253,23 @@ export default class Utils {
 
   /**
      * Get days difference to trip
-     * @param {Number} date - e.g. startDate of Trip
+     * @param {Number} startDate - e.g. startDate of Trip
+     * @param {Number} endDate - e.g. (optional) endDate of Trip
+     * @param {Boolean} toAbs - if result should be shown as a positive integer
      */
-  static getDaysDifference(date) {
-    if (!date) {
+  static getDaysDifference(startDate, endDate, toAbs = false) {
+    if (!startDate) {
       return;
     }
 
-    const toDate = moment(new Date(date * 1000));
-    const fromDate = moment().startOf('day');
+    const toDate = moment(new Date(startDate * 1000));
+    const fromDate = endDate ? moment(new Date(endDate * 1000)).startOf('day') : moment().startOf('day');
 
-    return Math.floor(moment.duration(toDate.diff(fromDate)).asDays());
+    const difference = Math.floor(moment.duration(toDate.diff(fromDate)).asDays());
+    if (toAbs) {
+      return Math.abs(difference);
+    }
+
+    return difference;
   }
 }

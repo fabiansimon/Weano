@@ -12,13 +12,13 @@ export default function ExpensesContainer({
   style, tileBackground = COLORS.neutral[50], showIndividual,
 }) {
   // STORES
-  const { expenses: data, activeMembers: users } = activeTripStore((state) => state.activeTrip);
+  const { expenses: data, activeMembers: users, currency } = activeTripStore((state) => state.activeTrip);
 
   const navigation = useNavigation();
 
   const extractIndividualData = (user) => {
     const { amount } = getAmount(user);
-    const expenses = data.filter((expense) => expense.creatorId === user.id);
+    const expenses = data.filter((expense) => expense.paidBy === user.id);
     return {
       user,
       amount,
@@ -30,7 +30,7 @@ export default function ExpensesContainer({
     let amount = 0;
     data.forEach((expense) => {
       if (user) {
-        if (expense.creatorId === user.id) {
+        if (expense.paidBy === user.id) {
           amount += expense.amount;
         }
       } else {
@@ -55,7 +55,8 @@ export default function ExpensesContainer({
           const individualData = extractIndividualData(user);
           return (
             <ExpenseIndividualCard
-              onPress={() => (showIndividual ? navigation.navigate(ROUTES.individualExpenseScreen, { data: individualData, users }) : navigation.navigate(ROUTES.expenseScreen))}
+              currency={currency}
+              onPress={() => (showIndividual ? navigation.navigate(ROUTES.individualExpenseScreen, { data: individualData, users, currency }) : navigation.navigate(ROUTES.expenseScreen))}
               data={individualData}
               user={user}
               style={{ marginRight: index === users.length - 1 ? 40 : 10, backgroundColor: tileBackground }}

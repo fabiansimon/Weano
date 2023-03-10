@@ -70,7 +70,7 @@ export default function ProfileScreen() {
     },
     {
       title: i18n.t('Friends'),
-      amount: user.friends && user.friends.length - 1,
+      amount: user.friends && user.friends.length - 1 < 0 ? 0 : user.friends.length - 1,
     },
   ];
 

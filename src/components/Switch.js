@@ -16,14 +16,14 @@ export default function Switch({ bool, onPress, color }) {
       <View style={[styles.innerContainer, { backgroundColor: bool ? colorTheme : 'transparent' }]}>
         <Icon
           name="person"
-          size={14}
+          size={12}
           color={bool ? COLORS.shades[0] : colorTheme}
         />
       </View>
       <View style={[styles.innerContainer, { backgroundColor: !bool ? colorTheme : 'transparent' }]}>
         <Icon
           name="people"
-          size={16}
+          size={14}
           color={!bool ? COLORS.shades[0] : colorTheme}
         />
       </View>
@@ -34,8 +34,8 @@ export default function Switch({ bool, onPress, color }) {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    width: 65,
-    height: 28,
+    width: 55,
+    height: 25,
     borderWidth: 1,
     borderRadius: 100,
     justifyContent: 'space-between',

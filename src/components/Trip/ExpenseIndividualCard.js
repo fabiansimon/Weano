@@ -7,10 +7,13 @@ import Body from '../typography/Body';
 import Headline from '../typography/Headline';
 import COLORS, { RADIUS } from '../../constants/Theme';
 import i18n from '../../utils/i18n';
+import activeTripStore from '../../stores/ActiveTripStore';
 
 export default function ExpenseIndividualCard({
   style, data, onPress, user,
 }) {
+  // STORES
+  const { currency } = activeTripStore((state) => state.activeTrip);
   return (
     <TouchableOpacity
       activeOpacity={0.9}
@@ -31,7 +34,7 @@ export default function ExpenseIndividualCard({
         />
         <Headline
           type={3}
-          text={`$${data.amount.toFixed(2)}`}
+          text={`${currency?.symbol}${data.amount.toFixed(2)}`}
           color={COLORS.neutral[900]}
         />
       </View>

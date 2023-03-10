@@ -87,7 +87,6 @@ export default function CheckboxTile({
 }
 
 const styles = StyleSheet.create({
-
   container: {
     minHeight: 50,
     flexDirection: 'row',

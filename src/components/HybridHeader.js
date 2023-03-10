@@ -9,7 +9,7 @@ import BasicHeader from './BasicHeader';
 import COLORS from '../constants/Theme';
 
 export default function HybridHeader({
-  style, title, subtitle, onPressBack, info, children, scrollY, content, backButton = true, backgroundColor = COLORS.shades[0], scrollEnabled,
+  style, title, subtitle, onPressBack, info, children, scrollY, content, backButton = true, backgroundColor = COLORS.shades[0], scrollEnabled, trailing,
 }) {
   return (
     <View style={{ flex: 1 }}>
@@ -53,6 +53,7 @@ export default function HybridHeader({
           title={title}
           subtitle={subtitle}
           info={info}
+          trailing={trailing}
         >
           {content}
         </BasicHeader>
