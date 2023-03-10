@@ -24,7 +24,7 @@ import LoadingModal from './LoadingModal';
 import activeTripStore from '../stores/ActiveTripStore';
 import tripsStore from '../stores/TripsStore';
 // import activeTripStore from '../stores/ActiveTripStore';
-
+const AnimatedImage = Animated.createAnimatedComponent(Image);
 export default function ImageModal({
   style, image, isVisible, onRetake, onRequestClose, tripId, isPreselected = false,
 }) {
@@ -255,7 +255,6 @@ export default function ImageModal({
     </View>
   );
 
-  const AnimatedImage = Animated.createAnimatedComponent(Image);
   return (
     <Modal
       animationType="none"
@@ -314,6 +313,9 @@ export default function ImageModal({
                 />
                 <TextInput
                   maxLength={80}
+                  numberOfLines={3}
+                  maxWidth={40}
+                  ellipsizeMode="tail"
                   placeholder={i18n.t('Or even an description')}
                   placeholderTextColor={Utils.addAlpha(COLORS.neutral[100], 0.6)}
                   style={[styles.descriptionStyle, styles.shadow]}
@@ -344,10 +346,12 @@ const styles = StyleSheet.create({
     letterSpacing: -0.6,
   },
   descriptionStyle: {
+    flexWrap: 'wrap',
     marginTop: 6,
     fontFamily: 'WorkSans-Regular',
     color: COLORS.shades[0],
     fontSize: 16,
+    marginRight: PADDING.l,
     letterSpacing: -0.6,
   },
   header: {

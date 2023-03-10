@@ -265,13 +265,13 @@ export default function MyAccountScreen() {
             <IonIcon
               name="ios-trash-outline"
               color={COLORS.error[900]}
-              size={22}
+              size={20}
             />
-            <Headline
+            <Body
               style={{ marginLeft: 8 }}
               color={COLORS.error[900]}
               text={i18n.t('Delete Account')}
-              type={4}
+              type={1}
             />
           </TouchableOpacity>
         </View>

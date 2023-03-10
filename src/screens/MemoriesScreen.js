@@ -371,63 +371,70 @@ export default function MemoriesScreen({ route }) {
     );
   };
 
-  const getFAB = () => (
-    <MenuView
-      style={styles.fabContainer}
-      onPressAction={({ nativeEvent }) => handleMenuOption(nativeEvent)}
-      actions={[
-        {
-          id: 'take',
-          title: i18n.t('Take a picture'),
-          image: Platform.select({
-            ios: 'camera',
-          }),
-        },
-        {
-          id: 'select',
-          title: i18n.t('Select from Cameraroll'),
-          image: Platform.select({
-            ios: 'photo',
-          }),
-        },
-      ]}
-    >
-      {userFreeImages <= 0 ? (
-        <View
-          activeOpacity={0.5}
-          style={[styles.fab, { backgroundColor: Utils.addAlpha(COLORS.primary[700], 0.3) }]}
-        >
-          <AccentBubble
-            disabled
-            style={{ position: 'absolute', right: -2, top: -2 }}
-          />
-          <EntIcon
-            name="camera"
-            size={22}
-            color={COLORS.shades[0]}
-          />
-        </View>
-      ) : (
-        <Animatable.View
-          animation="pulse"
-          iterationCount="infinite"
-          style={[styles.fab, { backgroundColor: COLORS.primary[700] }]}
-        >
-          <AccentBubble
-            style={{ position: 'absolute', right: -2, top: -2 }}
-            text={userFreeImages}
-          />
-          <EntIcon
-            name="camera"
-            size={22}
-            color={COLORS.shades[0]}
-          />
-        </Animatable.View>
-      )}
-
-    </MenuView>
-
-  );
+  const getFAB = () => {
+    const isDisabled = userFreeImages <= 0;
+    return (
+      <MenuView
+        style={styles.fabContainer}
+        onPressAction={({ nativeEvent }) => handleMenuOption(nativeEvent)}
+        actions={[
+          {
+            id: 'take',
+            title: i18n.t('Take a picture'),
+            attributes: {
+              disabled: isDisabled,
+            },
+            image: Platform.select({
+              ios: 'camera',
+            }),
+          },
+          {
+            id: 'select',
+            title: i18n.t('Select from Cameraroll'),
+            attributes: {
+              disabled: isDisabled,
+            },
+            image: Platform.select({
+              ios: 'photo',
+            }),
+          },
+        ]}
+      >
+        {isDisabled ? (
+          <View
+            activeOpacity={0.5}
+            style={[styles.fab, { backgroundColor: Utils.addAlpha(COLORS.primary[700], 0.3) }]}
+          >
+            <AccentBubble
+              disabled
+              style={{ position: 'absolute', right: -2, top: -2 }}
+            />
+            <EntIcon
+              name="camera"
+              size={22}
+              color={COLORS.shades[0]}
+            />
+          </View>
+        ) : (
+          <Animatable.View
+            animation="pulse"
+            iterationCount="infinite"
+            style={[styles.fab, { backgroundColor: COLORS.primary[700] }]}
+          >
+            <AccentBubble
+              style={{ position: 'absolute', right: -2, top: -2 }}
+              text={userFreeImages}
+            />
+            <EntIcon
+              name="camera"
+              size={22}
+              color={COLORS.shades[0]}
+            />
+          </Animatable.View>
+        )}
+      </MenuView>
+    );
+  };
 
   return (
     <>
