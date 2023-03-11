@@ -9,7 +9,7 @@ import BasicHeader from './BasicHeader';
 import COLORS from '../constants/Theme';
 
 export default function HybridHeader({
-  style, title, subtitle, onPressBack, info, children, scrollY, content, backButton = true, backgroundColor = COLORS.shades[0], scrollEnabled, trailing,
+  style, title, subtitle, onPressBack, info, children, scrollY, content, backButton = true, backgroundColor = COLORS.shades[0], trailing, scrollEnabled = true,
 }) {
   return (
     <View style={{ flex: 1 }}>

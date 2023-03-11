@@ -51,6 +51,7 @@ import tripsStore from '../../stores/TripsStore';
 import DocumentsContainer from '../../components/Trip/DocumentsContainer';
 import AccentBubble from '../../components/Trip/AccentBubble';
 import PacklistContainer from '../../components/Trip/PacklistContainer';
+import CalendarModal from '../../components/CalendarModal';
 
 export default function TripScreen({ route }) {
   // PARAMS
@@ -79,6 +80,13 @@ export default function TripScreen({ route }) {
   const [inputOpen, setInputOpen] = useState(null);
   const [showQR, setShowQR] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(() => {
+    const date = new Date();
+    date.setDate(date.getDate() + 5);
+    return date;
+  });
+  const [calendarVisible, setCalendarVisible] = useState(false);
   const scrollY = useRef(new Animated.Value(0)).current;
   const addImageRef = useRef();
   const scrollRef = useRef();
@@ -288,6 +296,40 @@ export default function TripScreen({ route }) {
     }
   };
 
+  const handleDateUpdate = async (start, end) => {
+    setTimeout(async () => {
+      const oldDateRange = data.dateRange;
+      updateActiveTrip({
+        dateRange: {
+          endDate: end,
+          startDate: start,
+        },
+      });
+
+      await updateTrip({
+        variables: {
+          trip: {
+            tripId: data.id,
+            dateRange: {
+              startDate: start,
+              endDate: end,
+            },
+          },
+        },
+      }).catch((e) => {
+        updateActiveTrip({ dateRange: oldDateRange });
+        setTimeout(() => {
+          Toast.show({
+            type: 'error',
+            text1: i18n.t('Whoops!'),
+            text2: e.message,
+          });
+        }, 500);
+        console.log(e);
+      });
+    }, 300);
+  };
+
   const updateDescription = async (description) => {
     if (description.trim().length <= 0) {
       setTimeout(() => {
@@ -390,8 +432,8 @@ export default function TripScreen({ route }) {
   const statusData = [
     {
       name: i18n.t('Location'),
-      isDone: data?.location,
-      route: ROUTES.locationScreen,
+      isDone: data?.destinations[0],
+      route: ROUTES.destinationScreen,
     },
     {
       name: i18n.t('Date'),
@@ -604,20 +646,20 @@ export default function TripScreen({ route }) {
           >
             <Button
               isSecondary
-              text={data?.location?.placeName.split(', ')[0] || i18n.t('Set location')}
+              text={data?.destinations[0]?.placeName.split(', ')[0] || i18n.t('Set location')}
               fullWidth={false}
               icon="location-pin"
               onPress={() => navigation.push(ROUTES.destinationScreen)}
               backgroundColor={COLORS.shades[0]}
               textColor={COLORS.shades[100]}
-              style={data?.location ? styles.infoTile : styles.infoButton}
+              style={data?.destinations[0] ? styles.infoTile : styles.infoButton}
             />
             <Button
               isSecondary
               text={data?.dateRange?.startDate ? Utils.getDateRange(data.dateRange) : i18n.t('Find date')}
               fullWidth={false}
               icon={<AntIcon name="calendar" size={18} />}
-              onPress={() => navigation.push(ROUTES.dateScreen)}
+              onPress={() => setCalendarVisible(true)}
               backgroundColor={COLORS.shades[0]}
               textColor={COLORS.shades[100]}
               style={[data?.dateRange?.startDate ? styles.infoTile : styles.infoButton, { marginLeft: 14 }]}
@@ -655,7 +697,7 @@ export default function TripScreen({ route }) {
             <Headline
               type={4}
               text={getDayDifference()}
-              style={{ fontWeight: '600', fontSize: 16 }}
+              style={{ fontWeight: '600', fontSize: 14 }}
               color={COLORS.shades[0]}
             />
           </Animatable.View>
@@ -761,7 +803,7 @@ export default function TripScreen({ route }) {
           title={!inactive ? data?.title : i18n.t('Loading...')}
           id={data?.id}
           isActive={activeTrip.type === 'active'}
-          subtitle={`${data?.location.placeName.split(',')[0]}`}
+          subtitle={`${data?.destinations[0]?.placeName.split(',')[0]}`}
           items={contentItems}
           onPress={(index) => handleTabPress(index)}
           currentTab={currentTab}
@@ -833,6 +875,20 @@ export default function TripScreen({ route }) {
         isVisible={showQR}
         onRequestClose={() => setShowQR(false)}
         value={`${META_DATA.baseUrl}/redirect/invitation/${tripId}`}
+      />
+      <CalendarModal
+        isVisible={calendarVisible}
+        onRequestClose={() => setCalendarVisible(false)}
+        minimumDate={new Date()}
+        initialStartDate={startDate}
+        initialEndDate={endDate}
+        onApplyClick={(startData, endData) => {
+          if (startData != null && endData != null) {
+            setStartDate(Date.parse(startData));
+            setEndDate(Date.parse(endData));
+            handleDateUpdate(Date.parse(startData) / 1000, Date.parse(endData) / 1000);
+          }
+        }}
       />
     </View>
   );

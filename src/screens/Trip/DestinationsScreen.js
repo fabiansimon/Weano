@@ -8,6 +8,7 @@ import {
   StyleSheet, View,
 } from 'react-native';
 import MapboxGL from '@react-native-mapbox-gl/maps';
+import Toast from 'react-native-toast-message';
 import bbox from '@turf/bbox';
 import { lineString, lineString as makeLineString } from '@turf/helpers';
 import BottomSheet from '@gorhom/bottom-sheet';
@@ -15,6 +16,7 @@ import BottomSheet from '@gorhom/bottom-sheet';
 import { MAPBOX_TOKEN } from '@env';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSharedValue } from 'react-native-reanimated';
+import { useMutation } from '@apollo/client';
 import BackButton from '../../components/BackButton';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import Utils from '../../utils';
@@ -24,37 +26,28 @@ import i18n from '../../utils/i18n';
 import Subtitle from '../../components/typography/Subtitle';
 import Body from '../../components/typography/Body';
 import activeTripStore from '../../stores/ActiveTripStore';
+import UPDATE_TRIP from '../../mutations/updateTrip';
 
 MapboxGL.setAccessToken(MAPBOX_TOKEN);
 
 export default function DestinationScreen() {
-  // STORES
-  const { dateRange } = activeTripStore((state) => state.activeTrip);
+// MUTATIONS
+  const [updateTrip] = useMutation(UPDATE_TRIP);
 
-  // STATE & MISC
-  const mockData = [
-    {
-      placeName: 'Mexico City, Mexico',
-      latlon: [-99.14638745694221, 19.39181444946778],
-      key: 1,
-    },
-    {
-      placeName: 'Chiapas, Mexico',
-      latlon: [-91.59616923105648, 16.56027299510734],
-      key: 2,
-    },
-    {
-      placeName: 'Bacalar, Mexico',
-      latlon: [-88.39089899276608, 18.679654560505313],
-      key: 3,
-    },
-  ];
+  // STORES
+  const { dateRange, destinations, id } = activeTripStore((state) => state.activeTrip);
+  const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
 
   // STATE && MISC
   const [inputVisible, setInputVisible] = useState(false);
-  const [destinationData, setDestinationData] = useState(mockData);
-  const snapPoints = useMemo(() => ['33%', '100%'], []);
+  const snapPoints = useMemo(() => ['25%', '100%'], []);
+  const [isReplace, setIsReplaced] = useState(false);
   const [expandedIndex, setExpandedIndex] = useState(0);
+
+  const destinationData = destinations.map((d, i) => ({
+    ...d,
+    key: i + 1,
+  }));
 
   const sheetRef = useRef(null);
   const mapCamera = useRef();
@@ -73,7 +66,7 @@ export default function DestinationScreen() {
   useEffect(() => {
     setTimeout(() => {
       handlePan();
-    }, 100);
+    }, 500);
   }, [destinationData]);
 
   const handleSheetChanges = useCallback((i) => {
@@ -88,13 +81,18 @@ export default function DestinationScreen() {
       i18n.t('Are you sure you want to delete your this stop?'),
       i18n.t('Yes'),
       async () => {
+        const oldData = destinations;
         // eslint-disable-next-line array-callback-return
-        setDestinationData((prev) => prev.filter((item, i) => {
+        const newArr = destinations.filter((item, i) => {
           if (i !== index) {
             return item;
           }
-        }));
+        });
+        updateActiveTrip({ destinations: newArr });
+        handleUpdateTrip(oldData, newArr);
+        sheetRef.current.snapToIndex(0);
       },
+
     );
     // eslint-disable-next-line array-callback-return
   };
@@ -103,29 +101,83 @@ export default function DestinationScreen() {
     if (!input) {
       return;
     }
-    sheetRef.current.snapToIndex(0);
+
+    let newArr;
+    const oldData = destinations;
+
+    if (isReplace) {
+      newArr = [{
+        latlon: input.location,
+        placeName: input.string,
+      }];
+      setIsReplaced(false);
+    } else {
+      newArr = [...destinations, {
+        latlon: input.location,
+        placeName: input.string,
+      }];
+    }
+
     setInputVisible(false);
-    setDestinationData((prev) => [...prev, {
-      latlon: input.location,
-      placeName: input.string,
-      key: prev.length + 1,
-    }]);
+
+    updateActiveTrip({ destinations: newArr });
+    handleUpdateTrip(oldData, newArr);
+    sheetRef.current.snapToIndex(0);
+  };
+
+  const updateData = (data) => {
+    const oldData = destinations;
+
+    updateActiveTrip({ destinations: data });
+    handleUpdateTrip(oldData, data);
+  };
+
+  const handleUpdateTrip = async (oldArr, newArr) => {
+    await updateTrip({
+      variables: {
+        trip: {
+          destinations: newArr.map((d) => ({
+            placeName: d.placeName,
+            latlon: d.latlon,
+          })),
+          tripId: id,
+        },
+      },
+    }).catch((e) => {
+      updateActiveTrip({ destinations: oldArr });
+      setTimeout(() => {
+        Toast.show({
+          type: 'error',
+          text1: i18n.t('Whoops!'),
+          text2: e.message,
+        });
+      }, 500);
+      console.log(e);
+    });
   };
 
   const handlePan = () => {
+    if (destinationData?.length <= 1) {
+      mapCamera?.current?.setCamera({
+        centerCoordinate: destinations[0].latlon,
+        zoomLevel: 8,
+        animationDuration: 500,
+      });
+      return;
+    }
+
     const box = bbox(lineString(destinationData.map((item) => item.latlon)));
 
-    mapCamera.current.fitBounds(
+    mapCamera?.current?.fitBounds(
       [box[0], box[1]],
       [box[2], box[3]],
-      30,
-      100,
+      [30, 120],
+      500,
     );
   };
 
   const renderBubble = (data, index) => {
     const { latlon } = data;
-
     if (latlon?.length < 2) {
       return;
     }
@@ -146,6 +198,9 @@ export default function DestinationScreen() {
   };
 
   const renderLines = () => {
+    if (destinationData?.length <= 1) {
+      return;
+    }
     const line = makeLineString(destinationData.map((item) => item.latlon));
     if (!line) {
       return;
@@ -213,11 +268,15 @@ export default function DestinationScreen() {
         animatedPosition={sheetPosition}
       >
         <DestinationsSheet
+          onReplace={() => {
+            setIsReplaced(true);
+            setInputVisible(true);
+          }}
           onPress={handleSheetTap}
           position={sheetPosition}
           onAdd={() => setInputVisible(true)}
           onDelete={(index) => handleDeletion(index)}
-          onDragEnded={(data) => setDestinationData(data)}
+          onDragEnded={(data) => updateData(data)}
           destinations={destinationData}
         />
       </BottomSheet>

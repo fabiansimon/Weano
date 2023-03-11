@@ -18,7 +18,7 @@ export default function TripContainer({
   trip, onLongPress, disabled = true, size, isDense = false, onPress,
 }) {
   const {
-    location, thumbnailUri: uri, dateRange, type, userFreeImages,
+    destinations, thumbnailUri: uri, dateRange, type, userFreeImages,
   } = trip;
 
   const height = size || 62;
@@ -81,7 +81,7 @@ export default function TripContainer({
             ellipsizeMode="tail"
             style={{ marginTop: 6, marginBottom: -2, textAlign: 'center' }}
             type={2}
-            text={location.placeName.split(',')[0]}
+            text={destinations[0]?.placeName.split(',')[0]}
           />
           <Label
             style={{ textAlign: 'center' }}

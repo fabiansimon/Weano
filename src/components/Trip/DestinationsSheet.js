@@ -13,9 +13,10 @@ import SwipeView from '../SwipeView';
 import Body from '../typography/Body';
 
 export default function DestinationsSheet({
-  destinations, onDragEnded, onAdd, onDelete, position, onPress,
+  destinations, onDragEnded, onAdd, onDelete, position, onPress, onReplace,
 }) {
   const { height } = Dimensions.get('window');
+  const isLast = destinations.length <= 1;
 
   const animatedStyle = useAnimatedStyle(() => {
     const translateY = Math.abs((height - position.value) - height);
@@ -27,8 +28,13 @@ export default function DestinationsSheet({
     const {
       isActive, item, drag, getIndex,
     } = destination;
+
     return (
-      <SwipeView onDelete={() => onDelete(getIndex())}>
+      <SwipeView
+        onDelete={() => (isLast ? onReplace() : onDelete(getIndex()))}
+        backgroundColor={isLast ? COLORS.primary[700] : COLORS.error[900]}
+        string={isLast ? i18n.t('Replace') : i18n.t('Delete')}
+      >
         <ScaleDecorator activeScale={1.05}>
           <Pressable
             onLongPress={(() => {

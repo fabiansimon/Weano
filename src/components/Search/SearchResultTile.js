@@ -6,7 +6,8 @@ import Body from '../typography/Body';
 import Utils from '../../utils';
 
 export default function SearchResultTile({ style, data, onPress }) {
-  const { title, location, dateRange } = data;
+  const { title, destinations, dateRange } = data;
+  const location = destinations[0];
   return (
     <Pressable
       onPress={onPress}
@@ -20,7 +21,7 @@ export default function SearchResultTile({ style, data, onPress }) {
         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
           <Body
             type={2}
-            text={`${location.placeName} ${location.placeName.length < 20 ? `• ${Utils.getDateFromTimestamp(dateRange.endDate, 'MM.YYYY')}` : ''}`}
+            text={`${location?.placeName} ${location.placeName.length < 20 ? `• ${Utils.getDateFromTimestamp(dateRange.endDate, 'MM.YYYY')}` : ''}`}
             color={COLORS.neutral[300]}
           />
         </View>

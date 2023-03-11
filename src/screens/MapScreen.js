@@ -55,25 +55,25 @@ export default function MapScreen({ route }) {
     }
 
     const searchTrip = trips.filter((trip) => trip.id === id)[0];
-    const { location } = searchTrip;
+    const { destinations } = searchTrip;
 
     mapCamera.current.setCamera({
-      centerCoordinate: location.latlon,
+      centerCoordinate: destinations[0].latlon,
       zoomLevel: 3,
       animationDuration: 500,
     });
   };
 
   const renderTripPins = (trip) => {
-    const { location } = trip;
+    const { destinations } = trip;
 
-    if (location?.latlon?.length < 2) {
+    if (destinations[0]?.latlon?.length < 2) {
       return;
     }
 
     return (
       <MapboxGL.MarkerView
-        coordinate={location.latlon}
+        coordinate={destinations[0].latlon}
       >
         <TripContainer
           onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: trip.id })}

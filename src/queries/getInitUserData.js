@@ -32,7 +32,7 @@ const GET_INIT_USER_DATA = gql`
                 }
                 thumbnailUri
                 title
-                location {
+                destinations {
                     placeName
                     latlon
                 }

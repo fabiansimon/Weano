@@ -9,7 +9,7 @@ const GET_TRIPS_FOR_USER = gql`
             thumbnailUri
             title
             description
-            location {
+            destinations {
                 placeName
                 latlon
             }

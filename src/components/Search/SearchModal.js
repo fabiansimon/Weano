@@ -55,7 +55,7 @@ export default function LocationScreen({ isVisible, onRequestClose, onPress }) {
       const formattedTrip = {
         title: trip.title.replace(REGEX.rawLetters, '').toLowerCase(),
         description: trip.description.replace(REGEX.rawLetters, '').toLowerCase(),
-        placeName: trip.location.placeName.replace(REGEX.rawLetters, '').toLowerCase(),
+        placeName: trip.destinations[0].placeName.replace(REGEX.rawLetters, '').toLowerCase(),
       };
 
       if (formattedTrip.title.includes(formattedTerm) || formattedTrip.description.includes(formattedTerm) || formattedTrip.placeName.includes(formattedTerm)) {

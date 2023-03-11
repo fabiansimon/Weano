@@ -236,13 +236,14 @@ export default function TimelineScreen() {
         title={i18n.t('Timeline Recap')}
         scrollY={scrollY}
         info={INFORMATION.dateScreen}
-        scrollEnabled={false}
+        scrollEnabled
       >
         <View style={styles.innerContainer}>
           {loading ? <TimelineSkeleton /> : (
             <SectionList
               style={{ marginHorizontal: 10 }}
               stickySectionHeadersEnabled
+              scrollEnabled={false}
               showsVerticalScrollIndicator={false}
               sections={timelineData}
               ListEmptyComponent={(
@@ -297,6 +298,7 @@ const styles = StyleSheet.create({
   innerContainer: {
     paddingHorizontal: PADDING.s,
     paddingBottom: 36,
+    flex: 1,
   },
   tile: {
     marginVertical: 10,

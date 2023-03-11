@@ -13,7 +13,7 @@ export default function RecapCardMini({
   data, style, onPress, onLongPress,
 }) {
   const {
-    location, dateRange, title, activeMembers,
+    destinations, dateRange, title, activeMembers,
   // eslint-disable-next-line react/destructuring-assignment
   } = data;
 
@@ -68,7 +68,7 @@ export default function RecapCardMini({
           <Body
             type={2}
             numberOfLines={1}
-            text={location?.placeName?.split(',')[0]}
+            text={destinations[0]?.placeName?.split(',')[0]}
             color={COLORS.neutral[300]}
             isDense
           />

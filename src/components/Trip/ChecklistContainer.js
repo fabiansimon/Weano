@@ -34,7 +34,6 @@ export default function ChecklistContainer({
       onLayout={onLayout}
       style={{
         marginHorizontal: PADDING.m,
-        marginVertical: -4,
       }}
     >
       <CheckboxTile
@@ -96,6 +95,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginHorizontal: -5,
     paddingVertical: 10,
-    paddingBottom: 14,
+    paddingBottom: 10,
   },
 });

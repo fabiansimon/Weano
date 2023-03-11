@@ -202,7 +202,7 @@ export default function ActionTile({ style, trip }) {
         color={COLORS.neutral[300]}
         numberOfLines={1}
         ellipsizeMode="tail"
-        text={`, ${location?.placeName.split(',')[0]}`}
+        text={`, ${location.placeName.split(',')[0]}`}
       />
       )}
     </View>

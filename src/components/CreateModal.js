@@ -157,7 +157,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
             endDate,
             startDate,
           },
-          location: {
+          destination: {
             placeName,
             latlon,
           },
@@ -179,10 +179,10 @@ export default function CreateModal({ isVisible, onRequestClose }) {
         thumbnailUri: null,
         title: tripName,
         description: null,
-        location: {
+        destinations: [{
           placeName,
           latlon,
-        },
+        }],
         activeMembers: [{
           avatarUri,
           firstName,

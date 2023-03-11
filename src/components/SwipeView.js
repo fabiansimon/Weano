@@ -8,7 +8,7 @@ import Body from './typography/Body';
 const WIDTH = 100;
 
 export default function SwipeView({
-  onDelete, string, children, enabled,
+  onDelete, string, children, enabled, backgroundColor = COLORS.error[900],
 }) {
   const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
   const swipeRef = useRef();
@@ -20,7 +20,7 @@ export default function SwipeView({
     });
     return (
       <AnimatedPressable
-        style={[styles.rightAction, { transform: [{ translateX }] }]}
+        style={[styles.rightAction, { transform: [{ translateX }], backgroundColor }]}
         onPress={() => {
           onDelete();
           swipeRef.current?.close();
@@ -53,7 +53,6 @@ const styles = StyleSheet.create({
   rightAction: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.error[900],
     width: WIDTH,
   },
 });

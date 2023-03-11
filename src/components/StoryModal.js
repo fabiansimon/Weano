@@ -179,7 +179,7 @@ export default function StoryModal({
           }}
         />
         <View style={styles.infoContainer}>
-          <View>
+          <View style={{ flex: 1 }}>
             <Body
               type={1}
               color={COLORS.shades[0]}
@@ -188,8 +188,10 @@ export default function StoryModal({
             />
             <Body
               type={2}
+              numberOfLines={2}
+              ellipsizeMode="tail"
               color={Utils.addAlpha('#ffffff', 0.5)}
-              style={{ fontStyle: !description ? 'italic' : 'normal', maxWidth: '100%' }}
+              style={{ fontStyle: !description ? 'italic' : 'normal' }}
               text={description || i18n.t('No description')}
             />
           </View>
@@ -301,6 +303,7 @@ const styles = StyleSheet.create({
   infoContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'flex-end',
     paddingHorizontal: PADDING.l,
     paddingBottom: 50,
     width: Dimensions.get('window').width,

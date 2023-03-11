@@ -9,7 +9,8 @@ const activeTripStore = create((set) => ({
       thumbnailUri: data.thumbnailUri || null,
       title: data.title || null,
       description: data.description || null,
-      location: data.location || null,
+      // location: data.location || null,
+      destinations: data.destinations || null,
       expenses: data.expenses || null,
       activeMembers: data.activeMembers || null,
       dateRange: data.dateRange || null,
@@ -21,7 +22,7 @@ const activeTripStore = create((set) => ({
       type: data.type || null,
       documents: data.documents || null,
       packingItems: data.packingItems || null,
-      currency: !data.currency.string ? {
+      currency: !data?.currency?.string ? {
         symbol: '$',
         string: 'USD',
       } : data.currency,
@@ -34,7 +35,8 @@ const activeTripStore = create((set) => ({
       thumbnailUri: data.thumbnailUri || state.activeTrip.thumbnailUri,
       title: data.title || state.activeTrip.title,
       description: data.description || state.activeTrip.description,
-      location: data.location || state.activeTrip.location,
+      // location: data.location || state.activeTrip.location,
+      destinations: data.destinations || state.activeTrip.destinations,
       expenses: data.expenses || state.activeTrip.expenses,
       activeMembers: data.activeMembers || state.activeTrip.activeMembers,
       dateRange: data.dateRange || state.activeTrip.dateRange,

@@ -14,7 +14,7 @@ const GET_TRIP_BY_ID = gql`
             title
             description
             type
-            location {
+            destinations {
                 placeName
                 latlon
             }
