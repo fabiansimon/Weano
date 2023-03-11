@@ -607,7 +607,7 @@ export default function TripScreen({ route }) {
               text={data?.location?.placeName.split(', ')[0] || i18n.t('Set location')}
               fullWidth={false}
               icon="location-pin"
-              onPress={() => navigation.push(ROUTES.locationScreen)}
+              onPress={() => navigation.push(ROUTES.destinationScreen)}
               backgroundColor={COLORS.shades[0]}
               textColor={COLORS.shades[100]}
               style={data?.location ? styles.infoTile : styles.infoButton}

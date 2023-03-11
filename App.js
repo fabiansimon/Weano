@@ -39,6 +39,7 @@ import DocumentsScreen from './src/screens/Trip/DocumentsScreen';
 import InternetCheckProvider from './src/Providers/InternetCheckProvider';
 import PremiumModal from './src/components/PremiumModal';
 import PacklistScreen from './src/screens/Trip/PacklistScreen';
+import DestinationScreen from './src/screens/Trip/DestinationsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -50,8 +51,8 @@ export default function App() {
   const navigationRef = useRef();
 
   const client = new ApolloClient({
-    uri: `${META_DATA.baseUrl}/graphql`,
-    // uri: 'http://192.168.0.31:4000/graphql',
+    // uri: `${META_DATA.baseUrl}/graphql`,
+    uri: 'http://10.100.31.188:4000/graphql',
     cache: new InMemoryCache(),
     headers: { Authorization: authToken || '' },
   });
@@ -129,6 +130,7 @@ export default function App() {
                 <Stack.Screen name={ROUTES.dateScreen} component={DateScreen} />
                 <Stack.Screen name={ROUTES.inviteeScreen} component={InviteeScreen} />
                 <Stack.Screen name={ROUTES.locationScreen} component={LocationScreen} />
+                <Stack.Screen name={ROUTES.destinationScreen} component={DestinationScreen} />
                 <Stack.Screen name={ROUTES.individualExpenseScreen} component={IndividualExpenseScreen} />
                 <Stack.Screen name={ROUTES.expenseScreen} component={ExpenseScreen} />
                 <Stack.Screen name={ROUTES.checklistScreen} component={ChecklistScreen} />

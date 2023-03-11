@@ -202,7 +202,7 @@ export default function ActionTile({ style, trip }) {
         color={COLORS.neutral[300]}
         numberOfLines={1}
         ellipsizeMode="tail"
-        text={`, ${location.placeName.split(',')[0]}`}
+        text={`, ${location?.placeName.split(',')[0]}`}
       />
       )}
     </View>
@@ -214,19 +214,23 @@ export default function ActionTile({ style, trip }) {
       style={[styles.container, style, { shadowColor: COLORS.neutral[300] }, { height: animatedHeight, borderRadius: animatedBorderRadius }]}
     >
       <View>
-        <Pressable
-          onPress={() => setIsExpanded(!isExpanded)}
+        <View
           style={{
             flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
           }}
         >
           <View style={{ flexDirection: 'row', flex: 1, marginRight: 28 }}>
-            <EntIcon
-              name={isExpanded ? 'chevron-up' : 'chevron-down'}
-              size={20}
-              color={COLORS.neutral[300]}
-              style={{ marginRight: 4 }}
-            />
+            <Pressable
+              hitSlop={40}
+              onPress={() => setIsExpanded(!isExpanded)}
+            >
+              <EntIcon
+                name={isExpanded ? 'chevron-up' : 'chevron-down'}
+                size={20}
+                color={COLORS.neutral[300]}
+                style={{ marginRight: 4 }}
+              />
+            </Pressable>
             {isExpanded ? (
               <Body
                 type={1}
@@ -245,7 +249,7 @@ export default function ActionTile({ style, trip }) {
               color={typeColor}
             />
           </View>
-        </Pressable>
+        </View>
 
         {isExpanded && (
         <Body

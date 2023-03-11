@@ -6,6 +6,7 @@ const ROUTES = {
   checklistScreen: 'ChecklistScreen',
   inviteeScreen: 'InviteeScreen',
   locationScreen: 'locationScreen',
+  destinationScreen: 'destinationScreen',
   dateScreen: 'dateScreen',
   expenseScreen: 'expenseScreen',
   individualExpenseScreen: 'individualExpenseScreen',

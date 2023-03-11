@@ -312,9 +312,8 @@ export default function ImageModal({
                   onChangeText={(val) => setTitle(val)}
                 />
                 <TextInput
-                  maxLength={80}
+                  maxLength={50}
                   numberOfLines={3}
-                  maxWidth={40}
                   ellipsizeMode="tail"
                   placeholder={i18n.t('Or even an description')}
                   placeholderTextColor={Utils.addAlpha(COLORS.neutral[100], 0.6)}
@@ -346,7 +345,6 @@ const styles = StyleSheet.create({
     letterSpacing: -0.6,
   },
   descriptionStyle: {
-    flexWrap: 'wrap',
     marginTop: 6,
     fontFamily: 'WorkSans-Regular',
     color: COLORS.shades[0],
