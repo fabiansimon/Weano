@@ -167,8 +167,8 @@ export default function TimelineScreen() {
               text={i18n.t('Task')}
               color={COLORS.neutral[300]}
             />
-            <Headline
-              type={4}
+            <Body
+              type={1}
               text={item.title}
             />
           </View>,

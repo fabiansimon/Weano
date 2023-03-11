@@ -254,7 +254,7 @@ export default function PacklistScreen() {
   return (
     <View style={styles.container}>
       <HybridHeader
-        title={i18n.t('Packlist')}
+        title={i18n.t('Packing list')}
         scrollY={scrollY}
         info={INFORMATION.packlistScreen}
         scrollEnabled={false}

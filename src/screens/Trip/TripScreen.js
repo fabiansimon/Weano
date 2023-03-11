@@ -480,7 +480,7 @@ export default function TripScreen({ route }) {
       />,
     },
     {
-      title: i18n.t('Packlist'),
+      title: i18n.t('Packing list'),
       trailing: <Headline
         onPress={() => navigation.navigate(ROUTES.packlistScreen)}
         type={4}
