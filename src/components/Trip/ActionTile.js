@@ -66,13 +66,13 @@ export default function ActionTile({ style, trip }) {
 
   if (!trip) { return <View />; }
   const {
-    id, images, location, dateRange, activeMembers, title: tripTitle,
+    id, images, dateRange, activeMembers, title: tripTitle, destinations,
   } = trip;
 
   const typeTitle = isActive ? i18n.t('Active') : isUpcoming ? i18n.t('Upcoming') : i18n.t('Rewind');
   const typeColor = isActive ? COLORS.error[900] : isUpcoming ? COLORS.success[700] : COLORS.primary[700];
 
-  const place = location?.placeName.split(',')[0];
+  const place = destinations[0]?.placeName.split(',')[0];
 
   const title = isActive ? `${i18n.t("How's")} ${place} ${i18n.t('treating you?')}`
     : isUpcoming ? `${i18n.t('Ready for')} ${place}?`
@@ -202,7 +202,7 @@ export default function ActionTile({ style, trip }) {
         color={COLORS.neutral[300]}
         numberOfLines={1}
         ellipsizeMode="tail"
-        text={`, ${location.placeName.split(',')[0]}`}
+        text={`, ${destinations[0].placeName.split(',')[0]}`}
       />
       )}
     </View>
