@@ -1,29 +1,35 @@
 import {
   View, StyleSheet, Pressable, Dimensions,
-  Image,
 } from 'react-native';
 import React, { useRef, useState } from 'react';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import PagerView from 'react-native-pager-view';
 import Icon from 'react-native-vector-icons/Ionicons';
-import EntIcon from 'react-native-vector-icons/Entypo';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import Headline from '../typography/Headline';
 import i18n from '../../utils/i18n';
 import Subtitle from '../typography/Subtitle';
 import Body from '../typography/Body';
 import TripStopTile from './TripStopTile';
-import ActivityChip from '../ActivityChip';
-import AirbnbLogo from '../../../assets/images/airbnb.png';
-import BookinLogo from '../../../assets/images/booking.png';
-import HostelworldLogo from '../../../assets/images/hostelworld.png';
+import AffiliateInfoView from './AffiliateInfoView';
 
 export default function DestinationsSheet({
-  destinations, onDragEnded, onAdd, onDelete, position, onPress, onReplace, dateRange,
+  destinations,
+  onDragEnded,
+  onAdd,
+  onDelete,
+  position,
+  onPress,
+  onReplace,
+  dateRange,
+  navigateRef,
+  setScrollIndex,
 }) {
   // STATE & MISC
-  const [info, setInfo] = useState('accomodation');
+  const [expandedIndex, setExpandedIndex] = useState(-1);
+  const [info, setInfo] = useState(null);
+
   const { height } = Dimensions.get('window');
   const isLast = destinations.length <= 1;
   const pageRef = useRef();
@@ -35,18 +41,6 @@ export default function DestinationsSheet({
     };
   });
 
-  const handleFurtherInfo = (type, item) => {
-    setInfo({
-      type: 'accomdation',
-      placeName: item.placeName,
-      dateRange,
-
-    });
-    setTimeout(() => {
-      pageRef.current?.setPage(1);
-    }, 100);
-  };
-
   const affiliateLinks = [
     {
       title: i18n.t('Sleep'),
@@ -56,7 +50,8 @@ export default function DestinationsSheet({
         color={COLORS.secondary[700]}
       />,
       color: COLORS.secondary[700],
-      type: 'accomodation',
+      type: 'sleep',
+
     },
     {
       title: i18n.t('Transport'),
@@ -90,22 +85,16 @@ export default function DestinationsSheet({
     },
   ];
 
-  const getSimpleButton = (image, string, _onPress) => (
-    <Pressable
-      onPress={_onPress}
-      style={styles.simpleButton}
-    >
-      <Image
-        style={{ height: 18, width: 18 }}
-        source={image}
-      />
-      <Body
-        type={1}
-        style={{ fontWeight: '500', marginLeft: 6 }}
-        text={string}
-      />
-    </Pressable>
-  );
+  const handleFurtherInfo = (link, index) => {
+    setInfo({
+      link,
+      index,
+    });
+
+    setTimeout(() => {
+      pageRef.current?.setPage(1);
+    }, 100);
+  };
 
   const getDestinationTile = (destination) => {
     const {
@@ -124,9 +113,12 @@ export default function DestinationsSheet({
         isLast={isLast}
         item={item}
         drag={drag}
+        isExpanded={index === expandedIndex}
+        onPress={() => setExpandedIndex(index === expandedIndex ? -1 : index)}
       />
     );
   };
+
   const getAddTile = () => (
     <Pressable
       onPress={onAdd}
@@ -148,7 +140,6 @@ export default function DestinationsSheet({
       />
     </Pressable>
   );
-
   return (
     <>
       <Animated.View style={[{
@@ -156,14 +147,19 @@ export default function DestinationsSheet({
       }, animatedStyle]}
       />
       <Pressable
-        onPress={onPress}
+        // onPress={onPress}
         style={{ flex: 1 }}
       >
         <View style={styles.container}>
           <View style={styles.handler} />
           <PagerView
             style={{ flex: 1 }}
-            ref={pageRef}
+            ref={(node) => {
+              // eslint-disable-next-line no-param-reassign
+              navigateRef.current = node;
+              pageRef.current = node;
+            }}
+            onPageSelected={(e) => setScrollIndex(e.nativeEvent.position)}
             scrollEnabled
           >
             <View>
@@ -182,80 +178,11 @@ export default function DestinationsSheet({
               />
               {getAddTile()}
             </View>
-            <View style={{ marginHorizontal: PADDING.l, alignItems: 'flex-start', marginTop: 30 }}>
-              <ActivityChip data={affiliateLinks[0]} />
-              <Body
-                type={1}
-                color={COLORS.neutral[300]}
-                text={i18n.t('Sleep in')}
-                style={{ marginTop: 12, marginBottom: 2 }}
-              />
-              <Headline
-                type={4}
-                text={info.placeName}
-              />
-              <View style={[styles.innerContainer, { marginTop: 16 }]}>
-                <View style={{ flex: 1 }}>
-                  <Body
-                    type={2}
-                    color={COLORS.neutral[300]}
-                    text={i18n.t('From')}
-                  />
-                  <Body
-                    type={1}
-                    color={COLORS.shades[900]}
-                    text="02/06/2022"
-                  />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Body
-                    type={2}
-                    color={COLORS.neutral[300]}
-                    text={i18n.t('To')}
-                  />
-                  <Body
-                    type={1}
-                    color={COLORS.shades[900]}
-                    text="04/06/2022"
-                  />
-                </View>
-              </View>
-              <View style={[styles.innerContainer, { marginTop: 16 }]}>
-                <View style={{ flex: 1, alignItems: 'flex-start', marginLeft: 15 }}>
-                  <EntIcon name="plus" size={20} />
-                </View>
-                <View style={{ justifyContent: 'center', flex: 1, alignItems: 'center' }}>
-                  <Body
-                    type={2}
-                    color={COLORS.neutral[300]}
-                    text={i18n.t('Nights')}
-                  />
-                  <Headline
-                    type={4}
-                    color={COLORS.shades[900]}
-                    text="2"
-                  />
-                </View>
-                <View style={{ flex: 1, alignItems: 'flex-end', marginRight: 15 }}>
-                  <EntIcon name="minus" size={20} />
-                </View>
-              </View>
-              <Headline
-                type={4}
-                style={{ marginTop: 40, marginBottom: 2 }}
-                text={i18n.t('Find accomodation')}
-              />
-              <Body
-                type={1}
-                color={COLORS.neutral[300]}
-                text={i18n.t('For 2 nights for 2 people')}
-              />
-              <View style={{ flexDirection: 'row', marginBottom: 6, marginTop: 30 }}>
-                {getSimpleButton(BookinLogo, 'Booking', () => console.log('hello'))}
-                {getSimpleButton(AirbnbLogo, 'Airbnb', () => console.log('hello'))}
-              </View>
-              {getSimpleButton(HostelworldLogo, 'Hostelworld', () => console.log('hello'))}
-            </View>
+            <AffiliateInfoView
+              info={info}
+              destinations={destinations}
+              dateRange={dateRange}
+            />
           </PagerView>
         </View>
       </Pressable>
@@ -297,27 +224,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: RADIUS.xl,
-  },
-  innerContainer: {
-    backgroundColor: COLORS.shades[0],
-    borderRadius: RADIUS.s,
-    borderWidth: 1,
-    borderColor: COLORS.neutral[100],
-    flexDirection: 'row',
-    paddingHorizontal: 13,
-    paddingVertical: 10,
-    alignItems: 'center',
-  },
-  simpleButton: {
-    marginRight: 6,
-    borderRadius: 100,
-    borderColor: COLORS.neutral[100],
-    borderWidth: 1,
-    backgroundColor: COLORS.shades[0],
-    flexDirection: 'row',
-    height: 42,
-    paddingHorizontal: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });

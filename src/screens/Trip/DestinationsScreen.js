@@ -17,6 +17,8 @@ import { MAPBOX_TOKEN } from '@env';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSharedValue } from 'react-native-reanimated';
 import { useMutation } from '@apollo/client';
+
+import { useNavigation } from '@react-navigation/native';
 import BackButton from '../../components/BackButton';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import Utils from '../../utils';
@@ -40,18 +42,23 @@ export default function DestinationScreen() {
 
   // STATE && MISC
   const [inputVisible, setInputVisible] = useState(false);
-  const snapPoints = useMemo(() => ['25%', '100%'], []);
   const [isReplace, setIsReplaced] = useState(false);
   const [expandedIndex, setExpandedIndex] = useState(0);
+  const [scrollIndex, setScrollIndex] = useState(false);
+
+  const snapPoints = useMemo(() => ['35%', '100%'], []);
+
+  const pageRef = useRef();
+  const sheetRef = useRef(null);
+  const mapCamera = useRef();
+  const sheetPosition = useSharedValue(0);
+
+  const navigation = useNavigation();
 
   const destinationData = destinations.map((d, i) => ({
     ...d,
     key: i + 1,
   }));
-
-  const sheetRef = useRef(null);
-  const mapCamera = useRef();
-  const sheetPosition = useSharedValue(0);
 
   const shapeStyle = {
     line: {
@@ -156,6 +163,18 @@ export default function DestinationScreen() {
     });
   };
 
+  const handleNavigation = () => {
+    if (scrollIndex !== 0) {
+      return pageRef.current?.setPage(0);
+    }
+
+    if (expandedIndex !== 0) {
+      return sheetRef.current.snapToIndex(0);
+    }
+
+    return navigation.goBack();
+  };
+
   const handlePan = () => {
     if (destinationData?.length <= 1) {
       mapCamera?.current?.setCamera({
@@ -236,6 +255,7 @@ export default function DestinationScreen() {
       </MapboxGL.MapView>
       <SafeAreaView edges={['top']} style={styles.header}>
         <BackButton
+          onPress={handleNavigation}
           isClear
         />
         <View style={{
@@ -268,6 +288,8 @@ export default function DestinationScreen() {
         animatedPosition={sheetPosition}
       >
         <DestinationsSheet
+          setScrollIndex={setScrollIndex}
+          navigateRef={pageRef}
           dateRange={dateRange}
           onReplace={() => {
             setIsReplaced(true);
