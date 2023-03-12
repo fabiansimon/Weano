@@ -268,6 +268,7 @@ export default function DestinationScreen() {
         animatedPosition={sheetPosition}
       >
         <DestinationsSheet
+          dateRange={dateRange}
           onReplace={() => {
             setIsReplaced(true);
             setInputVisible(true);

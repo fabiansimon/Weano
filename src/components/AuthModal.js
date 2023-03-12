@@ -2,7 +2,6 @@ import {
   View, StyleSheet, Keyboard,
 } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
-import CountryPicker from 'react-native-country-picker-modal';
 import PagerView from 'react-native-pager-view';
 import { useNavigation } from '@react-navigation/native';
 import { useMutation } from '@apollo/client';
