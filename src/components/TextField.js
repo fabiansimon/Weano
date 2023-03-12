@@ -116,7 +116,7 @@ export default function TextField({
         >
           <Body
             type={1}
-            text={`+ ${prefix}`}
+            text={prefix}
             color={COLORS.neutral[700]}
           />
         </TouchableOpacity>
@@ -127,11 +127,10 @@ export default function TextField({
           onPressIn={onPress || null}
           editable={!disabled}
           keyboardType={keyboardType}
-          // onFocus={() => focusable && setFocused(true)}
           style={styles.textInput}
           value={value || null}
           onChangeText={(val) => handleChangeText(val)}
-          placeholder={prefix ? `+${prefix} ${placeholder}` : placeholder}
+          placeholder={placeholder}
           placeholderTextColor={COLORS.neutral[300]}
         />
         {icon && (

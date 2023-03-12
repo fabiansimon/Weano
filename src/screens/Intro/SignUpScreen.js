@@ -1,5 +1,5 @@
 import {
-  Animated, View, StyleSheet, Image, Pressable,
+  Animated, View, StyleSheet, Image, Pressable, StatusBar,
 } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
@@ -347,6 +347,7 @@ export default function SignUpScreen({ invitationId, route }) {
 
   return (
     <View style={{ flex: 1, backgroundColor: COLORS.primary[700], justifyContent: 'space-between' }}>
+      <StatusBar barStyle="light-content" />
       <SensorView>
         <AnimatedImage
           style={[{ width: '100%', height: 320 }, { transform: [{ translateY: animatedImageY }] }]}

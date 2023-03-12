@@ -25,11 +25,13 @@ import httpService from '../utils/httpService';
 import userStore from '../stores/UserStore';
 import JOIN_TRIP from '../mutations/joinTrip';
 import Utils from '../utils';
+import CountrySelectorModal from './CountrySelectorModal';
+import CountryData from '../constants/Countries';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
 export default function AuthModal({
-  isVisible, onRequestClose, registerData, joinTripId, uploadReminderId,
+  isVisible, onRequestClose, registerData, joinTripId,
 }) {
   // MUTATIONS
   const [registerUser, { error: registerError }] = useMutation(REGISTER_USER);
@@ -43,21 +45,12 @@ export default function AuthModal({
   const [phoneNr, setPhoneNr] = useState('');
   const [pickerVisible, setPickerVisible] = useState(false);
   const [code, setCode] = useState('');
-  const [countryCode, setCountryCode] = useState('43');
+  const [country, setCountry] = useState(CountryData.find((c) => c.name === 'Austria'));
   const pageRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const navigation = useNavigation();
   const isLogin = !registerData;
-
-  const countryPickerTheme = {
-    primaryColorVariant: COLORS.neutral[100],
-    onBackgroundTextColor: COLORS.shades[100],
-    fontSize: 14,
-    activeOpacity: 0.7,
-    itemHeight: 60,
-    marginHorizontal: 10,
-  };
 
   useEffect(() => {
     if (loginError || registerError || joinError) {
@@ -78,6 +71,12 @@ export default function AuthModal({
       handleLogin();
     }
   }, [code]);
+  useEffect(() => {
+    setPhoneNr('');
+    setPickerVisible(false);
+    setCode('');
+    setCountry(CountryData.find((c) => c.name === 'Austria'));
+  }, [onRequestClose]);
 
   const navigatePage = (index) => {
     Keyboard.dismiss();
@@ -103,7 +102,7 @@ export default function AuthModal({
 
   const requestCode = async () => {
     setIsLoading(true);
-    const phoneNumber = `+${countryCode}${phoneNr.trim()}`;
+    const phoneNumber = `+${country.dialCode}${phoneNr.trim()}`;
     await httpService.getVerificationCode(phoneNumber)
       .then((res) => {
         if (res.status === 'pending') {
@@ -124,7 +123,7 @@ export default function AuthModal({
 
   const checkCode = async () => {
     setIsLoading(true);
-    const phoneNumber = `+${countryCode}${phoneNr.trim()}`;
+    const phoneNumber = `${country.dialCode}${phoneNr.trim()}`;
     const res = await httpService.checkVerificationCode(phoneNumber, code).catch((err) => Toast.show({
       type: 'error',
       text1: i18n.t('Whoops!'),
@@ -137,7 +136,7 @@ export default function AuthModal({
 
   const handleRegister = async () => {
     const { email, firstName, lastName } = registerData;
-    const phoneNumber = `+${countryCode}${phoneNr.trim()}`;
+    const phoneNumber = `${country.dialCode}${phoneNr.trim()}`;
 
     const check = await checkCode();
 
@@ -184,7 +183,7 @@ export default function AuthModal({
   };
 
   const handleLogin = async () => {
-    const phoneNumber = `+${countryCode}${phoneNr.trim()}`;
+    const phoneNumber = `${country.dialCode}${phoneNr.trim()}`;
     const check = await checkCode();
 
     if (check !== 'approved') {
@@ -242,7 +241,7 @@ export default function AuthModal({
           <PagerView
             style={{ flex: 1 }}
             ref={pageRef}
-            scrollEnabled
+            scrollEnabled={false}
           >
             <View style={{ padding: PADDING.l, justifyContent: 'space-between' }}>
               <View>
@@ -254,11 +253,11 @@ export default function AuthModal({
                 <TextField
                   keyboardType="phone-pad"
                   style={{ marginTop: 18, marginBottom: 10 }}
-                  prefix={countryCode}
+                  prefix={country.flag}
                   onPrefixPress={() => setPickerVisible(true)}
                   value={phoneNr || null}
                   onChangeText={(val) => setPhoneNr(val)}
-                  placeholder={i18n.t('123 45 56')}
+                  placeholder={`${country.dialCode} ${i18n.t('123 45 56')}`}
                   onDelete={() => setPhoneNr('')}
                 />
                 <Body
@@ -309,7 +308,7 @@ export default function AuthModal({
               />
               <Headline
                 type={4}
-                text={`+${countryCode} ${phoneNr}`}
+                text={`${country.dialCode} ${phoneNr}`}
                 style={{ fontWeight: '600' }}
                 color={COLORS.neutral[900]}
               />
@@ -342,15 +341,12 @@ export default function AuthModal({
           </PagerView>
         </View>
       </KeyboardView>
-      <CountryPicker
-        containerButtonStyle={{ opacity: 0 }}
-        flatListProps={{ marginHorizontal: 10 }}
-        visible={pickerVisible}
-        modalProps={{ presentationStyle: 'pageSheet' }}
+      <CountrySelectorModal
+        onRequestClose={() => setPickerVisible(false)}
+        isVisible={pickerVisible}
         onClose={() => setPickerVisible(false)}
-        theme={countryPickerTheme}
-        onSelect={(country) => setCountryCode(country.callingCode[0])}
-        withCallingCode
+        selectedCountry={country}
+        onPress={(c) => setCountry(c)}
       />
     </TitleModal>
   );

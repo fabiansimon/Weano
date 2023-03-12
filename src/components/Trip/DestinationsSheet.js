@@ -53,6 +53,9 @@ export default function DestinationsSheet({
               />
             </View>
             <Body
+              style={{ flex: 1, marginRight: 20 }}
+              numberOfLines={2}
+              ellipsizeMode="tail"
               type={1}
               text={item.placeName}
             />
@@ -142,7 +145,7 @@ const styles = StyleSheet.create({
     borderRadius: RADIUS.xl,
   },
   tileContainer: {
-    height: 53,
+    paddingVertical: 12,
     backgroundColor: COLORS.shades[0],
     borderLeftColor: COLORS.neutral[100],
     borderLeftWidth: 2,

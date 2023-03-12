@@ -4,7 +4,7 @@ import {
 import * as Animatable from 'react-native-animatable';
 import Toast from 'react-native-toast-message';
 import React, {
-  useRef, useState, useEffect,
+  useRef, useState, useEffect, useCallback,
 } from 'react';
 import Clipboard from '@react-native-clipboard/clipboard';
 import Animated from 'react-native-reanimated';
@@ -414,7 +414,27 @@ export default function TripScreen({ route }) {
     return `${i18n.t('In')} ${difference} ${difference === 1 ? i18n.t('day') : i18n.t('days')}`;
   };
 
-  const checkTasksStatus = () => {
+  const getLocationString = useCallback(() => {
+    if (!data) {
+      return;
+    }
+
+    const { destinations } = data;
+
+    const placeArr = data?.destinations[0]?.placeName.split(',');
+
+    if (destinations.length < 1) {
+      return i18n.t('Set location');
+    }
+
+    if (destinations.length > 1) {
+      return placeArr[placeArr.length - 1].trim();
+    }
+
+    return placeArr[0].trim();
+  }, [data?.destinations]);
+
+  const checkTasksStatus = useCallback(() => {
     if (!data) {
       return false;
     }
@@ -427,7 +447,7 @@ export default function TripScreen({ route }) {
     }
 
     return tasks.filter((task) => task.isDone).length === tasks.length;
-  };
+  }, [data]);
 
   const statusData = [
     {
@@ -646,7 +666,7 @@ export default function TripScreen({ route }) {
           >
             <Button
               isSecondary
-              text={data?.destinations[0]?.placeName.split(', ')[0] || i18n.t('Set location')}
+              text={getLocationString()}
               fullWidth={false}
               icon="location-pin"
               onPress={() => navigation.push(ROUTES.destinationScreen)}
@@ -659,7 +679,7 @@ export default function TripScreen({ route }) {
               text={data?.dateRange?.startDate ? Utils.getDateRange(data.dateRange) : i18n.t('Find date')}
               fullWidth={false}
               icon={<AntIcon name="calendar" size={18} />}
-              onPress={() => setCalendarVisible(true)}
+              onPress={() => (isHost ? setCalendarVisible(true) : null)}
               backgroundColor={COLORS.shades[0]}
               textColor={COLORS.shades[100]}
               style={[data?.dateRange?.startDate ? styles.infoTile : styles.infoButton, { marginLeft: 14 }]}
