@@ -37,7 +37,9 @@ export default function DestinationScreen() {
   const [updateTrip] = useMutation(UPDATE_TRIP);
 
   // STORES
-  const { dateRange, destinations, id } = activeTripStore((state) => state.activeTrip);
+  const {
+    dateRange, destinations, id, activeMembers,
+  } = activeTripStore((state) => state.activeTrip);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
 
   // STATE && MISC
@@ -295,6 +297,7 @@ export default function DestinationScreen() {
             setIsReplaced(true);
             setInputVisible(true);
           }}
+          amountPeople={activeMembers?.length}
           onPress={handleSheetTap}
           position={sheetPosition}
           onAdd={() => setInputVisible(true)}

@@ -12,14 +12,58 @@ import AirbnbLogo from '../../../assets/images/airbnb.png';
 import BookinLogo from '../../../assets/images/booking.png';
 import HostelworldLogo from '../../../assets/images/hostelworld.png';
 import Utils from '../../utils';
+import WebViewModal from '../WebViewModal';
 
-export default function AffiliateInfoView({ info, destinations, dateRange }) {
+export default function AffiliateInfoView({
+  info, destinations, dateRange, amountPeople,
+}) {
   // STATE & MISC
   const [nightsCounter, setNightsCounter] = useState(0);
+  const [dates, setDates] = useState({
+    start: 0,
+    end: 0,
+  });
+  const [webInfo, setWebInfo] = useState({
+    title: 'Hostelworld',
+    url: 'www.google.com',
+    isVisible: false,
+  });
+
+  const ONE_DAY = 86400;
+
+  const { startDate, endDate } = dateRange;
 
   useEffect(() => {
+    const newEnd = dates.start + (nightsCounter * ONE_DAY);
+
+    setDates((prev) => ({
+      start: prev.start,
+      end: newEnd,
+    }));
+  }, [nightsCounter]);
+
+  useEffect(() => {
+    if (!info) {
+      return;
+    }
+
+    if (destinations.length <= 1) {
+      return setDates({
+        start: startDate,
+        end: endDate,
+      });
+    }
+
     const diff = Utils.getDaysDifference(dateRange.startDate, dateRange.endDate, true);
-    setNightsCounter(parseInt((diff / destinations.length).toFixed(0), 10));
+    const split = parseInt((diff / destinations.length).toFixed(0), 10);
+    setNightsCounter(split);
+
+    const newStart = startDate + (ONE_DAY * (split * info.index));
+    const newEnd = newStart + (ONE_DAY * split);
+    setDates({
+      start: newStart,
+      end: newEnd,
+    });
   }, [destinations]);
 
   if (!info) {
@@ -35,6 +79,67 @@ export default function AffiliateInfoView({ info, destinations, dateRange }) {
   const title = isSleep ? i18n.t('Sleep in') : isTransport ? i18n.t('Getting from') : isDiscover ? i18n.t('What to do in') : i18n.t('Where to eat in');
   const findTitle = isSleep ? i18n.t('Find accomodation') : isTransport ? i18n.t('Find transportation') : isDiscover ? i18n.t('Find activites') : i18n.t('Find where to eat');
   const placeHolder = isSleep ? i18n.t('From') : i18n.t('On the');
+
+  const affData = [
+    {
+      title: 'Hostelworld',
+      type: 'hostelworld',
+      url: 'https://www.hostelworld.com',
+    },
+    {
+      title: 'Airbnb',
+      type: 'airbnb',
+      url: 'https://www.airbnb.com',
+    },
+    {
+      title: 'Booking',
+      type: 'booking',
+      url: 'https://www.booking.com',
+    },
+  ];
+
+  const handleWeb = (type) => {
+    setWebInfo({
+      ...affData.find((data) => data.type === type),
+      url: generateUrl(type),
+      isVisible: true,
+    });
+  };
+
+  const generateUrl = (type) => {
+    const adults = amountPeople;
+    const location = destinations[index].placeName;
+    const checkIn = Utils.getDateFromTimestamp(dates.start, 'YYYY-MM-DD');
+    const checkOut = Utils.getDateFromTimestamp(dates.end, 'YYYY-MM-DD');
+    // https://www.airbnb.co.uk/s/Oaxaca/homes?query=Oaxac&checkin=2023-03-19&checkout=2023-04-04&adults=2
+    // https://www.booking.com/ss=mexico%20city&checkin=2023-03-23&checkout=2023-03-26&group_adults=1
+    // https://www.getyourguide.co.uk/s?q=Oaxaca%20de%20JuarezMexico&date_from=2023-08-02&date_to=2023-08-04
+    const AIRBNB_URL = `https://www.airbnb.com/s/${location}/homes?query=${location}&checkin=${checkIn}&checkout=${checkOut}&adults=${adults}`;
+    const BOOKING_URL = `https://www.booking.com/ss=${location}&checkin=${checkIn}&checkout=${checkOut}&group_adults=${adults}`;
+    const YOURGUIDE_URL = `https://getyourguide.com/s?q=${location}&date_from=${checkIn}`;
+
+    console.log(YOURGUIDE_URL);
+    if (type === 'airbnb') {
+      return AIRBNB_URL;
+    }
+    if (type === 'booking') {
+      return BOOKING_URL;
+    }
+    if (type === 'hostelworld') {
+      return YOURGUIDE_URL;
+    }
+    if (type === 'hostelworld') {
+      return BOOKING_URL;
+    }
+  };
+
+  const handleCounter = (amount) => {
+    if (amount === -1) {
+      setNightsCounter((prev) => (prev > 1 ? prev - 1 : 1));
+    } else {
+      setNightsCounter((prev) => (prev + 1));
+    }
+  };
 
   const getSimpleButton = (image, string, _onPress) => (
     <Pressable
@@ -54,110 +159,121 @@ export default function AffiliateInfoView({ info, destinations, dateRange }) {
   );
 
   return (
-    <View style={{ marginHorizontal: PADDING.l, alignItems: 'flex-start', marginTop: 30 }}>
-      <ActivityChip data={link} />
-      <Body
-        type={1}
-        color={COLORS.neutral[300]}
-        text={title}
-        style={{ marginTop: 12, marginBottom: 2 }}
-      />
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-        <Headline
-          type={4}
-          text={destinations[index].placeName}
+    <>
+      <View style={{ marginHorizontal: PADDING.l, alignItems: 'flex-start', marginTop: 30 }}>
+        <ActivityChip data={link} />
+        <Body
+          type={1}
+          color={COLORS.neutral[300]}
+          text={title}
+          style={{ marginTop: 12, marginBottom: 2 }}
         />
-        {destinations[index + 1] && isTransport && (
-        <>
-          <Body
-            style={{ marginHorizontal: 4 }}
-            type={1}
-            color={COLORS.neutral[300]}
-            text={i18n.t('to')}
-          />
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
           <Headline
             type={4}
-            text={destinations[index + 1].placeName}
+            text={destinations[index].placeName}
           />
-        </>
-        )}
-      </View>
-      <View style={[styles.innerContainer, { marginTop: 16 }]}>
-        <View style={{ flex: 1 }}>
-          <Body
-            type={2}
-            color={COLORS.neutral[300]}
-            text={placeHolder}
-          />
-          <Body
-            type={1}
-            color={COLORS.shades[900]}
-            text="02/06/2022"
-          />
+          {destinations[index + 1] && isTransport && (
+          <>
+            <Body
+              style={{ marginHorizontal: 4 }}
+              type={1}
+              color={COLORS.neutral[300]}
+              text={i18n.t('to')}
+            />
+            <Headline
+              type={4}
+              text={destinations[index + 1].placeName}
+            />
+          </>
+          )}
+        </View>
+        <View style={[styles.innerContainer, { marginTop: 16 }]}>
+          <View style={{ flex: 1 }}>
+            <Body
+              type={2}
+              color={COLORS.neutral[300]}
+              text={placeHolder}
+            />
+            <Body
+              type={1}
+              color={COLORS.shades[900]}
+              text={Utils.getDateFromTimestamp(dates.start, 'MMM Do YYYY')}
+            />
+          </View>
+          {isSleep && (
+          <View style={{ flex: 1 }}>
+            <Body
+              type={2}
+              color={COLORS.neutral[300]}
+              text={i18n.t('To')}
+            />
+            <Body
+              type={1}
+              color={COLORS.shades[900]}
+              text={Utils.getDateFromTimestamp(dates.end, 'MMM Do YYYY')}
+            />
+          </View>
+          )}
         </View>
         {isSleep && (
-        <View style={{ flex: 1 }}>
-          <Body
-            type={2}
-            color={COLORS.neutral[300]}
-            text={i18n.t('To')}
-          />
-          <Body
-            type={1}
-            color={COLORS.shades[900]}
-            text="04/06/2022"
-          />
+        <View style={[styles.innerContainer, { marginTop: 16 }]}>
+          <Pressable
+            onPress={() => handleCounter(-1)}
+            style={{
+              flex: 1, alignItems: 'flex-start', paddingLeft: 15, height: 40, justifyContent: 'center',
+            }}
+          >
+            <EntIcon name="minus" size={20} />
+          </Pressable>
+          <View style={{ justifyContent: 'center', flex: 1, alignItems: 'center' }}>
+            <Body
+              type={2}
+              color={COLORS.neutral[300]}
+              text={i18n.t('Nights')}
+            />
+            <Headline
+              type={4}
+              color={COLORS.shades[900]}
+              text={nightsCounter}
+            />
+          </View>
+          <Pressable
+            onPress={() => handleCounter(+1)}
+            style={{
+              flex: 1, alignItems: 'flex-end', paddingRight: 15, height: 40, justifyContent: 'center',
+            }}
+          >
+            <EntIcon name="plus" size={20} />
+          </Pressable>
         </View>
         )}
-      </View>
-      {isSleep && (
-      <View style={[styles.innerContainer, { marginTop: 16 }]}>
-        <Pressable
-          onPress={() => setNightsCounter((prev) => (prev > 1 ? prev - 1 : 1))}
-          style={{
-            flex: 1, alignItems: 'flex-start', paddingLeft: 15, height: 40, justifyContent: 'center',
-          }}
-        >
-          <EntIcon name="minus" size={20} />
-        </Pressable>
-        <View style={{ justifyContent: 'center', flex: 1, alignItems: 'center' }}>
-          <Body
-            type={2}
-            color={COLORS.neutral[300]}
-            text={i18n.t('Nights')}
-          />
-          <Headline
-            type={4}
-            color={COLORS.shades[900]}
-            text={nightsCounter}
-          />
+        <Headline
+          type={4}
+          style={{ marginTop: 40, marginBottom: 2 }}
+          text={findTitle}
+        />
+        <Body
+          type={1}
+          color={COLORS.neutral[300]}
+          text={i18n.t('For 2 nights for 2 people')}
+        />
+        <View style={{ flexDirection: 'row', marginBottom: 6, marginTop: 30 }}>
+          {getSimpleButton(BookinLogo, 'Booking', () => handleWeb('booking'))}
+          {getSimpleButton(AirbnbLogo, 'Airbnb', () => handleWeb('airbnb'))}
         </View>
-        <Pressable
-          onPress={() => setNightsCounter((prev) => prev + 1)}
-          style={{
-            flex: 1, alignItems: 'flex-end', paddingRight: 15, height: 40, justifyContent: 'center',
-          }}
-        >
-          <EntIcon name="plus" size={20} />
-        </Pressable>
+        {getSimpleButton(HostelworldLogo, 'Hostelworld', () => handleWeb('hostelworld'))}
       </View>
-      )}
-      <Headline
-        type={4}
-        style={{ marginTop: 40, marginBottom: 2 }}
-        text={findTitle}
+      <WebViewModal
+        url={webInfo?.url}
+        isVisible={webInfo?.isVisible}
+        onRequestClose={() => setWebInfo((prev) => ({
+          ...prev,
+          isVisible: false,
+        }))}
+        title={webInfo?.title}
       />
-      <Body
-        type={1}
-        color={COLORS.neutral[300]}
-        text={i18n.t('For 2 nights for 2 people')}
-      />
-      <View style={{ flexDirection: 'row', marginBottom: 6, marginTop: 30 }}>
-        {getSimpleButton(BookinLogo, 'Booking', () => console.log('hello'))}
-        {getSimpleButton(AirbnbLogo, 'Airbnb', () => console.log('hello'))}
-      </View>
-      {getSimpleButton(HostelworldLogo, 'Hostelworld', () => console.log('hello'))}
-    </View>
+    </>
   );
 }
 

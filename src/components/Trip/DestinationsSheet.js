@@ -25,6 +25,7 @@ export default function DestinationsSheet({
   dateRange,
   navigateRef,
   setScrollIndex,
+  amountPeople,
 }) {
   // STATE & MISC
   const [expandedIndex, setExpandedIndex] = useState(-1);
@@ -179,6 +180,7 @@ export default function DestinationsSheet({
               {getAddTile()}
             </View>
             <AffiliateInfoView
+              amountPeople={amountPeople}
               info={info}
               destinations={destinations}
               dateRange={dateRange}
@@ -186,6 +188,7 @@ export default function DestinationsSheet({
           </PagerView>
         </View>
       </Pressable>
+
     </>
   );
 }
