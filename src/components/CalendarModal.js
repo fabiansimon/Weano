@@ -1,149 +1,146 @@
-import React, { useState } from 'react';
+import moment from 'moment';
+import React, { useMemo, useState } from 'react';
 import {
+  Text,
   StyleSheet,
-  View,
-  Modal,
-  SafeAreaView,
-  TouchableWithoutFeedback,
 } from 'react-native';
-import COLORS, { PADDING, RADIUS } from '../constants/Theme';
+import { View } from 'react-native-animatable';
+import { CalendarList } from 'react-native-calendars';
+import COLORS from '../constants/Theme';
+import Utils from '../utils';
 import i18n from '../utils/i18n';
-import Button from './Button';
-import CalendarPicker from './CalendarPicker';
-import Divider from './Divider';
+import TitleModal from './TitleModal';
 import Body from './typography/Body';
 import Headline from './typography/Headline';
-
-const HALF_MONTHS = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'July',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-];
-
-const WEEKS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 const CalendarModal = ({
   isVisible,
   onRequestClose,
-  minimumDate,
+  minDate = new Date(),
   initialStartDate,
   initialEndDate,
   onApplyClick,
 }) => {
-  const [startDate, setStartDate] = useState(initialStartDate);
-  const [endDate, setEndDate] = useState(initialEndDate);
+  const [dateRange, setDateRange] = useState({});
+  const RANGE = 24;
 
-  const formattedDate = (date) => (date
-    ? `${WEEKS[date?.getDay()]}, ${String(date?.getDate()).padStart(2, '0')} ${
-      HALF_MONTHS[date?.getMonth()]
-    }`
-    : '--/--');
+  const onDayTap = (day) => {
+    if (day === dateRange.start) {
+      return setDateRange((prev) => ({
+        ...prev,
+        start: null,
+      }));
+    }
+
+    if (day === dateRange.end) {
+      return setDateRange((prev) => ({
+        ...prev,
+        end: null,
+      }));
+    }
+
+    if (!dateRange.start) {
+      return setDateRange({
+        start: day,
+        end: null,
+      });
+    }
+
+    if (!dateRange.end) {
+      return setDateRange((prev) => ({
+        ...prev,
+        end: day,
+      }));
+    }
+  };
+
+  const getDateRange = useMemo(() => {
+    if (!dateRange.start) {
+      return;
+    }
+
+    const range = new Map();
+
+    let diff = 1;
+    if (dateRange.start && dateRange.end) {
+      diff = Utils.getDaysDifference(dateRange.start.timestamp / 1000, dateRange.end.timestamp / 1000, true);
+    }
+
+    for (let i = 0; i < diff; i += 1) {
+      const date = moment(dateRange.start).add(i, 'days');
+      const formatted = JSON.stringify(date).split('T')[0];
+    }
+
+    // {
+    //   '2023-05-22': { startingDay: true, color: COLORS.primary[700], textColor: COLORS.shades[0] },
+    //   '2023-05-23': { color: COLORS.primary[700], textColor: COLORS.shades[0] },
+    //   '2023-05-24': { color: COLORS.primary[700], textColor: COLORS.shades[0] },
+    //   '2023-05-25': { endingDay: true, color: COLORS.primary[700], textColor: COLORS.shades[0] },
+    // }
+    return range;
+  }, [dateRange]);
 
   return (
-    <Modal
-      visible={isVisible}
-      animationType="fade"
-      transparent
-      onRequestClose={onRequestClose}
+    <TitleModal
+      isVisible={isVisible}
+      onRequestClose={() => {
+        onRequestClose();
+        setDateRange({});
+      }}
+      title={i18n.t('Choose dates')}
+      actionLabel={i18n.t('Apply')}
+      isDisabled={false}
+      onPress={() => onApplyClick()}
     >
-      <TouchableWithoutFeedback
-        style={{ flex: 1 }}
-        onPress={onRequestClose}
-      >
-        <SafeAreaView style={styles.containerStyle}>
-          <TouchableWithoutFeedback style={{ flex: 1 }} onPress={() => {}}>
-            <View
-              style={{
-                backgroundColor: COLORS.shades[0], borderRadius: RADIUS.l, margin: PADDING.l, overflow: 'hidden',
-              }}
-            >
-              <View style={{ flexDirection: 'row' }}>
-                <View style={styles.timelineContainerStyle}>
-                  <Body
-                    color={COLORS.neutral[300]}
-                    type={2}
-                    text={i18n.t('From')}
-                  />
-                  <Headline
-                    color={COLORS.shades[100]}
-                    type={4}
-                    text={formattedDate(startDate)}
-                  />
-                </View>
-                <View style={styles.verticleDivider} />
-                <View style={styles.timelineContainerStyle}>
-                  <Body
-                    color={COLORS.neutral[300]}
-                    type={2}
-                    text={i18n.t('To')}
-                  />
-                  <Headline
-                    color={COLORS.shades[100]}
-                    type={4}
-                    text={formattedDate(endDate)}
-                  />
-                </View>
-              </View>
-              <Divider omitPadding />
-
-              <CalendarPicker
-                minDate={minimumDate}
-                startDate={startDate}
-                endDate={endDate}
-                startEndDateChange={(startDateData, endDateData) => {
-                  setStartDate(startDateData);
-                  setEndDate(endDateData);
-                }}
-              />
-              <View style={styles.applyBtn}>
-                <Button
-                  onPress={() => {
-                    onApplyClick(startDate, endDate);
-                    onRequestClose();
-                  }}
-                  text={i18n.t('Apply')}
-                />
-              </View>
-
-            </View>
-          </TouchableWithoutFeedback>
-        </SafeAreaView>
-      </TouchableWithoutFeedback>
-    </Modal>
+      <CalendarList
+        style={{ paddingTop: 10 }}
+        minDate={minDate}
+        markingType="period"
+        onDayPress={(day) => onDayTap(day)}
+        markedDates={getDateRange}
+        // markedDates={{
+        //   '2023-05-22': { startingDay: true, color: COLORS.primary[700], textColor: COLORS.shades[0] },
+        //   '2023-05-23': { color: COLORS.primary[700], textColor: COLORS.shades[0] },
+        //   '2023-05-24': { color: COLORS.primary[700], textColor: COLORS.shades[0] },
+        //   '2023-05-25': { endingDay: true, color: COLORS.primary[700], textColor: COLORS.shades[0] },
+        // }}
+        theme={styles.calendar}
+        // onVisibleMonthsChange={(months) => { console.log('now these months are visible', months); }}
+        pastScrollRange={0}
+        futureScrollRange={RANGE}
+        staticHeader
+        showScrollIndicator={false}
+        renderHeader={(date) => (
+          <Body
+            type={1}
+            style={{ marginBottom: 10, fontWeight: '500' }}
+            text={date.toString('MMMM yyyy')}
+          />
+        )}
+      />
+    </TitleModal>
   );
 };
 
 const styles = StyleSheet.create({
-  containerStyle: {
-    flex: 1,
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0, 0.5)',
-  },
-  timelineContainerStyle: {
-    overflow: 'hidden',
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  verticleDivider: {
-    height: 74,
-    width: 1,
-    backgroundColor: COLORS.neutral[100],
-  },
-  applyBtn: {
-    height: 50,
-    marginTop: PADDING.l,
-    marginBottom: PADDING.s,
-    marginHorizontal: PADDING.s,
+  calendar: {
+    // Month labels
+    monthTextColor: COLORS.neutral[900],
+    textMonthFontFamily: 'WorkSans-Regular',
+    textMonthFontWeight: '500',
+
+    // Number labels
+    textDayFontSize: 14,
+    textDayFontWeight: '400',
+    textDayFontFamily: 'WorkSans-Regular',
+    dayTextColor: COLORS.neutral[700],
+
+    // Day labels
+    textSectionTitleColor: COLORS.neutral[300],
+    textDayHeaderFontWeight: '400',
+    textDayHeaderFontSize: 14,
+    textDayHeaderFontFamily: 'WorkSans-Regular',
+
   },
 });
 

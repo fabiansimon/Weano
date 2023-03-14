@@ -8,6 +8,7 @@ import Icon from 'react-native-vector-icons/Entypo';
 import PagerView from 'react-native-pager-view';
 import { useMutation } from '@apollo/client';
 import Toast from 'react-native-toast-message';
+import { CalendarList } from 'react-native-calendars';
 import i18n from '../utils/i18n';
 import Headline from './typography/Headline';
 import COLORS, { PADDING } from '../constants/Theme';
@@ -213,17 +214,8 @@ export default function CreateModal({ isVisible, onRequestClose }) {
         placeholder={i18n.t('Select a date')}
       />
       <CalendarModal
-        isVisible={calendarVisible}
         onRequestClose={() => setCalendarVisible(false)}
-        minimumDate={new Date()}
-        initialStartDate={startDate}
-        initialEndDate={endDate}
-        onApplyClick={(startData, endData) => {
-          if (startData != null && endData != null) {
-            setStartDate(Date.parse(startData) / 1000);
-            setEndDate(Date.parse(endData) / 1000);
-          }
-        }}
+        isVisible={calendarVisible}
       />
       <PopUpModal
         isVisible={popUpVisible}
