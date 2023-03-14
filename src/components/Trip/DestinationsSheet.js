@@ -1,7 +1,7 @@
 import {
   View, StyleSheet, Pressable, Dimensions,
 } from 'react-native';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import PagerView from 'react-native-pager-view';
@@ -20,11 +20,12 @@ export default function DestinationsSheet({
   onAdd,
   onDelete,
   position,
-  onPress,
+  handleExpending,
   onReplace,
   dateRange,
   navigateRef,
   setScrollIndex,
+  sheetIndex,
   amountPeople,
 }) {
   // STATE & MISC
@@ -86,6 +87,12 @@ export default function DestinationsSheet({
     },
   ];
 
+  useEffect(() => {
+    if (!sheetIndex) {
+      setExpandedIndex(-1);
+    }
+  }, [sheetIndex]);
+
   const handleFurtherInfo = (link, index) => {
     setInfo({
       link,
@@ -115,7 +122,12 @@ export default function DestinationsSheet({
         item={item}
         drag={drag}
         isExpanded={index === expandedIndex}
-        onPress={() => setExpandedIndex(index === expandedIndex ? -1 : index)}
+        onPress={() => {
+          if (sheetIndex === 0) {
+            handleExpending();
+          }
+          setExpandedIndex(index === expandedIndex ? -1 : index);
+        }}
       />
     );
   };
@@ -161,7 +173,7 @@ export default function DestinationsSheet({
               pageRef.current = node;
             }}
             onPageSelected={(e) => setScrollIndex(e.nativeEvent.position)}
-            scrollEnabled
+            scrollEnabled={false}
           >
             <View>
               <Headline

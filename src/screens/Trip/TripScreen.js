@@ -1,5 +1,5 @@
 import {
-  View, StyleSheet, Image, Dimensions, Pressable, RefreshControl, Platform, StatusBar,
+  View, StyleSheet, Image, Dimensions, Pressable, RefreshControl, Platform, StatusBar, Keyboard,
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import Toast from 'react-native-toast-message';
@@ -18,6 +18,7 @@ import ActionSheet from 'react-native-actionsheet';
 import FastImage from 'react-native-fast-image';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import { MenuView } from '@react-native-menu/menu';
+import PagerView from 'react-native-pager-view';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import AnimatedHeader from '../../components/AnimatedHeader';
 import Headline from '../../components/typography/Headline';
@@ -52,6 +53,8 @@ import DocumentsContainer from '../../components/Trip/DocumentsContainer';
 import AccentBubble from '../../components/Trip/AccentBubble';
 import PacklistContainer from '../../components/Trip/PacklistContainer';
 import CalendarModal from '../../components/CalendarModal';
+import DestinationScreen from './DestinationsScreen';
+import FAButton from '../../components/FAButton';
 
 export default function TripScreen({ route }) {
   // PARAMS
@@ -76,6 +79,7 @@ export default function TripScreen({ route }) {
   const removeTrip = tripsStore((state) => state.removeTrip);
 
   // STATE & MISC
+  const [viewIndex, setViewIndex] = useState(0);
   const [currentTab, setCurrentTab] = useState(0);
   const [inputOpen, setInputOpen] = useState(null);
   const [showQR, setShowQR] = useState(false);
@@ -87,6 +91,8 @@ export default function TripScreen({ route }) {
     return date;
   });
   const [calendarVisible, setCalendarVisible] = useState(false);
+
+  const pageRef = useRef();
   const scrollY = useRef(new Animated.Value(0)).current;
   const addImageRef = useRef();
   const scrollRef = useRef();
@@ -117,6 +123,12 @@ export default function TripScreen({ route }) {
   const themeColor = activeTrip.type === 'active' ? COLORS.error[900] : COLORS.primary[700];
 
   const { width } = Dimensions.get('window');
+
+  const navigatePage = (index) => {
+    if (!inactive) {
+      pageRef.current?.setPage(index);
+    }
+  };
 
   const handleMenuOption = (input) => {
     const { event } = input;
@@ -175,6 +187,10 @@ export default function TripScreen({ route }) {
   useEffect(() => {
     getTripData();
   }, [tripId]);
+
+  useEffect(() => {
+    navigatePage(viewIndex);
+  }, [viewIndex]);
 
   const handleDeleteTrip = async () => {
     Utils.showConfirmationAlert(
@@ -453,7 +469,7 @@ export default function TripScreen({ route }) {
     {
       name: i18n.t('Location'),
       isDone: data?.destinations[0],
-      route: ROUTES.destinationScreen,
+      onPress: () => navigatePage(1),
     },
     {
       name: i18n.t('Date'),
@@ -669,7 +685,7 @@ export default function TripScreen({ route }) {
               text={getLocationString()}
               fullWidth={false}
               icon="location-pin"
-              onPress={() => navigation.push(ROUTES.destinationScreen)}
+              onPress={() => navigatePage(1)}
               backgroundColor={COLORS.shades[0]}
               textColor={COLORS.shades[100]}
               style={data?.destinations[0] ? styles.infoTile : styles.infoButton}
@@ -727,7 +743,7 @@ export default function TripScreen({ route }) {
             <StatusContainer
               style={{ marginRight: 10 }}
               data={item}
-              onPress={() => navigation.navigate(item.route)}
+              onPress={() => (item.onPress ? item.onPress() : navigation.navigate(item.route))}
             />
           ))}
         </ScrollView>
@@ -811,106 +827,125 @@ export default function TripScreen({ route }) {
   );
 
   return (
-    <View style={{ backgroundColor: COLORS.shades[0], flex: 1 }}>
-      <StatusBar barStyle="dark-content" />
-      <AnimatedHeader
-        style={{ height: 170 }}
-        scrollDistance={480}
-        threshold={1.2}
-        scrollY={scrollY}
+    <>
+      <PagerView
+        style={{ flex: 1 }}
+        ref={pageRef}
+        scrollEnabled
       >
-        <TripHeader
-          title={!inactive ? data?.title : i18n.t('Loading...')}
-          id={data?.id}
-          isActive={activeTrip.type === 'active'}
-          subtitle={`${data?.destinations[0]?.placeName.split(',')[0]}`}
-          items={contentItems}
-          onPress={(index) => handleTabPress(index)}
-          currentTab={currentTab}
-        />
-      </AnimatedHeader>
-      {getHeaderImage()}
-      <Animated.ScrollView
-        refreshControl={(
-          <RefreshControl
-            enabled={data}
-            progressViewOffset={50}
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-          />
+        <View style={{ backgroundColor: COLORS.shades[0], flex: 1 }}>
+          <StatusBar barStyle="dark-content" />
+          <AnimatedHeader
+            style={{ height: 170 }}
+            scrollDistance={480}
+            threshold={1.2}
+            scrollY={scrollY}
+          >
+            <TripHeader
+              title={!inactive ? data?.title : i18n.t('Loading...')}
+              id={data?.id}
+              isActive={activeTrip.type === 'active'}
+              subtitle={`${data?.destinations[0]?.placeName.split(',')[0]}`}
+              items={contentItems}
+              onPress={(index) => handleTabPress(index)}
+              currentTab={currentTab}
+            />
+          </AnimatedHeader>
+          {getHeaderImage()}
+          <Animated.ScrollView
+            refreshControl={(
+              <RefreshControl
+                enabled={data}
+                progressViewOffset={50}
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+              />
           )}
-        ref={scrollRef}
-        showsVerticalScrollIndicator={false}
-        scrollEventThrottle={16}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: true },
-        )}
-      >
-        <Pressable style={{ height: IMAGE_HEIGHT }} onPress={() => (data && isHost ? addImageRef.current?.show() : null)} />
-        {inactive && <View style={[styles.bodyContainer, { paddingHorizontal: PADDING.m, marginBottom: 60 }]}><TripScreenSkeleton /></View>}
-        {!inactive && getTopContent()}
-        {!inactive && getMainContent()}
-      </Animated.ScrollView>
-      <BackButton
-        onPress={() => navigation.navigate(ROUTES.mainScreen)}
-        style={{
-          position: 'absolute', top: 47, left: 20, zIndex: 10,
-        }}
-      />
-      <Pressable
-        onPress={() => (data ? navigation.navigate(ROUTES.memoriesScreen, { tripId: data.id }) : null)}
-        style={styles.memoryButton}
-      >
-        {data?.type === 'active' && data?.userFreeImages > 0 && (
-          <AccentBubble
-            style={{ position: 'absolute', right: -4, top: -6 }}
-            text={data?.userFreeImages}
+            ref={scrollRef}
+            showsVerticalScrollIndicator={false}
+            scrollEventThrottle={16}
+            onScroll={Animated.event(
+              [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+              { useNativeDriver: true },
+            )}
+          >
+            <Pressable style={{ height: IMAGE_HEIGHT }} onPress={() => (data && isHost ? addImageRef.current?.show() : null)} />
+            {inactive && <View style={[styles.bodyContainer, { paddingHorizontal: PADDING.m, marginBottom: 60 }]}><TripScreenSkeleton /></View>}
+            {!inactive && getTopContent()}
+            {!inactive && getMainContent()}
+          </Animated.ScrollView>
+          <BackButton
+            onPress={() => navigation.navigate(ROUTES.mainScreen)}
+            style={{
+              position: 'absolute', top: 47, left: 20, zIndex: 10,
+            }}
           />
-        )}
-        <Icon
-          name="image"
-          color={COLORS.neutral[700]}
-          size={22}
-        />
+          <Pressable
+            onPress={() => (data ? navigation.navigate(ROUTES.memoriesScreen, { tripId: data.id }) : null)}
+            style={styles.memoryButton}
+          >
+            {data?.type === 'active' && data?.userFreeImages > 0 && (
+            <AccentBubble
+              style={{ position: 'absolute', right: -4, top: -6 }}
+              text={data?.userFreeImages}
+            />
+            )}
+            <Icon
+              name="image"
+              color={COLORS.neutral[700]}
+              size={22}
+            />
 
-      </Pressable>
-      <ActionSheet
-        ref={addImageRef}
-        title={i18n.t('Choose an option')}
-        options={['Cancel', i18n.t('Choose from Camera Roll'), i18n.t('Take a picture'), i18n.t('Reset image')]}
-        cancelButtonIndex={0}
-        onPress={(index) => handleAddImage(index)}
+          </Pressable>
+          <ActionSheet
+            ref={addImageRef}
+            title={i18n.t('Choose an option')}
+            options={['Cancel', i18n.t('Choose from Camera Roll'), i18n.t('Take a picture'), i18n.t('Reset image')]}
+            cancelButtonIndex={0}
+            onPress={(index) => handleAddImage(index)}
+          />
+          <InputModal
+            isVisible={inputOpen}
+            placeholder={inputOpen === 'description' ? i18n.t('Enter description') : i18n.t('Enter title')}
+            initalValue={inputOpen === 'description' ? data?.description : data?.title}
+            onRequestClose={() => setInputOpen(null)}
+            multiline={inputOpen === 'description'}
+            maxLength={inputOpen === 'description' ? 100 : 20}
+            onPress={(string) => (inputOpen === 'description' ? updateDescription(string) : updateTitle(string))}
+          />
+          <QRModal
+            isVisible={showQR}
+            onRequestClose={() => setShowQR(false)}
+            value={`${META_DATA.baseUrl}/redirect/invitation/${tripId}`}
+          />
+          <CalendarModal
+            isVisible={calendarVisible}
+            onRequestClose={() => setCalendarVisible(false)}
+            minimumDate={new Date()}
+            initialStartDate={startDate}
+            initialEndDate={endDate}
+            onApplyClick={(startData, endData) => {
+              if (startData != null && endData != null) {
+                setStartDate(Date.parse(startData));
+                setEndDate(Date.parse(endData));
+                handleDateUpdate(Date.parse(startData) / 1000, Date.parse(endData) / 1000);
+              }
+            }}
+          />
+
+        </View>
+        {!inactive ? (
+          <DestinationScreen
+            navigatePage={navigatePage}
+          />
+        ) : <View />}
+      </PagerView>
+      <FAButton
+        onPress={() => setViewIndex(!viewIndex)}
+        icon={viewIndex ? 'list' : 'map'}
       />
-      <InputModal
-        isVisible={inputOpen}
-        placeholder={inputOpen === 'description' ? i18n.t('Enter description') : i18n.t('Enter title')}
-        initalValue={inputOpen === 'description' ? data?.description : data?.title}
-        onRequestClose={() => setInputOpen(null)}
-        multiline={inputOpen === 'description'}
-        maxLength={inputOpen === 'description' ? 100 : 20}
-        onPress={(string) => (inputOpen === 'description' ? updateDescription(string) : updateTitle(string))}
-      />
-      <QRModal
-        isVisible={showQR}
-        onRequestClose={() => setShowQR(false)}
-        value={`${META_DATA.baseUrl}/redirect/invitation/${tripId}`}
-      />
-      <CalendarModal
-        isVisible={calendarVisible}
-        onRequestClose={() => setCalendarVisible(false)}
-        minimumDate={new Date()}
-        initialStartDate={startDate}
-        initialEndDate={endDate}
-        onApplyClick={(startData, endData) => {
-          if (startData != null && endData != null) {
-            setStartDate(Date.parse(startData));
-            setEndDate(Date.parse(endData));
-            handleDateUpdate(Date.parse(startData) / 1000, Date.parse(endData) / 1000);
-          }
-        }}
-      />
-    </View>
+
+    </>
   );
 }
 

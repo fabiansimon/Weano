@@ -130,7 +130,6 @@ export default function App() {
                 <Stack.Screen name={ROUTES.dateScreen} component={DateScreen} />
                 <Stack.Screen name={ROUTES.inviteeScreen} component={InviteeScreen} />
                 <Stack.Screen name={ROUTES.locationScreen} component={LocationScreen} />
-                <Stack.Screen name={ROUTES.destinationScreen} component={DestinationScreen} />
                 <Stack.Screen name={ROUTES.individualExpenseScreen} component={IndividualExpenseScreen} />
                 <Stack.Screen name={ROUTES.expenseScreen} component={ExpenseScreen} />
                 <Stack.Screen name={ROUTES.checklistScreen} component={ChecklistScreen} />

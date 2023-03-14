@@ -74,11 +74,45 @@ export default function AffiliateInfoView({
   const isSleep = link.type === 'sleep';
   const isTransport = link.type === 'transport';
   const isDiscover = link.type === 'discover';
-  const isFood = link.type === 'food';
+  // const isFood = link.type === 'food';
 
-  const title = isSleep ? i18n.t('Sleep in') : isTransport ? i18n.t('Getting from') : isDiscover ? i18n.t('What to do in') : i18n.t('Where to eat in');
-  const findTitle = isSleep ? i18n.t('Find accomodation') : isTransport ? i18n.t('Find transportation') : isDiscover ? i18n.t('Find activites') : i18n.t('Find where to eat');
-  const placeHolder = isSleep ? i18n.t('From') : i18n.t('On the');
+  const getTextData = () => {
+    const date = Utils.getDateFromTimestamp(dates.start, 'DD.MM.YYYY');
+
+    if (isSleep) {
+      return {
+        header: i18n.t('Sleep in'),
+        title: i18n.t('Find accomodation'),
+        subtitle: `${i18n.t('For')} ${nightsCounter} ${nightsCounter > 1 ? i18n.t('nights,') : i18n.t('night,')} ${amountPeople} ${i18n.t('people')}`,
+        textfield: i18n.t('From'),
+      };
+    }
+
+    if (isTransport) {
+      return {
+        header: i18n.t('Getting from'),
+        title: i18n.t('Find transportation'),
+        subtitle: `${i18n.t('On the')} ${date} ${i18n.t('for')} ${amountPeople} ${i18n.t('people')}`,
+        textfield: i18n.t('On the'),
+      };
+    }
+    if (isDiscover) {
+      return {
+        header: i18n.t('What to do in'),
+        title: i18n.t('Find activites'),
+        subtitle: `${i18n.t('On the')} ${date} ${i18n.t('for')} ${amountPeople} ${i18n.t('people')}`,
+        textfield: i18n.t('On the'),
+      };
+    }
+    return {
+      header: i18n.t('Where to eat in'),
+      title: i18n.t('Find where to eat'),
+      subtitle: `${i18n.t('On the')} ${date} ${i18n.t('for')} ${amountPeople} ${i18n.t('people')}`,
+      textfield: i18n.t('On the'),
+    };
+  };
+
+  const textData = getTextData();
 
   const affData = [
     {
@@ -111,6 +145,7 @@ export default function AffiliateInfoView({
     const location = destinations[index].placeName;
     const checkIn = Utils.getDateFromTimestamp(dates.start, 'YYYY-MM-DD');
     const checkOut = Utils.getDateFromTimestamp(dates.end, 'YYYY-MM-DD');
+
     // https://www.airbnb.co.uk/s/Oaxaca/homes?query=Oaxac&checkin=2023-03-19&checkout=2023-04-04&adults=2
     // https://www.booking.com/ss=mexico%20city&checkin=2023-03-23&checkout=2023-03-26&group_adults=1
     // https://www.getyourguide.co.uk/s?q=Oaxaca%20de%20JuarezMexico&date_from=2023-08-02&date_to=2023-08-04
@@ -118,7 +153,6 @@ export default function AffiliateInfoView({
     const BOOKING_URL = `https://www.booking.com/ss=${location}&checkin=${checkIn}&checkout=${checkOut}&group_adults=${adults}`;
     const YOURGUIDE_URL = `https://getyourguide.com/s?q=${location}&date_from=${checkIn}`;
 
-    console.log(YOURGUIDE_URL);
     if (type === 'airbnb') {
       return AIRBNB_URL;
     }
@@ -165,7 +199,7 @@ export default function AffiliateInfoView({
         <Body
           type={1}
           color={COLORS.neutral[300]}
-          text={title}
+          text={textData?.header}
           style={{ marginTop: 12, marginBottom: 2 }}
         />
         <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -193,7 +227,7 @@ export default function AffiliateInfoView({
             <Body
               type={2}
               color={COLORS.neutral[300]}
-              text={placeHolder}
+              text={textData?.textfield}
             />
             <Body
               type={1}
@@ -251,12 +285,12 @@ export default function AffiliateInfoView({
         <Headline
           type={4}
           style={{ marginTop: 40, marginBottom: 2 }}
-          text={findTitle}
+          text={textData?.title}
         />
         <Body
           type={1}
           color={COLORS.neutral[300]}
-          text={i18n.t('For 2 nights for 2 people')}
+          text={textData?.subtitle}
         />
         <View style={{ flexDirection: 'row', marginBottom: 6, marginTop: 30 }}>
           {getSimpleButton(BookinLogo, 'Booking', () => handleWeb('booking'))}

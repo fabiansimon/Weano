@@ -17,8 +17,6 @@ import { MAPBOX_TOKEN } from '@env';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSharedValue } from 'react-native-reanimated';
 import { useMutation } from '@apollo/client';
-
-import { useNavigation } from '@react-navigation/native';
 import BackButton from '../../components/BackButton';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import Utils from '../../utils';
@@ -32,13 +30,13 @@ import UPDATE_TRIP from '../../mutations/updateTrip';
 
 MapboxGL.setAccessToken(MAPBOX_TOKEN);
 
-export default function DestinationScreen() {
+export default function DestinationScreen({ navigatePage }) {
 // MUTATIONS
   const [updateTrip] = useMutation(UPDATE_TRIP);
 
   // STORES
   const {
-    dateRange, destinations, id, activeMembers,
+    dateRange, destinations, id, activeMembers, title,
   } = activeTripStore((state) => state.activeTrip);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
 
@@ -54,8 +52,6 @@ export default function DestinationScreen() {
   const sheetRef = useRef(null);
   const mapCamera = useRef();
   const sheetPosition = useSharedValue(0);
-
-  const navigation = useNavigation();
 
   const destinationData = destinations.map((d, i) => ({
     ...d,
@@ -174,7 +170,7 @@ export default function DestinationScreen() {
       return sheetRef.current.snapToIndex(0);
     }
 
-    return navigation.goBack();
+    return navigatePage(0);
   };
 
   const handlePan = () => {
@@ -267,7 +263,7 @@ export default function DestinationScreen() {
           <Body
             type={1}
             style={{ fontWeight: '500', textAlign: 'center' }}
-            text={i18n.t('Destinations')}
+            text={title}
           />
           <Body
             type={2}
@@ -292,13 +288,14 @@ export default function DestinationScreen() {
         <DestinationsSheet
           setScrollIndex={setScrollIndex}
           navigateRef={pageRef}
+          sheetIndex={expandedIndex}
           dateRange={dateRange}
           onReplace={() => {
             setIsReplaced(true);
             setInputVisible(true);
           }}
           amountPeople={activeMembers?.length}
-          onPress={handleSheetTap}
+          handleExpending={handleSheetTap}
           position={sheetPosition}
           onAdd={() => setInputVisible(true)}
           onDelete={(index) => handleDeletion(index)}
