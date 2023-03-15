@@ -66,7 +66,7 @@ const CalendarModal = ({
       }));
     }
 
-    setDateRange((prev) => ({
+    return setDateRange((prev) => ({
       ...prev,
       end: day,
     }));
