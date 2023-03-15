@@ -19,66 +19,93 @@ const CalendarModal = ({
   minDate = new Date(),
   initialStartDate,
   initialEndDate,
+  isSingleDate = false,
   onApplyClick,
 }) => {
-  const [dateRange, setDateRange] = useState({});
+  const [dateRange, setDateRange] = useState(null);
+  const [date, setDate] = useState(initialStartDate);
   const RANGE = 24;
 
   const onDayTap = (day) => {
-    if (day === dateRange.start) {
+    if (isSingleDate) {
+      return setDate((prev) => (prev?.timestamp === day?.timestamp ? null : day));
+    }
+
+    if (day.dateString === dateRange?.start?.dateString) {
       return setDateRange((prev) => ({
         ...prev,
         start: null,
       }));
     }
 
-    if (day === dateRange.end) {
+    if (day.dateString === dateRange?.end?.dateString) {
       return setDateRange((prev) => ({
         ...prev,
         end: null,
       }));
     }
 
-    if (!dateRange.start) {
-      return setDateRange({
+    if (!dateRange?.start) {
+      return setDateRange((prev) => ({
+        ...prev,
         start: day,
-        end: null,
-      });
+      }));
     }
 
-    if (!dateRange.end) {
+    if (!dateRange?.end) {
       return setDateRange((prev) => ({
         ...prev,
         end: day,
       }));
     }
+
+    if (day.timestamp < dateRange?.start?.timestamp) {
+      return setDateRange((prev) => ({
+        ...prev,
+        start: day,
+      }));
+    }
+
+    setDateRange((prev) => ({
+      ...prev,
+      end: day,
+    }));
   };
 
   const getDateRange = useMemo(() => {
-    if (!dateRange.start) {
+    const range = {};
+    if (isSingleDate) {
+      if (!date) {
+        return range;
+      }
+
+      const _date = moment(date.timestamp);
+      const formatted = JSON.stringify(_date).split('T')[0].replace('"', '');
+      range[formatted] = {
+        startingDay: true, endingDay: true, color: COLORS.primary[700], textColor: COLORS.shades[0],
+      };
+      return range;
+    }
+
+    if (!dateRange?.start && !dateRange?.end) {
       return;
     }
 
-    const range = new Map();
-
     let diff = 1;
     if (dateRange.start && dateRange.end) {
-      diff = Utils.getDaysDifference(dateRange.start.timestamp / 1000, dateRange.end.timestamp / 1000, true);
+      diff = Utils.getDaysDifference(dateRange.start.timestamp / 1000, dateRange.end.timestamp / 1000, true) + 1;
     }
 
     for (let i = 0; i < diff; i += 1) {
-      const date = moment(dateRange.start).add(i, 'days');
-      const formatted = JSON.stringify(date).split('T')[0];
+      const _date = moment(dateRange.start ? dateRange.start.timestamp : dateRange.end.timestamp).add(i, 'days');
+      const formatted = JSON.stringify(_date).split('T')[0].replace('"', '');
+      range[formatted] = {
+        startingDay: i === 0, endingDay: i === diff - 1, color: i === diff - 1 ? COLORS.error[700] : COLORS.primary[700], textColor: COLORS.shades[0],
+      };
     }
 
-    // {
-    //   '2023-05-22': { startingDay: true, color: COLORS.primary[700], textColor: COLORS.shades[0] },
-    //   '2023-05-23': { color: COLORS.primary[700], textColor: COLORS.shades[0] },
-    //   '2023-05-24': { color: COLORS.primary[700], textColor: COLORS.shades[0] },
-    //   '2023-05-25': { endingDay: true, color: COLORS.primary[700], textColor: COLORS.shades[0] },
-    // }
     return range;
-  }, [dateRange]);
+  }, [dateRange, date]);
 
   return (
     <TitleModal
@@ -89,32 +116,28 @@ const CalendarModal = ({
       }}
       title={i18n.t('Choose dates')}
       actionLabel={i18n.t('Apply')}
-      isDisabled={false}
+      isDisabled={!((isSingleDate && date) || (!isSingleDate && dateRange.start && dateRange.end))}
       onPress={() => onApplyClick()}
     >
       <CalendarList
         style={{ paddingTop: 10 }}
         minDate={minDate}
         markingType="period"
+        // markingType="period"
         onDayPress={(day) => onDayTap(day)}
         markedDates={getDateRange}
-        // markedDates={{
-        //   '2023-05-22': { startingDay: true, color: COLORS.primary[700], textColor: COLORS.shades[0] },
-        //   '2023-05-23': { color: COLORS.primary[700], textColor: COLORS.shades[0] },
-        //   '2023-05-24': { color: COLORS.primary[700], textColor: COLORS.shades[0] },
-        //   '2023-05-25': { endingDay: true, color: COLORS.primary[700], textColor: COLORS.shades[0] },
-        // }}
         theme={styles.calendar}
-        // onVisibleMonthsChange={(months) => { console.log('now these months are visible', months); }}
         pastScrollRange={0}
         futureScrollRange={RANGE}
         staticHeader
         showScrollIndicator={false}
-        renderHeader={(date) => (
-          <Body
-            type={1}
-            style={{ marginBottom: 10, fontWeight: '500' }}
-            text={date.toString('MMMM yyyy')}
+        renderHeader={(d) => (
+          <Headline
+            type={4}
+            style={{
+              marginBottom: 10, marginTop: 10, fontWeight: '500', width: '100%',
+            }}
+            text={d.toString('MMMM yyyy')}
           />
         )}
       />

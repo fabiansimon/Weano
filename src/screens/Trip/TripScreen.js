@@ -126,6 +126,7 @@ export default function TripScreen({ route }) {
 
   const navigatePage = (index) => {
     if (!inactive) {
+      setViewIndex(index);
       pageRef.current?.setPage(index);
     }
   };
@@ -941,7 +942,7 @@ export default function TripScreen({ route }) {
         ) : <View />}
       </PagerView>
       <FAButton
-        onPress={() => setViewIndex(!viewIndex)}
+        onPress={() => navigatePage(!viewIndex)}
         icon={viewIndex ? 'list' : 'map'}
       />
 
