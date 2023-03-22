@@ -8,7 +8,6 @@ import Icon from 'react-native-vector-icons/Entypo';
 import PagerView from 'react-native-pager-view';
 import { useMutation } from '@apollo/client';
 import Toast from 'react-native-toast-message';
-import { CalendarList } from 'react-native-calendars';
 import i18n from '../utils/i18n';
 import Headline from './typography/Headline';
 import COLORS, { PADDING } from '../constants/Theme';
@@ -40,8 +39,10 @@ export default function CreateModal({ isVisible, onRequestClose }) {
   } = userStore((state) => state.user);
 
   // STATE & MISC
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+  const [dates, setDates] = useState({
+    start: null,
+    end: null,
+  });
   const [location, setLocation] = useState({
     placeName: '',
     latlon: [],
@@ -66,12 +67,12 @@ export default function CreateModal({ isVisible, onRequestClose }) {
   }, [error]);
 
   const getDateValue = () => {
-    if (!startDate || !endDate) {
+    if (!dates.start || !dates.end) {
       return;
     }
 
-    const start = startDate && Utils.getDateFromTimestamp(startDate, 'Do MMM YYYY');
-    const end = endDate && Utils.getDateFromTimestamp(endDate, 'Do MMM YYYY');
+    const start = dates.start && Utils.getDateFromTimestamp(dates.start, 'Do MMM YYYY');
+    const end = dates.end && Utils.getDateFromTimestamp(dates.end, 'Do MMM YYYY');
 
     return `${start} - ${end}`;
   };
@@ -107,8 +108,10 @@ export default function CreateModal({ isVisible, onRequestClose }) {
       string: '',
       latlon: [],
     });
-    setStartDate();
-    setEndDate();
+    setDates({
+      start: null,
+      end: null,
+    });
     setInvitees([]);
     onRequestClose();
     setPageIndex(0);
@@ -123,7 +126,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
       });
       return navigatePage(0);
     }
-    if (!startDate && !endDate) {
+    if (!dates.start && !dates.end) {
       Toast.show({
         type: 'error',
         text1: i18n.t('Whoops!'),
@@ -155,8 +158,8 @@ export default function CreateModal({ isVisible, onRequestClose }) {
       variables: {
         trip: {
           dateRange: {
-            endDate,
-            startDate,
+            endDate: dates.end,
+            startDate: dates.start,
           },
           destination: {
             placeName,
@@ -191,8 +194,8 @@ export default function CreateModal({ isVisible, onRequestClose }) {
           id: userId,
         }],
         dateRange: {
-          endDate,
-          startDate,
+          endDate: dates.end,
+          startDate: dates.start,
         },
         type: 'upcoming',
       });
@@ -214,6 +217,15 @@ export default function CreateModal({ isVisible, onRequestClose }) {
         placeholder={i18n.t('Select a date')}
       />
       <CalendarModal
+        onApplyClick={(datesData) => {
+          setCalendarVisible(false);
+          const { timestamp: endDate } = datesData.end;
+          const { timestamp: startDate } = datesData.start;
+          setDates({
+            start: startDate / 1000,
+            end: endDate / 1000,
+          });
+        }}
         onRequestClose={() => setCalendarVisible(false)}
         isVisible={calendarVisible}
       />

@@ -1,16 +1,13 @@
 import moment from 'moment';
 import React, { useMemo, useState } from 'react';
 import {
-  Text,
   StyleSheet,
 } from 'react-native';
-import { View } from 'react-native-animatable';
 import { CalendarList } from 'react-native-calendars';
 import COLORS from '../constants/Theme';
 import Utils from '../utils';
 import i18n from '../utils/i18n';
 import TitleModal from './TitleModal';
-import Body from './typography/Body';
 import Headline from './typography/Headline';
 
 const CalendarModal = ({
@@ -22,7 +19,10 @@ const CalendarModal = ({
   isSingleDate = false,
   onApplyClick,
 }) => {
-  const [dateRange, setDateRange] = useState(null);
+  const [dateRange, setDateRange] = useState({
+    start: initialStartDate || null,
+    end: initialEndDate || null,
+  });
   const [date, setDate] = useState(initialStartDate);
   const RANGE = 24;
 
@@ -72,6 +72,18 @@ const CalendarModal = ({
     }));
   };
 
+  const handleApply = () => {
+    if (!isSingleDate && dateRange?.end.timestamp < dateRange?.start.timestamp) {
+      const dates = dateRange;
+      setDateRange({
+        start: dates.end,
+        end: dates.start,
+      });
+    }
+
+    onApplyClick(isSingleDate ? date : dateRange);
+  };
+
   const getDateRange = useMemo(() => {
     const range = {};
     if (isSingleDate) {
@@ -116,14 +128,13 @@ const CalendarModal = ({
       }}
       title={i18n.t('Choose dates')}
       actionLabel={i18n.t('Apply')}
-      isDisabled={!((isSingleDate && date) || (!isSingleDate && dateRange.start && dateRange.end))}
-      onPress={() => onApplyClick()}
+      isDisabled={!((isSingleDate && date) || (!isSingleDate && dateRange?.start && dateRange?.end))}
+      onPress={handleApply}
     >
       <CalendarList
         style={{ paddingTop: 10 }}
         minDate={minDate}
         markingType="period"
-        // markingType="period"
         onDayPress={(day) => onDayTap(day)}
         markedDates={getDateRange}
         theme={styles.calendar}
