@@ -13,12 +13,14 @@ import BookinLogo from '../../../assets/images/booking.png';
 import HostelworldLogo from '../../../assets/images/hostelworld.png';
 import Utils from '../../utils';
 import WebViewModal from '../WebViewModal';
+import CalendarModal from '../CalendarModal';
 
 export default function AffiliateInfoView({
   info, destinations, dateRange, amountPeople,
 }) {
   // STATE & MISC
   const [nightsCounter, setNightsCounter] = useState(0);
+  const [calendarVisible, setCalendarVisible] = useState(false);
   const [dates, setDates] = useState({
     start: 0,
     end: 0,
@@ -32,15 +34,6 @@ export default function AffiliateInfoView({
   const ONE_DAY = 86400;
 
   const { startDate, endDate } = dateRange;
-
-  useEffect(() => {
-    const newEnd = dates.start + (nightsCounter * ONE_DAY);
-
-    setDates((prev) => ({
-      start: prev.start,
-      end: newEnd,
-    }));
-  }, [nightsCounter]);
 
   useEffect(() => {
     if (!info) {
@@ -173,6 +166,13 @@ export default function AffiliateInfoView({
     } else {
       setNightsCounter((prev) => (prev + 1));
     }
+
+    const newEnd = dates.start + (nightsCounter * ONE_DAY);
+
+    setDates((prev) => ({
+      start: prev.start,
+      end: newEnd,
+    }));
   };
 
   const getSimpleButton = (image, string, _onPress) => (
@@ -222,7 +222,10 @@ export default function AffiliateInfoView({
           </>
           )}
         </View>
-        <View style={[styles.innerContainer, { marginTop: 16 }]}>
+        <Pressable
+          onPress={() => setCalendarVisible(true)}
+          style={[styles.innerContainer, { marginTop: 16 }]}
+        >
           <View style={{ flex: 1 }}>
             <Body
               type={2}
@@ -249,7 +252,7 @@ export default function AffiliateInfoView({
             />
           </View>
           )}
-        </View>
+        </Pressable>
         {isSleep && (
         <View style={[styles.innerContainer, { marginTop: 16 }]}>
           <Pressable
@@ -306,6 +309,28 @@ export default function AffiliateInfoView({
           isVisible: false,
         }))}
         title={webInfo?.title}
+      />
+      <CalendarModal
+        isVisible={calendarVisible}
+        onRequestClose={() => setCalendarVisible(false)}
+        isSingleDate={!isSleep}
+        initialStartDate={dates?.start}
+        initialEndDate={dates?.end}
+        onApplyClick={(datesData) => {
+          if (isSleep) {
+            setDates({
+              start: datesData.timestamp / 1000 || 0,
+              end: 0,
+            });
+          } else {
+            setDates({
+              start: datesData.start.timestamp / 1000 || 0,
+              end: datesData.end.timestamp / 1000 || 0,
+            });
+          }
+
+          setCalendarVisible(false);
+        }}
       />
     </>
   );

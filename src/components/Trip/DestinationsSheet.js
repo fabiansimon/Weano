@@ -27,6 +27,7 @@ export default function DestinationsSheet({
   setScrollIndex,
   sheetIndex,
   amountPeople,
+  isRecent,
 }) {
   // STATE & MISC
   const [expandedIndex, setExpandedIndex] = useState(-1);
@@ -112,7 +113,7 @@ export default function DestinationsSheet({
     const index = getIndex();
     return (
       <TripStopTile
-        onInfoTap={(type, _item) => handleFurtherInfo(type, _item)}
+        onInfoTap={(t, _item) => handleFurtherInfo(t, _item)}
         links={affiliateLinks}
         onDelete={onDelete}
         onReplace={onReplace}
@@ -121,8 +122,13 @@ export default function DestinationsSheet({
         isLast={isLast}
         item={item}
         drag={drag}
+        disabled={isRecent}
         isExpanded={index === expandedIndex}
         onPress={() => {
+          if (isRecent) {
+            return;
+          }
+
           if (sheetIndex === 0) {
             handleExpending();
           }
@@ -189,7 +195,7 @@ export default function DestinationsSheet({
                 keyExtractor={(item) => item.key}
                 renderItem={(item) => getDestinationTile(item)}
               />
-              {getAddTile()}
+              {!isRecent && getAddTile()}
             </View>
             <AffiliateInfoView
               amountPeople={amountPeople}

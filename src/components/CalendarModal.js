@@ -1,5 +1,5 @@
 import moment from 'moment';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   StyleSheet,
 } from 'react-native';
@@ -20,11 +20,47 @@ const CalendarModal = ({
   onApplyClick,
 }) => {
   const [dateRange, setDateRange] = useState({
-    start: initialStartDate || null,
-    end: initialEndDate || null,
+    start: null,
+    end: null,
   });
-  const [date, setDate] = useState(initialStartDate);
+  const [date, setDate] = useState();
   const RANGE = 24;
+
+  useEffect(() => {
+    if (isSingleDate && initialStartDate) {
+      const _start = JSON.stringify(Utils.getDateFromTimestamp(initialStartDate)).split('T')[0].replace('"', '');
+      return setDate({
+        dateString: _start,
+        day: _start.split('-')[2],
+        month: _start.split('-')[1],
+        timestamp: new Date(_start).getTime(),
+        year: _start.split('-')[0],
+
+      });
+    }
+
+    if (initialStartDate && initialEndDate) {
+      const _start = JSON.stringify(Utils.getDateFromTimestamp(initialStartDate)).split('T')[0].replace('"', '');
+      const _end = JSON.stringify(Utils.getDateFromTimestamp(initialEndDate)).split('T')[0].replace('"', '');
+
+      return setDateRange({
+        start: {
+          dateString: _start,
+          day: _start.split('-')[2],
+          month: _start.split('-')[1],
+          timestamp: new Date(_start).getTime(),
+          year: _start.split('-')[0],
+        },
+        end: {
+          dateString: _end,
+          day: _end.split('-')[2],
+          month: _end.split('-')[1],
+          timestamp: new Date(_end).getTime(),
+          year: _end.split('-')[0],
+        },
+      });
+    }
+  }, [isVisible, initialStartDate, initialStartDate]);
 
   const onDayTap = (day) => {
     if (isSingleDate) {
@@ -112,7 +148,7 @@ const CalendarModal = ({
       const _date = moment(dateRange.start ? dateRange.start.timestamp : dateRange.end.timestamp).add(i, 'days');
       const formatted = JSON.stringify(_date).split('T')[0].replace('"', '');
       range[formatted] = {
-        startingDay: i === 0, endingDay: i === diff - 1, color: i === diff - 1 ? COLORS.error[700] : COLORS.primary[700], textColor: COLORS.shades[0],
+        startingDay: i === 0, endingDay: i === diff - 1, color: i === diff - 1 ? COLORS.primary[700] : COLORS.primary[700], textColor: COLORS.shades[0],
       };
     }
 

@@ -36,7 +36,7 @@ export default function DestinationScreen({ navigatePage }) {
 
   // STORES
   const {
-    dateRange, destinations, id, activeMembers, title,
+    dateRange, destinations, id, activeMembers, title, type,
   } = activeTripStore((state) => state.activeTrip);
   const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
 
@@ -295,6 +295,7 @@ export default function DestinationScreen({ navigatePage }) {
             setInputVisible(true);
           }}
           amountPeople={activeMembers?.length}
+          isRecent={type === 'recent'}
           handleExpending={handleSheetTap}
           position={sheetPosition}
           onAdd={() => setInputVisible(true)}

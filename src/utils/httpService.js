@@ -118,7 +118,11 @@ async function uploadToS3(image, transformToBase64 = false, document) {
 
 async function getLocationFromQuery(input) {
   const baseUrl = 'https://api.mapbox.com/geocoding/v5/mapbox.places/';
-  const query = input.trim();
+  const query = input
+    .replace('ß', 'ss')
+    .replace(/[^A-Za-z\-\s]+/g, '')
+    .trim()
+    .replace(' ', '%20'); input.trim();
   const limit = 2;
 
   if (query.length < 1) {

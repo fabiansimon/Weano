@@ -55,6 +55,7 @@ import PacklistContainer from '../../components/Trip/PacklistContainer';
 import CalendarModal from '../../components/CalendarModal';
 import DestinationScreen from './DestinationsScreen';
 import FAButton from '../../components/FAButton';
+import TripSlider from '../../components/Trip/TripSlider';
 
 export default function TripScreen({ route }) {
   // PARAMS
@@ -84,12 +85,6 @@ export default function TripScreen({ route }) {
   const [inputOpen, setInputOpen] = useState(null);
   const [showQR, setShowQR] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(() => {
-    const date = new Date();
-    date.setDate(date.getDate() + 5);
-    return date;
-  });
   const [calendarVisible, setCalendarVisible] = useState(false);
 
   const pageRef = useRef();
@@ -126,7 +121,6 @@ export default function TripScreen({ route }) {
 
   const navigatePage = (index) => {
     if (!inactive) {
-      setViewIndex(index);
       pageRef.current?.setPage(index);
     }
   };
@@ -922,14 +916,13 @@ export default function TripScreen({ route }) {
           <CalendarModal
             isVisible={calendarVisible}
             onRequestClose={() => setCalendarVisible(false)}
-            minimumDate={new Date()}
-            initialStartDate={startDate}
-            initialEndDate={endDate}
-            onApplyClick={(startData, endData) => {
-              if (startData != null && endData != null) {
-                setStartDate(Date.parse(startData));
-                setEndDate(Date.parse(endData));
-                handleDateUpdate(Date.parse(startData) / 1000, Date.parse(endData) / 1000);
+            initialStartDate={data?.dateRange?.startDate}
+            initialEndDate={data?.dateRange?.endDate}
+            onApplyClick={(dates) => {
+              const { end: { timestamp: _end }, start: { timestamp: _start } } = dates;
+              if (_start && _end) {
+                handleDateUpdate(_start / 1000, _end / 1000);
+                setCalendarVisible(false);
               }
             }}
           />
@@ -937,15 +930,14 @@ export default function TripScreen({ route }) {
         </View>
         {!inactive ? (
           <DestinationScreen
-            navigatePage={navigatePage}
+            navigatePage={() => setViewIndex(0)}
           />
         ) : <View />}
       </PagerView>
-      <FAButton
-        onPress={() => navigatePage(!viewIndex)}
-        icon={viewIndex ? 'list' : 'map'}
+      <TripSlider
+        index={viewIndex}
+        onPress={() => setViewIndex((prev) => !prev)}
       />
-
     </>
   );
 }

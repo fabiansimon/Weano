@@ -12,7 +12,7 @@ import Body from '../typography/Body';
 import ActivityChip from '../ActivityChip';
 
 export default function TripStopTile({
-  isLast, onReplace, onDelete, index, isActive, drag, item, links, onInfoTap, isExpanded, onPress,
+  isLast, onReplace, onDelete, index, isActive, drag, item, links, onInfoTap, isExpanded, onPress, disabled,
 }) {
   const animatedHeight = useRef(new Animated.Value(0)).current;
   const duration = 300;
@@ -67,11 +67,13 @@ export default function TripStopTile({
               type={1}
               text={item.placeName}
             />
+            {!disabled && (
             <Body
               type={2}
               color={COLORS.neutral[300]}
               text={isExpanded ? i18n.t('Tap to minimize') : i18n.t('Tap to expend')}
             />
+            )}
             <Animated.View style={{ height: animatedHeight, top: 4 }}>
               <View style={{ flexDirection: 'row', marginTop: 10 }}>
                 <ActivityChip data={links[0]} onPress={() => onInfoTap(links[0], index)} />
