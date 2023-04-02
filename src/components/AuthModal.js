@@ -253,10 +253,11 @@ export default function AuthModal({
                   keyboardType="phone-pad"
                   style={{ marginTop: 18, marginBottom: 10 }}
                   prefix={country.flag}
+                  dialCode={country.dialCode}
                   onPrefixPress={() => setPickerVisible(true)}
                   value={phoneNr || null}
                   onChangeText={(val) => setPhoneNr(val)}
-                  placeholder={`${country.dialCode} ${i18n.t('123 45 56')}`}
+                  placeholder={i18n.t('123 45 56')}
                   onDelete={() => setPhoneNr('')}
                 />
                 <Body

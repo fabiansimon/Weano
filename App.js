@@ -18,7 +18,6 @@ import TripScreen from './src/screens/Trip/TripScreen';
 import MapScreen from './src/screens/MapScreen';
 import InviteeScreen from './src/screens/Trip/InviteeScreen';
 import LocationScreen from './src/screens/Trip/LocationScreen';
-import DateScreen from './src/screens/Trip/DateScreen';
 import ChecklistScreen from './src/screens/Trip/ChecklistScreen';
 import ExpenseScreen from './src/screens/Trip/ExpenseScreen';
 import IndividualExpenseScreen from './src/screens/Trip/IndividualExpenseScreen';
@@ -39,7 +38,6 @@ import DocumentsScreen from './src/screens/Trip/DocumentsScreen';
 import InternetCheckProvider from './src/Providers/InternetCheckProvider';
 import PremiumModal from './src/components/PremiumModal';
 import PacklistScreen from './src/screens/Trip/PacklistScreen';
-import DestinationScreen from './src/screens/Trip/DestinationsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -127,7 +125,6 @@ export default function App() {
                   options={{ gestureEnabled: false }}
                   component={TripScreen}
                 />
-                <Stack.Screen name={ROUTES.dateScreen} component={DateScreen} />
                 <Stack.Screen name={ROUTES.inviteeScreen} component={InviteeScreen} />
                 <Stack.Screen name={ROUTES.locationScreen} component={LocationScreen} />
                 <Stack.Screen name={ROUTES.individualExpenseScreen} component={IndividualExpenseScreen} />

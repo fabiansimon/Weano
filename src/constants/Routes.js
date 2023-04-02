@@ -1,12 +1,10 @@
 const ROUTES = {
-  introScreen: 'IntroScreen',
   mainScreen: 'MainScreen',
   tripScreen: 'TripScreen',
   mapScreen: 'MapScreen',
   checklistScreen: 'ChecklistScreen',
   inviteeScreen: 'InviteeScreen',
   locationScreen: 'locationScreen',
-  dateScreen: 'dateScreen',
   expenseScreen: 'expenseScreen',
   individualExpenseScreen: 'individualExpenseScreen',
   memoriesScreen: 'memoriesScreen',

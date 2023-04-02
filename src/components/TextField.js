@@ -29,6 +29,7 @@ export default function TextField({
   ref,
   geoMatching = false,
   onSuggestionPress,
+  dialCode,
   ...rest
 }) {
   // STATE & MISC
@@ -121,13 +122,20 @@ export default function TextField({
           />
         </TouchableOpacity>
         )}
+        {dialCode && (
+        <Body
+          type={1}
+          text={dialCode}
+          style={{ marginLeft: 8 }}
+        />
+        )}
         <TextInput
           {...rest}
           ref={ref}
           onPressIn={onPress || null}
           editable={!disabled}
           keyboardType={keyboardType}
-          style={styles.textInput}
+          style={[styles.textInput, { paddingLeft: dialCode ? 5 : 12 }]}
           value={value || null}
           onChangeText={(val) => handleChangeText(val)}
           placeholder={placeholder}
@@ -221,14 +229,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   textInput: {
-    // backgroundColor: 'red',
     height: 50,
     flex: 1,
     fontSize: 16,
     paddingRight: 30,
     fontFamily: 'WorkSans-Regular',
     letterSpacing: -1.0,
-    paddingHorizontal: 12,
   },
   suggestionsContainer: {
     top: -10,

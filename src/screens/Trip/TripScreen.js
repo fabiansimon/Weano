@@ -464,12 +464,12 @@ export default function TripScreen({ route }) {
     {
       name: i18n.t('Location'),
       isDone: data?.destinations[0],
-      onPress: () => navigatePage(1),
+      onPress: () => setViewIndex((prev) => !prev),
     },
     {
       name: i18n.t('Date'),
       isDone: data?.dateRange?.startDate,
-      route: ROUTES.dateScreen,
+      onPress: () => (isHost ? setCalendarVisible(true) : null),
     },
     {
       name: i18n.t('Tasks'),
@@ -680,7 +680,7 @@ export default function TripScreen({ route }) {
               text={getLocationString()}
               fullWidth={false}
               icon="location-pin"
-              onPress={() => navigatePage(1)}
+              onPress={() => setViewIndex((prev) => !prev)}
               backgroundColor={COLORS.shades[0]}
               textColor={COLORS.shades[100]}
               style={data?.destinations[0] ? styles.infoTile : styles.infoButton}

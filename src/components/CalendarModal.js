@@ -174,8 +174,8 @@ const CalendarModal = ({
         onDayPress={(day) => onDayTap(day)}
         markedDates={getDateRange}
         theme={styles.calendar}
-        pastScrollRange={0}
         futureScrollRange={RANGE}
+        pastScrollRange={2}
         staticHeader
         showScrollIndicator={false}
         renderHeader={(d) => (
