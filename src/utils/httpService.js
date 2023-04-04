@@ -129,7 +129,7 @@ async function getLocationFromQuery(input) {
     return;
   }
 
-  const queryUrl = `${baseUrl}${query}.json?limit=${limit}&types=place%2Ccountry&access_token=${MAPBOX_TOKEN}`;
+  const queryUrl = `${baseUrl}${query}.json?limit=${limit}&types=place%2Cregion%2Cdistrict%2Cneighborhood%2Clocality%2Cpoi%2Ccountry&access_token=${MAPBOX_TOKEN}`;
   return new Promise((resolve, reject) => {
     fetch(queryUrl, {
       method: 'GET',

@@ -172,12 +172,16 @@ export default function InputModal({
       }}
       style={styles.suggestionTile}
     >
-      <EntIcon
-        name="location-pin"
-        color={COLORS.neutral[300]}
-        size={20}
-        style={{ marginRight: 6 }}
-      />
+      <View style={{
+        backgroundColor: COLORS.neutral[100], borderRadius: 8, height: 25, width: 25, justifyContent: 'center', alignItems: 'center', marginRight: 12,
+      }}
+      >
+        <EntIcon
+          name="location-pin"
+          color={COLORS.neutral[300]}
+          size={18}
+        />
+      </View>
       <Body
         type={1}
         color={COLORS.neutral[700]}
@@ -458,6 +462,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingVertical: 10,
     paddingHorizontal: PADDING.m,
+    marginRight: 30,
   },
   wrapContainer: {
     bottom: -20,

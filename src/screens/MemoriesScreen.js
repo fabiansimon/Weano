@@ -178,7 +178,7 @@ export default function MemoriesScreen({ route }) {
     }
 
     if (event === 'download') {
-      if (images?.length <= 0) {
+      if (images.length <= 0) {
         return;
       }
       setDownloadIndex(0);
@@ -476,7 +476,7 @@ export default function MemoriesScreen({ route }) {
           {getHeader()}
           <FlatList
             removeClippedSubviews
-            showsVerticalScrollIndicator={false}
+            showsVertiacalScrollIndicator={false}
             ListEmptyComponent={() => (
               <View style={{ justifyContent: 'space-between', alignItems: 'center', marginTop: '60%' }}>
                 <Body

@@ -2,9 +2,9 @@
 import {
   TextInput, StyleSheet, TouchableOpacity, View, FlatList, Pressable, ActivityIndicator,
 } from 'react-native';
+import EntIcon from 'react-native-vector-icons/Entypo';
 import React, { useState, useEffect, useCallback } from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
-import EntIcon from 'react-native-vector-icons/Entypo';
 import { debounce } from 'lodash';
 import COLORS, { PADDING, RADIUS } from '../constants/Theme';
 import Divider from './Divider';
@@ -87,14 +87,18 @@ export default function TextField({
       }}
       style={styles.suggestionTile}
     >
-      <EntIcon
-        name="location-pin"
-        color={COLORS.neutral[300]}
-        size={20}
-        style={{ marginRight: 6 }}
-      />
+      <View style={{
+        backgroundColor: COLORS.neutral[100], borderRadius: 8, height: 25, width: 25, justifyContent: 'center', alignItems: 'center', marginRight: 10,
+      }}
+      >
+        <EntIcon
+          name="location-pin"
+          color={COLORS.neutral[300]}
+          size={18}
+        />
+      </View>
       <Body
-        type={2}
+        type={1}
         color={COLORS.neutral[700]}
         text={item.string}
         style={{ marginRight: 30 }}
@@ -251,9 +255,9 @@ const styles = StyleSheet.create({
   },
   suggestionTile: {
     minHeight: 55,
-    paddingVertical: 10,
     alignItems: 'center',
     flexDirection: 'row',
-    paddingHorizontal: PADDING.m,
+    paddingHorizontal: PADDING.s,
+    paddingVertical: PADDING.s,
   },
 });

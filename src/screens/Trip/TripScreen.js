@@ -414,7 +414,7 @@ export default function TripScreen({ route }) {
 
   const getDayDifference = () => {
     if (activeTrip.type === 'active') {
-      return i18n.t('• live');
+      return i18n.t('• Live');
     }
 
     const difference = Utils.getDaysDifference(data?.dateRange.startDate);
@@ -826,7 +826,7 @@ export default function TripScreen({ route }) {
       <PagerView
         style={{ flex: 1 }}
         ref={pageRef}
-        scrollEnabled
+        scrollEnabled={false}
       >
         <View style={{ backgroundColor: COLORS.shades[0], flex: 1 }}>
           <StatusBar barStyle="dark-content" />

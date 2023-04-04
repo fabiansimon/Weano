@@ -69,7 +69,7 @@ export default function ActionTile({ style, trip }) {
     id, images, dateRange, activeMembers, title: tripTitle, destinations,
   } = trip;
 
-  const typeTitle = isActive ? i18n.t('Active') : isUpcoming ? i18n.t('Upcoming') : i18n.t('Rewind');
+  const typeTitle = isActive ? i18n.t('• Live') : isUpcoming ? i18n.t('Upcoming') : i18n.t('Rewind');
   const typeColor = isActive ? COLORS.error[900] : isUpcoming ? COLORS.success[700] : COLORS.primary[700];
 
   const place = destinations[0]?.placeName.split(',')[0];
@@ -211,7 +211,7 @@ export default function ActionTile({ style, trip }) {
   return (
     <AnimatedPressable
       onPress={() => navigation.navigate(isActive || isUpcoming ? ROUTES.tripScreen : ROUTES.memoriesScreen, { tripId: id })}
-      style={[styles.container, style, { shadowColor: COLORS.neutral[300] }, { height: animatedHeight, borderRadius: animatedBorderRadius }]}
+      style={[styles.container, style, { height: animatedHeight, borderRadius: animatedBorderRadius }]}
     >
       <View>
         <View
@@ -242,22 +242,23 @@ export default function ActionTile({ style, trip }) {
               />
             ) : getMinimizedTitle()}
           </View>
-          <View style={[styles.typeContainer, { backgroundColor: Utils.addAlpha(typeColor, 0.2) }]}>
-            <Subtitle
-              type={1}
+          <View style={[styles.typeContainer, { backgroundColor: typeColor }]}>
+            <Body
+              type={2}
+              style={{ fontWeight: '600' }}
               text={typeTitle}
-              color={typeColor}
+              color={COLORS.shades[0]}
             />
           </View>
         </View>
 
         {isExpanded && (
-        <Body
-          type={1}
-          text={!isRecap && subtitle}
-          style={{ maxWidth: '80%' }}
-          color={COLORS.neutral[300]}
-        />
+          <Body
+            type={1}
+            text={!isRecap && subtitle}
+            style={{ maxWidth: '80%' }}
+            color={COLORS.neutral[300]}
+          />
         )}
       </View>
       {isUpcoming && getOpenTaskList()}
@@ -268,12 +269,7 @@ export default function ActionTile({ style, trip }) {
 
 const styles = StyleSheet.create({
   container: {
-    shadowOffset: {
-      height: 4,
-    },
     overflow: 'hidden',
-    shadowRadius: 10,
-    shadowOpacity: 0.1,
     borderRadius: RADIUS.m,
     padding: PADDING.s,
     backgroundColor: COLORS.shades[0],
@@ -286,6 +282,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: RADIUS.xl,
     paddingVertical: 5,
+    marginBottom: -2,
     paddingHorizontal: 10,
   },
 });
