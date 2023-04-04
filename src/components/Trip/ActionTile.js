@@ -28,7 +28,7 @@ export default function ActionTile({ style, trip }) {
   const isActive = trip?.type === 'active';
   const isUpcoming = trip?.type === 'upcoming' || trip?.type === 'soon';
   const isRecap = trip?.type === 'recap';
-  const height = isActive ? 150 : isUpcoming && noTasks ? 130 : isUpcoming && !noTasks ? 180 : 130;
+  const height = isActive ? 150 : isUpcoming && noTasks ? 130 : isUpcoming && !noTasks ? 180 : 105;
 
   const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -249,6 +249,11 @@ export default function ActionTile({ style, trip }) {
               text={typeTitle}
               color={COLORS.shades[0]}
             />
+            <EntIcon
+              name="chevron-right"
+              size={20}
+              color={COLORS.shades[0]}
+            />
           </View>
         </View>
 
@@ -279,10 +284,10 @@ const styles = StyleSheet.create({
   },
   typeContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
     borderRadius: RADIUS.xl,
     paddingVertical: 5,
     marginBottom: -2,
-    paddingHorizontal: 10,
+    paddingRight: 6,
+    paddingLeft: 10,
   },
 });

@@ -434,7 +434,7 @@ export default function SignUpScreen({ invitationId, route }) {
           type={2}
           style={{ marginTop: 10 }}
           color={COLORS.shades[0]}
-          text={i18n.t('(Hey Sophia und Julia ihr hübschen 🇿🇦)')}
+          text={i18n.t('(Hey Verenski 🇳🇿)')}
         />
         <View style={{
           width: '100%', height: 170, marginTop: '25%', marginBottom: 40,

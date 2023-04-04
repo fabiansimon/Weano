@@ -1,5 +1,5 @@
 import {
-  View, StyleSheet, Image, Dimensions, Pressable, RefreshControl, Platform, StatusBar, Keyboard,
+  View, StyleSheet, Image, Dimensions, Pressable, RefreshControl, Platform, StatusBar,
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import Toast from 'react-native-toast-message';
@@ -54,7 +54,6 @@ import AccentBubble from '../../components/Trip/AccentBubble';
 import PacklistContainer from '../../components/Trip/PacklistContainer';
 import CalendarModal from '../../components/CalendarModal';
 import DestinationScreen from './DestinationsScreen';
-import FAButton from '../../components/FAButton';
 import TripSlider from '../../components/Trip/TripSlider';
 
 export default function TripScreen({ route }) {
