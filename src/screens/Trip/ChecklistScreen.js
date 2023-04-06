@@ -442,6 +442,7 @@ export default function ChecklistScreen() {
             />
             <Divider top={12} />
             <FlatList
+              contentContainerStyle={{ marginBottom: 100 }}
               scrollEnabled={false}
               data={filterOption === 0 ? privateTasks : filterOption === 1
                 ? privateTasks.filter((task) => task.isDone)

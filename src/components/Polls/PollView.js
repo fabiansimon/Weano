@@ -20,6 +20,9 @@ import userManagement from '../../utils/userManagement';
 import activeTripStore from '../../stores/ActiveTripStore';
 import VOTE_FOR_POLL from '../../mutations/voteForPoll';
 import userStore from '../../stores/UserStore';
+import Divider from '../Divider';
+
+const MAX_LENGTH = 2;
 
 export default function PollView({
   style, data, title, subtitle, onPress, isMinimized = false, onNavigation,
@@ -97,7 +100,10 @@ export default function PollView({
       onPress={onNavigation}
       style={[styles.pollContainer, style]}
     >
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 5 }}>
+      <View style={{
+        flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 5,
+      }}
+      >
         <View>
           <Headline
             type={4}
@@ -148,7 +154,7 @@ export default function PollView({
             <PollTile
               activeMembers={activeMembers}
               key={option.id}
-              style={{ marginBottom: 16 }}
+              style={{ marginBottom: 10 }}
               item={option}
               data={data}
               index={index}
@@ -158,12 +164,20 @@ export default function PollView({
           );
         } if (isMinimized && index === 2) {
           return (
-            <Body
-              type={1}
-              color={COLORS.neutral[300]}
-              style={{ marginLeft: 8, textAlign: 'center' }}
-              text={i18n.t('see more options')}
-            />
+            <View style={{ marginTop: -6 }}>
+              <Divider
+                style={{
+                  marginHorizontal: -6,
+                }}
+                color={COLORS.neutral[100]}
+              />
+              <Body
+                type={2}
+                color={COLORS.neutral[300]}
+                style={{ alignSelf: 'center' }}
+                text={`+ ${data.options.length - MAX_LENGTH} ${i18n.t('more options')}`}
+              />
+            </View>
           );
         }
         return null;

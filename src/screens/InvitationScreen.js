@@ -113,7 +113,7 @@ export default function InvitationScreen({ route }) {
   const getTripInviteContainer = () => (
     <View style={styles.tripInvite}>
       <Headline
-        type={2}
+        type={3}
         isDense
         text={tripData && tripData.title}
       />
@@ -123,7 +123,7 @@ export default function InvitationScreen({ route }) {
         contentContainerStyle={{ paddingRight: 30 }}
         style={{
           flexDirection: 'row',
-          marginTop: 12,
+          marginTop: 4,
           marginHorizontal: -PADDING.m,
           paddingLeft: PADDING.m,
 
@@ -193,14 +193,14 @@ export default function InvitationScreen({ route }) {
                 <View style={styles.inviteContainer}>
                   <View>
                     <Headline
-                      type={2}
+                      type={3}
                       text={i18n.t("You've been invited")}
                       color={COLORS.shades[100]}
                     />
-                    <Headline
-                      type={4}
+                    <Body
+                      type={1}
                       text={`${tripData?.hostName} ${i18n.t('invited you to join a trip 🏝')}`}
-                      style={{ marginTop: 4 }}
+                      style={{ marginTop: 2 }}
                       color={COLORS.neutral[300]}
                     />
                     {getTripInviteContainer()}

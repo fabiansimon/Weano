@@ -2,6 +2,7 @@ import {
   View, StyleSheet, SectionList, Dimensions, Pressable,
 } from 'react-native';
 import React, {
+  useCallback,
   useEffect, useRef, useState,
 } from 'react';
 import Animated from 'react-native-reanimated';
@@ -113,7 +114,7 @@ export default function PacklistScreen() {
       };
     });
 
-    const usageLimit = JSON.parse(!isProMember ? await asyncStorageDAO.getPremiumTierLimits() : await asyncStorageDAO.getFreeTierLimits()).packingItems;
+    const usageLimit = JSON.parse(isProMember ? await asyncStorageDAO.getPremiumTierLimits() : await asyncStorageDAO.getFreeTierLimits()).packingItems;
     if (packingItems.length + items.length > usageLimit) {
       setTimeout(() => {
         PremiumController.showModal();
@@ -251,6 +252,24 @@ export default function PacklistScreen() {
     );
   };
 
+  const percentageLine = useCallback(() => {
+    const status = packingItems?.length ? ((packingItems.filter((item) => item.isPacked).length / packingItems.length) * 100).toFixed(0) : 0;
+
+    return (
+      <View style={{ marginLeft: PADDING.l, marginTop: -4, marginBottom: -4 }}>
+        <Body
+          type={2}
+          color={COLORS.primary[500]}
+          text={`${status}% ${i18n.t('packed')}`}
+          style={{ fontWeight: '500', marginBottom: 4 }}
+        />
+        <View style={styles.percentageContainer}>
+          <View style={[styles.percentageStatus, { width: `${status}%` }]} />
+        </View>
+      </View>
+    );
+  }, [packingItems]);
+
   return (
     <View style={styles.container}>
       <HybridHeader
@@ -258,29 +277,32 @@ export default function PacklistScreen() {
         scrollY={scrollY}
         info={INFORMATION.packlistScreen}
         scrollEnabled={false}
+        content={percentageLine()}
       >
-        <View style={styles.stayContainer}>
-          <Icon
-            name="stopwatch"
-            size={16}
-            style={{ marginRight: 6 }}
-          />
-          <Body
-            type={2}
-            color={COLORS.neutral[500]}
-            text={i18n.t("Don't forget, you will stay there for")}
-          />
-          <Body
-            type={2}
-            style={{ marginLeft: 4, fontWeight: '500' }}
-            color={COLORS.neutral[900]}
-            text={`${Utils.getDaysDifference(dateRange.startDate, dateRange.endDate, true) - 1} ${i18n.t('nights')}`}
-          />
-        </View>
         <SectionList
-          style={{ paddingBottom: '100%' }}
+          style={{ maxHeight: '70%' }}
           stickySectionHeadersEnabled
           sections={packData}
+          ListHeaderComponent={(
+            <View style={styles.stayContainer}>
+              <Icon
+                name="stopwatch"
+                size={16}
+                style={{ marginRight: 6 }}
+              />
+              <Body
+                type={2}
+                color={COLORS.neutral[500]}
+                text={i18n.t("Don't forget, you will stay there for")}
+              />
+              <Body
+                type={2}
+                style={{ marginLeft: 4, fontWeight: '500' }}
+                color={COLORS.neutral[900]}
+                text={`${Utils.getDaysDifference(dateRange.startDate, dateRange.endDate, true) - 1} ${i18n.t('nights')}`}
+              />
+            </View>
+)}
           ListEmptyComponent={(
             <View
               style={{
@@ -387,5 +409,16 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.neutral[50],
     flexDirection: 'row',
     marginRight: 'auto',
+  },
+  percentageContainer: {
+    height: 5,
+    width: '93%',
+    backgroundColor: Utils.addAlpha(COLORS.primary[700], 0.1),
+    borderRadius: 100,
+  },
+  percentageStatus: {
+    height: 5,
+    backgroundColor: COLORS.primary[300],
+    borderRadius: 100,
   },
 });

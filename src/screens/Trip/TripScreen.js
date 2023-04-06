@@ -623,18 +623,6 @@ export default function TripScreen({ route }) {
                         disabled: !isHost,
                       },
                     },
-                    {
-                      id: 'delete',
-                      title: i18n.t('Delete Trip'),
-                      attributes: {
-                        destructive: true,
-                        disabled: !isHost,
-                      },
-                      image: Platform.select({
-                        ios: 'trash',
-                        android: 'ic_menu_delete',
-                      }),
-                    },
                   ],
                 },
                 {
@@ -652,7 +640,18 @@ export default function TripScreen({ route }) {
                     ios: 'qrcode',
                   }),
                 },
-
+                {
+                  id: 'delete',
+                  title: i18n.t('Delete Trip'),
+                  attributes: {
+                    destructive: true,
+                    disabled: !isHost,
+                  },
+                  image: Platform.select({
+                    ios: 'trash',
+                    android: 'ic_menu_delete',
+                  }),
+                },
               ]}
             >
               <FeatherIcon
@@ -904,7 +903,7 @@ export default function TripScreen({ route }) {
             initalValue={inputOpen === 'description' ? data?.description : data?.title}
             onRequestClose={() => setInputOpen(null)}
             multiline={inputOpen === 'description'}
-            maxLength={inputOpen === 'description' ? 100 : 20}
+            maxLength={inputOpen === 'description' ? 100 : 25}
             onPress={(string) => (inputOpen === 'description' ? updateDescription(string) : updateTitle(string))}
           />
           <QRModal

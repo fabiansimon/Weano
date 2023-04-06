@@ -8,6 +8,9 @@ import Body from '../typography/Body';
 import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
 import EmptyDataContainer from '../EmptyDataContainer';
 import ROUTES from '../../constants/Routes';
+import Divider from '../Divider';
+
+const MAX_LENGTH = 3;
 
 export default function ChecklistContainer({
   onPress, onLayout, sender,
@@ -17,6 +20,8 @@ export default function ChecklistContainer({
 
   // STATE & MISC
   const [isPrivate, setIsPrivate] = useState(privateTasks?.length > mutualTasks?.length);
+
+  const data = isPrivate ? privateTasks : mutualTasks;
 
   if (mutualTasks?.length <= 0 && privateTasks?.length <= 0) {
     return (
@@ -37,6 +42,7 @@ export default function ChecklistContainer({
       }}
     >
       <CheckboxTile
+        style={{ marginBottom: -2 }}
         isDense={item.isPrivate}
         disabled
         disableLabel={isPrivate}
@@ -64,25 +70,29 @@ export default function ChecklistContainer({
         />
         {!sender && <Switch bool={isPrivate} onPress={() => setIsPrivate(!isPrivate)} />}
       </View>
-      {isPrivate ? privateTasks?.length > 0
-        ? privateTasks?.map((item) => getChecklistItem(item))
-        : (
-          <Body
-            color={COLORS.neutral[300]}
-            type={2}
-            text={i18n.t('No private tasks yet')}
-            style={{ marginLeft: PADDING.m }}
-          />
-        ) : mutualTasks?.length > 0
-        ? mutualTasks?.map((item) => getChecklistItem(item))
-        : (
-          <Body
-            color={COLORS.neutral[300]}
-            type={2}
-            style={{ marginLeft: PADDING.m }}
-            text={i18n.t('No mutual tasks yet')}
-          />
-        )}
+      {data?.length > 0 ? data.map((item, index) => {
+        if (index >= MAX_LENGTH) return;
+
+        return getChecklistItem(item);
+      }) : (
+        <Body
+          color={COLORS.neutral[300]}
+          type={2}
+          text={isPrivate ? i18n.t('No private tasks yet') : i18n.t('No mutual tasks yet')}
+          style={{ marginLeft: PADDING.m }}
+        />
+      )}
+      {data?.length > MAX_LENGTH && (
+      <View>
+        <Divider color={COLORS.neutral[100]} />
+        <Body
+          type={2}
+          color={COLORS.neutral[300]}
+          style={{ marginBottom: 2, alignSelf: 'center' }}
+          text={`+ ${data.length - MAX_LENGTH} ${i18n.t('more items')}`}
+        />
+      </View>
+      )}
     </Pressable>
   );
 }

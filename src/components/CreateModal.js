@@ -292,6 +292,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
     <TextField
       style={{ marginTop: 10, marginBottom: 10 }}
       value={tripName || null}
+      maxLength={25}
       onChangeText={(val) => setTripName(val)}
       placeholder={i18n.t('Epic Summer Trip 2021 ✈️')}
       onDelete={() => setTripName('')}
@@ -425,7 +426,7 @@ export default function CreateModal({ isVisible, onRequestClose }) {
         autoCapitalize={false}
         emailInput
         multipleInputs
-        placeholder={i18n.t('Invite friends')}
+        placeholder={i18n.t('john.doe@email.com')}
         onRequestClose={() => setInputVisible(false)}
         onPress={(input) => setInvitees((prev) => prev.concat(input))}
         autoClose

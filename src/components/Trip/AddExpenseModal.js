@@ -1,7 +1,7 @@
 import {
   StyleSheet, View,
 } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { TextInput } from 'react-native-gesture-handler';
 import Toast from 'react-native-toast-message';
 import TitleModal from '../TitleModal';
@@ -69,6 +69,9 @@ export default function AddExpenseModal({
     onPress({
       amount, title, paidBy,
     });
+    setAmount('');
+    setTitle('');
+    setPaidBy(activeMembers.find((member) => member.id === userId));
   };
 
   const getAmountContainer = () => (
@@ -134,7 +137,7 @@ export default function AddExpenseModal({
     </View>
   );
 
-  const getSummaryContainer = () => (
+  const getSummaryContainer = useCallback(() => (
     <View style={styles.summaryContainer}>
       <Body
         type={1}
@@ -172,12 +175,17 @@ export default function AddExpenseModal({
       </>
       )}
     </View>
-  );
+  ), [isVisible, title, paidBy, currency, amount]);
 
   return (
     <TitleModal
       isVisible={isVisible}
-      onRequestClose={onRequestClose}
+      onRequestClose={() => {
+        setAmount('');
+        setTitle('');
+        setPaidBy(activeMembers.find((member) => member.id === userId));
+        onRequestClose();
+      }}
       title={i18n.t('Expense')}
       actionLabel={i18n.t('Create')}
       onPress={handlePress}

@@ -101,7 +101,7 @@ export default function DocumentsScreen() {
         type, name, size, uri,
       } = res[0];
 
-      if (size > 500000) {
+      if (size > 800000) {
         setIsLoading(false);
         return Toast.show({
           type: 'error',
@@ -191,7 +191,7 @@ export default function DocumentsScreen() {
               const onPress = item.creatorId === id ? () => handleDelete(item) : null;
               return (
                 <DocumentTile
-                  style={{ paddingHorizontal: PADDING.s, backgroundColor: COLORS.shades[0] }}
+                  style={{ paddingHorizontal: PADDING.m, backgroundColor: COLORS.shades[0] }}
                   onPress={() => Utils.openDocumentFromUrl(item.uri, item.title)}
                   onDelete={onPress}
                   showMenu

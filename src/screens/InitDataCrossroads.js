@@ -1,5 +1,5 @@
 import {
-  Image, Linking, Platform, StyleSheet, View,
+  Image, Linking, Platform, StatusBar, StyleSheet, View,
 } from 'react-native';
 import React, { useEffect, useState, useRef } from 'react';
 import * as Notifications from 'expo-notifications';
@@ -302,9 +302,11 @@ export default function InitDataCrossroads() {
 
   return (
     <View style={styles.container}>
+      <StatusBar barStyle="light-content" />
       <Image
         source={Logo}
-        style={{ height: 200, width: 377 }}
+        resizeMode="center"
+        style={{ flex: 1 }}
       />
     </View>
   );

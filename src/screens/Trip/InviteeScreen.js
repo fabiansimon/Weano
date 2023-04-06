@@ -234,7 +234,7 @@ export default function InviteeScreen() {
         autoCapitalize={false}
         emailInput
         multipleInputs
-        placeholder={i18n.t('Invite friends')}
+        placeholder={i18n.t('john.doe@email.com')}
         onRequestClose={() => setInputVisible(false)}
         onPress={(input) => handleInvitations(input)}
         autoClose

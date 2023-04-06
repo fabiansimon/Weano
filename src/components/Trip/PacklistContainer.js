@@ -11,6 +11,9 @@ import EmptyDataContainer from '../EmptyDataContainer';
 import ROUTES from '../../constants/Routes';
 import CheckboxTile from './CheckboxTile';
 import Body from '../typography/Body';
+import Divider from '../Divider';
+
+const MAX_LENGTH = 4;
 
 export default function PacklistContainer({ style, data }) {
   const navigation = useNavigation();
@@ -37,15 +40,29 @@ export default function PacklistContainer({ style, data }) {
           text={i18n.t('Open items to pack')}
         />
       </View>
-      {data.map((item) => (
-        <CheckboxTile
-          trailing={<Body color={COLORS.neutral[500]} type={1} text={`${item.amount}x`} />}
-          disabled
-          style={{ paddingHorizontal: PADDING.m, marginVertical: -4 }}
-          item={item}
-          disableLabel
+      {data.map((item, index) => {
+        if (index > MAX_LENGTH) return;
+        return (
+          <CheckboxTile
+            trailing={<Body color={COLORS.neutral[500]} type={1} text={`${item.amount}x`} />}
+            disabled
+            style={{ paddingHorizontal: PADDING.m, marginVertical: -4 }}
+            item={item}
+            disableLabel
+          />
+        );
+      })}
+      {data?.length > MAX_LENGTH && (
+      <View>
+        <Divider color={COLORS.neutral[100]} />
+        <Body
+          type={2}
+          color={COLORS.neutral[300]}
+          style={{ marginBottom: 8, alignSelf: 'center' }}
+          text={`+ ${data.length - MAX_LENGTH} ${i18n.t('more items')}`}
         />
-      ))}
+      </View>
+      )}
     </Pressable>
   );
 }

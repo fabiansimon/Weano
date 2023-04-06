@@ -14,6 +14,8 @@ import Body from '../typography/Body';
 import TripStopTile from './TripStopTile';
 import AffiliateInfoView from './AffiliateInfoView';
 
+const MAX_LENGTH = 15;
+
 export default function DestinationsSheet({
   destinations,
   onDragEnded,
@@ -36,7 +38,6 @@ export default function DestinationsSheet({
   const { height } = Dimensions.get('window');
   const isLast = destinations.length <= 1;
   const pageRef = useRef();
-
   const animatedStyle = useAnimatedStyle(() => {
     const translateY = Math.abs((height - position.value) - height);
     return {
@@ -195,7 +196,7 @@ export default function DestinationsSheet({
                 keyExtractor={(item) => item.key}
                 renderItem={(item) => getDestinationTile(item)}
               />
-              {!isRecent && getAddTile()}
+              {(!isRecent && destinations?.length < MAX_LENGTH) && getAddTile()}
             </View>
             <AffiliateInfoView
               amountPeople={amountPeople}

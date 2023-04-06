@@ -343,9 +343,21 @@ export default function MainScreen() {
         onPress={(id) => navigation.navigate(ROUTES.tripScreen, { tripId: id })}
       />
       <FAButton
+        options={[
+          {
+            title: i18n.t('Join trip'),
+            icon: 'scan',
+            onPress: () => console.log('Scan'),
+          },
+          {
+            title: i18n.t('Create trip'),
+            icon: 'add',
+            onPress: createTrip,
+          },
+
+        ]}
         icon="add"
         iconSize={28}
-        onPress={() => createTrip()}
       />
 
     </View>

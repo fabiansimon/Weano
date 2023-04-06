@@ -29,6 +29,7 @@ import activeTripStore from '../../stores/ActiveTripStore';
 import UPDATE_TRIP from '../../mutations/updateTrip';
 
 MapboxGL.setAccessToken(MAPBOX_TOKEN);
+const MAX_LENGTH = 15;
 
 export default function DestinationScreen({ navigatePage }) {
 // MUTATIONS
@@ -104,6 +105,10 @@ export default function DestinationScreen({ navigatePage }) {
 
   const handleAddDestination = (input) => {
     if (!input) {
+      return;
+    }
+
+    if (destinations.length >= MAX_LENGTH) {
       return;
     }
 
