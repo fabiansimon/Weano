@@ -1,7 +1,7 @@
 import React, {useMemo, useRef, useState, useEffect} from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
+import {NativeModules, Pressable, StyleSheet, View} from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
-import MapboxGL from '@react-native-mapbox-gl/maps';
+import MapboxGL from '@rnmapbox/maps';
 import BottomSheet from '@gorhom/bottom-sheet';
 // eslint-disable-next-line import/no-unresolved
 import {MAPBOX_TOKEN} from '@env';
@@ -15,6 +15,8 @@ import ROUTES from '../constants/Routes';
 import SearchModal from '../components/Search/SearchModal';
 import TripContainer from '../components/Trip/TripContainer';
 
+const {StatusBarManager} = NativeModules;
+
 MapboxGL.setAccessToken(MAPBOX_TOKEN);
 
 export default function MapScreen({route}) {
@@ -26,7 +28,7 @@ export default function MapScreen({route}) {
 
   // STATE & MISC
   const [showSearch, setShowSearch] = useState(false);
-  const snapPoints = useMemo(() => ['22%', '88%'], []);
+  const snapPoints = useMemo(() => ['22%', '90%'], []);
   const sheetRef = useRef(null);
 
   const mapCamera = useRef();
@@ -66,13 +68,14 @@ export default function MapScreen({route}) {
     }
 
     return (
-      <MapboxGL.MarkerView coordinate={destinations[0].latlon}>
+      <MapboxGL.MarkerView
+        coordinate={destinations[0].latlon}>
         <TripContainer
           onPress={() =>
             navigation.navigate(ROUTES.tripScreen, {tripId: trip.id})
           }
           isDense
-          size={50}
+          size={40}
           trip={trip}
         />
       </MapboxGL.MarkerView>
@@ -82,6 +85,8 @@ export default function MapScreen({route}) {
   return (
     <View style={styles.container}>
       <MapboxGL.MapView
+        compassEnabled={false}
+        scaleBarEnabled={false}
         rotateEnabled={false}
         style={styles.map}
         styleURL="mapbox://styles/fabiansimon/clezrm6w7002g01p9eu1n0aos">
@@ -93,7 +98,9 @@ export default function MapScreen({route}) {
         <Pressable
           style={styles.searchButton}
           onPress={() => setShowSearch(true)}>
-          <Icon name="search1" size={20} />
+          <Icon
+            color={COLORS.shades[100]}
+            name="search1" size={20} />
         </Pressable>
       </View>
       <BottomSheet
@@ -123,7 +130,7 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'space-between',
     position: 'absolute',
-    top: 60,
+    top: StatusBarManager.HEIGHT ,
     paddingHorizontal: PADDING.m,
   },
   container: {

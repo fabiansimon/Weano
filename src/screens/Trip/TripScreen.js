@@ -58,9 +58,9 @@ import DocumentsContainer from '../../components/Trip/DocumentsContainer';
 import AccentBubble from '../../components/Trip/AccentBubble';
 import PacklistContainer from '../../components/Trip/PacklistContainer';
 import CalendarModal from '../../components/CalendarModal';
-// import DestinationScreen from './DestinationsScreen';
 import TripSlider from '../../components/Trip/TripSlider';
 import Animated from 'react-native-reanimated';
+import DestinationScreen from './DestinationsScreen';
 
 const {StatusBarManager} = NativeModules;
 
@@ -857,7 +857,10 @@ export default function TripScreen({route}) {
         <View style={{backgroundColor: COLORS.shades[0], flex: 1}}>
           <StatusBar barStyle="dark-content" />
           <AnimatedHeader
-            style={{height: StatusBarManager.HEIGHT + 110}}
+            style={{
+              height:
+                StatusBarManager.HEIGHT + (Platform.OS === 'android' ? 0 : 110),
+            }}
             scrollDistance={480}
             threshold={1.2}
             scrollY={scrollY}>
@@ -873,14 +876,14 @@ export default function TripScreen({route}) {
           </AnimatedHeader>
           {getHeaderImage()}
           <Animated.ScrollView
-            // refreshControl={
-            //   <RefreshControl
-            //     enabled={data}
-            //     progressViewOffset={50}
-            //     refreshing={refreshing}
-            //     onRefresh={onRefresh}
-            //   />
-            // }
+            refreshControl={
+              <RefreshControl
+                enabled={data}
+                progressViewOffset={50}
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+              />
+            }
             ref={scrollRef}
             showsVerticalScrollIndicator={false}
             scrollEventThrottle={16}
@@ -910,7 +913,8 @@ export default function TripScreen({route}) {
             onPress={() => navigation.navigate(ROUTES.mainScreen)}
             style={{
               position: 'absolute',
-              top: StatusBarManager.HEIGHT - 20,
+              top:
+                StatusBarManager.HEIGHT - (Platform.OS === 'android' ? 25 : 5),
               left: 20,
               zIndex: 10,
             }}
@@ -984,8 +988,7 @@ export default function TripScreen({route}) {
           />
         </View>
         {!inactive ? (
-          // <DestinationScreen navigatePage={() => setViewIndex(0)} />
-          <View />
+          <DestinationScreen navigatePage={() => setViewIndex(0)} />
         ) : (
           <View />
         )}
@@ -1082,7 +1085,7 @@ const styles = StyleSheet.create({
   },
   memoryButton: {
     position: 'absolute',
-    top: StatusBarManager.HEIGHT - 20,
+    top: StatusBarManager.HEIGHT - (Platform.OS === 'android' ? 25 : 5),
     right: 20,
     zIndex: 10,
     borderWidth: 1,

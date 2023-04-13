@@ -1,4 +1,4 @@
-import {View, StyleSheet, NativeModules} from 'react-native';
+import {View, StyleSheet, NativeModules, Platform} from 'react-native';
 import React from 'react';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 import Headline from './typography/Headline';
@@ -75,7 +75,7 @@ export default function TripHeader({
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: StatusBarManager.HEIGHT - 20,
+    marginTop: StatusBarManager.HEIGHT - (Platform.OS === 'android'? 30 : 20),
   },
   header: {
     flexDirection: 'row',

@@ -1,5 +1,6 @@
 import {
   Dimensions,
+  Platform,
   Pressable,
   RefreshControl,
   Share,
@@ -419,7 +420,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 14,
+    paddingTop: Platform.OS === 'android' ? 14 : 0,
     borderBottomColor: COLORS.neutral[100],
     borderBottomWidth: 1,
     marginHorizontal: -PADDING.l,

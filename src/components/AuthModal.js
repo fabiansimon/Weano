@@ -325,7 +325,8 @@ export default function AuthModal({
                   marginBottom: 20,
                   alignSelf: 'center',
                 }}>
-                <CodeInput value={code} setValue={val => setCode(val)} />
+                <CodeInput value={code}
+                  setValue={val => setCode(val)} />
               </View>
               <Body
                 type={1}

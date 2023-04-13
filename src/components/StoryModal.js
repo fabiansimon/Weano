@@ -10,7 +10,10 @@ import Toast from 'react-native-toast-message';
 import React, {useState, useEffect} from 'react';
 import OctiIcon from 'react-native-vector-icons/Octicons';
 import FastImage from 'react-native-fast-image';
-import {PanGestureHandler} from 'react-native-gesture-handler';
+import {
+  GestureHandlerRootView,
+  PanGestureHandler,
+} from 'react-native-gesture-handler';
 import Animated, {
   runOnJS,
   useAnimatedGestureHandler,
@@ -285,20 +288,22 @@ export default function StoryModal({
       transparent
       statusBarTranslucent
       onRequestClose={onRequestClose}>
-      <PanGestureHandler onGestureEvent={handleGesture}>
-        <Animated.View
-          style={[
-            {
-              overflow: 'hidden',
-              flex: 1,
-              backgroundColor: COLORS.neutral[900],
-            },
-            modalStyle,
-          ]}>
-          {data && getImagePreview(data[imageIndex])}
-          {data && getProgressHeader()}
-        </Animated.View>
-      </PanGestureHandler>
+      <GestureHandlerRootView style={{flex: 1}}>
+        <PanGestureHandler onGestureEvent={handleGesture}>
+          <Animated.View
+            style={[
+              {
+                overflow: 'hidden',
+                flex: 1,
+                backgroundColor: COLORS.neutral[900],
+              },
+              modalStyle,
+            ]}>
+            {data && getImagePreview(data[imageIndex])}
+            {data && getProgressHeader()}
+          </Animated.View>
+        </PanGestureHandler>
+      </GestureHandlerRootView>
       <Toast config={toastConfig} />
     </Modal>
   );

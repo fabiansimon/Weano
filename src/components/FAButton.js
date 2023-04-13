@@ -4,6 +4,7 @@ import {
   StyleSheet,
   View,
   Animated,
+  Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import React, {useEffect, useRef, useState} from 'react';
@@ -162,7 +163,7 @@ const styles = StyleSheet.create({
   },
   fabContainer: {
     position: 'absolute',
-    bottom: 50,
+    bottom: Platform.OS === 'android' ? 30: 40,
     right: PADDING.l,
   },
   container: {

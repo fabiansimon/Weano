@@ -1,4 +1,4 @@
-import {StyleSheet, Text} from 'react-native';
+import {Platform, StyleSheet, Text} from 'react-native';
 import React from 'react';
 import {
   CodeField,
@@ -41,7 +41,7 @@ export default function CodeInput({cellCount, value, setValue}) {
 const styles = StyleSheet.create({
   cell: {
     width: 55,
-    paddingTop: 8,
+    paddingTop: Platform.OS === 'android' ? 0: 8,
     height: 60,
     borderRadius: 10,
     fontSize: 34,

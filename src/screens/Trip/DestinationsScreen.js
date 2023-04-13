@@ -1,6 +1,6 @@
 import React, {useMemo, useRef, useState, useEffect, useCallback} from 'react';
 import {Dimensions, StyleSheet, View} from 'react-native';
-import MapboxGL from '@react-native-mapbox-gl/maps';
+import MapboxGL from '@rnmapbox/maps';
 import Toast from 'react-native-toast-message';
 import bbox from '@turf/bbox';
 import {lineString, lineString as makeLineString} from '@turf/helpers';

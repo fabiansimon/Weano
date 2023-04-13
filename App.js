@@ -7,7 +7,6 @@ import AsyncStorageDAO from './src/utils/AsyncStorageDAO';
 import * as Notifications from 'expo-notifications';
 import Toast from 'react-native-toast-message';
 import toastConfig from './src/constants/ToastConfig';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import userStore from './src/stores/UserStore';
 import META_DATA from './src/constants/MetaData';
 import InternetCheckProvider from './src/Providers/InternetCheckProvider';
@@ -17,7 +16,7 @@ import SignUpScreen from './src/screens/Intro/SignUpScreen';
 import MainScreen from './src/screens/MainScreen';
 import InvitationScreen from './src/screens/InvitationScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
-// import MapScreen from './src/screens/MapScreen';
+import MapScreen from './src/screens/MapScreen';
 import TripScreen from './src/screens/Trip/TripScreen';
 import InviteeScreen from './src/screens/Trip/InviteeScreen';
 // import LocationScreen from './src/components/Search/SearchModal';
@@ -103,11 +102,11 @@ function App() {
                 name={ROUTES.profileScreen}
                 component={ProfileScreen}
               />
-              {/* <Stack.Screen
+              <Stack.Screen
                   name={ROUTES.mapScreen}
                   initialParams={{initTrip: null}}
                   component={MapScreen}
-                /> */}
+                />
               <Stack.Screen
                 name={ROUTES.tripScreen}
                 options={{gestureEnabled: false}}

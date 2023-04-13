@@ -114,6 +114,15 @@ PODS:
   - libwebp/mux (1.2.4):
     - libwebp/demux
   - libwebp/webp (1.2.4)
+  - MapboxCommon (23.4.0)
+  - MapboxCoreMaps (10.12.2):
+    - MapboxCommon (~> 23.4)
+  - MapboxMaps (10.12.2):
+    - MapboxCommon (= 23.4.0)
+    - MapboxCoreMaps (= 10.12.2)
+    - MapboxMobileEvents (= 1.0.10)
+    - Turf (~> 2.0)
+  - MapboxMobileEvents (1.0.10)
   - OpenSSL-Universal (1.1.1100)
   - RCT-Folly (2021.07.22.00):
     - boost
@@ -475,6 +484,17 @@ PODS:
     - TOCropViewController
   - RNLocalize (2.2.6):
     - React-Core
+  - rnmapbox-maps (10.0.0-rc.14):
+    - MapboxMaps (~> 10.12.0)
+    - React
+    - React-Core
+    - rnmapbox-maps/DynamicLibrary (= 10.0.0-rc.14)
+    - Turf
+  - rnmapbox-maps/DynamicLibrary (10.0.0-rc.14):
+    - MapboxMaps (~> 10.12.0)
+    - React
+    - React-Core
+    - Turf
   - RNReanimated (2.14.4):
     - DoubleConversion
     - FBLazyVector
@@ -515,6 +535,7 @@ PODS:
     - SDWebImage/Core (~> 5.10)
   - SocketRocket (0.6.0)
   - TOCropViewController (2.6.1)
+  - Turf (2.6.1)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
     - Yoga (~> 1.14)
@@ -612,6 +633,7 @@ DEPENDENCIES:
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
   - RNLocalize (from `../node_modules/react-native-localize`)
+  - "rnmapbox-maps (from `../node_modules/@rnmapbox/maps`)"
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSVG (from `../node_modules/react-native-svg`)
@@ -632,11 +654,16 @@ SPEC REPOS:
     - fmt
     - libevent
     - libwebp
+    - MapboxCommon
+    - MapboxCoreMaps
+    - MapboxMaps
+    - MapboxMobileEvents
     - OpenSSL-Universal
     - SDWebImage
     - SDWebImageWebPCoder
     - SocketRocket
     - TOCropViewController
+    - Turf
     - YogaKit
 
 EXTERNAL SOURCES:
@@ -774,6 +801,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-image-crop-picker"
   RNLocalize:
     :path: "../node_modules/react-native-localize"
+  rnmapbox-maps:
+    :path: "../node_modules/@rnmapbox/maps"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
@@ -815,6 +844,10 @@ SPEC CHECKSUMS:
   hermes-engine: f6e715aa6c8bd38de6c13bc85e07b0a337edaa89
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   libwebp: f62cb61d0a484ba548448a4bd52aabf150ff6eef
+  MapboxCommon: 2945d39158111455f353524f3c2ad356bd8d546a
+  MapboxCoreMaps: 8f355514ac5b573967badd9cf8e482561d6e8e2d
+  MapboxMaps: 9e0873d7f8bddf5751791da7be2560b4157f3c95
+  MapboxMobileEvents: de50b3a4de180dd129c326e09cd12c8adaaa46d6
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: dea3e4163184ea57c50288c15c32c1529265c58f
@@ -865,6 +898,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: 071d7a9ad81e8b83fe7663b303d132406a7d8f39
   RNImageCropPicker: 14fe1c29298fb4018f3186f455c475ab107da332
   RNLocalize: d4b8af4e442d4bcca54e68fc687a2129b4d71a81
+  rnmapbox-maps: 3af6c669a2277cbd2b2d6c826b9429daa5c5c3b7
   RNReanimated: cc5e3aa479cb9170bcccf8204291a6950a3be128
   RNScreens: 218801c16a2782546d30bd2026bb625c0302d70f
   RNSVG: 53c661b76829783cdaf9b7a57258f3d3b4c28315
@@ -872,9 +906,10 @@ SPEC CHECKSUMS:
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
+  Turf: 469ce2c3d22e5e8e4818d5a3b254699a5c89efa4
   Yoga: c618b544ff8bd8865cdca602f00cbcdb92fd6d31
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 231980dcb02af6731380e61cfeeb5d0889895f45
+PODFILE CHECKSUM: 91381d3393f2fc5ec9f83c0da0d25ef6093d1611
 
 COCOAPODS: 1.11.3

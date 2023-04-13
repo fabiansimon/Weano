@@ -8,6 +8,8 @@ import {
   ScrollView,
   FlatList,
   Platform,
+  NativeModules,
+  StatusBar,
 } from 'react-native';
 import React, {useState} from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -21,6 +23,8 @@ import SearchResultTile from './SearchResultTile';
 import Body from '../typography/Body';
 import REGEX from '../../constants/Regex';
 import Utils from '../../utils';
+
+const {StatusBarManager} = NativeModules;
 
 export default function LocationScreen({isVisible, onRequestClose, onPress}) {
   // STORES
@@ -101,9 +105,10 @@ export default function LocationScreen({isVisible, onRequestClose, onPress}) {
       animationType="slide"
       transparent
       onRequestClose={onRequestClose}>
+      <StatusBar barStyle="dark-content" />
       <KeyboardView paddingBottom={0}>
         <View style={styles.container}>
-          <SafeAreaView style={styles.header}>
+          <View style={styles.header}>
             <Pressable
               onPress={() => {
                 setSearchResult([]);
@@ -120,9 +125,9 @@ export default function LocationScreen({isVisible, onRequestClose, onPress}) {
             </Pressable>
             <Headline type={3} text={i18n.t('Search')} />
             <View style={{width: 50}} />
-          </SafeAreaView>
+          </View>
           <TextField
-            style={{marginTop: 10, marginHorizontal: PADDING.m}}
+            style={{ marginHorizontal: PADDING.m,}}
             value={term || null}
             onChangeText={val => handleSearchTerm(val)}
             onDelete={() => handleSearchTerm('')}
@@ -220,7 +225,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.neutral[50],
   },
   header: {
-    paddingTop: Platform.OS === 'android' && 10,
+    marginTop: StatusBarManager.HEIGHT - (Platform.OS === 'android' ? 25 : 10),
     paddingHorizontal: PADDING.s,
     alignItems: 'center',
     flexDirection: 'row',

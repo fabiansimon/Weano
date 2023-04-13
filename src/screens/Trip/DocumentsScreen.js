@@ -93,7 +93,9 @@ export default function DocumentsScreen() {
         ? await asyncStorageDAO.getPremiumTierLimits()
         : await asyncStorageDAO.getFreeTierLimits(),
     ).documents;
-    if (documents?.length >= usageLimit) {
+
+
+    if (documents.filter((doc) => doc.creatorId === id)?.length >= usageLimit) {
       return PremiumController.showModal();
     }
 

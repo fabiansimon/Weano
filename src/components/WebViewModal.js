@@ -47,7 +47,7 @@ export default function WebViewModal({isVisible, onRequestClose, url, title}) {
         <SafeAreaView style={styles.header}>
           <BackButton
             closeIcon
-            style={{marginLeft: PADDING.l}}
+            style={{marginLeft: PADDING.l, marginBottom: Platform.OS === 'android' ? 0 : 10}}
             isClear
             onPress={onRequestClose}
           />
@@ -57,7 +57,7 @@ export default function WebViewModal({isVisible, onRequestClose, url, title}) {
               style={{
                 textAlign: 'center',
                 alignSelf: 'center',
-                marginBottom: 10,
+                marginBottom: 14,
               }}
               text={title}
             />
@@ -123,6 +123,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   moreIcon: {
+    marginBottom: Platform.OS === 'android' ? 0 : 10,
     width: 40,
   },
 });

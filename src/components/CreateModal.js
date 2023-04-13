@@ -474,7 +474,6 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     marginHorizontal: PADDING.l,
-    marginBottom: 10,
   },
   container: {
     justifyContent: 'space-between',

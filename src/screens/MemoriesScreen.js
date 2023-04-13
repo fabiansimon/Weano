@@ -293,6 +293,7 @@ export default function MemoriesScreen({route}) {
       shadowColor: COLORS.shades[100],
       shadowRadius: 10,
     };
+
     return (
       <SafeAreaView style={styles.header}>
         <BackButton
@@ -345,7 +346,7 @@ export default function MemoriesScreen({route}) {
           </View>
         </View>
         {images && images.length > 0 && (
-          <View style={{marginTop: 10}}>{getDateSelection()}</View>
+          <View style={{marginTop: 10, marginBottom: Platform.OS === 'android' ? 20 : 0}}>{getDateSelection()}</View>
         )}
       </SafeAreaView>
     );
