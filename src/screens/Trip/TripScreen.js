@@ -12,7 +12,6 @@ import {
 import * as Animatable from 'react-native-animatable';
 import Toast from 'react-native-toast-message';
 import React, {useRef, useState, useEffect, useCallback} from 'react';
-import Clipboard from '@react-native-clipboard/clipboard';
 import Icon from 'react-native-vector-icons/Ionicons';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import AntIcon from 'react-native-vector-icons/AntDesign';
@@ -842,7 +841,8 @@ export default function TripScreen({route}) {
           <AnimatedHeader
             style={{
               height:
-                StatusBarManager.HEIGHT + (Platform.OS === 'android' ? 0 : 110),
+                StatusBarManager.HEIGHT +
+                (Platform.OS === 'android' ? 100 : 110),
             }}
             scrollDistance={480}
             threshold={1.2}
@@ -971,8 +971,7 @@ export default function TripScreen({route}) {
           />
         </View>
         {!inactive ? (
-          // <DestinationScreen navigatePage={() => setViewIndex(0)} />
-          <View />
+          <DestinationScreen navigatePage={() => setViewIndex(0)} />
         ) : (
           <View />
         )}

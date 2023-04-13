@@ -4,6 +4,7 @@ import {
   Pressable,
   RefreshControl,
   Share,
+  StatusBar,
   StyleSheet,
   View,
 } from 'react-native';
@@ -285,6 +286,7 @@ export default function MainScreen() {
 
   return (
     <GestureHandlerRootView style={{flex: 1}}>
+      <StatusBar barStyle="dark-content" />
       <View
         style={{
           backgroundColor: COLORS.neutral[50],

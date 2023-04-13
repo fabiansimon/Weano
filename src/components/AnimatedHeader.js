@@ -36,7 +36,7 @@ function AnimatedHeader({
         [styles.stickyHeader, style, {marginTop}],
         {
           opacity: opacity,
-          transform: [{translateY: translateY}],
+          transform: [{translateY}],
         },
       ]}>
       {children}
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     width: '100%',
-    height: Platform.OS === 'android' ? 70 : 0,
+    height: Platform.OS === 'android' ? 70 : undefined,
     backgroundColor: COLORS.shades[0],
     shadowColor: COLORS.shades[100],
     shadowOffset: {

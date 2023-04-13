@@ -95,6 +95,7 @@ function App() {
               />
               <Stack.Screen
                 name={ROUTES.invitationScreen}
+                // initialParams={{tripId: '640cda3fe90057102b89c66d'}}
                 component={InvitationScreen}
                 options={{gestureEnabled: false}}
               />

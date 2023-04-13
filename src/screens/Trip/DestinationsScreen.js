@@ -1,5 +1,5 @@
 import React, {useMemo, useRef, useState, useEffect, useCallback} from 'react';
-import {Dimensions, StyleSheet, View} from 'react-native';
+import {Dimensions, Platform, StyleSheet, View} from 'react-native';
 import MapboxGL from '@rnmapbox/maps';
 import Toast from 'react-native-toast-message';
 import bbox from '@turf/bbox';
@@ -81,7 +81,7 @@ export default function DestinationScreen({navigatePage}) {
       i18n.t('Yes'),
       async () => {
         const oldData = destinations;
-        // eslint-disable-next-line array-callback-return
+
         const newArr = destinations.filter((item, i) => {
           if (i !== index) {
             return item;
@@ -92,7 +92,6 @@ export default function DestinationScreen({navigatePage}) {
         sheetRef.current.snapToIndex(0);
       },
     );
-    // eslint-disable-next-line array-callback-return
   };
 
   const handleAddDestination = input => {
@@ -240,7 +239,11 @@ export default function DestinationScreen({navigatePage}) {
         {renderLines()}
       </MapboxGL.MapView>
       <SafeAreaView edges={['top']} style={styles.header}>
-        <BackButton onPress={handleNavigation} isClear />
+        <BackButton
+          style={{marginBottom: Platform.OS === 'android' ? 10 : 0}}
+          onPress={handleNavigation}
+          isClear
+        />
         <View
           style={{
             position: 'absolute',
@@ -311,7 +314,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.shades[0],
     paddingHorizontal: PADDING.m,
     zIndex: 2,
-    paddingTop: 10,
+    paddingTop: Platform.OS === 'android' ? 25 : 10,
     paddingBottom: 10,
     shadowColor: COLORS.neutral[300],
     shadowOffset: {width: 0, height: 10},

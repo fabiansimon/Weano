@@ -1,4 +1,10 @@
-import {ActivityIndicator, ScrollView, StyleSheet, View} from 'react-native';
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import Toast from 'react-native-toast-message';
 import React, {useRef, useEffect, useState} from 'react';
 import PagerView from 'react-native-pager-view';
@@ -19,11 +25,13 @@ import ROUTES from '../constants/Routes';
 import GET_INVITATION_TRIP_DATA from '../queries/getInvitationTripData';
 import JOIN_TRIP from '../mutations/joinTrip';
 import userStore from '../stores/UserStore';
+import Divider from '../components/Divider';
+import Avatar from '../components/Avatar';
+import DefaultImage from '../../assets/images/default_trip.png';
 
 export default function InvitationScreen({route}) {
   // PARAMS
   const {tripId} = route.params;
-
   // QUERIES
   const {loading, error, data} = useQuery(GET_INVITATION_TRIP_DATA, {
     variables: {
@@ -56,8 +64,8 @@ export default function InvitationScreen({route}) {
     }
 
     if (data) {
-      const {getInvitationTripData} = data;
-      setTripData(getInvitationTripData);
+      const {getTripById} = data;
+      setTripData(getTripById);
     }
   }, [data, error, jError]);
 
@@ -106,9 +114,7 @@ export default function InvitationScreen({route}) {
   const handleDecline = async () => {
     Utils.showConfirmationAlert(
       i18n.t('Decline Invitation'),
-      i18n.t(
-        `Are you sure you want to decline ${tripData.hostName}'s invitation?`,
-      ),
+      i18n.t('Are you sure you want to decline the invitation?'),
       i18n.t('Decline'),
       async () => {
         navigation.navigate(ROUTES.initDataCrossroads);
@@ -118,60 +124,85 @@ export default function InvitationScreen({route}) {
 
   const getTripInviteContainer = () => (
     <View style={styles.tripInvite}>
-      <Headline type={3} isDense text={tripData && tripData.title} />
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{paddingRight: 30}}
-        style={{
-          flexDirection: 'row',
-          marginTop: 4,
-          marginHorizontal: -PADDING.m,
-          paddingLeft: PADDING.m,
-        }}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Icon name="location-pin" color={COLORS.neutral[300]} size={18} />
-          <Body
-            type={1}
-            style={{marginLeft: 2}}
-            color={COLORS.neutral[300]}
-            text={
-              tripData?.location?.placeName.split(',')[0] ||
-              i18n.t('No location yet')
-            }
+      <View>
+        {tripData?.thumbnailUri && (
+          <Image
+            source={{uri: tripData.thumbnailUri}}
+            style={{
+              height: 120,
+              borderTopLeftRadius: RADIUS.s,
+              borderTopRightRadius: RADIUS.s,
+            }}
           />
-        </View>
+        )}
         <View
-          style={{marginLeft: 12, flexDirection: 'row', alignItems: 'center'}}>
-          <AntIcon name="calendar" size={18} color={COLORS.neutral[300]} />
-          <Body
-            type={1}
-            style={{marginLeft: 8}}
-            color={COLORS.neutral[300]}
-            text={
-              tripData?.dateRange?.startDate
-                ? getDateRange()
-                : i18n.t('No date yet')
-            }
-          />
+          style={{
+            flexDirection: 'row',
+            position: 'absolute',
+            bottom: 10,
+            right: 10,
+          }}>
+          {tripData?.activeMembers.map(member => (
+            <Avatar
+              disabled
+              key={member.id}
+              data={member}
+              size={24}
+              style={{marginLeft: -8}}
+            />
+          ))}
         </View>
-      </ScrollView>
-      <View
-        style={{
-          marginTop: 18,
-          padding: 10,
-          backgroundColor: COLORS.neutral[50],
-          borderRadius: 10,
-          borderWidth: 0.5,
-          borderColor: COLORS.neutral[100],
-        }}>
+      </View>
+      <View style={{marginHorizontal: 10, marginTop: 8}}>
+        <Headline type={3} isDense text={tripData && tripData.title} />
+        <View
+          style={{
+            flexDirection: 'row',
+            marginTop: 8,
+            marginBottom: 2,
+            marginHorizontal: -PADDING.m,
+            paddingLeft: PADDING.m,
+          }}>
+          <View
+            style={{flexDirection: 'row', alignItems: 'center', marginTop: 2}}>
+            <Icon name="location-pin" color={COLORS.neutral[900]} size={18} />
+            <Body
+              type={1}
+              style={{marginLeft: 2}}
+              color={COLORS.neutral[900]}
+              text={
+                tripData?.destinations[0].placeName.split(',')[0] ||
+                i18n.t('No location yet')
+              }
+            />
+          </View>
+          <View
+            style={{
+              marginLeft: 12,
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
+            <AntIcon name="calendar" size={18} color={COLORS.neutral[900]} />
+            <Body
+              type={1}
+              style={{marginLeft: 8}}
+              color={COLORS.neutral[900]}
+              text={
+                tripData?.dateRange?.startDate
+                  ? getDateRange()
+                  : i18n.t('No date yet')
+              }
+            />
+          </View>
+        </View>
+        <Divider />
         <Body
-          type={1}
+          type={2}
           text={
             tripData?.description ||
             i18n.t('No description yet for this trip ✒️')
           }
-          style={{marginLeft: 4, color: COLORS.neutral[300]}}
+          style={{marginTop: 2, marginLeft: 6, color: COLORS.neutral[700]}}
         />
       </View>
     </View>
@@ -194,18 +225,16 @@ export default function InvitationScreen({route}) {
                 <View>
                   <Headline
                     type={3}
-                    text={i18n.t("You've been invited")}
+                    text={i18n.t("You've been invited!")}
                     color={COLORS.shades[100]}
                   />
                   <Body
                     type={1}
-                    text={`${tripData?.hostName} ${i18n.t(
-                      'invited you to join a trip 🏝',
-                    )}`}
+                    text={i18n.t("Let's go! What are you waiting for?")}
                     style={{marginTop: 2}}
                     color={COLORS.neutral[300]}
                   />
-                  {getTripInviteContainer()}
+                  {tripData && getTripInviteContainer()}
                 </View>
                 <View style={{width: '100%', height: 100}}>
                   <Button
@@ -239,11 +268,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   tripInvite: {
+    // overflow: 'hidden',
     marginTop: 50,
-    borderRadius: RADIUS.m,
+    borderRadius: RADIUS.s,
     backgroundColor: COLORS.shades[0],
     borderColor: COLORS.neutral[100],
-    borderWidth: 0.5,
-    padding: 15,
+    borderWidth: 1,
+    marginHorizontal: -5,
+    paddingBottom: 15,
+    shadowColor: COLORS.neutral[500],
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    shadowOffset: {},
   },
 });

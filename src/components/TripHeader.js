@@ -75,6 +75,7 @@ export default function TripHeader({
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: COLORS.shades[0],
     marginTop: StatusBarManager.HEIGHT - (Platform.OS === 'android' ? 30 : 15),
   },
   header: {

@@ -37,6 +37,7 @@ export default function HybridHeader({
         <SafeAreaView
           style={{
             flex: 1,
+            // marginTop: -25,
             marginBottom: -24,
           }}>
           <Headline
