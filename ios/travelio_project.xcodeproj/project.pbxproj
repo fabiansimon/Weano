@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* travelio_projectTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* travelio_projectTests.m */; };
-		08FF72B10114C65C472F10A4 /* Pods_travelio_project.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7C41B7997E973F5BCD49F6F /* Pods_travelio_project.framework */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
@@ -84,8 +83,9 @@
 		1FAC40A1285267B90089BDEE /* FontAwesome5_Brands.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1FAC4081285267B90089BDEE /* FontAwesome5_Brands.ttf */; };
 		255B5035E24571E69682A6AD /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9AD4085254070A587C11756 /* ExpoModulesProvider.swift */; };
 		5096C07D7789B4DE86704F30 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40E6425841D5FA9553DF8DA8 /* ExpoModulesProvider.swift */; };
-		6C0DF52B3E0E0C97782231F7 /* Pods_travelio_project_travelio_projectTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2068E4F88832352B112781FC /* Pods_travelio_project_travelio_projectTests.framework */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		F42D87EE58FE724AB0C94AE3 /* libPods-travelio_project-travelio_projectTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60E9CDBEAC09333BF5A2A863 /* libPods-travelio_project-travelio_projectTests.a */; };
+		F9B627A9FBBC73F3736BDB12 /* libPods-travelio_project.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B2C7D79BB9ECD24EE1E4A210 /* libPods-travelio_project.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -148,7 +148,6 @@
 		1FAC407F285267B90089BDEE /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = FontAwesome5_Solid.ttf; path = "../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf"; sourceTree = "<group>"; };
 		1FAC4080285267B90089BDEE /* Foundation.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Foundation.ttf; path = "../../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
 		1FAC4081285267B90089BDEE /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = FontAwesome5_Brands.ttf; path = "../../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf"; sourceTree = "<group>"; };
-		2068E4F88832352B112781FC /* Pods_travelio_project_travelio_projectTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_travelio_project_travelio_projectTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		21353FEFB65248238D811CB3 /* WorkSans-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "WorkSans-ExtraBoldItalic.ttf"; path = "../assets/fonts/WorkSans-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
 		215EC05CCE4C4907ADC1BB08 /* WorkSans-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "WorkSans-MediumItalic.ttf"; path = "../assets/fonts/WorkSans-MediumItalic.ttf"; sourceTree = "<group>"; };
 		22CC229C2972EB60006EEF1C /* travelio_project.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = travelio_project.entitlements; path = travelio_project/travelio_project.entitlements; sourceTree = "<group>"; };
@@ -160,15 +159,16 @@
 		4E46FAB770F566E303B0B31B /* Pods-travelio_project-travelio_projectTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-travelio_project-travelio_projectTests.release.xcconfig"; path = "Target Support Files/Pods-travelio_project-travelio_projectTests/Pods-travelio_project-travelio_projectTests.release.xcconfig"; sourceTree = "<group>"; };
 		50F63DACE27C43BFA3539CA1 /* WorkSans-ExtraLightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "WorkSans-ExtraLightItalic.ttf"; path = "../assets/fonts/WorkSans-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
 		54618D02FCF141DE864751A0 /* WorkSans-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "WorkSans-SemiBold.ttf"; path = "../assets/fonts/WorkSans-SemiBold.ttf"; sourceTree = "<group>"; };
+		60E9CDBEAC09333BF5A2A863 /* libPods-travelio_project-travelio_projectTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-travelio_project-travelio_projectTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8192BD9F3B344EDBAC05CB78 /* WorkSans-ThinItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "WorkSans-ThinItalic.ttf"; path = "../assets/fonts/WorkSans-ThinItalic.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = travelio_project/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9F6E34D837FF4D3BB1EBE93D /* WorkSans-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "WorkSans-SemiBoldItalic.ttf"; path = "../assets/fonts/WorkSans-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
 		A9AD4085254070A587C11756 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-travelio_project/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		B2C7D79BB9ECD24EE1E4A210 /* libPods-travelio_project.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-travelio_project.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B62C066B03C206340E1E3AB3 /* Pods-travelio_project.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-travelio_project.release.xcconfig"; path = "Target Support Files/Pods-travelio_project/Pods-travelio_project.release.xcconfig"; sourceTree = "<group>"; };
 		D29581E6F1EA4B9BA5037AB5 /* WorkSans-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "WorkSans-Bold.ttf"; path = "../assets/fonts/WorkSans-Bold.ttf"; sourceTree = "<group>"; };
 		D4E1C356411E751834992666 /* Pods-travelio_project-travelio_projectTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-travelio_project-travelio_projectTests.debug.xcconfig"; path = "Target Support Files/Pods-travelio_project-travelio_projectTests/Pods-travelio_project-travelio_projectTests.debug.xcconfig"; sourceTree = "<group>"; };
 		E45760BF2CE840DEA90E670A /* WorkSans-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "WorkSans-Thin.ttf"; path = "../assets/fonts/WorkSans-Thin.ttf"; sourceTree = "<group>"; };
-		E7C41B7997E973F5BCD49F6F /* Pods_travelio_project.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_travelio_project.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8C0FEFF508D4ED09425D064 /* WorkSans-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "WorkSans-ExtraBold.ttf"; path = "../assets/fonts/WorkSans-ExtraBold.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F03FA6F505074293908F23B0 /* WorkSans-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "WorkSans-LightItalic.ttf"; path = "../assets/fonts/WorkSans-LightItalic.ttf"; sourceTree = "<group>"; };
@@ -179,7 +179,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6C0DF52B3E0E0C97782231F7 /* Pods_travelio_project_travelio_projectTests.framework in Frameworks */,
+				F42D87EE58FE724AB0C94AE3 /* libPods-travelio_project-travelio_projectTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -187,7 +187,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				08FF72B10114C65C472F10A4 /* Pods_travelio_project.framework in Frameworks */,
+				F9B627A9FBBC73F3736BDB12 /* libPods-travelio_project.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -289,8 +289,8 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				E7C41B7997E973F5BCD49F6F /* Pods_travelio_project.framework */,
-				2068E4F88832352B112781FC /* Pods_travelio_project_travelio_projectTests.framework */,
+				B2C7D79BB9ECD24EE1E4A210 /* libPods-travelio_project.a */,
+				60E9CDBEAC09333BF5A2A863 /* libPods-travelio_project-travelio_projectTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -785,6 +785,7 @@
 				INFOPLIST_FILE = travelio_project/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Weano;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -821,6 +822,7 @@
 				INFOPLIST_FILE = travelio_project/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Weano;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.travel";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -892,7 +894,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",
@@ -957,7 +959,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					/usr/lib/swift,
 					"$(inherited)",

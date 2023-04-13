@@ -66,8 +66,8 @@ export default function Button({
         // eslint-disable-next-line no-unused-expressions
         !isLoading && onPress();
         // eslint-disable-next-line no-unused-expressions
-        !disableHaptics &&
-          ReactNativeHapticFeedback.trigger('impactLight', options);
+        // !disableHaptics &&
+        //   ReactNativeHapticFeedback.trigger('impactLight', options);
       }}
       disabled={isDisabled}>
       {icon && !isLoading && getIcon()}
