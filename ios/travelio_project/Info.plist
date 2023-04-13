@@ -19,7 +19,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>1.81</string>
 	<key>LSApplicationCategoryType</key>
-	<string></string>
+	<string/>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -53,7 +53,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Allow $(PRODUCT_NAME) to use the camera</string>
 	<key>NSContactsUsageDescription</key>
-	<string>We need to access your contacts, so you&apos;re able to add them to the trip</string>
+	<string>We need to access your contacts, so you're able to add them to the trip</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>We need to access your location</string>
 	<key>NSMicrophoneUsageDescription</key>
@@ -108,7 +108,7 @@
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
 	<key>CFBundleGetInfoString</key>
-	<string></string>
+	<string/>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 </dict>
