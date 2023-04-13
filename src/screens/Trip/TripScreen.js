@@ -52,7 +52,7 @@ import GET_TRIP_BY_ID from '../../queries/getTripById';
 import TripScreenSkeleton from './TripScreenSkeleton';
 import userManagement from '../../utils/userManagement';
 import DELETE_TRIP_BY_ID from '../../mutations/deleteTripById';
-import QRModal from '../../components/Trip/QRModal';
+import ShareModal from '../../components/Trip/ShareModal';
 import tripsStore from '../../stores/TripsStore';
 import DocumentsContainer from '../../components/Trip/DocumentsContainer';
 import AccentBubble from '../../components/Trip/AccentBubble';
@@ -965,7 +965,7 @@ export default function TripScreen({route}) {
                 : updateTitle(string)
             }
           />
-          <QRModal
+          <ShareModal
             isVisible={showQR}
             onRequestClose={() => setShowQR(false)}
             value={`${META_DATA.baseUrl}/redirect/invitation/${tripId}`}
