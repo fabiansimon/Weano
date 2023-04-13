@@ -1,8 +1,4 @@
-import {
-  Pressable,
-  StyleSheet,
-  View,
-} from 'react-native';
+import {Pressable, StyleSheet, View} from 'react-native';
 import React from 'react';
 import FastImage from 'react-native-fast-image';
 import ContextMenu from 'react-native-context-menu-view';
@@ -15,10 +11,19 @@ import i18n from '../../utils/i18n';
 import AccentBubble from './AccentBubble';
 
 export default function TripContainer({
-  trip, onLongPress, disabled = true, size, isDense = false, onPress,
+  trip,
+  onLongPress,
+  disabled = true,
+  size,
+  isDense = false,
+  onPress,
 }) {
   const {
-    destinations, thumbnailUri: uri, dateRange, type, userFreeImages,
+    destinations,
+    thumbnailUri: uri,
+    dateRange,
+    type,
+    userFreeImages,
   } = trip;
 
   const height = size || 62;
@@ -38,8 +43,8 @@ export default function TripContainer({
   };
 
   const getActions = () => {
-    const map = { title: i18n.t('Visit on Map'), systemIcon: 'map' };
-    const camera = { title: i18n.t('Capture a memory'), systemIcon: 'camera' };
+    const map = {title: i18n.t('Visit on Map'), systemIcon: 'map'};
+    const camera = {title: i18n.t('Capture a memory'), systemIcon: 'camera'};
 
     return [map, camera];
   };
@@ -51,47 +56,49 @@ export default function TripContainer({
     <ContextMenu
       previewBackgroundColor={COLORS.neutral[50]}
       actions={actions}
-      onPress={(e) => onLongPress(e, trip.id)}
-      disabled={disabled}
-    >
+      onPress={e => onLongPress(e, trip.id)}
+      disabled={disabled}>
       <Pressable
-        style={{ marginRight: 14, maxWidth: width + 6 }}
-        onPress={onPress}
-      >
-
-        <View style={[styles.outerTripContainer, {
-          borderColor, borderRadius: borderRadius + 2, height: height + 6, width: width + 6,
-        }]}
-        >
+        style={{marginRight: 14, maxWidth: width + 6}}
+        onPress={onPress}>
+        <View
+          style={[
+            styles.outerTripContainer,
+            {
+              borderColor,
+              borderRadius: borderRadius + 2,
+              height: height + 6,
+              width: width + 6,
+            },
+          ]}>
           <FastImage
-            style={[styles.tripContainer, { height, width, borderRadius }]}
-            source={uri ? { uri } : DefaultImage}
+            style={[styles.tripContainer, {height, width, borderRadius}]}
+            source={uri ? {uri} : DefaultImage}
           />
           {userFreeImages > 0 && (
-          <AccentBubble
-            style={{ position: 'absolute', right: 0, bottom: 0 }}
-            text={userFreeImages}
-          />
+            <AccentBubble
+              style={{position: 'absolute', right: 0, bottom: 0}}
+              text={userFreeImages}
+            />
           )}
         </View>
         {!isDense && (
-        <>
-          <Body
-            numberOfLines={2}
-            ellipsizeMode="tail"
-            style={{ marginTop: 6, marginBottom: -2, textAlign: 'center' }}
-            type={2}
-            text={destinations[0]?.placeName.split(',')[0]}
-          />
-          <Label
-            style={{ textAlign: 'center' }}
-            type={1}
-            color={COLORS.neutral[300]}
-            text={Utils.getDateFromTimestamp(dateRange.startDate, 'YYYY')}
-          />
-        </>
+          <>
+            <Body
+              numberOfLines={2}
+              ellipsizeMode="tail"
+              style={{marginTop: 6, marginBottom: -2, textAlign: 'center'}}
+              type={2}
+              text={destinations[0]?.placeName.split(',')[0]}
+            />
+            <Label
+              style={{textAlign: 'center'}}
+              type={1}
+              color={COLORS.neutral[300]}
+              text={Utils.getDateFromTimestamp(dateRange.startDate, 'YYYY')}
+            />
+          </>
         )}
-
       </Pressable>
     </ContextMenu>
   );
@@ -106,5 +113,4 @@ const styles = StyleSheet.create({
   tripContainer: {
     backgroundColor: COLORS.shades[0],
   },
-
 });

@@ -1,13 +1,15 @@
 import 'react-native-get-random-values';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { v4 as uuidv4 } from 'uuid';
+import {v4 as uuidv4} from 'uuid';
 import {
-  ACCESS_KEY_ID, SECRET_ACCESS_KEY, S3_BUCKET, MAPBOX_TOKEN, APP_TOKEN,
-  // eslint-disable-next-line import/no-unresolved
+  ACCESS_KEY_ID,
+  SECRET_ACCESS_KEY,
+  S3_BUCKET,
+  MAPBOX_TOKEN,
+  APP_TOKEN,
 } from '@env';
-import { S3 } from 'aws-sdk';
-import { decode } from 'base64-arraybuffer';
-import { readFile } from 'react-native-fs';
+import {S3} from 'aws-sdk';
+import {decode} from 'base64-arraybuffer';
+import {readFile} from 'react-native-fs';
 import META_DATA from '../constants/MetaData';
 
 async function sendInvitations(invitees, tripId) {
@@ -19,11 +21,11 @@ async function sendInvitations(invitees, tripId) {
         'App-Token': APP_TOKEN,
       },
     })
-      .then((res) => res.json())
-      .then((res) => {
+      .then(res => res.json())
+      .then(res => {
         resolve(res);
       })
-      .catch((err) => {
+      .catch(err => {
         reject(err);
       });
   });
@@ -38,11 +40,11 @@ async function getVerificationCode(phoneNumber) {
         'App-Token': APP_TOKEN,
       },
     })
-      .then((res) => res.json())
-      .then((res) => {
+      .then(res => res.json())
+      .then(res => {
         resolve(res);
       })
-      .catch((err) => {
+      .catch(err => {
         reject(err);
       });
   });
@@ -57,11 +59,11 @@ async function checkVerificationCode(phoneNumber, code) {
         'App-Token': APP_TOKEN,
       },
     })
-      .then((res) => res.json())
-      .then((res) => {
+      .then(res => res.json())
+      .then(res => {
         resolve(res);
       })
-      .catch((err) => {
+      .catch(err => {
         reject(err);
       });
   });
@@ -87,13 +89,15 @@ async function uploadToS3(image, transformToBase64 = false, document) {
     arrayBuffer = decode(base64);
 
     // eslint-disable-next-line no-return-await
-    return await bucket.upload({
-      Bucket: S3_BUCKET,
-      Key: `${key}/helloworld.pdf`,
-      ContentDisposition: 'attachment',
-      Body: arrayBuffer,
-      ContentType: type,
-    }).promise();
+    return await bucket
+      .upload({
+        Bucket: S3_BUCKET,
+        Key: `${key}/helloworld.pdf`,
+        ContentDisposition: 'attachment',
+        Body: arrayBuffer,
+        ContentType: type,
+      })
+      .promise();
   }
 
   const type = 'image/jpeg';
@@ -107,13 +111,15 @@ async function uploadToS3(image, transformToBase64 = false, document) {
   }
 
   // eslint-disable-next-line no-return-await
-  return await bucket.upload({
-    Bucket: S3_BUCKET,
-    Key: key,
-    ContentDisposition: 'attachment',
-    Body: arrayBuffer,
-    ContentType: type,
-  }).promise();
+  return await bucket
+    .upload({
+      Bucket: S3_BUCKET,
+      Key: key,
+      ContentDisposition: 'attachment',
+      Body: arrayBuffer,
+      ContentType: type,
+    })
+    .promise();
 }
 
 async function getLocationFromQuery(input) {
@@ -122,7 +128,8 @@ async function getLocationFromQuery(input) {
     .replace('ß', 'ss')
     .replace(/[^A-Za-z\-\s]+/g, '')
     .trim()
-    .replace(' ', '%20'); input.trim();
+    .replace(' ', '%20');
+  input.trim();
   const limit = 2;
 
   if (query.length < 1) {
@@ -137,11 +144,11 @@ async function getLocationFromQuery(input) {
         'Content-Type': 'application/json',
       },
     })
-      .then((res) => res.json())
-      .then((res) => {
+      .then(res => res.json())
+      .then(res => {
         resolve(res);
       })
-      .catch((err) => {
+      .catch(err => {
         reject(err);
       });
   });

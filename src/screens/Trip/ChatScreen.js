@@ -8,17 +8,18 @@ import {
   ScrollView,
   StatusBar,
 } from 'react-native';
-import React, {
-  useState, useEffect, useRef,
-} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import Icon from 'react-native-vector-icons/EvilIcons';
 import MatIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontIcon from 'react-native-vector-icons/FontAwesome';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import Animated, {
-  useAnimatedStyle, useSharedValue, withSpring, withTiming,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
 } from 'react-native-reanimated';
-import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
+import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import BackButton from '../../components/BackButton';
 import Headline from '../../components/typography/Headline';
 import Body from '../../components/typography/Body';
@@ -38,7 +39,7 @@ export default function ChatScreen() {
   const [pollVisible, setPollVisible] = useState(false);
   const [chatData, setChatData] = useState([]);
   const chatRef = useRef();
-  const animatedValues = useSharedValue({ height: 0, opacity: 0 });
+  const animatedValues = useSharedValue({height: 0, opacity: 0});
   const duration = 250;
 
   const attachmentData = [
@@ -65,7 +66,6 @@ export default function ChatScreen() {
       icon: <MatIcon name="timer-outline" />,
       type: ATTACHMENTS.countdown,
     },
-
   ];
 
   const mockData = [
@@ -103,7 +103,6 @@ export default function ChatScreen() {
           type: 'STRING',
           content: 'Fix du hengst 🍣',
         },
-
       ],
     },
     {
@@ -209,13 +208,13 @@ export default function ChatScreen() {
       ],
     };
 
-    setChatData((prev) => prev.concat(newMessage));
+    setChatData(prev => prev.concat(newMessage));
     setMessage('');
     toggleExpand();
     scrollDown();
   };
 
-  const extractPollData = (data) => {
+  const extractPollData = data => {
     const options = [];
     for (let i = 1; i < data.length; i += 1) {
       options.push({
@@ -233,42 +232,38 @@ export default function ChatScreen() {
   const animationStyle = useAnimatedStyle(() => ({
     height: !footerExpanded
       ? withTiming(animatedValues.value.height, {
-        duration,
-      })
+          duration,
+        })
       : withSpring(animatedValues.value.height, {
-        duration,
-        mass: 0.3,
-      }),
+          duration,
+          mass: 0.3,
+        }),
 
     opacity: withSpring(animatedValues.value.opacity, {
       duration,
     }),
   }));
 
-  const toggleExpand = (val) => {
+  const toggleExpand = val => {
     if (!val) {
       setFooterExpanded(false);
-      animatedValues.value = { height: 0, opacity: 0 };
+      animatedValues.value = {height: 0, opacity: 0};
       return;
     }
 
     setFooterExpanded(!footerExpanded);
-    animatedValues.value = { height: !footerExpanded ? 70 : 0, opacity: !footerExpanded ? 1 : 0 };
+    animatedValues.value = {
+      height: !footerExpanded ? 70 : 0,
+      opacity: !footerExpanded ? 1 : 0,
+    };
   };
 
   const getHeader = () => (
     <View style={styles.header}>
       <BackButton />
       <View style={styles.title}>
-        <Headline
-          type={3}
-          text="Maturareise 2022"
-        />
-        <Body
-          type={2}
-          text="2 members"
-          color={COLORS.neutral[300]}
-        />
+        <Headline type={3} text="Maturareise 2022" />
+        <Body type={2} text="2 members" color={COLORS.neutral[300]} />
       </View>
     </View>
   );
@@ -277,31 +272,41 @@ export default function ChatScreen() {
     <View style={styles.chatContainer}>
       <ScrollView
         ref={chatRef}
-        contentContainerStyle={{ flexGrow: 1, paddingVertical: 20, paddingHorizontal: PADDING.s }}
-        showsVerticalScrollIndicator={false}
-      >
-        {chatData.map((item) => <ChatMessageContainer data={item} />)}
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingVertical: 20,
+          paddingHorizontal: PADDING.s,
+        }}
+        showsVerticalScrollIndicator={false}>
+        {chatData.map(item => (
+          <ChatMessageContainer data={item} />
+        ))}
       </ScrollView>
     </View>
   );
 
   const getFooter = () => (
     <SafeAreaView style={styles.footerContainer}>
-      <Animated.View style={[styles.attachmentContainer, animationStyle, {
-        borderTopColor: COLORS.neutral[100],
-        borderTopWidth: footerExpanded ? 1 : 0,
-      }]}
-      >
+      <Animated.View
+        style={[
+          styles.attachmentContainer,
+          animationStyle,
+          {
+            borderTopColor: COLORS.neutral[100],
+            borderTopWidth: footerExpanded ? 1 : 0,
+          },
+        ]}>
         <ScrollView
           horizontal
           scrollEnabled
           showsHorizontalScrollIndicator={false}
           paddingHorizontal={PADDING.xl}
-          style={{ paddingTop: 14 }}
-        >
+          style={{paddingTop: 14}}>
           {attachmentData.map((attachment, index) => (
             <AttachmentContainer
-              style={{ marginRight: index === attachmentData.length - 1 ? 50 : 8 }}
+              style={{
+                marginRight: index === attachmentData.length - 1 ? 50 : 8,
+              }}
               onPress={attachment.onPress}
               data={attachment}
             />
@@ -318,20 +323,19 @@ export default function ChatScreen() {
             backgroundColor: COLORS.neutral[100],
             alignItems: 'center',
             justifyContent: 'center',
-          }}
-        >
+          }}>
           {footerExpanded ? (
             <Icon
               name="chevron-down"
               size={40}
-              style={{ opacity: 0.3, marginTop: -2 }}
+              style={{opacity: 0.3, marginTop: -2}}
               color={COLORS.neutral[700]}
             />
           ) : (
             <Icon
               name="paperclip"
               size={32}
-              style={{ opacity: 0.3 }}
+              style={{opacity: 0.3}}
               color={COLORS.neutral[700]}
             />
           )}
@@ -341,7 +345,7 @@ export default function ChatScreen() {
             style={styles.textInput}
             selectionColor={COLORS.primary[700]}
             value={message || null}
-            onChangeText={(val) => setMessage(val)}
+            onChangeText={val => setMessage(val)}
             placeholder={i18n.t('Type a message...')}
             placeholderTextColor={COLORS.neutral[300]}
             onFocus={scrollDown}
@@ -349,8 +353,7 @@ export default function ChatScreen() {
         </View>
         <TouchableOpacity
           onPress={() => sendMessage('STRING', message)}
-          style={styles.roundButton}
-        >
+          style={styles.roundButton}>
           <IonIcon
             name="ios-paper-plane"
             size={22}
@@ -366,7 +369,7 @@ export default function ChatScreen() {
       <KeyboardView ignoreTouch>
         <StatusBar barStyle="dark-content" />
         <View style={styles.container}>
-          <SafeAreaView style={{ backgroundColor: COLORS.shades[0] }}>
+          <SafeAreaView style={{backgroundColor: COLORS.shades[0]}}>
             {getHeader()}
           </SafeAreaView>
           {getChatContainer()}
@@ -376,13 +379,15 @@ export default function ChatScreen() {
 
       {/* Add Expense Modal */}
       <AddExpenseModal
-        onPress={(data) => sendMessage('WIDGET', WIDGETS.TYPE_EXPENSE, data)}
+        onPress={data => sendMessage('WIDGET', WIDGETS.TYPE_EXPENSE, data)}
         isVisible={expenseVisible}
         onRequestClose={() => setExpenseVisible(false)}
       />
       {/* Add Poll Modal */}
       <AddPollModal
-        onPress={(data) => sendMessage('WIDGET', WIDGETS.TYPE_POLL, extractPollData(data))}
+        onPress={data =>
+          sendMessage('WIDGET', WIDGETS.TYPE_POLL, extractPollData(data))
+        }
         isVisible={pollVisible}
         onRequestClose={() => setPollVisible(false)}
       />
@@ -463,9 +468,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: RADIUS.s,
   },
   roundButton: {
-    transform: [
-      { rotate: '45deg' },
-    ],
+    transform: [{rotate: '45deg'}],
     alignItems: 'center',
     backgroundColor: 'transparent',
     borderRadius: RADIUS.xl,

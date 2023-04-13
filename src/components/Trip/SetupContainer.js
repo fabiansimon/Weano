@@ -1,44 +1,29 @@
-import {
-  Image, Pressable, StyleSheet, View,
-} from 'react-native';
+import {Image, Pressable, StyleSheet, View} from 'react-native';
 import React from 'react';
-import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
+import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import Headline from '../typography/Headline';
 import Subtitle from '../typography/Subtitle';
 import Calendar3D from '../../../assets/images/calendar_3d.png';
 import Location3D from '../../../assets/images/location_3d.png';
 import i18n from '../../utils/i18n';
 
-export default function SetupContainer({
-  style, onPress, type = 'location',
-}) {
+export default function SetupContainer({style, onPress, type = 'location'}) {
   const source = type === 'location' ? Location3D : Calendar3D;
-  const title = type === 'location' ? i18n.t('Set destination') : i18n.t('Set date');
+  const title =
+    type === 'location' ? i18n.t('Set destination') : i18n.t('Set date');
 
   return (
-    <Pressable
-      onPress={onPress}
-      style={[styles.container, style]}
-    >
-      <View style={{ justifyContent: 'space-between' }}>
-        <Headline
-          type={3}
-          isDense
-          text={title}
-          color={COLORS.shades[0]}
-        />
+    <Pressable onPress={onPress} style={[styles.container, style]}>
+      <View style={{justifyContent: 'space-between'}}>
+        <Headline type={3} isDense text={title} color={COLORS.shades[0]} />
         <Subtitle
-          style={{ marginTop: 2 }}
+          style={{marginTop: 2}}
           type={2}
           text={i18n.t('You can always change it later')}
           color={COLORS.shades[0]}
         />
       </View>
-      <Image
-        source={source}
-        resizeMode="cover"
-        style={styles.image}
-      />
+      <Image source={source} resizeMode="cover" style={styles.image} />
     </Pressable>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   Modal,
   StyleSheet,
@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import EntIcon from 'react-native-vector-icons/Entypo';
-import COLORS, { PADDING, RADIUS } from '../constants/Theme';
+import COLORS, {PADDING, RADIUS} from '../constants/Theme';
 import i18n from '../utils/i18n';
 // eslint-disable-next-line import/no-cycle
 import Avatar from './Avatar';
@@ -19,11 +19,7 @@ import Headline from './typography/Headline';
 import WorldImage from '../../assets/images/world.jpeg';
 import Utils from '../utils';
 
-function ContactDetailModal({
-  isVisible,
-  onRequestClose,
-  data,
-}) {
+function ContactDetailModal({isVisible, onRequestClose, data}) {
   const [showModal, setShowModal] = useState(isVisible);
   const animatedBottom = useRef(new Animated.Value(900)).current;
   const duration = 300;
@@ -54,20 +50,15 @@ function ContactDetailModal({
     <TouchableOpacity
       activeOpacity={0.8}
       onPress={onPress}
-      style={{ alignItems: 'center' }}
-    >
+      style={{alignItems: 'center'}}>
       <View style={styles.roundButton}>
-        <Icon
-          name={icon}
-          size={24}
-          color={COLORS.shades[0]}
-        />
+        <Icon name={icon} size={24} color={COLORS.shades[0]} />
       </View>
       <Body
         type={2}
         text={string}
         color={COLORS.neutral[300]}
-        style={{ marginTop: 8 }}
+        style={{marginTop: 8}}
       />
     </TouchableOpacity>
   );
@@ -80,19 +71,19 @@ function ContactDetailModal({
       collapsable
       transparent
       statusBarTranslucent
-      onRequestClose={onRequestClose}
-    >
+      onRequestClose={onRequestClose}>
       <TouchableOpacity
         activeOpacity={1}
         style={[styles.container]}
-        onPress={onRequestClose}
-      >
+        onPress={onRequestClose}>
         <Animated.View
-          style={[styles.content, { transform: [{ translateY: animatedBottom }] }]}
-        >
+          style={[styles.content, {transform: [{translateY: animatedBottom}]}]}>
           <View style={styles.handler} />
           <View style={styles.innerContainer}>
-            <Image source={WorldImage} style={{ width: '100%', height: 100, borderRadius: RADIUS.m }} />
+            <Image
+              source={WorldImage}
+              style={{width: '100%', height: 100, borderRadius: RADIUS.m}}
+            />
             <View style={styles.overlay} />
             <EntIcon
               suppressHighlighting
@@ -100,13 +91,13 @@ function ContactDetailModal({
               name="info-with-circle"
               size={18}
               color={COLORS.primary[50]}
-              style={{ position: 'absolute', top: 20, right: 20 }}
+              style={{position: 'absolute', top: 20, right: 20}}
             />
             <Avatar
               disabled
               size={70}
               data={data}
-              style={{ marginTop: -35 }}
+              style={{marginTop: -35}}
               borderWidth={3}
             />
 
@@ -120,9 +111,23 @@ function ContactDetailModal({
               color={COLORS.neutral[300]}
             />
             <View style={styles.bottomRow}>
-              {getRoundButton('phone', i18n.t('Audio call'), () => data && Linking.openURL(`tel:${data.phoneNumber}`))}
-              <View style={{ width: PADDING.m }} />
-              {getRoundButton('save', i18n.t('Save Nr'), () => data && Utils.openPhoneNumber(data.phoneNumber, data.firstName, data.lastName))}
+              {getRoundButton(
+                'phone',
+                i18n.t('Audio call'),
+                () => data && Linking.openURL(`tel:${data.phoneNumber}`),
+              )}
+              <View style={{width: PADDING.m}} />
+              {getRoundButton(
+                'save',
+                i18n.t('Save Nr'),
+                () =>
+                  data &&
+                  Utils.openPhoneNumber(
+                    data.phoneNumber,
+                    data.firstName,
+                    data.lastName,
+                  ),
+              )}
             </View>
           </View>
         </Animated.View>

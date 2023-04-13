@@ -1,21 +1,19 @@
 import {
-  Modal, StyleSheet, TouchableOpacity, Animated, Dimensions,
+  Modal,
+  StyleSheet,
+  TouchableOpacity,
+  Animated,
+  Dimensions,
 } from 'react-native';
-import React, {
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import QRCode from 'react-native-qrcode-svg';
-import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
+import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import Logo from '../../../assets/images/logo_blue.png';
 import Utils from '../../utils';
 import i18n from '../../utils/i18n';
 import Body from '../typography/Body';
 
-export default function QRModal({
-  isVisible, onRequestClose, value,
-}) {
+export default function QRModal({isVisible, onRequestClose, value}) {
   // STATE & MISC
   const [showModal, setShowModal] = useState(isVisible);
   const animatedScale = useRef(new Animated.Value(0)).current;
@@ -55,14 +53,16 @@ export default function QRModal({
       collapsable
       transparent
       statusBarTranslucent
-      onRequestClose={onRequestClose}
-    >
+      onRequestClose={onRequestClose}>
       <TouchableOpacity
         activeOpacity={1}
         onPress={onRequestClose}
-        style={styles.container}
-      >
-        <Animated.View style={[styles.innerContainer, { transform: [{ scale: animatedScale }] }]}>
+        style={styles.container}>
+        <Animated.View
+          style={[
+            styles.innerContainer,
+            {transform: [{scale: animatedScale}]},
+          ]}>
           <QRCode
             value={value}
             logo={Logo}
@@ -76,7 +76,8 @@ export default function QRModal({
           />
           <Body
             style={{
-              maxWidth: width + 10, marginTop: 10,
+              maxWidth: width + 10,
+              marginTop: 10,
             }}
             type={2}
             color={COLORS.neutral[900]}

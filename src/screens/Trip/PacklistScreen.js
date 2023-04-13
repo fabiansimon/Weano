@@ -1,16 +1,17 @@
 import {
-  View, StyleSheet, SectionList, Dimensions, Pressable,
+  View,
+  StyleSheet,
+  SectionList,
+  Dimensions,
+  Pressable,
 } from 'react-native';
-import React, {
-  useCallback,
-  useEffect, useRef, useState,
-} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Entypo';
-import { useMutation } from '@apollo/client';
+import {useMutation} from '@apollo/client';
 import Toast from 'react-native-toast-message';
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
+// import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import HybridHeader from '../../components/HybridHeader';
 import INFORMATION from '../../constants/Information';
@@ -39,10 +40,12 @@ export default function PacklistScreen() {
 
   // STORES
   const {
-    packingItems, id: tripId, dateRange,
-  } = activeTripStore((state) => state.activeTrip);
-  const { isProMember } = userStore((state) => state.user);
-  const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
+    packingItems,
+    id: tripId,
+    dateRange,
+  } = activeTripStore(state => state.activeTrip);
+  const {isProMember} = userStore(state => state.user);
+  const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
 
   // STATE & MISC
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -50,30 +53,28 @@ export default function PacklistScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [packData, setPackData] = useState([]);
 
-  const { height } = Dimensions.get('window');
+  const {height} = Dimensions.get('window');
 
   useEffect(() => {
-    setPackData(
-      [
-        {
-          title: i18n.t('Done'),
-          data: packingItems.filter((item) => item.isPacked),
-        },
-        {
-          title: i18n.t('Open'),
-          data: packingItems.filter((item) => !item.isPacked),
-        },
-      ],
-    );
+    setPackData([
+      {
+        title: i18n.t('Done'),
+        data: packingItems.filter(item => item.isPacked),
+      },
+      {
+        title: i18n.t('Open'),
+        data: packingItems.filter(item => !item.isPacked),
+      },
+    ]);
   }, [packingItems]);
 
-  const handleDeletion = (item) => {
+  const handleDeletion = item => {
     Utils.showConfirmationAlert(
       i18n.t('Delete Packing Item'),
       i18n.t('Are you sure you want to delete your Packing Item?'),
       i18n.t('Yes'),
       async () => {
-        const { _id } = item;
+        const {_id} = item;
 
         await deletePackingItem({
           variables: {
@@ -84,9 +85,11 @@ export default function PacklistScreen() {
           },
         })
           .then(() => {
-            updateActiveTrip({ packingItems: packingItems.filter((p) => p._id !== _id) });
+            updateActiveTrip({
+              packingItems: packingItems.filter(p => p._id !== _id),
+            });
           })
-          .catch((e) => {
+          .catch(e => {
             Toast.show({
               type: 'error',
               text1: i18n.t('Whoops!'),
@@ -98,13 +101,13 @@ export default function PacklistScreen() {
     );
   };
 
-  const handleChange = async (data) => {
+  const handleChange = async data => {
     if (!data) {
       return;
     }
     setIsVisible(false);
 
-    const items = data.map((input) => {
+    const items = data.map(input => {
       const amount = input.split(' ')[0].trim();
       const index = amount.length;
       const title = input.slice(index).trim();
@@ -114,7 +117,11 @@ export default function PacklistScreen() {
       };
     });
 
-    const usageLimit = JSON.parse(isProMember ? await asyncStorageDAO.getPremiumTierLimits() : await asyncStorageDAO.getFreeTierLimits()).packingItems;
+    const usageLimit = JSON.parse(
+      isProMember
+        ? await asyncStorageDAO.getPremiumTierLimits()
+        : await asyncStorageDAO.getFreeTierLimits(),
+    ).packingItems;
     if (packingItems.length + items.length > usageLimit) {
       setTimeout(() => {
         PremiumController.showModal();
@@ -132,17 +139,17 @@ export default function PacklistScreen() {
         },
       },
     })
-      .then((res) => {
+      .then(res => {
         const newItems = res.data.createPackingList;
 
         if (packingItems?.length > 0) {
-          updateActiveTrip({ packingItems: [...packingItems, ...newItems] });
+          updateActiveTrip({packingItems: [...packingItems, ...newItems]});
         } else {
-          updateActiveTrip({ packingItems: newItems });
+          updateActiveTrip({packingItems: newItems});
         }
         setIsLoading(false);
       })
-      .catch((e) => {
+      .catch(e => {
         setIsLoading(false);
         Toast.show({
           type: 'error',
@@ -158,16 +165,15 @@ export default function PacklistScreen() {
       return;
     }
 
-    ReactNativeHapticFeedback.trigger('impactLight', {
-      enableVibrateFallback: true,
-      ignoreAndroidSystemSettings: true,
-    });
-    const { _id, isPacked, amount } = data;
+    // ReactNativeHapticFeedback.trigger('impactLight', {
+    //   enableVibrateFallback: true,
+    //   ignoreAndroidSystemSettings: true,
+    // });
+    const {_id, isPacked, amount} = data;
 
     const oldData = packingItems;
     updateActiveTrip({
-
-      packingItems: packingItems.map((item) => {
+      packingItems: packingItems.map(item => {
         if (item._id === _id) {
           const _amount = newAmount || item.amount;
           const _isPacked = newAmount ? item.isPacked : !item.isPacked;
@@ -189,58 +195,59 @@ export default function PacklistScreen() {
           amount: newAmount || amount,
         },
       },
-    }).catch((e) => {
+    }).catch(e => {
       Toast.show({
         type: 'error',
         text1: i18n.t('Whoops!'),
         text2: e.message,
       });
 
-      updateActiveTrip({ packingItems: oldData });
+      updateActiveTrip({packingItems: oldData});
       console.log(`ERROR: ${e.message}`);
     });
   };
 
-  const getItem = (item) => {
-    const { isPacked, amount } = item;
+  const getItem = item => {
+    const {isPacked, amount} = item;
     return (
       <SwipeView onDelete={() => handleDeletion(item)}>
         <CheckboxTile
-          style={{ paddingHorizontal: PADDING.xl, backgroundColor: COLORS.shades[0], marginVertical: -4 }}
-          trailing={(
-            <View style={{
-              flexDirection: 'row', alignItems: 'center',
-            }}
-            >
+          style={{
+            paddingHorizontal: PADDING.xl,
+            backgroundColor: COLORS.shades[0],
+            marginVertical: -4,
+          }}
+          trailing={
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}>
               <Pressable
-                onPress={() => (amount <= 1 ? handleDeletion(item) : handleUpdate(item, amount - 1))}
-                style={styles.counterContainer}
-              >
-                <Icon
-                  name="minus"
-                  size={16}
-                  color={COLORS.neutral[700]}
-                />
+                onPress={() =>
+                  amount <= 1
+                    ? handleDeletion(item)
+                    : handleUpdate(item, amount - 1)
+                }
+                style={styles.counterContainer}>
+                <Icon name="minus" size={16} color={COLORS.neutral[700]} />
               </Pressable>
               <Headline
                 style={{
-                  marginHorizontal: 6, minWidth: 20, textAlign: 'center',
+                  marginHorizontal: 6,
+                  minWidth: 20,
+                  textAlign: 'center',
                 }}
                 type={4}
                 text={amount}
               />
               <Pressable
                 onPress={() => handleUpdate(item, amount + 1)}
-                style={styles.counterContainer}
-              >
-                <Icon
-                  name="plus"
-                  size={16}
-                  color={COLORS.neutral[700]}
-                />
+                style={styles.counterContainer}>
+                <Icon name="plus" size={16} color={COLORS.neutral[700]} />
               </Pressable>
             </View>
-        )}
+          }
           item={{
             ...item,
             isDone: isPacked,
@@ -253,18 +260,24 @@ export default function PacklistScreen() {
   };
 
   const percentageLine = useCallback(() => {
-    const status = packingItems?.length ? ((packingItems.filter((item) => item.isPacked).length / packingItems.length) * 100).toFixed(0) : 0;
+    const status = packingItems?.length
+      ? (
+          (packingItems.filter(item => item.isPacked).length /
+            packingItems.length) *
+          100
+        ).toFixed(0)
+      : 0;
 
     return (
-      <View style={{ marginLeft: PADDING.l, marginTop: -4, marginBottom: -4 }}>
+      <View style={{marginLeft: PADDING.l, marginTop: -4, marginBottom: -4}}>
         <Body
           type={2}
           color={COLORS.primary[500]}
           text={`${status}% ${i18n.t('packed')}`}
-          style={{ fontWeight: '500', marginBottom: 4 }}
+          style={{fontWeight: '500', marginBottom: 4}}
         />
         <View style={styles.percentageContainer}>
-          <View style={[styles.percentageStatus, { width: `${status}%` }]} />
+          <View style={[styles.percentageStatus, {width: `${status}%`}]} />
         </View>
       </View>
     );
@@ -277,18 +290,18 @@ export default function PacklistScreen() {
         scrollY={scrollY}
         info={INFORMATION.packlistScreen}
         scrollEnabled={false}
-        content={percentageLine()}
-      >
+        content={percentageLine()}>
         <SectionList
-          style={{ maxHeight: '70%' }}
+          style={{maxHeight: '70%'}}
           stickySectionHeadersEnabled
           sections={packData}
-          ListHeaderComponent={(
+          ListHeaderComponent={
             <View style={styles.stayContainer}>
               <Icon
                 name="stopwatch"
+                color={COLORS.shades[100]}
                 size={16}
-                style={{ marginRight: 6 }}
+                style={{marginRight: 6}}
               />
               <Body
                 type={2}
@@ -297,55 +310,72 @@ export default function PacklistScreen() {
               />
               <Body
                 type={2}
-                style={{ marginLeft: 4, fontWeight: '500' }}
+                style={{marginLeft: 4, fontWeight: '500'}}
                 color={COLORS.neutral[900]}
-                text={`${Utils.getDaysDifference(dateRange.startDate, dateRange.endDate, true) - 1} ${i18n.t('nights')}`}
+                text={`${
+                  Utils.getDaysDifference(
+                    dateRange.startDate,
+                    dateRange.endDate,
+                    true,
+                  ) - 1
+                } ${i18n.t('nights')}`}
               />
             </View>
-)}
-          ListEmptyComponent={(
+          }
+          ListEmptyComponent={
             <View
               style={{
                 flex: 1,
                 height: height * 0.65,
                 justifyContent: 'center',
-              }}
-            >
+              }}>
               <Body
                 type={1}
-                style={{ alignSelf: 'center' }}
+                style={{alignSelf: 'center'}}
                 color={COLORS.shades[100]}
                 text={i18n.t('There are no entries yet 😕')}
               />
               <Body
                 type={2}
                 style={{
-                  alignSelf: 'center', textAlign: 'center', width: '85%', marginTop: 4,
+                  alignSelf: 'center',
+                  textAlign: 'center',
+                  width: '85%',
+                  marginTop: 4,
                 }}
                 color={COLORS.neutral[300]}
-                text={i18n.t('When the groups adds new polls, tasks, expenses or memories, they will be listed here.')}
+                text={i18n.t(
+                  'When the groups adds new polls, tasks, expenses or memories, they will be listed here.',
+                )}
               />
             </View>
-              )}
-          contentContainerStyle={{ paddingBottom: 80 }}
+          }
+          contentContainerStyle={{paddingBottom: 80}}
           keyExtractor={(item, index) => item + index}
-          renderItem={({ item }) => getItem(item)}
-          renderSectionHeader={({ section: { title, data } }) => {
+          renderItem={({item}) => getItem(item)}
+          renderSectionHeader={({section: {title, data}}) => {
             const isEmpty = data?.length <= 0;
-            const color = title === i18n.t('Done') ? COLORS.success[700] : COLORS.error[700];
+            const color =
+              title === i18n.t('Done')
+                ? COLORS.success[700]
+                : COLORS.error[700];
             return (
               <>
-                <View style={[styles.titleContainer, { backgroundColor: Utils.addAlpha(color, 0.2) }]}>
+                <View
+                  style={[
+                    styles.titleContainer,
+                    {backgroundColor: Utils.addAlpha(color, 0.2)},
+                  ]}>
                   <Body
                     type={2}
                     color={color}
-                    style={{ fontWeight: '500' }}
+                    style={{fontWeight: '500'}}
                     text={title}
                   />
                 </View>
                 {isEmpty && (
                   <Body
-                    style={{ marginLeft: PADDING.xl }}
+                    style={{marginLeft: PADDING.xl}}
                     type={2}
                     text={i18n.t('No open items')}
                     color={COLORS.neutral[300]}
@@ -364,7 +394,7 @@ export default function PacklistScreen() {
         multipleInputs
         placeholder={i18n.t('Add items to pack')}
         onRequestClose={() => setIsVisible(false)}
-        onPress={(input) => handleChange(input)}
+        onPress={input => handleChange(input)}
         autoClose
       />
       <FAButton

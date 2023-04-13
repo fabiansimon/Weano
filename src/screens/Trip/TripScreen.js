@@ -1,25 +1,30 @@
 import {
-  View, StyleSheet, Image, Dimensions, Pressable, RefreshControl, Platform, StatusBar,
+  View,
+  StyleSheet,
+  Image,
+  Dimensions,
+  Pressable,
+  RefreshControl,
+  Platform,
+  StatusBar,
+  NativeModules,
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import Toast from 'react-native-toast-message';
-import React, {
-  useRef, useState, useEffect, useCallback,
-} from 'react';
+import React, {useRef, useState, useEffect, useCallback} from 'react';
 import Clipboard from '@react-native-clipboard/clipboard';
-import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import AntIcon from 'react-native-vector-icons/AntDesign';
-import { useNavigation } from '@react-navigation/native';
-import { ScrollView } from 'react-native-gesture-handler';
-import { useLazyQuery, useMutation } from '@apollo/client';
+import {useNavigation} from '@react-navigation/native';
+import {ScrollView} from 'react-native-gesture-handler';
+import {useLazyQuery, useMutation} from '@apollo/client';
 import ActionSheet from 'react-native-actionsheet';
 import FastImage from 'react-native-fast-image';
 import ImageCropPicker from 'react-native-image-crop-picker';
-import { MenuView } from '@react-native-menu/menu';
+import {MenuView} from '@react-native-menu/menu';
 import PagerView from 'react-native-pager-view';
-import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
+import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import AnimatedHeader from '../../components/AnimatedHeader';
 import Headline from '../../components/typography/Headline';
 import i18n from '../../utils/i18n';
@@ -53,30 +58,34 @@ import DocumentsContainer from '../../components/Trip/DocumentsContainer';
 import AccentBubble from '../../components/Trip/AccentBubble';
 import PacklistContainer from '../../components/Trip/PacklistContainer';
 import CalendarModal from '../../components/CalendarModal';
-import DestinationScreen from './DestinationsScreen';
+// import DestinationScreen from './DestinationsScreen';
 import TripSlider from '../../components/Trip/TripSlider';
+import Animated from 'react-native-reanimated';
 
-export default function TripScreen({ route }) {
+const {StatusBarManager} = NativeModules;
+
+export default function TripScreen({route}) {
   // PARAMS
-  const { tripId } = route.params;
+  const {tripId} = route.params;
 
   // QUERIES
-  const [getTripData, { error: fetchError, data: tripData, loading }] = useLazyQuery(GET_TRIP_BY_ID, {
-    variables: {
-      tripId,
-    },
-    fetchPolicy: 'network-only',
-  });
+  const [getTripData, {error: fetchError, data: tripData, loading}] =
+    useLazyQuery(GET_TRIP_BY_ID, {
+      variables: {
+        tripId,
+      },
+      fetchPolicy: 'network-only',
+    });
 
   // MUTATIONS
-  const [updateTrip, { error }] = useMutation(UPDATE_TRIP);
+  const [updateTrip, {error}] = useMutation(UPDATE_TRIP);
   const [deleteTrip] = useMutation(DELETE_TRIP_BY_ID);
 
   // STORES
-  const activeTrip = activeTripStore((state) => state.activeTrip);
-  const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
-  const setActiveTrip = activeTripStore((state) => state.setActiveTrip);
-  const removeTrip = tripsStore((state) => state.removeTrip);
+  const activeTrip = activeTripStore(state => state.activeTrip);
+  const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
+  const setActiveTrip = activeTripStore(state => state.setActiveTrip);
+  const removeTrip = tripsStore(state => state.removeTrip);
 
   // STATE & MISC
   const [viewIndex, setViewIndex] = useState(0);
@@ -114,18 +123,19 @@ export default function TripScreen({ route }) {
 
   const isHost = userManagement.isHost();
 
-  const themeColor = activeTrip.type === 'active' ? COLORS.error[900] : COLORS.primary[700];
+  const themeColor =
+    activeTrip.type === 'active' ? COLORS.error[900] : COLORS.primary[700];
 
-  const { width } = Dimensions.get('window');
+  const {width} = Dimensions.get('window');
 
-  const navigatePage = (index) => {
+  const navigatePage = index => {
     if (!inactive) {
       pageRef.current?.setPage(index);
     }
   };
 
-  const handleMenuOption = (input) => {
-    const { event } = input;
+  const handleMenuOption = input => {
+    const {event} = input;
 
     switch (event) {
       case 'editTitle':
@@ -138,7 +148,9 @@ export default function TripScreen({ route }) {
         addImageRef.current?.show();
         break;
       case 'copy':
-        Clipboard.setString(`${META_DATA.baseUrl}/redirect/invitation/${tripId}`);
+        Clipboard.setString(
+          `${META_DATA.baseUrl}/redirect/invitation/${tripId}`,
+        );
         Toast.show({
           type: 'success',
           text1: i18n.t('Copied!'),
@@ -159,7 +171,9 @@ export default function TripScreen({ route }) {
 
   const onRefresh = () => {
     setRefreshing(true);
-    getTripData().then(() => setRefreshing(false)).catch(() => setRefreshing(false));
+    getTripData()
+      .then(() => setRefreshing(false))
+      .catch(() => setRefreshing(false));
   };
 
   useEffect(() => {
@@ -207,7 +221,7 @@ export default function TripScreen({ route }) {
             removeTrip(data.id);
             navigation.navigate(ROUTES.mainScreen);
           })
-          .catch((e) => {
+          .catch(e => {
             Toast.show({
               type: 'error',
               text1: i18n.t('Whoops!'),
@@ -219,16 +233,16 @@ export default function TripScreen({ route }) {
     );
   };
 
-  const handleTabPress = (index) => {
+  const handleTabPress = index => {
     setCurrentTab(index);
     const headerHeight = 460;
     const ref = contentRefs[index];
     ref?.current?.measure((_, fy) => {
-      scrollRef.current?.scrollTo({ y: fy + headerHeight, animated: true });
+      scrollRef.current?.scrollTo({y: fy + headerHeight, animated: true});
     });
   };
 
-  const handleAddImage = async (index) => {
+  const handleAddImage = async index => {
     const options = {
       width: 400,
       height: 300,
@@ -242,13 +256,13 @@ export default function TripScreen({ route }) {
     }
 
     if (index === 1) {
-      ImageCropPicker.openPicker(options).then(async (image) => {
+      ImageCropPicker.openPicker(options).then(async image => {
         uploadImage(image);
       });
     }
 
     if (index === 2) {
-      ImageCropPicker.openCamera(options).then(async (image) => {
+      ImageCropPicker.openCamera(options).then(async image => {
         uploadImage(image);
       });
     }
@@ -260,10 +274,11 @@ export default function TripScreen({ route }) {
           tripId: data.id,
         },
       },
-    }).then(() => {
-      updateActiveTrip({ thumbnailUri: '' });
     })
-      .catch((e) => {
+      .then(() => {
+        updateActiveTrip({thumbnailUri: ''});
+      })
+      .catch(e => {
         setTimeout(() => {
           Toast.show({
             type: 'error',
@@ -274,12 +289,12 @@ export default function TripScreen({ route }) {
       });
   };
 
-  const uploadImage = async (image) => {
+  const uploadImage = async image => {
     try {
-      const { Location } = await httpService.uploadToS3(image.data);
+      const {Location} = await httpService.uploadToS3(image.data);
 
       const oldUri = activeTrip.thumbnailUri;
-      updateActiveTrip({ thumbnailUri: Location });
+      updateActiveTrip({thumbnailUri: Location});
 
       await updateTrip({
         variables: {
@@ -288,8 +303,8 @@ export default function TripScreen({ route }) {
             tripId: data.id,
           },
         },
-      }).catch((e) => {
-        updateActiveTrip({ thumbnailUri: oldUri });
+      }).catch(e => {
+        updateActiveTrip({thumbnailUri: oldUri});
         Toast.show({
           type: 'error',
           text1: i18n.t('Whoops!'),
@@ -326,8 +341,8 @@ export default function TripScreen({ route }) {
             },
           },
         },
-      }).catch((e) => {
-        updateActiveTrip({ dateRange: oldDateRange });
+      }).catch(e => {
+        updateActiveTrip({dateRange: oldDateRange});
         setTimeout(() => {
           Toast.show({
             type: 'error',
@@ -340,7 +355,7 @@ export default function TripScreen({ route }) {
     }, 300);
   };
 
-  const updateDescription = async (description) => {
+  const updateDescription = async description => {
     if (description.trim().length <= 0) {
       setTimeout(() => {
         Toast.show({
@@ -353,7 +368,7 @@ export default function TripScreen({ route }) {
     }
 
     const oldDescription = activeTrip.description;
-    updateActiveTrip({ description });
+    updateActiveTrip({description});
 
     await updateTrip({
       variables: {
@@ -362,8 +377,8 @@ export default function TripScreen({ route }) {
           tripId: data.id,
         },
       },
-    }).catch((e) => {
-      updateActiveTrip({ description: oldDescription });
+    }).catch(e => {
+      updateActiveTrip({description: oldDescription});
       setTimeout(() => {
         Toast.show({
           type: 'error',
@@ -375,7 +390,7 @@ export default function TripScreen({ route }) {
 
     setInputOpen(null);
   };
-  const updateTitle = async (title) => {
+  const updateTitle = async title => {
     if (title.trim().length <= 0) {
       setTimeout(() => {
         Toast.show({
@@ -388,7 +403,7 @@ export default function TripScreen({ route }) {
     }
 
     const oldTitle = activeTrip.title;
-    updateActiveTrip({ title });
+    updateActiveTrip({title});
 
     await updateTrip({
       variables: {
@@ -397,8 +412,8 @@ export default function TripScreen({ route }) {
           tripId: data.id,
         },
       },
-    }).catch((e) => {
-      updateActiveTrip({ description: oldTitle });
+    }).catch(e => {
+      updateActiveTrip({description: oldTitle});
       setTimeout(() => {
         Toast.show({
           type: 'error',
@@ -421,7 +436,9 @@ export default function TripScreen({ route }) {
     if (difference < 0) {
       return `${difference * -1} ${i18n.t('days ago')}`;
     }
-    return `${i18n.t('In')} ${difference} ${difference === 1 ? i18n.t('day') : i18n.t('days')}`;
+    return `${i18n.t('In')} ${difference} ${
+      difference === 1 ? i18n.t('day') : i18n.t('days')
+    }`;
   };
 
   const getLocationString = useCallback(() => {
@@ -429,7 +446,7 @@ export default function TripScreen({ route }) {
       return;
     }
 
-    const { destinations } = data;
+    const {destinations} = data;
 
     const placeArr = data?.destinations[0]?.placeName.split(',');
 
@@ -449,21 +466,21 @@ export default function TripScreen({ route }) {
       return false;
     }
 
-    const { mutualTasks, privateTasks } = data;
+    const {mutualTasks, privateTasks} = data;
     const tasks = [...mutualTasks, ...privateTasks];
 
     if (tasks.length <= 0) {
       return false;
     }
 
-    return tasks.filter((task) => task.isDone).length === tasks.length;
+    return tasks.filter(task => task.isDone).length === tasks.length;
   }, [data]);
 
   const statusData = [
     {
       name: i18n.t('Location'),
       isDone: data?.destinations[0],
-      onPress: () => setViewIndex((prev) => !prev),
+      onPress: () => setViewIndex(prev => !prev),
     },
     {
       name: i18n.t('Date'),
@@ -480,102 +497,113 @@ export default function TripScreen({ route }) {
   const contentItems = [
     {
       title: i18n.t('Documents'),
-      trailing: <Headline
-        onPress={() => navigation.navigate(ROUTES.documentsScreen)}
-        type={4}
-        style={{ textDecorationLine: 'underline' }}
-        text={i18n.t('see all')}
-        color={COLORS.neutral[300]}
-      />,
+      trailing: (
+        <Headline
+          onPress={() => navigation.navigate(ROUTES.documentsScreen)}
+          type={4}
+          style={{textDecorationLine: 'underline'}}
+          text={i18n.t('see all')}
+          color={COLORS.neutral[300]}
+        />
+      ),
       ref: documentsRef,
       omitPadding: true,
-      content: data?.documents && (
-        <DocumentsContainer
-          data={data?.documents}
+      content: data?.documents && <DocumentsContainer data={data?.documents} />,
+    },
+    {
+      title: i18n.t('Expenses'),
+      trailing: (
+        <Headline
+          onPress={() => navigation.navigate(ROUTES.expenseScreen)}
+          type={4}
+          style={{textDecorationLine: 'underline'}}
+          text={i18n.t('see all')}
+          color={COLORS.neutral[300]}
+        />
+      ),
+      ref: expensesRef,
+      content: <ExpensesContainer tileBackground={COLORS.shades[0]} />,
+    },
+    {
+      title: i18n.t('Packing list'),
+      trailing: (
+        <Headline
+          onPress={() => navigation.navigate(ROUTES.packlistScreen)}
+          type={4}
+          style={{textDecorationLine: 'underline'}}
+          text={i18n.t('see all')}
+          color={COLORS.neutral[300]}
+        />
+      ),
+      ref: packlistRef,
+      content: (
+        <PacklistContainer
+          data={data?.packingItems.filter(item => !item.isPacked)}
         />
       ),
     },
     {
-      title: i18n.t('Expenses'),
-      trailing: <Headline
-        onPress={() => navigation.navigate(ROUTES.expenseScreen)}
-        type={4}
-        style={{ textDecorationLine: 'underline' }}
-        text={i18n.t('see all')}
-        color={COLORS.neutral[300]}
-      />,
-      ref: expensesRef,
-      content: <ExpensesContainer
-        tileBackground={COLORS.shades[0]}
-      />,
-    },
-    {
-      title: i18n.t('Packing list'),
-      trailing: <Headline
-        onPress={() => navigation.navigate(ROUTES.packlistScreen)}
-        type={4}
-        style={{ textDecorationLine: 'underline' }}
-        text={i18n.t('see all')}
-        color={COLORS.neutral[300]}
-      />,
-      ref: packlistRef,
-      content: <PacklistContainer
-        data={data?.packingItems.filter((item) => !item.isPacked)}
-      />,
-    },
-    {
       title: i18n.t('Checklist'),
-      trailing: <Headline
-        ref={checklistRef}
-        onPress={() => navigation.navigate(ROUTES.checklistScreen)}
-        type={4}
-        style={{ textDecorationLine: 'underline' }}
-        text={i18n.t('see all')}
-        color={COLORS.neutral[300]}
-      />,
+      trailing: (
+        <Headline
+          ref={checklistRef}
+          onPress={() => navigation.navigate(ROUTES.checklistScreen)}
+          type={4}
+          style={{textDecorationLine: 'underline'}}
+          text={i18n.t('see all')}
+          color={COLORS.neutral[300]}
+        />
+      ),
       ref: checklistRef,
-      content: <ChecklistContainer
-        onPress={() => navigation.navigate(ROUTES.checklistScreen)}
-      />,
+      content: (
+        <ChecklistContainer
+          onPress={() => navigation.navigate(ROUTES.checklistScreen)}
+        />
+      ),
     },
-
     {
       title: i18n.t('Polls'),
-      trailing: <Headline
-        ref={pollsRef}
-        onPress={() => navigation.navigate(ROUTES.pollScreen)}
-        type={4}
-        style={{ textDecorationLine: 'underline' }}
-        text={i18n.t('see all')}
-        color={COLORS.neutral[300]}
-      />,
+      trailing: (
+        <Headline
+          ref={pollsRef}
+          onPress={() => navigation.navigate(ROUTES.pollScreen)}
+          type={4}
+          style={{textDecorationLine: 'underline'}}
+          text={i18n.t('see all')}
+          color={COLORS.neutral[300]}
+        />
+      ),
       ref: pollsRef,
       omitPadding: true,
       content: data?.polls && (
-      <PollCarousel
-        onPress={() => navigation.navigate(ROUTES.pollScreen)}
-        data={data?.polls}
-      />
+        <PollCarousel
+          onPress={() => navigation.navigate(ROUTES.pollScreen)}
+          data={data?.polls}
+        />
       ),
     },
     {
       title: i18n.t('Travelers'),
-      trailing: <Headline
-        ref={travelersRef}
-        onPress={() => navigation.navigate(ROUTES.inviteeScreen)}
-        type={4}
-        style={{ textDecorationLine: 'underline' }}
-        text={i18n.t('see all')}
-        color={COLORS.neutral[300]}
-      />,
+      trailing: (
+        <Headline
+          ref={travelersRef}
+          onPress={() => navigation.navigate(ROUTES.inviteeScreen)}
+          type={4}
+          style={{textDecorationLine: 'underline'}}
+          text={i18n.t('see all')}
+          color={COLORS.neutral[300]}
+        />
+      ),
       ref: travelersRef,
-      content: <InviteeContainer
-        onPress={() => navigation.navigate(ROUTES.inviteeScreen)}
-        data={data?.activeMembers}
-        onLayout={(e) => {
-          console.log(`Invitees: ${e.nativeEvent.layout.y}`);
-        }}
-      />,
+      content: (
+        <InviteeContainer
+          onPress={() => navigation.navigate(ROUTES.inviteeScreen)}
+          data={data?.activeMembers}
+          onLayout={e => {
+            console.log(`Invitees: ${e.nativeEvent.layout.y}`);
+          }}
+        />
+      ),
     },
   ];
 
@@ -583,20 +611,20 @@ export default function TripScreen({ route }) {
     <>
       <View style={styles.handler} />
       <View style={styles.bodyContainer}>
-        <View style={{ paddingHorizontal: PADDING.l }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <View style={{paddingHorizontal: PADDING.l}}>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
             <Headline
               onPress={() => isHost && setInputOpen('title')}
               type={2}
               numberOfLines={1}
               ellipsizeMode="tail"
-              style={{ flex: 1 }}
+              style={{flex: 1}}
               text={data?.title}
             />
 
             <MenuView
               style={styles.addIcon}
-              onPressAction={({ nativeEvent }) => handleMenuOption(nativeEvent)}
+              onPressAction={({nativeEvent}) => handleMenuOption(nativeEvent)}
               actions={[
                 {
                   id: 'edit',
@@ -652,117 +680,127 @@ export default function TripScreen({ route }) {
                     android: 'ic_menu_delete',
                   }),
                 },
-              ]}
-            >
+              ]}>
               <FeatherIcon
                 name="more-vertical"
                 size={20}
                 color={COLORS.neutral[700]}
               />
             </MenuView>
-
           </View>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingRight: 30 }}
+            contentContainerStyle={{paddingRight: 30}}
             style={{
               flexDirection: 'row',
               marginTop: 8,
               marginHorizontal: -PADDING.l,
               paddingLeft: PADDING.m,
-            }}
-          >
+            }}>
             <Button
+              color={COLORS.shades[100]}
               isSecondary
               text={getLocationString()}
               fullWidth={false}
               icon="location-pin"
-              onPress={() => setViewIndex((prev) => !prev)}
+              onPress={() => setViewIndex(prev => !prev)}
               backgroundColor={COLORS.shades[0]}
               textColor={COLORS.shades[100]}
-              style={data?.destinations[0] ? styles.infoTile : styles.infoButton}
+              style={
+                data?.destinations[0] ? styles.infoTile : styles.infoButton
+              }
             />
             <Button
               isSecondary
-              text={data?.dateRange?.startDate ? Utils.getDateRange(data.dateRange) : i18n.t('Find date')}
+              text={
+                data?.dateRange?.startDate
+                  ? Utils.getDateRange(data.dateRange)
+                  : i18n.t('Find date')
+              }
               fullWidth={false}
-              icon={<AntIcon name="calendar" size={18} />}
+              icon={
+                <AntIcon color={COLORS.shades[100]} name="calendar" size={18} />
+              }
               onPress={() => (isHost ? setCalendarVisible(true) : null)}
               backgroundColor={COLORS.shades[0]}
               textColor={COLORS.shades[100]}
-              style={[data?.dateRange?.startDate ? styles.infoTile : styles.infoButton, { marginLeft: 14 }]}
+              style={[
+                data?.dateRange?.startDate
+                  ? styles.infoTile
+                  : styles.infoButton,
+                {marginLeft: 14},
+              ]}
             />
           </ScrollView>
           <Pressable
-            style={{ flexDirection: 'row', marginTop: 16, alignItems: 'center' }}
-            onPress={() => isHost && setInputOpen('description')}
-          >
+            style={{flexDirection: 'row', marginTop: 16, alignItems: 'center'}}
+            onPress={() => isHost && setInputOpen('description')}>
             {!data?.description && isHost && (
-            <Icon
-              size={16}
-              color={COLORS.neutral[300]}
-              name="pencil-sharp"
-            />
+              <Icon size={16} color={COLORS.neutral[300]} name="pencil-sharp" />
             )}
             <Body
               type={1}
-              text={data?.description || i18n.t('Add a description to the trip 😎')}
-              style={{ marginLeft: 4, color: COLORS.neutral[300] }}
+              text={
+                data?.description || i18n.t('Add a description to the trip 😎')
+              }
+              style={{marginLeft: 4, color: COLORS.neutral[300]}}
             />
           </Pressable>
         </View>
         <Divider vertical={20} />
         <View style={styles.statusContainer}>
-          <Headline
-            type={3}
-            text={i18n.t('Status')}
-          />
+          <Headline type={3} text={i18n.t('Status')} />
           <Animatable.View
-            style={[styles.dateDifferenceStyle, { backgroundColor: themeColor }]}
+            style={[styles.dateDifferenceStyle, {backgroundColor: themeColor}]}
             animation="pulse"
-            iterationCount={activeTrip.type === 'active' ? 'infinite' : 1}
-          >
+            iterationCount={activeTrip.type === 'active' ? 'infinite' : 1}>
             <Headline
               type={4}
               text={getDayDifference()}
-              style={{ fontWeight: '600', fontSize: 14 }}
+              style={{fontWeight: '600', fontSize: 14}}
               color={COLORS.shades[0]}
             />
           </Animatable.View>
         </View>
-        <ScrollView horizontal style={{ paddingHorizontal: PADDING.l, paddingTop: 14, paddingBottom: 6 }}>
-          {statusData.map((item) => (
+        <ScrollView
+          horizontal
+          style={{
+            paddingHorizontal: PADDING.l,
+            paddingTop: 14,
+            paddingBottom: 6,
+          }}>
+          {statusData.map(item => (
             <StatusContainer
-              style={{ marginRight: 10 }}
+              style={{marginRight: 10}}
               data={item}
-              onPress={() => (item.onPress ? item.onPress() : navigation.navigate(item.route))}
+              onPress={() =>
+                item.onPress ? item.onPress() : navigation.navigate(item.route)
+              }
             />
           ))}
         </ScrollView>
         <Divider top={18} />
         <TabBar
-          style={{ marginBottom: 10 }}
+          style={{marginBottom: 10}}
           items={contentItems}
           currentTab={currentTab}
-          onPress={(index) => handleTabPress(index)}
+          onPress={index => handleTabPress(index)}
         />
         <Divider omitPadding />
       </View>
-
     </>
   );
 
   const getMainContent = () => (
     <View style={styles.mainContainer}>
-      {contentItems.map((item) => (
+      {contentItems.map(item => (
         <View ref={item.ref}>
           <ListItem
             onPress={item.onPress}
             omitPadding={item.omitPadding}
             title={item.title}
-            trailing={item.trailing}
-          >
+            trailing={item.trailing}>
             {item.content}
           </ListItem>
         </View>
@@ -771,24 +809,26 @@ export default function TripScreen({ route }) {
   );
 
   const getHeaderImage = () => (
-    <Animated.View style={{
-      backgroundColor: COLORS.shades[100],
-      position: 'absolute',
-      zIndex: 0,
-      height: IMAGE_HEIGHT,
-      width,
-      transform: [{
-        translateY: scrollY.interpolate({
-          inputRange: [-IMAGE_HEIGHT, 0, IMAGE_HEIGHT],
-          outputRange: [IMAGE_HEIGHT / 2, 0, -IMAGE_HEIGHT / 3],
-        }),
-        scale: scrollY.interpolate({
-          inputRange: [-IMAGE_HEIGHT, 0, IMAGE_HEIGHT],
-          outputRange: [2, 1, 1],
-        }),
-      }],
-    }}
-    >
+    <Animated.View
+      style={{
+        backgroundColor: COLORS.shades[100],
+        position: 'absolute',
+        zIndex: 0,
+        height: IMAGE_HEIGHT,
+        width,
+        transform: [
+          {
+            translateY: scrollY.interpolate({
+              inputRange: [-IMAGE_HEIGHT, 0, IMAGE_HEIGHT],
+              outputRange: [IMAGE_HEIGHT / 2, 0, -IMAGE_HEIGHT / 3],
+            }),
+            scale: scrollY.interpolate({
+              inputRange: [-IMAGE_HEIGHT, 0, IMAGE_HEIGHT],
+              outputRange: [2, 1, 1],
+            }),
+          },
+        ],
+      }}>
       <Image
         style={styles.image}
         resizeMode="cover"
@@ -796,115 +836,130 @@ export default function TripScreen({ route }) {
         blurRadius={5}
       />
       {!inactive && (
-      <View style={styles.addImage}>
-        <Headline
-          type={3}
-          text={i18n.t('Add Trip Image')}
-          color="white"
-        />
-        <Icon
-          name="image"
-          size={32}
-          color="white"
-        />
-      </View>
+        <View style={styles.addImage}>
+          <Headline type={3} text={i18n.t('Add Trip Image')} color="white" />
+          <Icon name="image" size={32} color="white" />
+        </View>
       )}
       {data?.thumbnailUri && (
-      <FastImage
-        style={styles.image}
-        resizeMode="center"
-        source={{ uri: data.thumbnailUri }}
-      />
+        <FastImage
+          style={styles.image}
+          resizeMode="center"
+          source={{uri: data.thumbnailUri}}
+        />
       )}
     </Animated.View>
   );
 
   return (
     <>
-      <PagerView
-        style={{ flex: 1 }}
-        ref={pageRef}
-        scrollEnabled={false}
-      >
-        <View style={{ backgroundColor: COLORS.shades[0], flex: 1 }}>
+      <PagerView style={{flex: 1}} ref={pageRef} scrollEnabled={false}>
+        <View style={{backgroundColor: COLORS.shades[0], flex: 1}}>
           <StatusBar barStyle="dark-content" />
           <AnimatedHeader
-            style={{ height: 170 }}
+            style={{height: StatusBarManager.HEIGHT + 110}}
             scrollDistance={480}
             threshold={1.2}
-            scrollY={scrollY}
-          >
+            scrollY={scrollY}>
             <TripHeader
               title={!inactive ? data?.title : i18n.t('Loading...')}
               id={data?.id}
               isActive={activeTrip.type === 'active'}
               subtitle={`${data?.destinations[0]?.placeName.split(',')[0]}`}
               items={contentItems}
-              onPress={(index) => handleTabPress(index)}
+              onPress={index => handleTabPress(index)}
               currentTab={currentTab}
             />
           </AnimatedHeader>
           {getHeaderImage()}
           <Animated.ScrollView
-            refreshControl={(
-              <RefreshControl
-                enabled={data}
-                progressViewOffset={50}
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-              />
-          )}
+            // refreshControl={
+            //   <RefreshControl
+            //     enabled={data}
+            //     progressViewOffset={50}
+            //     refreshing={refreshing}
+            //     onRefresh={onRefresh}
+            //   />
+            // }
             ref={scrollRef}
             showsVerticalScrollIndicator={false}
             scrollEventThrottle={16}
             onScroll={Animated.event(
-              [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-              { useNativeDriver: true },
+              [{nativeEvent: {contentOffset: {y: scrollY}}}],
+              {useNativeDriver: true},
+            )}>
+            <Pressable
+              style={{height: IMAGE_HEIGHT}}
+              onPress={() =>
+                data && isHost ? addImageRef.current?.show() : null
+              }
+            />
+            {inactive && (
+              <View
+                style={[
+                  styles.bodyContainer,
+                  {paddingHorizontal: PADDING.m, marginBottom: 60},
+                ]}>
+                <TripScreenSkeleton />
+              </View>
             )}
-          >
-            <Pressable style={{ height: IMAGE_HEIGHT }} onPress={() => (data && isHost ? addImageRef.current?.show() : null)} />
-            {inactive && <View style={[styles.bodyContainer, { paddingHorizontal: PADDING.m, marginBottom: 60 }]}><TripScreenSkeleton /></View>}
             {!inactive && getTopContent()}
             {!inactive && getMainContent()}
           </Animated.ScrollView>
           <BackButton
             onPress={() => navigation.navigate(ROUTES.mainScreen)}
             style={{
-              position: 'absolute', top: 47, left: 20, zIndex: 10,
+              position: 'absolute',
+              top: StatusBarManager.HEIGHT - 20,
+              left: 20,
+              zIndex: 10,
             }}
           />
           <Pressable
-            onPress={() => (data ? navigation.navigate(ROUTES.memoriesScreen, { tripId: data.id }) : null)}
-            style={styles.memoryButton}
-          >
+            onPress={() =>
+              data
+                ? navigation.navigate(ROUTES.memoriesScreen, {tripId: data.id})
+                : null
+            }
+            style={styles.memoryButton}>
             {data?.type === 'active' && data?.userFreeImages > 0 && (
-            <AccentBubble
-              style={{ position: 'absolute', right: -4, top: -6 }}
-              text={data?.userFreeImages}
-            />
+              <AccentBubble
+                style={{position: 'absolute', right: -4, top: -6}}
+                text={data?.userFreeImages}
+              />
             )}
-            <Icon
-              name="image"
-              color={COLORS.neutral[700]}
-              size={22}
-            />
-
+            <Icon name="image" color={COLORS.neutral[700]} size={22} />
           </Pressable>
           <ActionSheet
             ref={addImageRef}
             title={i18n.t('Choose an option')}
-            options={['Cancel', i18n.t('Choose from Camera Roll'), i18n.t('Take a picture'), i18n.t('Reset image')]}
+            options={[
+              'Cancel',
+              i18n.t('Choose from Camera Roll'),
+              i18n.t('Take a picture'),
+              i18n.t('Reset image'),
+            ]}
             cancelButtonIndex={0}
-            onPress={(index) => handleAddImage(index)}
+            onPress={index => handleAddImage(index)}
           />
           <InputModal
             isVisible={inputOpen}
-            placeholder={inputOpen === 'description' ? i18n.t('Enter description') : i18n.t('Enter title')}
-            initalValue={inputOpen === 'description' ? data?.description : data?.title}
+            placeholder={
+              inputOpen === 'description'
+                ? i18n.t('Enter description')
+                : i18n.t('Enter title')
+            }
+            initalValue={
+              inputOpen === 'description' ? data?.description : data?.title
+            }
             onRequestClose={() => setInputOpen(null)}
             multiline={inputOpen === 'description'}
             maxLength={inputOpen === 'description' ? 100 : 25}
-            onPress={(string) => (inputOpen === 'description' ? updateDescription(string) : updateTitle(string))}
+            onPress={string =>
+              inputOpen === 'description'
+                ? updateDescription(string)
+                : updateTitle(string)
+            }
           />
           <QRModal
             isVisible={showQR}
@@ -916,25 +971,28 @@ export default function TripScreen({ route }) {
             onRequestClose={() => setCalendarVisible(false)}
             initialStartDate={data?.dateRange?.startDate}
             initialEndDate={data?.dateRange?.endDate}
-            onApplyClick={(dates) => {
-              const { end: { timestamp: _end }, start: { timestamp: _start } } = dates;
+            onApplyClick={dates => {
+              const {
+                end: {timestamp: _end},
+                start: {timestamp: _start},
+              } = dates;
               if (_start && _end) {
                 handleDateUpdate(_start / 1000, _end / 1000);
                 setCalendarVisible(false);
               }
             }}
           />
-
         </View>
         {!inactive ? (
-          <DestinationScreen
-            navigatePage={() => setViewIndex(0)}
-          />
-        ) : <View />}
+          // <DestinationScreen navigatePage={() => setViewIndex(0)} />
+          <View />
+        ) : (
+          <View />
+        )}
       </PagerView>
       <TripSlider
         index={viewIndex}
-        onPress={() => setViewIndex((prev) => !prev)}
+        onPress={() => setViewIndex(prev => !prev)}
       />
     </>
   );
@@ -1024,7 +1082,7 @@ const styles = StyleSheet.create({
   },
   memoryButton: {
     position: 'absolute',
-    top: 47,
+    top: StatusBarManager.HEIGHT - 20,
     right: 20,
     zIndex: 10,
     borderWidth: 1,

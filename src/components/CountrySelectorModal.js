@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, {useEffect} from 'react';
 import {
   StyleSheet,
   ScrollView,
@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import CountryData from '../constants/Countries';
-import COLORS, { PADDING } from '../constants/Theme';
+import COLORS, {PADDING} from '../constants/Theme';
 import i18n from '../utils/i18n';
 import CountryListItem from './CountryListItem';
 import TextField from './TextField';
@@ -33,16 +33,16 @@ const CountrySelectorModal = ({
     let prefCountries = [];
     let restCountries = [];
 
-    prefCountries = countries.filter((country) => country.isPref);
+    prefCountries = countries.filter(country => country.isPref);
     prefCountries.sort((a, b) => a.name.localeCompare(b.name));
 
-    restCountries = countries.filter((country) => !country.isPref);
+    restCountries = countries.filter(country => !country.isPref);
     restCountries.sort((a, b) => a.name.localeCompare(b.name));
 
     setCountryData(sortedCountries.concat(prefCountries, restCountries));
   };
 
-  const filterData = (val) => {
+  const filterData = val => {
     setSearchTerm(val);
 
     if (val.trim() === '') {
@@ -53,7 +53,7 @@ const CountrySelectorModal = ({
     const filteredData = [];
     const term = val.toLowerCase().trim();
 
-    CountryData.forEach((country) => {
+    CountryData.forEach(country => {
       if (country.name.toLowerCase().trim().includes(term)) {
         filteredData.push(country);
       }
@@ -88,14 +88,13 @@ const CountrySelectorModal = ({
     <TitleModal
       isVisible={isVisible}
       onRequestClose={onRequestClose}
-      title={i18n.t('Select Country')}
-    >
+      title={i18n.t('Select Country')}>
       <ScrollView style={styles.container}>
         <View style={styles.headerContainer}>
           <TextField
-            style={{ marginBottom: 10, borderColor: 'transparent', height: 45 }}
+            style={{marginBottom: 10, borderColor: 'transparent', height: 45}}
             value={searchTerm || null}
-            onChangeText={(val) => filterData(val)}
+            onChangeText={val => filterData(val)}
             onDelete={() => filterData('')}
             placeholder={i18n.t('Filter Trip')}
           />
@@ -108,12 +107,11 @@ const CountrySelectorModal = ({
               backgroundColor: 'white',
               borderRadius: 10,
               marginBottom: 50,
-            }}
-          >
+            }}>
             <FlatList
               data={countryData}
               scrollEnabled={false}
-              renderItem={({ item, index }) => renderItem(item, index)}
+              renderItem={({item, index}) => renderItem(item, index)}
             />
           </View>
         )}

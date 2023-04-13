@@ -7,21 +7,21 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import MatIcon from 'react-native-vector-icons/MaterialIcons';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import * as Animatable from 'react-native-animatable';
 import moment from 'moment';
-import { Camera, CameraType, FlashMode } from 'expo-camera';
-import { manipulateAsync, FlipType } from 'expo-image-manipulator';
-import { PinchGestureHandler } from 'react-native-gesture-handler';
+import {Camera, CameraType, FlashMode} from 'expo-camera';
+import {manipulateAsync, FlipType} from 'expo-image-manipulator';
+import {PinchGestureHandler} from 'react-native-gesture-handler';
 import Video from 'react-native-video';
-import { BlurView } from '@react-native-community/blur';
-import { useQuery } from '@apollo/client';
-import { useNavigation } from '@react-navigation/native';
-import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
+import {BlurView} from '@react-native-community/blur';
+import {useQuery} from '@apollo/client';
+import {useNavigation} from '@react-navigation/native';
+import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import Headline from '../../components/typography/Headline';
 import i18n from '../../utils/i18n';
 import Button from '../../components/Button';
@@ -35,15 +35,15 @@ import PremiumController from '../../PremiumController';
 import userStore from '../../stores/UserStore';
 
 let camera;
-export default function CameraScreen({ route }) {
+export default function CameraScreen({route}) {
   // PARAMS
-  const { tripId, onNavBack, preselectedImage } = route.params;
+  const {tripId, onNavBack, preselectedImage} = route.params;
 
   // STORES
-  const { isProMember } = userStore((state) => state.user);
+  const {isProMember} = userStore(state => state.user);
 
   // QUERIES
-  const { data } = useQuery(CHECK_FREE_IMAGES, {
+  const {data} = useQuery(CHECK_FREE_IMAGES, {
     variables: {
       tripId,
     },
@@ -65,7 +65,7 @@ export default function CameraScreen({ route }) {
 
   useEffect(() => {
     if (data) {
-      const { userFreeImages } = data.getImagesFromTrip;
+      const {userFreeImages} = data.getImagesFromTrip;
       if (userFreeImages && userFreeImages > 0) {
         return setFreeImages(userFreeImages);
       }
@@ -76,7 +76,9 @@ export default function CameraScreen({ route }) {
 
       return Alert.alert(
         i18n.t('Oops, sorry'),
-        i18n.t("It seems like you don't have any free images left right now. Do you want to upgrade your account?"),
+        i18n.t(
+          "It seems like you don't have any free images left right now. Do you want to upgrade your account?",
+        ),
         [
           {
             text: i18n.t('Go back'),
@@ -97,7 +99,8 @@ export default function CameraScreen({ route }) {
     }
   }, [data]);
 
-  const AnimatableTouchableOpacity = Animatable.createAnimatableComponent(TouchableOpacity);
+  const AnimatableTouchableOpacity =
+    Animatable.createAnimatableComponent(TouchableOpacity);
 
   useEffect(() => {
     if (preselectedImage) {
@@ -111,7 +114,7 @@ export default function CameraScreen({ route }) {
   let lastPress = 0;
   const DOUBLE_PRESS_DELAY = 500;
 
-  const changeZoom = (event) => {
+  const changeZoom = event => {
     if (event.nativeEvent.scale > 1 && zoom < 1) {
       setZoom(zoom + 0.001);
     }
@@ -120,7 +123,11 @@ export default function CameraScreen({ route }) {
     }
   };
 
-  const changeFlash = () => { setFlashMode((current) => (current === FlashMode.on ? FlashMode.off : FlashMode.on)); };
+  const changeFlash = () => {
+    setFlashMode(current =>
+      current === FlashMode.on ? FlashMode.off : FlashMode.on,
+    );
+  };
 
   const handleCapture = async () => {
     if (isRecording) {
@@ -130,14 +137,14 @@ export default function CameraScreen({ route }) {
 
     if (camera) {
       camera.pausePreview();
-      const image = await camera.takePictureAsync({ quality: 0.5 });
+      const image = await camera.takePictureAsync({quality: 0.5});
       let flippedImage;
 
       if (cameraType === CameraType.front) {
         flippedImage = await manipulateAsync(
           image.localUri || image.uri,
-          [{ flip: FlipType.Horizontal }],
-          { compress: 0.5 },
+          [{flip: FlipType.Horizontal}],
+          {compress: 0.5},
         );
       }
 
@@ -148,7 +155,11 @@ export default function CameraScreen({ route }) {
     }
   };
 
-  const rotateCamera = () => { setCameraType((current) => (current === CameraType.back ? CameraType.front : CameraType.back)); };
+  const rotateCamera = () => {
+    setCameraType(current =>
+      current === CameraType.back ? CameraType.front : CameraType.back,
+    );
+  };
 
   // const startCaptureVideo = async () => {
   //   setIsRecording(true);
@@ -174,27 +185,27 @@ export default function CameraScreen({ route }) {
         <View>
           <Headline
             type={4}
-            style={{ marginRight: PADDING.xl }}
+            style={{marginRight: PADDING.xl}}
             color={COLORS.shades[0]}
             text={i18n.t('Please allow us to access your camera 📸')}
           />
           <Body
             type={2}
             color={COLORS.neutral[300]}
-            style={{ marginTop: 6, marginRight: 40 }}
+            style={{marginTop: 6, marginRight: 40}}
             text="Without it you won't be able to capture moments of your trip to revisit later."
           />
         </View>
-        <View style={{ width: '100%', flex: 1 }}>
+        <View style={{width: '100%', flex: 1}}>
           <Button
-            style={{ width: '100%', marginTop: 'auto' }}
+            style={{width: '100%', marginTop: 'auto'}}
             fullWidth
             onPress={requestPermission}
             text={i18n.t('Grant permission')}
           />
           <Button
             isOutlined
-            style={{ width: '100%', marginTop: 8 }}
+            style={{width: '100%', marginTop: 8}}
             fullWidth
             onPress={() => {
               if (Platform.OS === 'ios') {
@@ -225,65 +236,61 @@ export default function CameraScreen({ route }) {
       onPress={onNavBack}
       activeOpacity={0.9}
       // disabled={isRecording}
-      style={[styles.roundButton, { opacity: isRecording && 0 }]}
-    >
-      <Icon
-        name="arrowleft"
-        color={COLORS.neutral[300]}
-        size={22}
-      />
+      style={[styles.roundButton, {opacity: isRecording && 0}]}>
+      <Icon name="arrowleft" color={COLORS.neutral[300]} size={22} />
     </TouchableOpacity>
   );
 
   const getCaptureContainer = () => (
-    <View style={{ position: 'absolute', width: Dimensions.get('window').width, alignItems: 'center' }}>
-      {isRecording
-        ? (
-          <View
-            animation="bounceInDown"
-            easing="ease-out"
-            style={styles.recordingContainer}
-          >
-            <View style={{ textAlign: 'center' }}>
-              <Headline
-                type={4}
-                isDense
-                text={i18n.t('• Recording')}
-                color={COLORS.error[900]}
-              />
-            </View>
+    <View
+      style={{
+        position: 'absolute',
+        width: Dimensions.get('window').width,
+        alignItems: 'center',
+      }}>
+      {isRecording ? (
+        <View
+          animation="bounceInDown"
+          easing="ease-out"
+          style={styles.recordingContainer}>
+          <View style={{textAlign: 'center'}}>
+            <Headline
+              type={4}
+              isDense
+              text={i18n.t('• Recording')}
+              color={COLORS.error[900]}
+            />
           </View>
-        ) : (
-          <AnimatableTouchableOpacity
-            animation="pulse"
-            easing="ease-out"
-            iterationCount="infinite"
-            activeOpacity={1}
-            style={styles.captureContainer}
-          >
-            <View style={{ alignItems: 'center' }}>
-              <View style={{ flexDirection: 'row' }}>
-                <Body
-                  type={1}
-                  style={{ marginTop: -2, fontWeight: '500' }}
-                  text={i18n.t('Capture now')}
-                  color={COLORS.shades[0]}
-                />
-                <AccentBubble
-                  style={{ position: 'absolute', right: -22, top: -12 }}
-                  text={freeImages}
-                />
-              </View>
-              <Label
+        </View>
+      ) : (
+        <AnimatableTouchableOpacity
+          animation="pulse"
+          easing="ease-out"
+          iterationCount="infinite"
+          activeOpacity={1}
+          style={styles.captureContainer}>
+          <View style={{alignItems: 'center'}}>
+            <View style={{flexDirection: 'row'}}>
+              <Body
                 type={1}
-                style={{ fontWeight: '400' }}
-                text={i18n.t("Don't be shy now 📸")}
-                color={Utils.addAlpha(COLORS.neutral[50], 0.9)}
+                style={{marginTop: -2, fontWeight: '500'}}
+                text={i18n.t('Capture now')}
+                color={COLORS.shades[0]}
+              />
+              <AccentBubble
+                style={{position: 'absolute', right: -22, top: -12}}
+                text={freeImages}
               />
             </View>
-          </AnimatableTouchableOpacity>
-        )}
-
+            <Label
+              type={1}
+              style={{fontWeight: '400'}}
+              text={i18n.t("Don't be shy now 📸")}
+              color={Utils.addAlpha(COLORS.neutral[50], 0.9)}
+            />
+          </View>
+        </AnimatableTouchableOpacity>
+      )}
     </View>
   );
 
@@ -298,39 +305,50 @@ export default function CameraScreen({ route }) {
           />
         </View>
       )}
-      <BlurView
-        style={styles.blurView}
-        blurType="dark"
-        blurAmount={4}
-        reducedTransparencyFallbackColor={COLORS.shades[0]}
-      />
-
+      {Platform.OS !== 'android' && (
+        <BlurView
+          style={styles.blurView}
+          blurType="dark"
+          blurAmount={4}
+          reducedTransparencyFallbackColor={COLORS.shades[0]}
+        />
+      )}
       <View style={styles.recordUnit}>
         {!isRecording && (
           <TouchableOpacity
             activeOpacity={0.9}
-            style={[styles.flashButton, flashMode === FlashMode.on ? styles.flashOn : styles.flashOff]}
-            onPress={changeFlash}
-          >
+            style={[
+              styles.flashButton,
+              flashMode === FlashMode.on ? styles.flashOn : styles.flashOff,
+            ]}
+            onPress={changeFlash}>
             <IonIcons
               name="ios-flash"
-              color={flashMode === FlashMode.on ? COLORS.neutral[500] : COLORS.shades[0]}
+              color={
+                flashMode === FlashMode.on
+                  ? COLORS.neutral[500]
+                  : COLORS.shades[0]
+              }
               size={18}
             />
           </TouchableOpacity>
         )}
         <AnimatableTouchableOpacity
           onPress={handleCapture}
-            // onLongPress={startCaptureVideo}
+          // onLongPress={startCaptureVideo}
           animation="pulse"
           easing="ease-out"
           iterationCount="infinite"
           activeOpacity={0.9}
-          style={[styles.recordButton, { borderColor: isRecording ? COLORS.error[900] : COLORS.shades[0] }]}
-        >
+          style={[
+            styles.recordButton,
+            {borderColor: isRecording ? COLORS.error[900] : COLORS.shades[0]},
+          ]}>
           <View
             style={{
-              backgroundColor: isRecording ? COLORS.error[900] : COLORS.shades[0],
+              backgroundColor: isRecording
+                ? COLORS.error[900]
+                : COLORS.shades[0],
               height: 54,
               width: 54,
               borderRadius: RADIUS.xl,
@@ -341,8 +359,7 @@ export default function CameraScreen({ route }) {
           <TouchableOpacity
             onPress={rotateCamera}
             activeOpacity={0.9}
-            style={styles.flipButton}
-          >
+            style={styles.flipButton}>
             <MatIcon
               name="flip-camera-android"
               color={COLORS.shades[0]}
@@ -362,17 +379,16 @@ export default function CameraScreen({ route }) {
         flex: 1,
         width: '100%',
         height: '100%',
-      }}
-    >
+      }}>
       <Video
-        source={{ uri: capturedVideo && capturedVideo.uri }}
+        source={{uri: capturedVideo && capturedVideo.uri}}
         style={{
           position: 'absolute',
           left: 0,
           top: 0,
           bottom: 0,
           right: 0,
-          transform: [{ scaleX: -1 }],
+          transform: [{scaleX: -1}],
         }}
       />
     </TouchableOpacity>
@@ -386,23 +402,22 @@ export default function CameraScreen({ route }) {
     <>
       <TouchableOpacity
         activeOpacity={1}
-        style={{ flex: 1 }}
-        onPress={checkDoublePress}
-      >
-        <PinchGestureHandler onGestureEvent={(event) => changeZoom(event)}>
+        style={{flex: 1}}
+        onPress={checkDoublePress}>
+        <PinchGestureHandler onGestureEvent={event => changeZoom(event)}>
           <View style={styles.container}>
             <>
               <Camera
-                style={{ flex: 1 }}
+                style={{flex: 1}}
                 flashMode={flashMode}
                 zoom={zoom}
                 type={cameraType}
-                ref={(r) => {
+                ref={r => {
                   camera = r;
                 }}
               />
               <SafeAreaView style={styles.overlay} edges={['top']}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
                   {getRoundedBackButton()}
                   {getCaptureContainer()}
                 </View>
@@ -454,6 +469,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   overlay: {
+    marginTop: Platform.OS === 'android' ? 20 : 0,
     position: 'absolute',
     width: '100%',
     height: '100%',

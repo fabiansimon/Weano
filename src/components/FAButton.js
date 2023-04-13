@@ -6,8 +6,8 @@ import {
   Animated,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import React, { useEffect, useRef, useState } from 'react';
-import COLORS, { PADDING, RADIUS } from '../constants/Theme';
+import React, {useEffect, useRef, useState} from 'react';
+import COLORS, {PADDING, RADIUS} from '../constants/Theme';
 import Headline from './typography/Headline';
 import Utils from '../utils';
 import Body from './typography/Body';
@@ -15,7 +15,13 @@ import Body from './typography/Body';
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export default function FAButton({
-  style, onPress, icon, iconSize = 22, string, isLoading = false, options = [],
+  style,
+  onPress,
+  icon,
+  iconSize = 22,
+  string,
+  isLoading = false,
+  options = [],
 }) {
   // STATE && MISC
   const [isExpanded, setIsExpanded] = useState(false);
@@ -52,10 +58,11 @@ export default function FAButton({
         useNativeDriver: false,
       }).start();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isExpanded]);
 
   const getOptionButton = (option, index) => {
-    const { title, icon: iconName, onPress: onTap } = option;
+    const {title, icon: iconName, onPress: onTap} = option;
 
     return (
       <AnimatedPressable
@@ -69,23 +76,22 @@ export default function FAButton({
           alignItems: 'center',
           justifyContent: 'flex-end',
           right: 7,
-          transform: [{ translateY: Animated.multiply(animatedOffset, (index + 1) * -1) }],
-        }}
-      >
+          transform: [
+            {translateY: Animated.multiply(animatedOffset, (index + 1) * -1)},
+          ],
+        }}>
         {isExpanded && (
-        <Body
-          text={title}
-          color={COLORS.shades[0]}
-          style={{ width: 100, textAlign: 'right', marginRight: 10 }}
-        />
+          <Body
+            text={title}
+            color={COLORS.shades[0]}
+            style={{width: 100, textAlign: 'right', marginRight: 10}}
+          />
         )}
-        <View
-          style={styles.miniFab}
-        >
+        <View style={styles.miniFab}>
           <Icon
             name={iconName}
             size={22}
-            style={{ marginLeft: 1 }}
+            style={{marginLeft: 1}}
             color={COLORS.shades[0]}
           />
         </View>
@@ -97,34 +103,43 @@ export default function FAButton({
     <>
       <AnimatedPressable
         onPress={() => setIsExpanded(false)}
-        style={[styles.container, { transform: [{ translateX: isExpanded ? 0 : -1000 }], opacity: animatedOpacity }]}
+        style={[
+          styles.container,
+          {
+            transform: [{translateX: isExpanded ? 0 : -1000}],
+            opacity: animatedOpacity,
+          },
+        ]}
       />
       <View style={styles.fabContainer}>
         {options?.map((option, index) => getOptionButton(option, index))}
         <Pressable
           disabled={isLoading}
-          onPress={() => (options.length <= 0 ? onPress() : setIsExpanded((prev) => !prev))}
-          style={[styles.fab, {
-            paddingHorizontal: string ? PADDING.l : 0,
-            backgroundColor: isExpanded ? COLORS.neutral[900] : COLORS.primary[700],
-          }, style]}
-        >
-          {isLoading
-            ? <ActivityIndicator color={COLORS.shades[0]} />
-            : (
-              <>
-                <Headline
-                  type={4}
-                  color={COLORS.shades[0]}
-                  text={string}
-                />
-                <Icon
-                  name={isExpanded ? 'close' : icon}
-                  color={COLORS.shades[0]}
-                  size={iconSize}
-                />
-              </>
-            )}
+          onPress={() =>
+            options.length <= 0 ? onPress() : setIsExpanded(prev => !prev)
+          }
+          style={[
+            styles.fab,
+            {
+              paddingHorizontal: string ? PADDING.l : 0,
+              backgroundColor: isExpanded
+                ? COLORS.neutral[900]
+                : COLORS.primary[700],
+            },
+            style,
+          ]}>
+          {isLoading ? (
+            <ActivityIndicator color={COLORS.shades[0]} />
+          ) : (
+            <>
+              <Headline type={4} color={COLORS.shades[0]} text={string} />
+              <Icon
+                name={isExpanded ? 'close' : icon}
+                color={COLORS.shades[0]}
+                size={iconSize}
+              />
+            </>
+          )}
         </Pressable>
       </View>
     </>

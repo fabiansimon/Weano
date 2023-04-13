@@ -1,5 +1,8 @@
 import {
-  Keyboard, KeyboardAvoidingView, Platform, TouchableWithoutFeedback,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import React from 'react';
 
@@ -10,13 +13,19 @@ export default function KeyboardView({
   paddingBottom = 20,
   behavior = 'height',
 }) {
+  if (Platform.OS === 'android') {
+    return children;
+  }
+
   if (ignoreTouch) {
     return (
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? behavior : null}
-        style={[style, { flex: 1, backgroundColor: 'transparent' }]}
-        keyboardVerticalOffset={Platform.select({ ios: paddingBottom, android: 500 })}
-      >
+        style={[style, {flex: 1, backgroundColor: 'transparent'}]}
+        keyboardVerticalOffset={Platform.select({
+          ios: paddingBottom,
+          android: 500,
+        })}>
         {children}
       </KeyboardAvoidingView>
     );
@@ -24,14 +33,15 @@ export default function KeyboardView({
 
   return (
     <TouchableWithoutFeedback
-      style={[style, { flex: 1 }]}
-      onPress={() => Keyboard.dismiss()}
-    >
+      style={[style, {flex: 1}]}
+      onPress={() => Keyboard.dismiss()}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? behavior : null}
-        style={[{ flex: 1, backgroundColor: 'transparent' }]}
-        keyboardVerticalOffset={Platform.select({ ios: paddingBottom, android: 500 })}
-      >
+        behavior={Platform.OS === 'ios' ? behavior : 'none'}
+        style={[{flex: 1, backgroundColor: 'transparent'}]}
+        keyboardVerticalOffset={Platform.select({
+          ios: paddingBottom,
+          android: 500,
+        })}>
         {children}
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>

@@ -1,41 +1,62 @@
 import {
-  Modal, View, StyleSheet, TouchableOpacity, Dimensions, ActivityIndicator,
+  Modal,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
 import Toast from 'react-native-toast-message';
-import COLORS from '../constants/Theme';
+import COLORS, {RADIUS} from '../constants/Theme';
 import Headline from './typography/Headline';
 import toastConfig from '../constants/ToastConfig';
 
 export default function TitleModal({
-  isVisible, onRequestClose, title, children, actionLabel, onPress, isLoading, isDisabled,
+  isVisible,
+  onRequestClose,
+  title,
+  children,
+  actionLabel,
+  onPress,
+  isLoading,
+  isDisabled,
 }) {
   return (
     <Modal
       animationType="slide"
       visible={isVisible}
       onRequestClose={onRequestClose}
-      presentationStyle="pageSheet"
-    >
+      presentationStyle="pageSheet">
       <View style={styles.container}>
         <View style={styles.headerContainer}>
-          <View style={{ position: 'absolute', width: Dimensions.get('window').width }}>
-            <Headline type={4} text={title} style={{ alignSelf: 'center' }} />
+          <View
+            style={{
+              position: 'absolute',
+              width: Dimensions.get('window').width,
+            }}>
+            <Headline type={4} text={title} style={{alignSelf: 'center'}} />
           </View>
           <TouchableOpacity hitSlop={20} onPress={onRequestClose}>
-            <Icon name="close" size={20} />
+            <Icon name="close" color={COLORS.shades[100]} size={20} />
           </TouchableOpacity>
           {actionLabel && (
-            <TouchableOpacity
-              disabled={isDisabled}
-              onPress={onPress}
-            >
-              {isLoading ? <ActivityIndicator color={COLORS.neutral[300]} style={{ marginRight: 5 }} /> : (
+            <TouchableOpacity disabled={isDisabled} onPress={onPress}>
+              {isLoading ? (
+                <ActivityIndicator
+                  color={COLORS.neutral[300]}
+                  style={{marginRight: 5}}
+                />
+              ) : (
                 <Headline
                   type={4}
-                  style={{ fontWeight: '500' }}
-                  color={(isLoading || isDisabled) ? COLORS.neutral[300] : COLORS.primary[500]}
+                  style={{fontWeight: '500'}}
+                  color={
+                    isLoading || isDisabled
+                      ? COLORS.neutral[300]
+                      : COLORS.primary[500]
+                  }
                   text={actionLabel}
                 />
               )}

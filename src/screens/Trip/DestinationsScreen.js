@@ -1,24 +1,17 @@
-import React, {
-  useMemo, useRef, useState,
-  useEffect,
-  useCallback,
-} from 'react';
-import {
-  Dimensions,
-  StyleSheet, View,
-} from 'react-native';
+import React, {useMemo, useRef, useState, useEffect, useCallback} from 'react';
+import {Dimensions, StyleSheet, View} from 'react-native';
 import MapboxGL from '@react-native-mapbox-gl/maps';
 import Toast from 'react-native-toast-message';
 import bbox from '@turf/bbox';
-import { lineString, lineString as makeLineString } from '@turf/helpers';
+import {lineString, lineString as makeLineString} from '@turf/helpers';
 import BottomSheet from '@gorhom/bottom-sheet';
 // eslint-disable-next-line import/no-unresolved
-import { MAPBOX_TOKEN } from '@env';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useSharedValue } from 'react-native-reanimated';
-import { useMutation } from '@apollo/client';
+import {MAPBOX_TOKEN} from '@env';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {useSharedValue} from 'react-native-reanimated';
+import {useMutation} from '@apollo/client';
 import BackButton from '../../components/BackButton';
-import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
+import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import Utils from '../../utils';
 import DestinationsSheet from '../../components/Trip/DestinationsSheet';
 import InputModal from '../../components/InputModal';
@@ -31,15 +24,14 @@ import UPDATE_TRIP from '../../mutations/updateTrip';
 MapboxGL.setAccessToken(MAPBOX_TOKEN);
 const MAX_LENGTH = 15;
 
-export default function DestinationScreen({ navigatePage }) {
-// MUTATIONS
+export default function DestinationScreen({navigatePage}) {
+  // MUTATIONS
   const [updateTrip] = useMutation(UPDATE_TRIP);
 
   // STORES
-  const {
-    dateRange, destinations, id, activeMembers, title, type,
-  } = activeTripStore((state) => state.activeTrip);
-  const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
+  const {dateRange, destinations, id, activeMembers, title, type} =
+    activeTripStore(state => state.activeTrip);
+  const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
 
   // STATE && MISC
   const [inputVisible, setInputVisible] = useState(false);
@@ -75,13 +67,14 @@ export default function DestinationScreen({ navigatePage }) {
     }, 500);
   }, [destinationData]);
 
-  const handleSheetChanges = useCallback((i) => {
+  const handleSheetChanges = useCallback(i => {
     setExpandedIndex(i);
   }, []);
 
-  const handleSheetTap = () => sheetRef.current.snapToIndex(expandedIndex ? 0 : 1);
+  const handleSheetTap = () =>
+    sheetRef.current.snapToIndex(expandedIndex ? 0 : 1);
 
-  const handleDeletion = (index) => {
+  const handleDeletion = index => {
     Utils.showConfirmationAlert(
       i18n.t('Delete Trip stop?'),
       i18n.t('Are you sure you want to delete your this stop?'),
@@ -94,16 +87,15 @@ export default function DestinationScreen({ navigatePage }) {
             return item;
           }
         });
-        updateActiveTrip({ destinations: newArr });
+        updateActiveTrip({destinations: newArr});
         handleUpdateTrip(oldData, newArr);
         sheetRef.current.snapToIndex(0);
       },
-
     );
     // eslint-disable-next-line array-callback-return
   };
 
-  const handleAddDestination = (input) => {
+  const handleAddDestination = input => {
     if (!input) {
       return;
     }
@@ -116,29 +108,34 @@ export default function DestinationScreen({ navigatePage }) {
     const oldData = destinations;
 
     if (isReplace) {
-      newArr = [{
-        latlon: input.location,
-        placeName: input.string,
-      }];
+      newArr = [
+        {
+          latlon: input.location,
+          placeName: input.string,
+        },
+      ];
       setIsReplaced(false);
     } else {
-      newArr = [...destinations, {
-        latlon: input.location,
-        placeName: input.string,
-      }];
+      newArr = [
+        ...destinations,
+        {
+          latlon: input.location,
+          placeName: input.string,
+        },
+      ];
     }
 
     setInputVisible(false);
 
-    updateActiveTrip({ destinations: newArr });
+    updateActiveTrip({destinations: newArr});
     handleUpdateTrip(oldData, newArr);
     sheetRef.current.snapToIndex(0);
   };
 
-  const updateData = (data) => {
+  const updateData = data => {
     const oldData = destinations;
 
-    updateActiveTrip({ destinations: data });
+    updateActiveTrip({destinations: data});
     handleUpdateTrip(oldData, data);
   };
 
@@ -146,15 +143,15 @@ export default function DestinationScreen({ navigatePage }) {
     await updateTrip({
       variables: {
         trip: {
-          destinations: newArr.map((d) => ({
+          destinations: newArr.map(d => ({
             placeName: d.placeName,
             latlon: d.latlon,
           })),
           tripId: id,
         },
       },
-    }).catch((e) => {
-      updateActiveTrip({ destinations: oldArr });
+    }).catch(e => {
+      updateActiveTrip({destinations: oldArr});
       setTimeout(() => {
         Toast.show({
           type: 'error',
@@ -188,7 +185,7 @@ export default function DestinationScreen({ navigatePage }) {
       return;
     }
 
-    const box = bbox(lineString(destinationData.map((item) => item.latlon)));
+    const box = bbox(lineString(destinationData.map(item => item.latlon)));
 
     mapCamera?.current?.fitBounds(
       [box[0], box[1]],
@@ -199,21 +196,15 @@ export default function DestinationScreen({ navigatePage }) {
   };
 
   const renderBubble = (data, index) => {
-    const { latlon } = data;
+    const {latlon} = data;
     if (latlon?.length < 2) {
       return;
     }
 
     return (
-      <MapboxGL.MarkerView
-        coordinate={latlon}
-      >
+      <MapboxGL.MarkerView coordinate={latlon}>
         <View style={styles.numberContainer}>
-          <Subtitle
-            type={1}
-            color={COLORS.shades[0]}
-            text={index + 1}
-          />
+          <Subtitle type={1} color={COLORS.shades[0]} text={index + 1} />
         </View>
       </MapboxGL.MarkerView>
     );
@@ -223,20 +214,14 @@ export default function DestinationScreen({ navigatePage }) {
     if (destinationData?.length <= 1) {
       return;
     }
-    const line = makeLineString(destinationData.map((item) => item.latlon));
+    const line = makeLineString(destinationData.map(item => item.latlon));
     if (!line) {
       return;
     }
 
     return (
-      <MapboxGL.ShapeSource
-        id="line"
-        shape={line.geometry}
-      >
-        <MapboxGL.LineLayer
-          id="lineLayer"
-          style={shapeStyle.line}
-        />
+      <MapboxGL.ShapeSource id="line" shape={line.geometry}>
+        <MapboxGL.LineLayer id="lineLayer" style={shapeStyle.line} />
       </MapboxGL.ShapeSource>
     );
   };
@@ -246,50 +231,47 @@ export default function DestinationScreen({ navigatePage }) {
       <MapboxGL.MapView
         rotateEnabled={false}
         style={styles.map}
-        styleURL="mapbox://styles/fabiansimon/clezrm6w7002g01p9eu1n0aos"
-      >
-        <MapboxGL.Camera
-          animationMode="moveTo"
-          animated
-          ref={mapCamera}
-        />
-        {destinationData && destinationData.map((location, index) => renderBubble(location, index))}
+        styleURL="mapbox://styles/fabiansimon/clezrm6w7002g01p9eu1n0aos">
+        <MapboxGL.Camera animationMode="moveTo" animated ref={mapCamera} />
+        {destinationData &&
+          destinationData.map((location, index) =>
+            renderBubble(location, index),
+          )}
         {renderLines()}
       </MapboxGL.MapView>
       <SafeAreaView edges={['top']} style={styles.header}>
-        <BackButton
-          onPress={handleNavigation}
-          isClear
-        />
-        <View style={{
-          position: 'absolute', alignItems: 'center', width: Dimensions.get('window').width, bottom: 6,
-        }}
-        >
+        <BackButton onPress={handleNavigation} isClear />
+        <View
+          style={{
+            position: 'absolute',
+            alignItems: 'center',
+            width: Dimensions.get('window').width,
+            bottom: 6,
+          }}>
           <Body
             type={1}
-            style={{ fontWeight: '500', textAlign: 'center' }}
+            style={{fontWeight: '500', textAlign: 'center'}}
             text={title}
           />
           <Body
             type={2}
-            style={{ textAlign: 'center' }}
+            style={{textAlign: 'center'}}
             color={COLORS.neutral[300]}
             text={Utils.getDateRange(dateRange)}
           />
         </View>
       </SafeAreaView>
       <BottomSheet
-        handleIndicatorStyle={{ opacity: 0 }}
+        handleIndicatorStyle={{opacity: 0}}
         backgroundStyle={{
           backgroundColor: 'transparent',
           borderRadius: 20,
         }}
-        onChange={(i) => handleSheetChanges(i)}
+        onChange={i => handleSheetChanges(i)}
         ref={sheetRef}
         index={0}
         snapPoints={snapPoints}
-        animatedPosition={sheetPosition}
-      >
+        animatedPosition={sheetPosition}>
         <DestinationsSheet
           setScrollIndex={setScrollIndex}
           navigateRef={pageRef}
@@ -304,8 +286,8 @@ export default function DestinationScreen({ navigatePage }) {
           handleExpending={handleSheetTap}
           position={sheetPosition}
           onAdd={() => setInputVisible(true)}
-          onDelete={(index) => handleDeletion(index)}
-          onDragEnded={(data) => updateData(data)}
+          onDelete={index => handleDeletion(index)}
+          onDragEnded={data => updateData(data)}
           destinations={destinationData}
         />
       </BottomSheet>
@@ -314,7 +296,7 @@ export default function DestinationScreen({ navigatePage }) {
         geoMatching
         placeholder={i18n.t('Enter new destination')}
         onRequestClose={() => setInputVisible(false)}
-        onPress={(input) => handleAddDestination(input)}
+        onPress={input => handleAddDestination(input)}
       />
     </View>
   );
@@ -332,10 +314,9 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 10,
     shadowColor: COLORS.neutral[300],
-    shadowOffset: { width: 0, height: 10 },
+    shadowOffset: {width: 0, height: 10},
     shadowOpacity: 0.1,
     shadowRadius: 10,
-
   },
   container: {
     width: '100%',
@@ -353,7 +334,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: -5,
     alignSelf: 'center',
-    transform: [{ rotate: '45deg' }],
+    transform: [{rotate: '45deg'}],
   },
   imageContainer: {
     padding: 4,

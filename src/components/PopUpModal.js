@@ -1,13 +1,16 @@
-import {
-  Modal, StyleSheet, TouchableOpacity,
-} from 'react-native';
+import {Modal, StyleSheet, TouchableOpacity} from 'react-native';
 import React from 'react';
 import COLORS from '../constants/Theme';
 import Headline from './typography/Headline';
 import Body from './typography/Body';
 
 export default function PopUpModal({
-  style, isVisible, onRequestClose, title, subtitle, children,
+  style,
+  isVisible,
+  onRequestClose,
+  title,
+  subtitle,
+  children,
 }) {
   return (
     <Modal
@@ -16,17 +19,12 @@ export default function PopUpModal({
       useNativeDriver
       collapsable
       transparent
-      onRequestClose={onRequestClose}
-    >
+      onRequestClose={onRequestClose}>
       <TouchableOpacity
         style={styles.container}
         activeOpacity={1}
-        onPress={onRequestClose}
-      >
-        <TouchableOpacity
-          activeOpacity={1}
-          style={[styles.content, style]}
-        >
+        onPress={onRequestClose}>
+        <TouchableOpacity activeOpacity={1} style={[styles.content, style]}>
           <Headline type={2} text={title} />
           <Body text={subtitle} color={COLORS.neutral[900]} />
           {children}

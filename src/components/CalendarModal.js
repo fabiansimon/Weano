@@ -1,9 +1,7 @@
 import moment from 'moment';
-import React, { useEffect, useMemo, useState } from 'react';
-import {
-  StyleSheet,
-} from 'react-native';
-import { CalendarList } from 'react-native-calendars';
+import React, {useEffect, useMemo, useState} from 'react';
+import {StyleSheet} from 'react-native';
+import {CalendarList} from 'react-native-calendars';
 import COLORS from '../constants/Theme';
 import Utils from '../utils';
 import i18n from '../utils/i18n';
@@ -28,20 +26,29 @@ const CalendarModal = ({
 
   useEffect(() => {
     if (isSingleDate && initialStartDate) {
-      const _start = JSON.stringify(Utils.getDateFromTimestamp(initialStartDate)).split('T')[0].replace('"', '');
+      const _start = JSON.stringify(
+        Utils.getDateFromTimestamp(initialStartDate),
+      )
+        .split('T')[0]
+        .replace('"', '');
       return setDate({
         dateString: _start,
         day: _start.split('-')[2],
         month: _start.split('-')[1],
         timestamp: new Date(_start).getTime(),
         year: _start.split('-')[0],
-
       });
     }
 
     if (initialStartDate && initialEndDate) {
-      const _start = JSON.stringify(Utils.getDateFromTimestamp(initialStartDate)).split('T')[0].replace('"', '');
-      const _end = JSON.stringify(Utils.getDateFromTimestamp(initialEndDate)).split('T')[0].replace('"', '');
+      const _start = JSON.stringify(
+        Utils.getDateFromTimestamp(initialStartDate),
+      )
+        .split('T')[0]
+        .replace('"', '');
+      const _end = JSON.stringify(Utils.getDateFromTimestamp(initialEndDate))
+        .split('T')[0]
+        .replace('"', '');
 
       return setDateRange({
         start: {
@@ -62,54 +69,57 @@ const CalendarModal = ({
     }
   }, [isVisible, initialStartDate, initialStartDate]);
 
-  const onDayTap = (day) => {
+  const onDayTap = day => {
     if (isSingleDate) {
-      return setDate((prev) => (prev?.timestamp === day?.timestamp ? null : day));
+      return setDate(prev => (prev?.timestamp === day?.timestamp ? null : day));
     }
 
     if (day.dateString === dateRange?.start?.dateString) {
-      return setDateRange((prev) => ({
+      return setDateRange(prev => ({
         ...prev,
         start: null,
       }));
     }
 
     if (day.dateString === dateRange?.end?.dateString) {
-      return setDateRange((prev) => ({
+      return setDateRange(prev => ({
         ...prev,
         end: null,
       }));
     }
 
     if (!dateRange?.start) {
-      return setDateRange((prev) => ({
+      return setDateRange(prev => ({
         ...prev,
         start: day,
       }));
     }
 
     if (!dateRange?.end) {
-      return setDateRange((prev) => ({
+      return setDateRange(prev => ({
         ...prev,
         end: day,
       }));
     }
 
     if (day.timestamp < dateRange?.start?.timestamp) {
-      return setDateRange((prev) => ({
+      return setDateRange(prev => ({
         ...prev,
         start: day,
       }));
     }
 
-    return setDateRange((prev) => ({
+    return setDateRange(prev => ({
       ...prev,
       end: day,
     }));
   };
 
   const handleApply = () => {
-    if (!isSingleDate && dateRange?.end.timestamp < dateRange?.start.timestamp) {
+    if (
+      !isSingleDate &&
+      dateRange?.end.timestamp < dateRange?.start.timestamp
+    ) {
       const dates = dateRange;
       setDateRange({
         start: dates.end,
@@ -130,7 +140,10 @@ const CalendarModal = ({
       const _date = moment(date.timestamp);
       const formatted = JSON.stringify(_date).split('T')[0].replace('"', '');
       range[formatted] = {
-        startingDay: true, endingDay: true, color: COLORS.primary[700], textColor: COLORS.shades[0],
+        startingDay: true,
+        endingDay: true,
+        color: COLORS.primary[700],
+        textColor: COLORS.shades[0],
       };
       return range;
     }
@@ -141,14 +154,24 @@ const CalendarModal = ({
 
     let diff = 1;
     if (dateRange.start && dateRange.end) {
-      diff = Utils.getDaysDifference(dateRange.start.timestamp / 1000, dateRange.end.timestamp / 1000, true) + 1;
+      diff =
+        Utils.getDaysDifference(
+          dateRange.start.timestamp / 1000,
+          dateRange.end.timestamp / 1000,
+          true,
+        ) + 1;
     }
 
     for (let i = 0; i < diff; i += 1) {
-      const _date = moment(dateRange.start ? dateRange.start.timestamp : dateRange.end.timestamp).add(i, 'days');
+      const _date = moment(
+        dateRange.start ? dateRange.start.timestamp : dateRange.end.timestamp,
+      ).add(i, 'days');
       const formatted = JSON.stringify(_date).split('T')[0].replace('"', '');
       range[formatted] = {
-        startingDay: i === 0, endingDay: i === diff - 1, color: i === diff - 1 ? COLORS.primary[700] : COLORS.primary[700], textColor: COLORS.shades[0],
+        startingDay: i === 0,
+        endingDay: i === diff - 1,
+        color: i === diff - 1 ? COLORS.primary[700] : COLORS.primary[700],
+        textColor: COLORS.shades[0],
       };
     }
 
@@ -164,25 +187,32 @@ const CalendarModal = ({
       }}
       title={i18n.t('Choose dates')}
       actionLabel={i18n.t('Apply')}
-      isDisabled={!((isSingleDate && date) || (!isSingleDate && dateRange?.start && dateRange?.end))}
-      onPress={handleApply}
-    >
+      isDisabled={
+        !(
+          (isSingleDate && date) ||
+          (!isSingleDate && dateRange?.start && dateRange?.end)
+        )
+      }
+      onPress={handleApply}>
       <CalendarList
-        style={{ paddingTop: 10 }}
+        style={{paddingTop: 10}}
         minDate={minDate}
         markingType="period"
-        onDayPress={(day) => onDayTap(day)}
+        onDayPress={day => onDayTap(day)}
         markedDates={getDateRange}
         theme={styles.calendar}
         futureScrollRange={RANGE}
         pastScrollRange={2}
         staticHeader
         showScrollIndicator={false}
-        renderHeader={(d) => (
+        renderHeader={d => (
           <Headline
             type={4}
             style={{
-              marginBottom: 10, marginTop: 10, fontWeight: '500', width: '100%',
+              marginBottom: 10,
+              marginTop: 10,
+              fontWeight: '500',
+              width: '100%',
             }}
             text={d.toString('MMMM yyyy')}
           />
@@ -210,7 +240,6 @@ const styles = StyleSheet.create({
     textDayHeaderFontWeight: '400',
     textDayHeaderFontSize: 14,
     textDayHeaderFontFamily: 'WorkSans-Regular',
-
   },
 });
 

@@ -1,14 +1,22 @@
 import {
-  Modal, StyleSheet, View, TouchableOpacity, ScrollView, Animated,
+  Modal,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  ScrollView,
+  Animated,
 } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Headline from './typography/Headline';
-import COLORS, { RADIUS } from '../constants/Theme';
+import COLORS, {RADIUS} from '../constants/Theme';
 import Body from './typography/Body';
 
 export default function FilterModal({
-  isVisible, onRequestClose, data, selectedIndex,
+  isVisible,
+  onRequestClose,
+  data,
+  selectedIndex,
 }) {
   // STATE & MISC
   const [showModal, setShowModal] = useState(isVisible);
@@ -46,18 +54,20 @@ export default function FilterModal({
       collapsable
       transparent
       statusBarTranslucent
-      onRequestClose={onRequestClose}
-    >
+      onRequestClose={onRequestClose}>
       <TouchableOpacity
         activeOpacity={1}
         onPress={onRequestClose}
-        style={{ backgroundColor: 'rgba(0,0,0,0.6)', flex: 1 }}
-      >
-        <Animated.View style={[styles.modalContainer, { transform: [{ translateY: animatedBottom }] }]}>
+        style={{backgroundColor: 'rgba(0,0,0,0.6)', flex: 1}}>
+        <Animated.View
+          style={[
+            styles.modalContainer,
+            {transform: [{translateY: animatedBottom}]},
+          ]}>
           <View style={styles.modalHeader}>
             <Headline type={3} text={data.title} />
           </View>
-          <ScrollView contentContainerStyle={{ paddingBottom: 0 }}>
+          <ScrollView contentContainerStyle={{paddingBottom: 0}}>
             {data.options.map((option, index) => (
               <TouchableOpacity
                 style={styles.tile}
@@ -67,18 +77,25 @@ export default function FilterModal({
                   setTimeout(() => {
                     option.onPress(option);
                   }, 350);
-                }}
-              >
+                }}>
                 <Body
                   type={1}
-                  color={option.deleteAction ? COLORS.error[900] : option.notAvailable ? COLORS.neutral[300] : COLORS.shades[100]}
+                  color={
+                    option.deleteAction
+                      ? COLORS.error[900]
+                      : option.notAvailable
+                      ? COLORS.neutral[300]
+                      : COLORS.shades[100]
+                  }
                   text={option.name}
                 />
-                {selectedIndex && selectedIndex === index && <MaterialIcon name="check" size={20} />}
+                {selectedIndex && selectedIndex === index && (
+                  <MaterialIcon name="check" size={20} />
+                )}
                 {option.trailing || null}
               </TouchableOpacity>
             ))}
-            <View style={{ height: 150 }} />
+            <View style={{height: 150}} />
           </ScrollView>
         </Animated.View>
       </TouchableOpacity>

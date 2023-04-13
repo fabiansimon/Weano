@@ -1,12 +1,10 @@
-import {
-  View, StyleSheet, FlatList, Dimensions,
-} from 'react-native';
-import React, { useRef, useEffect, useState } from 'react';
+import {View, StyleSheet, FlatList, Dimensions} from 'react-native';
+import React, {useRef, useEffect, useState} from 'react';
 import Animated from 'react-native-reanimated';
-import { useMutation } from '@apollo/client';
+import {useMutation} from '@apollo/client';
 import Toast from 'react-native-toast-message';
 import DocumentPicker from 'react-native-document-picker';
-import COLORS, { PADDING } from '../../constants/Theme';
+import COLORS, {PADDING} from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import HybridHeader from '../../components/HybridHeader';
 import INFORMATION from '../../constants/Information';
@@ -26,19 +24,19 @@ const asyncStorageDAO = new AsyncStorageDAO();
 
 export default function DocumentsScreen() {
   // MUTATIONS
-  const [uploadDocument, { error: deleteError }] = useMutation(UPLOAD_DOCUMENT);
-  const [deleteDocument, { error }] = useMutation(DELETE_DOCUMENT);
+  const [uploadDocument, {error: deleteError}] = useMutation(UPLOAD_DOCUMENT);
+  const [deleteDocument, {error}] = useMutation(DELETE_DOCUMENT);
 
   // STORES
-  const { documents, id: tripId } = activeTripStore((state) => state.activeTrip);
-  const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
-  const { id, isProMember } = userStore((state) => state.user);
+  const {documents, id: tripId} = activeTripStore(state => state.activeTrip);
+  const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
+  const {id, isProMember} = userStore(state => state.user);
 
   // STATE & MISC
   const scrollY = useRef(new Animated.Value(0)).current;
   const [isLoading, setIsLoading] = useState(false);
 
-  const { height } = Dimensions.get('window');
+  const {height} = Dimensions.get('window');
 
   useEffect(() => {
     if (error || deleteError) {
@@ -52,7 +50,7 @@ export default function DocumentsScreen() {
     }
   }, [error, deleteError]);
 
-  const handleDelete = ({ _id }) => {
+  const handleDelete = ({_id}) => {
     Utils.showConfirmationAlert(
       i18n.t('Delete Document'),
       i18n.t('Are you sure you want to delete your Document?'),
@@ -65,16 +63,19 @@ export default function DocumentsScreen() {
               tripId,
             },
           },
-        }).then(() => {
-          Toast.show({
-            type: 'success',
-            text1: i18n.t('Whooray!'),
-            text2: i18n.t('Document was succeessfully deleted!'),
-          });
-
-          updateActiveTrip({ documents: documents.filter((doc) => doc._id !== _id) });
         })
-          .catch((e) => {
+          .then(() => {
+            Toast.show({
+              type: 'success',
+              text1: i18n.t('Whooray!'),
+              text2: i18n.t('Document was succeessfully deleted!'),
+            });
+
+            updateActiveTrip({
+              documents: documents.filter(doc => doc._id !== _id),
+            });
+          })
+          .catch(e => {
             Toast.show({
               type: 'error',
               text1: i18n.t('Whoops!'),
@@ -87,19 +88,22 @@ export default function DocumentsScreen() {
   };
 
   const handleAddDocument = async () => {
-    const usageLimit = JSON.parse(isProMember ? await asyncStorageDAO.getPremiumTierLimits() : await asyncStorageDAO.getFreeTierLimits()).documents;
+    const usageLimit = JSON.parse(
+      isProMember
+        ? await asyncStorageDAO.getPremiumTierLimits()
+        : await asyncStorageDAO.getFreeTierLimits(),
+    ).documents;
     if (documents?.length >= usageLimit) {
       return PremiumController.showModal();
     }
 
     setIsLoading(true);
+
     try {
       const res = await DocumentPicker.pick({
         type: [DocumentPicker.types.allFiles],
       });
-      const {
-        type, name, size, uri,
-      } = res[0];
+      const {type, name, size, uri} = res[0];
 
       if (size > 800000) {
         setIsLoading(false);
@@ -117,7 +121,7 @@ export default function DocumentsScreen() {
           text2: i18n.t('We only support PDF format for now'),
         });
       }
-      const { Location } = await httpService.uploadToS3(null, null, uri);
+      const {Location} = await httpService.uploadToS3(null, null, uri);
 
       await uploadDocument({
         variables: {
@@ -128,11 +132,12 @@ export default function DocumentsScreen() {
             title: name,
           },
         },
-      }).then((r) => {
-        updateActiveTrip({ documents: [...documents, r.data.uploadDocument] });
-        setIsLoading(false);
       })
-        .catch((e) => {
+        .then(r => {
+          updateActiveTrip({documents: [...documents, r.data.uploadDocument]});
+          setIsLoading(false);
+        })
+        .catch(e => {
           Toast.show({
             type: 'error',
             text1: i18n.t('Whoops!'),
@@ -152,47 +157,57 @@ export default function DocumentsScreen() {
       <HybridHeader
         title={i18n.t('Documents')}
         scrollY={scrollY}
-        info={INFORMATION.documentScreen}
-      >
+        info={INFORMATION.documentScreen}>
         <View style={styles.innerContainer}>
           <FlatList
-            ListEmptyComponent={(
+            ListEmptyComponent={
               <View
                 style={{
                   flex: 1,
                   height: height * 0.65,
                   justifyContent: 'center',
-                }}
-              >
+                }}>
                 <Body
                   type={1}
-                  style={{ alignSelf: 'center' }}
+                  style={{alignSelf: 'center'}}
                   color={COLORS.shades[100]}
                   text={i18n.t('There are no documents yet 😕')}
                 />
                 <Body
                   type={2}
                   style={{
-                    alignSelf: 'center', textAlign: 'center', width: '85%', marginTop: 4,
+                    alignSelf: 'center',
+                    textAlign: 'center',
+                    width: '85%',
+                    marginTop: 4,
                   }}
                   color={COLORS.neutral[300]}
-                  text={i18n.t('Upload any important documents for this trip. Could be boarding passes, receipts etc.')}
+                  text={i18n.t(
+                    'Upload any important documents for this trip. Could be boarding passes, receipts etc.',
+                  )}
                 />
               </View>
-            )}
+            }
             data={documents}
             ItemSeparatorComponent={() => (
-              <View style={{
-                height: 10,
-              }}
+              <View
+                style={{
+                  height: 10,
+                }}
               />
             )}
-            renderItem={({ item }) => {
-              const onPress = item.creatorId === id ? () => handleDelete(item) : null;
+            renderItem={({item}) => {
+              const onPress =
+                item.creatorId === id ? () => handleDelete(item) : null;
               return (
                 <DocumentTile
-                  style={{ paddingHorizontal: PADDING.m, backgroundColor: COLORS.shades[0] }}
-                  onPress={() => Utils.openDocumentFromUrl(item.uri, item.title)}
+                  style={{
+                    paddingHorizontal: PADDING.m,
+                    backgroundColor: COLORS.shades[0],
+                  }}
+                  onPress={() =>
+                    Utils.openDocumentFromUrl(item.uri, item.title)
+                  }
                   onDelete={onPress}
                   showMenu
                   data={item}

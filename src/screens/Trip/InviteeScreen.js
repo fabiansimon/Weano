@@ -1,13 +1,11 @@
-import {
-  View, StyleSheet, FlatList, Pressable, Share,
-} from 'react-native';
-import React, { useRef, useState } from 'react';
+import {View, StyleSheet, FlatList, Pressable, Share} from 'react-native';
+import React, {useRef, useState} from 'react';
 import Animated from 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { useMutation } from '@apollo/client';
-import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
+import {useMutation} from '@apollo/client';
+import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import HybridHeader from '../../components/HybridHeader';
 import INFORMATION from '../../constants/Information';
@@ -30,8 +28,10 @@ export default function InviteeScreen() {
   const [removeUser] = useMutation(REMOVE_USER_FROM_TRIP);
 
   // STORES
-  const { activeMembers, hostId, id } = activeTripStore((state) => state.activeTrip);
-  const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
+  const {activeMembers, hostId, id} = activeTripStore(
+    state => state.activeTrip,
+  );
+  const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
 
   // STATE & MISC
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -55,14 +55,15 @@ export default function InviteeScreen() {
     });
   };
 
-  const handleInvitations = async (invites) => {
+  const handleInvitations = async invites => {
     if (invites.length <= 0) {
       return;
     }
 
     const param = invites.toString().replace(',', '&');
 
-    await httpService.sendInvitations(param, id)
+    await httpService
+      .sendInvitations(param, id)
       .then(() => {
         Toast.show({
           type: 'success',
@@ -70,7 +71,7 @@ export default function InviteeScreen() {
           text2: i18n.t('The invites where successful sent to their emails!'),
         });
       })
-      .catch((err) => {
+      .catch(err => {
         Toast.show({
           type: 'error',
           text1: i18n.t('Whoops!'),
@@ -79,7 +80,7 @@ export default function InviteeScreen() {
       });
   };
 
-  const handleDelete = (removeUserId) => {
+  const handleDelete = removeUserId => {
     Utils.showConfirmationAlert(
       i18n.t('Remove user'),
       i18n.t('Are you sure you want to remove the user'),
@@ -92,16 +93,19 @@ export default function InviteeScreen() {
               tripId: id,
             },
           },
-        }).then(() => {
-          Toast.show({
-            type: 'success',
-            text1: i18n.t('Whooray!'),
-            text2: i18n.t('User was succeessfully removed!'),
-          });
-
-          updateActiveTrip({ activeMembers: activeMembers.filter((a) => a.id !== removeUserId) });
         })
-          .catch((e) => {
+          .then(() => {
+            Toast.show({
+              type: 'success',
+              text1: i18n.t('Whooray!'),
+              text2: i18n.t('User was succeessfully removed!'),
+            });
+
+            updateActiveTrip({
+              activeMembers: activeMembers.filter(a => a.id !== removeUserId),
+            });
+          })
+          .catch(e => {
             Toast.show({
               type: 'error',
               text1: i18n.t('Whoops!'),
@@ -113,17 +117,13 @@ export default function InviteeScreen() {
     );
   };
 
-  const getTile = ({ item }) => {
-    const {
-      firstName, lastName, email, id: userId,
-    } = item;
+  const getTile = ({item}) => {
+    const {firstName, lastName, email, id: userId} = item;
     return (
-
       <SwipeView
         enabled={isHost}
         string={i18n.t('Remove')}
-        onDelete={() => handleDelete(userId)}
-      >
+        onDelete={() => handleDelete(userId)}>
         <Pressable
           onPress={() => setShowUser(item)}
           style={{
@@ -134,62 +134,46 @@ export default function InviteeScreen() {
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
-          }}
-        >
-          <Avatar
-            data={item}
-            size={40}
-            style={{ marginRight: 10 }}
-          />
-          <View style={{ marginRight: 'auto' }}>
+          }}>
+          <Avatar data={item} size={40} style={{marginRight: 10}} />
+          <View style={{marginRight: 'auto'}}>
             <Body
               type={1}
               color={COLORS.shades[100]}
               text={`${firstName} ${lastName}`}
             />
-            <Body
-              type={2}
-              color={COLORS.neutral[300]}
-              text={`${email}`}
-            />
+            <Body type={2} color={COLORS.neutral[300]} text={`${email}`} />
           </View>
           <RoleChip isHost={item.id === hostId} />
         </Pressable>
-
       </SwipeView>
-
     );
   };
 
   const getShareLinkButton = () => (
-    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: PADDING.s }}>
-      <Pressable
-        onPress={handleShare}
-        style={styles.shareButton}
-      >
+    <View
+      style={{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginHorizontal: PADDING.s,
+      }}>
+      <Pressable onPress={handleShare} style={styles.shareButton}>
         <Body
           type={1}
           color={COLORS.shades[0]}
           text={i18n.t('Send friends invitation')}
         />
         <Icon
-          style={{ marginLeft: 8 }}
+          style={{marginLeft: 8}}
           name="ios-share"
           color={COLORS.shades[0]}
           size={18}
         />
       </Pressable>
-      <Pressable
-        onPress={copyLink}
-        style={styles.copyButton}
-      >
-        <Body
-          type={1}
-          color={COLORS.shades[100]}
-          text={i18n.t('Copy link')}
-        />
+      <Pressable onPress={copyLink} style={styles.copyButton}>
+        <Body type={1} color={COLORS.shades[100]} text={i18n.t('Copy link')} />
         <Icon
-          style={{ marginLeft: 8 }}
+          style={{marginLeft: 8}}
           name="content-copy"
           color={COLORS.shades[100]}
           size={18}
@@ -203,18 +187,17 @@ export default function InviteeScreen() {
       <HybridHeader
         title={i18n.t('Travelers')}
         scrollY={scrollY}
-        info={INFORMATION.inviteesScreen}
-      >
+        info={INFORMATION.inviteesScreen}>
         <FlatList
-          style={{ marginTop: 6 }}
-          ListEmptyComponent={(
+          style={{marginTop: 6}}
+          ListEmptyComponent={
             <Body
-              style={{ textAlign: 'center', marginTop: 18 }}
+              style={{textAlign: 'center', marginTop: 18}}
               text={i18n.t('No active Members yet')}
               color={COLORS.neutral[300]}
             />
-            )}
-          contentContainerStyle={{ paddingBottom: 60 }}
+          }
+          contentContainerStyle={{paddingBottom: 60}}
           data={activeMembers}
           renderItem={(item, index) => getTile(item, index)}
         />
@@ -225,9 +208,7 @@ export default function InviteeScreen() {
         onPress={() => setInputVisible(true)}
       />
       <InputModal
-        topContent={(
-          getShareLinkButton()
-        )}
+        topContent={getShareLinkButton()}
         isVisible={inputVisible}
         keyboardType="email-address"
         autoCorrect={false}
@@ -236,7 +217,7 @@ export default function InviteeScreen() {
         multipleInputs
         placeholder={i18n.t('john.doe@email.com')}
         onRequestClose={() => setInputVisible(false)}
-        onPress={(input) => handleInvitations(input)}
+        onPress={input => handleInvitations(input)}
         autoClose
       />
       <ContactDetailModal

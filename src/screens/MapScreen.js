@@ -1,21 +1,15 @@
-import React, {
-  useMemo, useRef, useState,
-  useEffect,
-} from 'react';
-import {
-  Pressable,
-  StyleSheet, View,
-} from 'react-native';
+import React, {useMemo, useRef, useState, useEffect} from 'react';
+import {Pressable, StyleSheet, View} from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
 import MapboxGL from '@react-native-mapbox-gl/maps';
 import BottomSheet from '@gorhom/bottom-sheet';
 // eslint-disable-next-line import/no-unresolved
-import { MAPBOX_TOKEN } from '@env';
-import { useNavigation } from '@react-navigation/native';
+import {MAPBOX_TOKEN} from '@env';
+import {useNavigation} from '@react-navigation/native';
 import BackButton from '../components/BackButton';
 import CountriesVisited from '../components/Map/CountriesVisited';
 import tripsStore from '../stores/TripsStore';
-import COLORS, { PADDING, RADIUS } from '../constants/Theme';
+import COLORS, {PADDING, RADIUS} from '../constants/Theme';
 import Utils from '../utils';
 import ROUTES from '../constants/Routes';
 import SearchModal from '../components/Search/SearchModal';
@@ -23,12 +17,12 @@ import TripContainer from '../components/Trip/TripContainer';
 
 MapboxGL.setAccessToken(MAPBOX_TOKEN);
 
-export default function MapScreen({ route }) {
+export default function MapScreen({route}) {
   // PARAMS
-  const { initTrip } = route.params;
+  const {initTrip} = route.params;
 
   // STORES
-  const trips = tripsStore((state) => state.trips);
+  const trips = tripsStore(state => state.trips);
 
   // STATE & MISC
   const [showSearch, setShowSearch] = useState(false);
@@ -47,15 +41,15 @@ export default function MapScreen({ route }) {
     }
   }, [initTrip]);
 
-  const handleSearch = (id) => {
+  const handleSearch = id => {
     sheetRef.current.snapToIndex(0);
 
     if (!id) {
       return;
     }
 
-    const searchTrip = trips.filter((trip) => trip.id === id)[0];
-    const { destinations } = searchTrip;
+    const searchTrip = trips.filter(trip => trip.id === id)[0];
+    const {destinations} = searchTrip;
 
     mapCamera.current.setCamera({
       centerCoordinate: destinations[0].latlon,
@@ -64,19 +58,19 @@ export default function MapScreen({ route }) {
     });
   };
 
-  const renderTripPins = (trip) => {
-    const { destinations } = trip;
+  const renderTripPins = trip => {
+    const {destinations} = trip;
 
     if (destinations[0]?.latlon?.length < 2) {
       return;
     }
 
     return (
-      <MapboxGL.MarkerView
-        coordinate={destinations[0].latlon}
-      >
+      <MapboxGL.MarkerView coordinate={destinations[0].latlon}>
         <TripContainer
-          onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: trip.id })}
+          onPress={() =>
+            navigation.navigate(ROUTES.tripScreen, {tripId: trip.id})
+          }
           isDense
           size={50}
           trip={trip}
@@ -90,26 +84,20 @@ export default function MapScreen({ route }) {
       <MapboxGL.MapView
         rotateEnabled={false}
         style={styles.map}
-        styleURL="mapbox://styles/fabiansimon/clezrm6w7002g01p9eu1n0aos"
-      >
-        <MapboxGL.Camera
-          animationMode="moveTo"
-          animated
-          ref={mapCamera}
-        />
-        {trips && trips.map((trip) => renderTripPins(trip))}
+        styleURL="mapbox://styles/fabiansimon/clezrm6w7002g01p9eu1n0aos">
+        <MapboxGL.Camera animationMode="moveTo" animated ref={mapCamera} />
+        {trips && trips.map(trip => renderTripPins(trip))}
       </MapboxGL.MapView>
       <View style={styles.header}>
         <BackButton style={styles.backButton} />
         <Pressable
           style={styles.searchButton}
-          onPress={() => setShowSearch(true)}
-        >
+          onPress={() => setShowSearch(true)}>
           <Icon name="search1" size={20} />
         </Pressable>
       </View>
       <BottomSheet
-        handleIndicatorStyle={{ opacity: 0 }}
+        handleIndicatorStyle={{opacity: 0}}
         backgroundStyle={{
           backgroundColor: 'transparent',
           borderRadius: 20,
@@ -117,19 +105,13 @@ export default function MapScreen({ route }) {
         ref={sheetRef}
         index={0}
         snapPoints={snapPoints}
-        onClose={() => {
-
-        }}
-      >
-        <CountriesVisited
-          data={trips}
-          onPress={(id) => handleSearch(id)}
-        />
+        onClose={() => {}}>
+        <CountriesVisited data={trips} onPress={id => handleSearch(id)} />
       </BottomSheet>
       <SearchModal
         isVisible={showSearch}
         onRequestClose={() => setShowSearch(false)}
-        onPress={(id) => handleSearch(id)}
+        onPress={id => handleSearch(id)}
       />
     </View>
   );
@@ -160,7 +142,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: -5,
     alignSelf: 'center',
-    transform: [{ rotate: '45deg' }],
+    transform: [{rotate: '45deg'}],
   },
   imageContainer: {
     padding: 4,

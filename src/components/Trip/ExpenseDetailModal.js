@@ -1,13 +1,15 @@
 import {
-  Modal, StyleSheet, View, TouchableOpacity, ScrollView, Animated, Pressable,
+  Modal,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  ScrollView,
+  Animated,
+  Pressable,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import React, {
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
+import React, {useEffect, useRef, useState} from 'react';
+import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import Headline from '../typography/Headline';
 import Avatar from '../Avatar';
 import Body from '../typography/Body';
@@ -17,10 +19,16 @@ import Utils from '../../utils';
 import userStore from '../../stores/UserStore';
 
 export default function ExpenseDetailModal({
-  isVisible, onRequestClose, data, users, onDelete, onReminder, currency,
+  isVisible,
+  onRequestClose,
+  data,
+  users,
+  onDelete,
+  onReminder,
+  currency,
 }) {
   // STORES
-  const { id: userId } = userStore((state) => state.user);
+  const {id: userId} = userStore(state => state.user);
 
   // STATE & MISC
   const [showModal, setShowModal] = useState(isVisible);
@@ -31,21 +39,23 @@ export default function ExpenseDetailModal({
   const duration = 350;
 
   const isCreator = userId === data?.paidBy;
-  const splitees = members.filter((member) => member.isIncluded);
+  const splitees = members.filter(member => member.isIncluded);
 
   useEffect(() => {
     toggleModal();
   }, [isVisible]);
 
   useEffect(() => {
-    setMembers(users.map((u) => ({
-      ...u,
-      isIncluded: false,
-    })));
+    setMembers(
+      users.map(u => ({
+        ...u,
+        isIncluded: false,
+      })),
+    );
   }, [users]);
 
   useEffect(() => {
-    const payingMembers = members.filter((member) => member.isIncluded).length;
+    const payingMembers = members.filter(member => member.isIncluded).length;
     if (!payingMembers) {
       setSplitAmonut(null);
       return;
@@ -64,10 +74,12 @@ export default function ExpenseDetailModal({
     } else {
       setTimeout(() => {
         setShowModal(false);
-        setMembers((prev) => prev.map((member) => ({
-          ...member,
-          isIncluded: false,
-        })));
+        setMembers(prev =>
+          prev.map(member => ({
+            ...member,
+            isIncluded: false,
+          })),
+        );
       }, duration - 100);
       Animated.spring(animatedScale, {
         toValue: 0,
@@ -77,12 +89,14 @@ export default function ExpenseDetailModal({
     }
   };
 
-  const addToSplit = (splitee) => {
-    const { id } = splitee;
-    setMembers((prev) => prev.map((p) => ({
-      ...p,
-      isIncluded: p.id === id ? !p.isIncluded : p.isIncluded,
-    })));
+  const addToSplit = splitee => {
+    const {id} = splitee;
+    setMembers(prev =>
+      prev.map(p => ({
+        ...p,
+        isIncluded: p.id === id ? !p.isIncluded : p.isIncluded,
+      })),
+    );
   };
 
   const handleDelete = async () => {
@@ -104,22 +118,20 @@ export default function ExpenseDetailModal({
       collapsable
       transparent
       statusBarTranslucent
-      onRequestClose={onRequestClose}
-    >
+      onRequestClose={onRequestClose}>
       <TouchableOpacity
         activeOpacity={1}
         onPress={onRequestClose}
-        style={styles.container}
-      >
-        <Animated.View style={[styles.innerContainer, { transform: [{ scale: animatedScale }] }]}>
-          <Avatar
-            style={styles.avatar}
-            isSelf
-            size={35}
-          />
+        style={styles.container}>
+        <Animated.View
+          style={[
+            styles.innerContainer,
+            {transform: [{scale: animatedScale}]},
+          ]}>
+          <Avatar style={styles.avatar} isSelf size={35} />
           <Headline
             text={data?.title}
-            style={{ paddingTop: 2 }}
+            style={{paddingTop: 2}}
             color={COLORS.neutral[700]}
             type={4}
           />
@@ -128,61 +140,73 @@ export default function ExpenseDetailModal({
             color={COLORS.neutral[700]}
             type={1}
           />
-          <View style={[styles.splitContainer, { marginBottom: isCreator ? 20 : 0 }]}>
+          <View
+            style={[styles.splitContainer, {marginBottom: isCreator ? 20 : 0}]}>
             <Pressable>
-              <View style={{
-                flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: PADDING.s, marginVertical: 10,
-              }}
-              >
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  marginHorizontal: PADDING.s,
+                  marginVertical: 10,
+                }}>
                 <Body
                   type={2}
                   text={i18n.t('Split by')}
                   color={COLORS.neutral[500]}
                 />
                 {splitAmount ? (
-                  <View style={{
-                    borderRadius: RADIUS.xl,
-                    backgroundColor: COLORS.primary[700],
-                    paddingVertical: 4,
-                    paddingHorizontal: 10,
-                  }}
-                  >
+                  <View
+                    style={{
+                      borderRadius: RADIUS.xl,
+                      backgroundColor: COLORS.primary[700],
+                      paddingVertical: 4,
+                      paddingHorizontal: 10,
+                    }}>
                     <Body
                       type={2}
-                      text={`${data?.currency}${splitAmount} ${i18n.t('per person')}`}
+                      text={`${data?.currency}${splitAmount} ${i18n.t(
+                        'per person',
+                      )}`}
                       color={COLORS.shades[0]}
                     />
                   </View>
-                ) : <View style={{ height: 27 }} />}
+                ) : (
+                  <View style={{height: 27}} />
+                )}
               </View>
-              <ScrollView horizontal style={{ paddingLeft: PADDING.s, paddingBottom: 10 }}>
-                {members.map((splitee) => (
+              <ScrollView
+                horizontal
+                style={{paddingLeft: PADDING.s, paddingBottom: 10}}>
+                {members.map(splitee => (
                   <TouchableOpacity
                     onPress={() => addToSplit(splitee)}
                     activeOpacity={0.9}
-                    style={{ alignItems: 'center', width: 50 }}
-                  >
+                    style={{alignItems: 'center', width: 50}}>
                     <View>
-                      <Avatar
-                        size={35}
-                        disabled
-                        data={splitee}
-                      />
+                      <Avatar size={35} disabled data={splitee} />
                       {splitee.isIncluded && (
-                      <View style={styles.avatarOverlay}>
-                        <Icon
-                          name="checkmark-circle-outline"
-                          size={22}
-                          color={COLORS.shades[0]}
-                        />
-                      </View>
+                        <View style={styles.avatarOverlay}>
+                          <Icon
+                            name="checkmark-circle-outline"
+                            size={22}
+                            color={COLORS.shades[0]}
+                          />
+                        </View>
                       )}
                     </View>
                     <Body
                       type={2}
                       text={splitee?.firstName}
-                      style={{ fontWeight: splitee.isIncluded ? '500' : '400', marginTop: 4 }}
-                      color={splitee.isIncluded ? COLORS.shades[100] : COLORS.neutral[300]}
+                      style={{
+                        fontWeight: splitee.isIncluded ? '500' : '400',
+                        marginTop: 4,
+                      }}
+                      color={
+                        splitee.isIncluded
+                          ? COLORS.shades[100]
+                          : COLORS.neutral[300]
+                      }
                     />
                   </TouchableOpacity>
                 ))}
@@ -192,12 +216,14 @@ export default function ExpenseDetailModal({
           {isCreator && (
             <View style={styles.buttonContainer}>
               <Button
-                onPress={() => onReminder({
-                  splitees,
-                  currency: data?.currency,
-                  amount: splitAmount,
-                  title: data?.title,
-                })}
+                onPress={() =>
+                  onReminder({
+                    splitees,
+                    currency: data?.currency,
+                    amount: splitAmount,
+                    title: data?.title,
+                  })
+                }
                 isDisabled={splitees.length <= 0}
                 text={i18n.t('Send reminder')}
               />
@@ -205,12 +231,13 @@ export default function ExpenseDetailModal({
                 style={{
                   marginLeft: 10,
                 }}
-                icon={(
+                icon={
                   <Icon
+                    color={COLORS.shades[100]}
                     name="ios-trash-outline"
                     size={22}
                   />
-                )}
+                }
                 onPress={handleDelete}
                 isSecondary
                 fullWidth={false}

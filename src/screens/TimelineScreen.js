@@ -1,13 +1,17 @@
 /* eslint-disable react/jsx-closing-tag-location */
 import {
-  View, StyleSheet, SectionList, Dimensions, StatusBar,
+  View,
+  StyleSheet,
+  SectionList,
+  Dimensions,
+  StatusBar,
 } from 'react-native';
-import React, { useRef, useEffect, useState } from 'react';
+import React, {useRef, useEffect, useState} from 'react';
 import Animated from 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
-import { useQuery } from '@apollo/client';
+import {useQuery} from '@apollo/client';
 import FastImage from 'react-native-fast-image';
-import COLORS, { PADDING, RADIUS } from '../constants/Theme';
+import COLORS, {PADDING, RADIUS} from '../constants/Theme';
 import i18n from '../utils/i18n';
 import HybridHeader from '../components/HybridHeader';
 import INFORMATION from '../constants/Information';
@@ -22,10 +26,10 @@ import months from '../constants/Months';
 
 export default function TimelineScreen() {
   // STORES
-  const { id: tripId } = activeTripStore((state) => state.activeTrip);
+  const {id: tripId} = activeTripStore(state => state.activeTrip);
 
   // QUERIES
-  const { error, data, loading } = useQuery(GET_TIMELINE_DATA, {
+  const {error, data, loading} = useQuery(GET_TIMELINE_DATA, {
     variables: {
       tripId,
     },
@@ -36,12 +40,10 @@ export default function TimelineScreen() {
   const scrollY = useRef(new Animated.Value(0)).current;
   const [timelineData, setTimelineData] = useState([]);
 
-  const { height } = Dimensions.get('window');
+  const {height} = Dimensions.get('window');
 
-  const setData = (d) => {
-    const {
-      expenses, images, mutualTasks, polls,
-    } = d;
+  const setData = d => {
+    const {expenses, images, mutualTasks, polls} = d;
     const expenseData = expenses || [];
     const imageData = images || [];
     const generalArr = [...expenseData, ...imageData, ...mutualTasks, ...polls];
@@ -50,14 +52,17 @@ export default function TimelineScreen() {
     setTimelineData(sortArr(generalArr));
   };
 
-  const sortArr = (arr) => {
+  const sortArr = arr => {
     const dataSet = [];
 
     for (let i = 0; i < arr.length; i += 1) {
-      const datestamp = Utils.getDateFromTimestamp(arr[i].createdAt / 1000, 'DDMMYY');
+      const datestamp = Utils.getDateFromTimestamp(
+        arr[i].createdAt / 1000,
+        'DDMMYY',
+      );
       const setSection = getMonthString(datestamp);
 
-      const index = dataSet.findIndex((d) => d.title === setSection);
+      const index = dataSet.findIndex(d => d.title === setSection);
 
       if (index < 0) {
         dataSet.push({
@@ -71,7 +76,7 @@ export default function TimelineScreen() {
     return dataSet;
   };
 
-  const getMonthString = (month) => {
+  const getMonthString = month => {
     const day = month.slice(0, 2);
     let mm;
     if (month[2] === '0') {
@@ -100,79 +105,103 @@ export default function TimelineScreen() {
     }
   }, [error, data]);
 
-  const getData = (item) => {
+  const getData = item => {
     const createdBy = item.author || item.creatorId;
-    const { firstName } = userManagement.convertIdToUser(createdBy);
-    const { __typename: type } = item;
+    const {firstName} = userManagement.convertIdToUser(createdBy);
+    const {__typename: type} = item;
 
     switch (type) {
       case 'Image':
         return {
-          title: `${firstName || i18n.t('Deleted user')} ${i18n.t('uploaded photo')}`,
-          leading: <FastImage
-            style={{
-              height: 45, width: 36, borderRadius: 4, marginRight: 10,
-            }}
-            source={{ uri: item.uri }}
-          />,
-          dateStamp: Utils.getDateFromTimestamp(item.createdAt / 1000, 'MMM DD YYYY • HH:mm'),
+          title: `${firstName || i18n.t('Deleted user')} ${i18n.t(
+            'uploaded photo',
+          )}`,
+          leading: (
+            <FastImage
+              style={{
+                height: 45,
+                width: 36,
+                borderRadius: 4,
+                marginRight: 10,
+              }}
+              source={{uri: item.uri}}
+            />
+          ),
+          dateStamp: Utils.getDateFromTimestamp(
+            item.createdAt / 1000,
+            'MMM DD YYYY • HH:mm',
+          ),
         };
       case 'Expense':
         return {
-          title: `${firstName || i18n.t('Deleted user')} ${i18n.t('added an expense')}`,
-          leading: <View style={{
-            marginRight: 10, justifyContent: 'center', maxWidth: 110,
-          }}
-          >
-            <Headline
-              type={4}
-              text={`${item.amount}${item.currency}`}
-            />
-            <Body
-              type={2}
-              text={item.title}
-              color={COLORS.neutral[300]}
-            />
-          </View>,
-          dateStamp: Utils.getDateFromTimestamp(item.createdAt / 1000, 'MMM DD YYYY • HH:mm'),
+          title: `${firstName || i18n.t('Deleted user')} ${i18n.t(
+            'added an expense',
+          )}`,
+          leading: (
+            <View
+              style={{
+                marginRight: 10,
+                justifyContent: 'center',
+                maxWidth: 110,
+              }}>
+              <Headline type={4} text={`${item.amount}${item.currency}`} />
+              <Body type={2} text={item.title} color={COLORS.neutral[300]} />
+            </View>
+          ),
+          dateStamp: Utils.getDateFromTimestamp(
+            item.createdAt / 1000,
+            'MMM DD YYYY • HH:mm',
+          ),
         };
       case 'Poll':
         return {
-          title: `${firstName || i18n.t('Deleted user')} ${i18n.t('created a poll')}`,
-          leading: <View style={{
-            marginRight: 10, justifyContent: 'center', maxWidth: 110,
-          }}
-          >
-            <Body
-              type={2}
-              text={i18n.t('Poll')}
-              color={COLORS.neutral[300]}
-            />
-            <Headline
-              type={4}
-              text={item.title}
-            />
-          </View>,
-          dateStamp: Utils.getDateFromTimestamp(item.createdAt / 1000, 'MMM DD YYYY • HH:mm'),
+          title: `${firstName || i18n.t('Deleted user')} ${i18n.t(
+            'created a poll',
+          )}`,
+          leading: (
+            <View
+              style={{
+                marginRight: 10,
+                justifyContent: 'center',
+                maxWidth: 110,
+              }}>
+              <Body
+                type={2}
+                text={i18n.t('Poll')}
+                color={COLORS.neutral[300]}
+              />
+              <Headline type={4} text={item.title} />
+            </View>
+          ),
+          dateStamp: Utils.getDateFromTimestamp(
+            item.createdAt / 1000,
+            'MMM DD YYYY • HH:mm',
+          ),
         };
       case 'Task':
         return {
-          title: `${firstName || i18n.t('Deleted user')} ${i18n.t('created a task')}`,
-          leading: <View style={{
-            marginRight: 10, justifyContent: 'center', maxWidth: 110,
-          }}
-          >
-            <Body
-              type={2}
-              text={i18n.t('Task')}
-              color={COLORS.neutral[300]}
-            />
-            <Body
-              type={1}
-              text={item.title}
-            />
-          </View>,
-          dateStamp: Utils.getDateFromTimestamp(item.createdAt / 1000, 'MMM DD YYYY • HH:mm'),
+          title: `${firstName || i18n.t('Deleted user')} ${i18n.t(
+            'created a task',
+          )}`,
+          leading: (
+            <View
+              style={{
+                marginRight: 10,
+                justifyContent: 'center',
+                maxWidth: 110,
+              }}>
+              <Body
+                type={2}
+                text={i18n.t('Task')}
+                color={COLORS.neutral[300]}
+              />
+              <Body type={1} text={item.title} />
+            </View>
+          ),
+          dateStamp: Utils.getDateFromTimestamp(
+            item.createdAt / 1000,
+            'MMM DD YYYY • HH:mm',
+          ),
         };
       default:
         return {
@@ -183,43 +212,46 @@ export default function TimelineScreen() {
     }
   };
 
-  const getItem = (item) => {
+  const getItem = item => {
     const itemData = getData(item);
 
     return (
-      <View style={{
-        flexDirection: 'row', alignItems: 'center', width: '100%',
-      }}
-      >
-        <View style={{
-          borderLeftColor: COLORS.neutral[100],
-          borderLeftWidth: 1,
-          height: '100%',
-        }}
-        />
-        <View style={{
-          borderTopColor: COLORS.neutral[100],
-          borderTopWidth: 1,
-          width: 20,
-        }}
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          width: '100%',
+        }}>
+        <View
+          style={{
+            borderLeftColor: COLORS.neutral[100],
+            borderLeftWidth: 1,
+            height: '100%',
+          }}
         />
         <View
-          style={styles.tile}
-        >
-          {itemData.leading}
-          <View style={{
-            justifyContent: 'center', flex: 1,
+          style={{
+            borderTopColor: COLORS.neutral[100],
+            borderTopWidth: 1,
+            width: 20,
           }}
-          >
+        />
+        <View style={styles.tile}>
+          {itemData.leading}
+          <View
+            style={{
+              justifyContent: 'center',
+              flex: 1,
+            }}>
             <Body
-              style={{ textAlign: 'right' }}
+              style={{textAlign: 'right'}}
               type={1}
               color={COLORS.neutral[700]}
               text={itemData.title}
             />
             <Body
               type={2}
-              style={{ textAlign: 'right' }}
+              style={{textAlign: 'right'}}
               color={COLORS.neutral[300]}
               text={itemData.dateStamp}
             />
@@ -236,56 +268,60 @@ export default function TimelineScreen() {
         title={i18n.t('Timeline Recap')}
         scrollY={scrollY}
         info={INFORMATION.dateScreen}
-        scrollEnabled
-      >
+        scrollEnabled>
         <View style={styles.innerContainer}>
-          {loading ? <TimelineSkeleton /> : (
+          {loading ? (
+            <TimelineSkeleton />
+          ) : (
             <SectionList
-              style={{ marginHorizontal: 10 }}
+              style={{marginHorizontal: 10}}
               stickySectionHeadersEnabled
               scrollEnabled={false}
               showsVerticalScrollIndicator={false}
               sections={timelineData}
-              ListEmptyComponent={(
+              ListEmptyComponent={
                 <View
                   style={{
                     flex: 1,
                     height: height * 0.65,
                     justifyContent: 'center',
-                  }}
-                >
+                  }}>
                   <Body
                     type={1}
-                    style={{ alignSelf: 'center' }}
+                    style={{alignSelf: 'center'}}
                     color={COLORS.shades[100]}
                     text={i18n.t('There are no entries yet 😕')}
                   />
                   <Body
                     type={2}
                     style={{
-                      alignSelf: 'center', textAlign: 'center', width: '85%', marginTop: 4,
+                      alignSelf: 'center',
+                      textAlign: 'center',
+                      width: '85%',
+                      marginTop: 4,
                     }}
                     color={COLORS.neutral[300]}
-                    text={i18n.t('When the groups adds new polls, tasks, expenses or memories, they will be listed here.')}
+                    text={i18n.t(
+                      'When the groups adds new polls, tasks, expenses or memories, they will be listed here.',
+                    )}
                   />
                 </View>
-              )}
-              contentContainerStyle={{ paddingBottom: 80 }}
+              }
+              contentContainerStyle={{paddingBottom: 80}}
               keyExtractor={(item, index) => item + index}
-              renderItem={({ item }) => getItem(item)}
-              renderSectionHeader={({ section: { title } }) => (
+              renderItem={({item}) => getItem(item)}
+              renderSectionHeader={({section: {title}}) => (
                 <Body
                   type={1}
                   color={COLORS.neutral[300]}
                   text={title}
-                  style={{ marginVertical: 10 }}
+                  style={{marginVertical: 10}}
                 />
               )}
             />
           )}
         </View>
       </HybridHeader>
-
     </View>
   );
 }

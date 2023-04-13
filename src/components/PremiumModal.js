@@ -1,18 +1,32 @@
 import {
-  Modal, View, StyleSheet, Image, Pressable, ScrollView, TouchableHighlight, ActivityIndicator,
+  Modal,
+  View,
+  StyleSheet,
+  Image,
+  Pressable,
+  ScrollView,
+  TouchableHighlight,
+  ActivityIndicator,
 } from 'react-native';
 import React, {
-  forwardRef, useImperativeHandle, useLayoutEffect, useRef, useState,
+  forwardRef,
+  useImperativeHandle,
+  useLayoutEffect,
+  useRef,
+  useState,
   useEffect,
 } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import {
-  initConnection, getProducts, endConnection, requestSubscription,
+  initConnection,
+  getProducts,
+  endConnection,
+  requestSubscription,
 } from 'react-native-iap';
 
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import COLORS, { PADDING, RADIUS } from '../constants/Theme';
+// import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import COLORS, {PADDING, RADIUS} from '../constants/Theme';
 import Logo from '../../assets/images/logo_blue.png';
 import Headline from './typography/Headline';
 import i18n from '../utils/i18n';
@@ -49,7 +63,7 @@ const PremiumModal = () => {
   useEffect(() => {
     (async () => {
       await initConnection();
-      setProducts(await getProducts({ skus: ['pro_subscription_v1'] }));
+      setProducts(await getProducts({skus: ['pro_subscription_v1']}));
     })();
   }, []);
 
@@ -57,9 +71,9 @@ const PremiumModal = () => {
     setIsLoading(true);
     try {
       requestSubscription(
-        { sku },
+        {sku},
         // ...(offerToken && { subscriptionOffers: [{ sku, offerToken }] }),
-      ).then((res) => {
+      ).then(res => {
         console.log(res);
         setIsLoading(false);
         setIsVisible(false);
@@ -81,83 +95,78 @@ const PremiumModal = () => {
     },
     {
       title: i18n.t('👀  Increased storage for planning'),
-      subtitle: i18n.t('Upload as many documents, expenses, polls and tasks as you wish'),
+      subtitle: i18n.t(
+        'Upload as many documents, expenses, polls and tasks as you wish',
+      ),
     },
     {
       title: i18n.t('🏄‍♀️  Travel with more friends'),
-      subtitle: i18n.t('Invite as many people as you wish. The more the merrier'),
+      subtitle: i18n.t(
+        'Invite as many people as you wish. The more the merrier',
+      ),
     },
   ];
 
-  const getFeatureItem = (feature) => (
-    <View style={{ marginTop: 18 }}>
-      <Body
-        type={1}
-        color={COLORS.neutral[900]}
-        text={feature.title}
-      />
-      <Body
-        type={2}
-        color={COLORS.neutral[500]}
-        text={feature.subtitle}
-      />
+  const getFeatureItem = feature => (
+    <View style={{marginTop: 18}}>
+      <Body type={1} color={COLORS.neutral[900]} text={feature.title} />
+      <Body type={2} color={COLORS.neutral[500]} text={feature.subtitle} />
     </View>
   );
 
-  const getOfferTile = (offer) => {
+  const getOfferTile = offer => {
     const {
-      subscriptionPeriodNumberIOS: months, price, isBest = true, productId,
+      subscriptionPeriodNumberIOS: months,
+      price,
+      isBest = true,
+      productId,
     } = offer;
     const total = (price * months).toFixed(2);
-    const title = `$${total} / ${months} ${i18n.t('Months')} (${price} ${i18n.t('per Months')})`;
-    const subtitle = `${i18n.t('instead of')} $${(total * 2).toFixed(2)} ${i18n.t('for')} ${months} ${i18n.t('Months')}`;
+    const title = `$${total} / ${months} ${i18n.t('Months')} (${price} ${i18n.t(
+      'per Months',
+    )})`;
+    const subtitle = `${i18n.t('instead of')} $${(total * 2).toFixed(
+      2,
+    )} ${i18n.t('for')} ${months} ${i18n.t('Months')}`;
     return (
       <TouchableHighlight
         underlayColor={COLORS.neutral[100]}
         onPress={() => {
-          ReactNativeHapticFeedback.trigger('impactHeavy', {
-            enableVibrateFallback: true,
-            ignoreAndroidSystemSettings: true,
-          });
+          // ReactNativeHapticFeedback.trigger('impactHeavy', {
+          //   enableVibrateFallback: true,
+          //   ignoreAndroidSystemSettings: true,
+          // });
 
           handleSubscribtion(productId);
         }}
-        style={[styles.offerTile, isBest && styles.bestContainer]}
-      >
-
+        style={[styles.offerTile, isBest && styles.bestContainer]}>
         <>
           {isBest && (
             <View style={styles.bestHeader}>
-              <Icon
-                name="ios-star"
-                color={COLORS.shades[0]}
-              />
+              <Icon name="ios-star" color={COLORS.shades[0]} />
               <Subtitle
                 type={1}
-                style={{ marginLeft: 4 }}
+                style={{marginLeft: 4}}
                 color={COLORS.shades[0]}
                 text={i18n.t('Best seller')}
               />
             </View>
           )}
-          <View style={{ paddingHorizontal: PADDING.m, paddingVertical: PADDING.s, height: 62 }}>
+          <View
+            style={{
+              paddingHorizontal: PADDING.m,
+              paddingVertical: PADDING.s,
+              height: 62,
+            }}>
             {isLoading ? (
               <ActivityIndicator
-                style={{ marginTop: 10 }}
+                style={{marginTop: 10}}
                 color={COLORS.primary[700]}
               />
             ) : (
               <>
-                <Body
-                  type={1}
-                  color={COLORS.neutral[900]}
-                  text={title}
-                />
-                <Body
-                  type={2}
-                  color={COLORS.neutral[300]}
-                  text={subtitle}
-                />
+                <Body type={1} color={COLORS.neutral[900]} text={title} />
+                <Body type={2} color={COLORS.neutral[300]} text={subtitle} />
               </>
             )}
           </View>
@@ -171,31 +180,32 @@ const PremiumModal = () => {
       animationType="slide"
       visible={isVisible}
       onRequestClose={() => setIsVisible(false)}
-      presentationStyle="pageSheet"
-    >
+      presentationStyle="pageSheet">
       <View style={styles.container}>
         <View style={styles.header}>
           <View style={styles.iconContainer}>
-            <Image source={Logo} style={{ height: 50, width: 50 }} />
+            <Image source={Logo} style={{height: 50, width: 50}} />
           </View>
           <Headline
             type={3}
-            style={{ marginTop: 8 }}
+            style={{marginTop: 8}}
             color={COLORS.shades[0]}
             text={i18n.t('Get Weano Pro')}
           />
           <Body
             type={2}
-            style={{ marginTop: 8, lineHeight: 16, textAlign: 'center' }}
+            style={{marginTop: 8, lineHeight: 16, textAlign: 'center'}}
             color={COLORS.shades[0]}
-            text={i18n.t('We know everybody hates subscriptions, but for only one cup of coffee a month you can get a bunch of cool stuff')}
+            text={i18n.t(
+              'We know everybody hates subscriptions, but for only one cup of coffee a month you can get a bunch of cool stuff',
+            )}
           />
         </View>
         <ScrollView>
-          <View style={{ marginTop: 6 }}>
-            {features.map((feature) => getFeatureItem(feature))}
+          <View style={{marginTop: 6}}>
+            {features.map(feature => getFeatureItem(feature))}
           </View>
-          <View style={{ marginTop: 20 }}>
+          <View style={{marginTop: 20}}>
             <Divider />
             <View style={styles.offerContainer}>
               <Body
@@ -204,21 +214,20 @@ const PremiumModal = () => {
                 text={i18n.t('One time offer')}
               />
               <Icon
-                style={{ marginLeft: 4 }}
+                style={{marginLeft: 4}}
                 name="timer-outline"
                 size={20}
                 color={COLORS.shades[0]}
               />
             </View>
           </View>
-          <View style={{ marginTop: -18 }}>
-            {products.map((offer) => getOfferTile(offer))}
+          <View style={{marginTop: -18}}>
+            {products.map(offer => getOfferTile(offer))}
           </View>
         </ScrollView>
         <Pressable
           onPress={() => setIsVisible(false)}
-          style={styles.closeContainer}
-        >
+          style={styles.closeContainer}>
           <AntIcon
             name="close"
             size={16}

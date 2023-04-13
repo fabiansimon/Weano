@@ -1,12 +1,12 @@
 import React from 'react';
-import { BaseToast, ErrorToast } from 'react-native-toast-message';
+import {BaseToast, ErrorToast} from 'react-native-toast-message';
 import COLORS from './Theme';
 
 const toastConfig = {
-  success: (props) => (
+  success: props => (
     <BaseToast
       {...props}
-      style={{ borderLeftColor: COLORS.success[700] }}
+      style={{borderLeftColor: COLORS.success[700]}}
       text1Style={{
         fontFamily: 'WorkSans-Regular',
         fontSize: 14,
@@ -23,10 +23,10 @@ const toastConfig = {
       }}
     />
   ),
-  warning: (props) => (
+  warning: props => (
     <BaseToast
       {...props}
-      style={{ borderLeftColor: COLORS.warning[700] }}
+      style={{borderLeftColor: COLORS.warning[700]}}
       text1Style={{
         fontFamily: 'WorkSans-Regular',
         fontSize: 14,
@@ -43,10 +43,10 @@ const toastConfig = {
       }}
     />
   ),
-  error: (props) => (
+  error: props => (
     <ErrorToast
       {...props}
-      style={{ borderLeftColor: COLORS.error[900] }}
+      style={{borderLeftColor: COLORS.error[900]}}
       text1Style={{
         fontFamily: 'WorkSans-Regular',
         fontSize: 14,

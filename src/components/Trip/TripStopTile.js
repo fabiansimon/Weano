@@ -1,10 +1,8 @@
-import {
-  View, Pressable, StyleSheet, Animated,
-} from 'react-native';
-import React, { useRef, useEffect } from 'react';
-import { ScaleDecorator } from 'react-native-draggable-flatlist';
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import COLORS, { RADIUS } from '../../constants/Theme';
+import {View, Pressable, StyleSheet, Animated} from 'react-native';
+import React, {useRef, useEffect} from 'react';
+import {ScaleDecorator} from 'react-native-draggable-flatlist';
+// import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import COLORS, {RADIUS} from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Subtitle from '../typography/Subtitle';
 import SwipeView from '../SwipeView';
@@ -12,7 +10,18 @@ import Body from '../typography/Body';
 import ActivityChip from '../ActivityChip';
 
 export default function TripStopTile({
-  isLast, onReplace, onDelete, index, isActive, drag, item, links, onInfoTap, isExpanded, onPress, disabled,
+  isLast,
+  onReplace,
+  onDelete,
+  index,
+  isActive,
+  drag,
+  item,
+  links,
+  onInfoTap,
+  isExpanded,
+  onPress,
+  disabled,
 }) {
   const animatedHeight = useRef(new Animated.Value(0)).current;
   const duration = 300;
@@ -39,49 +48,59 @@ export default function TripStopTile({
     <SwipeView
       onDelete={() => (isLast ? onReplace() : onDelete(index))}
       backgroundColor={isLast ? COLORS.primary[700] : COLORS.error[900]}
-      string={isLast ? i18n.t('Replace') : i18n.t('Delete')}
-    >
+      string={isLast ? i18n.t('Replace') : i18n.t('Delete')}>
       <ScaleDecorator activeScale={1.05}>
         <Pressable
           onPress={onPress}
-          onLongPress={(() => {
+          onLongPress={() => {
             drag();
-            ReactNativeHapticFeedback.trigger('impactLight');
-          })}
+            // ReactNativeHapticFeedback.trigger('impactLight');
+          }}
           disabled={isActive}
-          style={styles.tileContainer}
-        >
+          style={styles.tileContainer}>
           <View style={styles.numberContainer}>
             <View style={styles.line} />
-            <Subtitle
-              type={1}
-              color={COLORS.shades[0]}
-              text={index + 1}
-            />
+            <Subtitle type={1} color={COLORS.shades[0]} text={index + 1} />
           </View>
           <View>
             <Body
-              style={{ flex: 1, marginRight: 40 }}
+              style={{flex: 1, marginRight: 40}}
               numberOfLines={2}
               ellipsizeMode="tail"
               type={1}
               text={item.placeName}
             />
             {!disabled && (
-            <Body
-              type={2}
-              color={COLORS.neutral[300]}
-              text={isExpanded ? i18n.t('Tap to minimize') : i18n.t('Tap to expend')}
-            />
+              <Body
+                type={2}
+                color={COLORS.neutral[300]}
+                text={
+                  isExpanded
+                    ? i18n.t('Tap to minimize')
+                    : i18n.t('Tap to expend')
+                }
+              />
             )}
-            <Animated.View style={{ height: animatedHeight, top: 4 }}>
-              <View style={{ flexDirection: 'row', marginTop: 10 }}>
-                <ActivityChip data={links[0]} onPress={() => onInfoTap(links[0], index)} />
-                <ActivityChip data={links[1]} onPress={() => onInfoTap(links[1], index)} />
+            <Animated.View style={{height: animatedHeight, top: 4}}>
+              <View style={{flexDirection: 'row', marginTop: 10}}>
+                <ActivityChip
+                  data={links[0]}
+                  onPress={() => onInfoTap(links[0], index)}
+                />
+                <ActivityChip
+                  data={links[1]}
+                  onPress={() => onInfoTap(links[1], index)}
+                />
               </View>
-              <View style={{ flexDirection: 'row', marginTop: 10 }}>
-                <ActivityChip data={links[2]} onPress={() => onInfoTap(links[2], index)} />
-                <ActivityChip data={links[3]} onPress={() => onInfoTap(links[3], index)} />
+              <View style={{flexDirection: 'row', marginTop: 10}}>
+                <ActivityChip
+                  data={links[2]}
+                  onPress={() => onInfoTap(links[2], index)}
+                />
+                <ActivityChip
+                  data={links[3]}
+                  onPress={() => onInfoTap(links[3], index)}
+                />
               </View>
             </Animated.View>
           </View>

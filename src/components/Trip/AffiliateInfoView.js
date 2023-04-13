@@ -1,11 +1,9 @@
-import {
-  Image, Pressable, StyleSheet, View,
-} from 'react-native';
-import React, { useEffect, useState } from 'react';
+import {Image, Pressable, StyleSheet, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import EntIcon from 'react-native-vector-icons/Entypo';
 import ActivityChip from '../ActivityChip';
 import i18n from '../../utils/i18n';
-import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
+import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import Body from '../typography/Body';
 import Headline from '../typography/Headline';
 import AirbnbLogo from '../../../assets/images/airbnb.png';
@@ -16,7 +14,10 @@ import WebViewModal from '../WebViewModal';
 import CalendarModal from '../CalendarModal';
 
 export default function AffiliateInfoView({
-  info, destinations, dateRange, amountPeople,
+  info,
+  destinations,
+  dateRange,
+  amountPeople,
 }) {
   // STATE & MISC
   const [nightsCounter, setNightsCounter] = useState(0);
@@ -33,7 +34,7 @@ export default function AffiliateInfoView({
 
   const ONE_DAY = 86400;
 
-  const { startDate, endDate } = dateRange;
+  const {startDate, endDate} = dateRange;
 
   useEffect(() => {
     if (!info) {
@@ -47,12 +48,16 @@ export default function AffiliateInfoView({
       });
     }
 
-    const diff = Utils.getDaysDifference(dateRange.startDate, dateRange.endDate, true);
+    const diff = Utils.getDaysDifference(
+      dateRange.startDate,
+      dateRange.endDate,
+      true,
+    );
     const split = parseInt((diff / destinations.length).toFixed(0), 10);
     setNightsCounter(split);
 
-    const newStart = startDate + (ONE_DAY * (split * info.index));
-    const newEnd = newStart + (ONE_DAY * split);
+    const newStart = startDate + ONE_DAY * (split * info.index);
+    const newEnd = newStart + ONE_DAY * split;
     setDates({
       start: newStart,
       end: newEnd,
@@ -63,7 +68,7 @@ export default function AffiliateInfoView({
     return <View />;
   }
 
-  const { index, link } = info;
+  const {index, link} = info;
   const isSleep = link.type === 'sleep';
   const isTransport = link.type === 'transport';
   const isDiscover = link.type === 'discover';
@@ -76,7 +81,9 @@ export default function AffiliateInfoView({
       return {
         header: i18n.t('Sleep in'),
         title: i18n.t('Find accomodation'),
-        subtitle: `${i18n.t('For')} ${nightsCounter} ${nightsCounter > 1 ? i18n.t('nights,') : i18n.t('night,')} ${amountPeople} ${i18n.t('people')}`,
+        subtitle: `${i18n.t('For')} ${nightsCounter} ${
+          nightsCounter > 1 ? i18n.t('nights,') : i18n.t('night,')
+        } ${amountPeople} ${i18n.t('people')}`,
         textfield: i18n.t('From'),
       };
     }
@@ -85,7 +92,9 @@ export default function AffiliateInfoView({
       return {
         header: i18n.t('Getting from'),
         title: i18n.t('Find transportation'),
-        subtitle: `${i18n.t('On the')} ${date} ${i18n.t('for')} ${amountPeople} ${i18n.t('people')}`,
+        subtitle: `${i18n.t('On the')} ${date} ${i18n.t(
+          'for',
+        )} ${amountPeople} ${i18n.t('people')}`,
         textfield: i18n.t('On the'),
       };
     }
@@ -93,14 +102,18 @@ export default function AffiliateInfoView({
       return {
         header: i18n.t('What to do in'),
         title: i18n.t('Find activites'),
-        subtitle: `${i18n.t('On the')} ${date} ${i18n.t('for')} ${amountPeople} ${i18n.t('people')}`,
+        subtitle: `${i18n.t('On the')} ${date} ${i18n.t(
+          'for',
+        )} ${amountPeople} ${i18n.t('people')}`,
         textfield: i18n.t('On the'),
       };
     }
     return {
       header: i18n.t('Where to eat in'),
       title: i18n.t('Find where to eat'),
-      subtitle: `${i18n.t('On the')} ${date} ${i18n.t('for')} ${amountPeople} ${i18n.t('people')}`,
+      subtitle: `${i18n.t('On the')} ${date} ${i18n.t(
+        'for',
+      )} ${amountPeople} ${i18n.t('people')}`,
       textfield: i18n.t('On the'),
     };
   };
@@ -125,15 +138,15 @@ export default function AffiliateInfoView({
     },
   ];
 
-  const handleWeb = (type) => {
+  const handleWeb = type => {
     setWebInfo({
-      ...affData.find((data) => data.type === type),
+      ...affData.find(data => data.type === type),
       url: generateUrl(type),
       isVisible: true,
     });
   };
 
-  const generateUrl = (type) => {
+  const generateUrl = type => {
     const adults = amountPeople;
     const location = destinations[index].placeName;
     const checkIn = Utils.getDateFromTimestamp(dates.start, 'YYYY-MM-DD');
@@ -160,73 +173,61 @@ export default function AffiliateInfoView({
     }
   };
 
-  const handleCounter = (amount) => {
+  const handleCounter = amount => {
     if (amount === -1) {
-      setNightsCounter((prev) => (prev > 1 ? prev - 1 : 1));
+      setNightsCounter(prev => (prev > 1 ? prev - 1 : 1));
     } else {
-      setNightsCounter((prev) => (prev + 1));
+      setNightsCounter(prev => prev + 1);
     }
 
-    const newEnd = dates.start + (nightsCounter * ONE_DAY);
+    const newEnd = dates.start + nightsCounter * ONE_DAY;
 
-    setDates((prev) => ({
+    setDates(prev => ({
       start: prev.start,
       end: newEnd,
     }));
   };
 
   const getSimpleButton = (image, string, _onPress) => (
-    <Pressable
-      onPress={_onPress}
-      style={styles.simpleButton}
-    >
-      <Image
-        style={{ height: 18, width: 18 }}
-        source={image}
-      />
-      <Body
-        type={1}
-        style={{ fontWeight: '500', marginLeft: 6 }}
-        text={string}
-      />
+    <Pressable onPress={_onPress} style={styles.simpleButton}>
+      <Image style={{height: 18, width: 18}} source={image} />
+      <Body type={1} style={{fontWeight: '500', marginLeft: 6}} text={string} />
     </Pressable>
   );
 
   return (
     <>
-      <View style={{ marginHorizontal: PADDING.l, alignItems: 'flex-start', marginTop: 30 }}>
+      <View
+        style={{
+          marginHorizontal: PADDING.l,
+          alignItems: 'flex-start',
+          marginTop: 30,
+        }}>
         <ActivityChip data={link} />
         <Body
           type={1}
           color={COLORS.neutral[300]}
           text={textData?.header}
-          style={{ marginTop: 12, marginBottom: 2 }}
+          style={{marginTop: 12, marginBottom: 2}}
         />
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-          <Headline
-            type={4}
-            text={destinations[index].placeName}
-          />
+        <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+          <Headline type={4} text={destinations[index].placeName} />
           {destinations[index + 1] && isTransport && (
-          <>
-            <Body
-              style={{ marginHorizontal: 4 }}
-              type={1}
-              color={COLORS.neutral[300]}
-              text={i18n.t('to')}
-            />
-            <Headline
-              type={4}
-              text={destinations[index + 1].placeName}
-            />
-          </>
+            <>
+              <Body
+                style={{marginHorizontal: 4}}
+                type={1}
+                color={COLORS.neutral[300]}
+                text={i18n.t('to')}
+              />
+              <Headline type={4} text={destinations[index + 1].placeName} />
+            </>
           )}
         </View>
         <Pressable
           onPress={() => setCalendarVisible(true)}
-          style={[styles.innerContainer, { marginTop: 16 }]}
-        >
-          <View style={{ flex: 1 }}>
+          style={[styles.innerContainer, {marginTop: 16}]}>
+          <View style={{flex: 1}}>
             <Body
               type={2}
               color={COLORS.neutral[300]}
@@ -239,75 +240,78 @@ export default function AffiliateInfoView({
             />
           </View>
           {isSleep && (
-          <View style={{ flex: 1 }}>
-            <Body
-              type={2}
-              color={COLORS.neutral[300]}
-              text={i18n.t('To')}
-            />
-            <Body
-              type={1}
-              color={COLORS.shades[900]}
-              text={Utils.getDateFromTimestamp(dates.end, 'MMM Do YYYY')}
-            />
-          </View>
+            <View style={{flex: 1}}>
+              <Body type={2} color={COLORS.neutral[300]} text={i18n.t('To')} />
+              <Body
+                type={1}
+                color={COLORS.shades[900]}
+                text={Utils.getDateFromTimestamp(dates.end, 'MMM Do YYYY')}
+              />
+            </View>
           )}
         </Pressable>
         {isSleep && (
-        <View style={[styles.innerContainer, { marginTop: 16 }]}>
-          <Pressable
-            onPress={() => handleCounter(-1)}
-            style={{
-              flex: 1, alignItems: 'flex-start', paddingLeft: 15, height: 40, justifyContent: 'center',
-            }}
-          >
-            <EntIcon name="minus" size={20} />
-          </Pressable>
-          <View style={{ justifyContent: 'center', flex: 1, alignItems: 'center' }}>
-            <Body
-              type={2}
-              color={COLORS.neutral[300]}
-              text={i18n.t('Nights')}
-            />
-            <Headline
-              type={4}
-              color={COLORS.shades[900]}
-              text={nightsCounter}
-            />
+          <View style={[styles.innerContainer, {marginTop: 16}]}>
+            <Pressable
+              onPress={() => handleCounter(-1)}
+              style={{
+                flex: 1,
+                alignItems: 'flex-start',
+                paddingLeft: 15,
+                height: 40,
+                justifyContent: 'center',
+              }}>
+              <EntIcon name="minus" size={20} />
+            </Pressable>
+            <View
+              style={{justifyContent: 'center', flex: 1, alignItems: 'center'}}>
+              <Body
+                type={2}
+                color={COLORS.neutral[300]}
+                text={i18n.t('Nights')}
+              />
+              <Headline
+                type={4}
+                color={COLORS.shades[900]}
+                text={nightsCounter}
+              />
+            </View>
+            <Pressable
+              onPress={() => handleCounter(+1)}
+              style={{
+                flex: 1,
+                alignItems: 'flex-end',
+                paddingRight: 15,
+                height: 40,
+                justifyContent: 'center',
+              }}>
+              <EntIcon name="plus" size={20} />
+            </Pressable>
           </View>
-          <Pressable
-            onPress={() => handleCounter(+1)}
-            style={{
-              flex: 1, alignItems: 'flex-end', paddingRight: 15, height: 40, justifyContent: 'center',
-            }}
-          >
-            <EntIcon name="plus" size={20} />
-          </Pressable>
-        </View>
         )}
         <Headline
           type={4}
-          style={{ marginTop: 40, marginBottom: 2 }}
+          style={{marginTop: 40, marginBottom: 2}}
           text={textData?.title}
         />
-        <Body
-          type={1}
-          color={COLORS.neutral[300]}
-          text={textData?.subtitle}
-        />
-        <View style={{ flexDirection: 'row', marginBottom: 6, marginTop: 30 }}>
+        <Body type={1} color={COLORS.neutral[300]} text={textData?.subtitle} />
+        <View style={{flexDirection: 'row', marginBottom: 6, marginTop: 30}}>
           {getSimpleButton(BookinLogo, 'Booking', () => handleWeb('booking'))}
           {getSimpleButton(AirbnbLogo, 'Airbnb', () => handleWeb('airbnb'))}
         </View>
-        {getSimpleButton(HostelworldLogo, 'Hostelworld', () => handleWeb('hostelworld'))}
+        {getSimpleButton(HostelworldLogo, 'Hostelworld', () =>
+          handleWeb('hostelworld'),
+        )}
       </View>
       <WebViewModal
         url={webInfo?.url}
         isVisible={webInfo?.isVisible}
-        onRequestClose={() => setWebInfo((prev) => ({
-          ...prev,
-          isVisible: false,
-        }))}
+        onRequestClose={() =>
+          setWebInfo(prev => ({
+            ...prev,
+            isVisible: false,
+          }))
+        }
         title={webInfo?.title}
       />
       <CalendarModal
@@ -316,7 +320,7 @@ export default function AffiliateInfoView({
         isSingleDate={!isSleep}
         initialStartDate={dates?.start}
         initialEndDate={dates?.end}
-        onApplyClick={(datesData) => {
+        onApplyClick={datesData => {
           if (isSleep) {
             setDates({
               start: datesData.timestamp / 1000 || 0,

@@ -1,50 +1,41 @@
-import {
-  StyleSheet, View, TouchableOpacity,
-} from 'react-native';
+import {StyleSheet, View, TouchableOpacity} from 'react-native';
 import React from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import Headline from '../typography/Headline';
 import Body from '../typography/Body';
 import RoleChip from '../RoleChip';
 import i18n from '../../utils/i18n';
 
 export default function HighlightContainer({
-  style, description, text, onPress, onBottom = true,
+  style,
+  description,
+  text,
+  onPress,
+  onBottom = true,
 }) {
   if (onBottom) {
     return (
       <TouchableOpacity
         onPress={onPress}
         activeOpacity={1}
-        style={styles.bottomContainer}
-      >
+        style={styles.bottomContainer}>
         <SafeAreaView edges={['bottom']}>
-          <View
-            style={[styles.tile, style]}
-          >
+          <View style={[styles.tile, style]}>
             <View>
-              <Body
-                type={1}
-                text={description}
-                color={COLORS.shades[0]}
-              />
+              <Body type={1} text={description} color={COLORS.shades[0]} />
               <Headline
                 type={3}
                 text={text}
                 color={COLORS.shades[0]}
                 numberOfLines={1}
                 ellipsizeMode="tail"
-                style={{ alignSelf: 'flex-start' }}
+                style={{alignSelf: 'flex-start'}}
               />
             </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Body
-                type={2}
-                text={i18n.t('set by')}
-                color={COLORS.shades[0]}
-              />
-              <RoleChip isHost style={{ marginLeft: 6 }} />
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <Body type={2} text={i18n.t('set by')} color={COLORS.shades[0]} />
+              <RoleChip isHost style={{marginLeft: 6}} />
             </View>
           </View>
         </SafeAreaView>
@@ -53,29 +44,19 @@ export default function HighlightContainer({
   }
 
   return (
-    <View
-      style={[styles.tile, style]}
-    >
+    <View style={[styles.tile, style]}>
       <View>
-        <Headline
-          type={4}
-          text={description}
-          color={COLORS.shades[0]}
-        />
+        <Headline type={4} text={description} color={COLORS.shades[0]} />
         <Headline
           type={2}
           text={text}
           color={COLORS.shades[0]}
-          style={{ alignSelf: 'flex-start' }}
+          style={{alignSelf: 'flex-start'}}
         />
       </View>
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Body
-          type={2}
-          text={i18n.t('set by')}
-          color={COLORS.shades[0]}
-        />
-        <RoleChip isHost style={{ marginLeft: 6 }} />
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <Body type={2} text={i18n.t('set by')} color={COLORS.shades[0]} />
+        <RoleChip isHost style={{marginLeft: 6}} />
       </View>
     </View>
   );

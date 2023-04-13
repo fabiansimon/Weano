@@ -1,26 +1,31 @@
-import {
-  View, StyleSheet, Pressable,
-} from 'react-native';
+import {View, StyleSheet, Pressable} from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import COLORS from '../constants/Theme';
 
-export default function Switch({ bool, onPress, color }) {
+export default function Switch({bool, onPress, color}) {
   const colorTheme = color || COLORS.neutral[300];
 
   return (
     <Pressable
       onPress={onPress}
-      style={[styles.container, { borderColor: colorTheme }]}
-    >
-      <View style={[styles.innerContainer, { backgroundColor: bool ? colorTheme : 'transparent' }]}>
+      style={[styles.container, {borderColor: colorTheme}]}>
+      <View
+        style={[
+          styles.innerContainer,
+          {backgroundColor: bool ? colorTheme : 'transparent'},
+        ]}>
         <Icon
           name="person"
           size={12}
           color={bool ? COLORS.shades[0] : colorTheme}
         />
       </View>
-      <View style={[styles.innerContainer, { backgroundColor: !bool ? colorTheme : 'transparent' }]}>
+      <View
+        style={[
+          styles.innerContainer,
+          {backgroundColor: !bool ? colorTheme : 'transparent'},
+        ]}>
         <Icon
           name="people"
           size={14}

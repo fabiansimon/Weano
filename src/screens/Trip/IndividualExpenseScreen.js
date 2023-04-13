@@ -1,9 +1,7 @@
-import {
-  View, StyleSheet, FlatList,
-} from 'react-native';
-import React, { useRef, useState } from 'react';
+import {View, StyleSheet, FlatList} from 'react-native';
+import React, {useRef, useState} from 'react';
 import Animated from 'react-native-reanimated';
-import COLORS, { PADDING } from '../../constants/Theme';
+import COLORS, {PADDING} from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import HybridHeader from '../../components/HybridHeader';
 import INFORMATION from '../../constants/Information';
@@ -13,20 +11,19 @@ import Divider from '../../components/Divider';
 import ExpenseDetailModal from '../../components/Trip/ExpenseDetailModal';
 import Body from '../../components/typography/Body';
 
-export default function IndividualExpenseScreen({ route }) {
+export default function IndividualExpenseScreen({route}) {
   // PARAMS
-  const { data, users, currency } = route.params;
+  const {data, users, currency} = route.params;
 
   // STATE & MISC
   const scrollY = useRef(new Animated.Value(0)).current;
-  const [selectedExpense, setSelectedExpense] = useState({ isVisible: false, data: null });
+  const [selectedExpense, setSelectedExpense] = useState({
+    isVisible: false,
+    data: null,
+  });
 
-  const getExpenseTile = (expense) => (
-    <ExpenseTile
-      currency={currency}
-      data={expense}
-      user={data.user}
-    />
+  const getExpenseTile = expense => (
+    <ExpenseTile currency={currency} data={expense} user={data.user} />
   );
 
   return (
@@ -34,16 +31,15 @@ export default function IndividualExpenseScreen({ route }) {
       <HybridHeader
         title={`${data.user.firstName}'s ${i18n.t('Expenses')}`}
         scrollY={scrollY}
-        info={INFORMATION.dateScreen}
-      >
-        <View style={{ marginHorizontal: PADDING.l }}>
+        info={INFORMATION.dateScreen}>
+        <View style={{marginHorizontal: PADDING.l}}>
           <Headline
-            style={{ marginTop: 26 }}
+            style={{marginTop: 26}}
             type={1}
-            text={`${currency?.symbol}${data.amount}`}
+            text={`${currency?.symbol}${data.amount.toFixed(2)}`}
           />
           <Body
-            style={{ marginBottom: 16 }}
+            style={{marginBottom: 16}}
             type={1}
             text={i18n.t('total expenses')}
             color={COLORS.neutral[300]}
@@ -51,14 +47,14 @@ export default function IndividualExpenseScreen({ route }) {
 
           <FlatList
             inverted
-            style={{ paddingTop: 50 }}
-            contentContainerStyle={{ paddingBottom: 20 }}
+            style={{paddingTop: 50}}
+            contentContainerStyle={{paddingBottom: 20}}
             data={data.expenses || null}
-            renderItem={({ item }) => getExpenseTile(item)}
-                // eslint-disable-next-line react/no-unstable-nested-components
+            renderItem={({item}) => getExpenseTile(item)}
+            // eslint-disable-next-line react/no-unstable-nested-components
             ItemSeparatorComponent={() => (
               <Divider
-                style={{ marginLeft: 60 }}
+                style={{marginLeft: 60}}
                 color={COLORS.neutral[50]}
                 vertical={14}
               />
@@ -69,10 +65,12 @@ export default function IndividualExpenseScreen({ route }) {
       <ExpenseDetailModal
         currency={currency}
         isVisible={selectedExpense.isVisible}
-        onRequestClose={() => setSelectedExpense((prev) => ({
-          ...prev,
-          isVisible: false,
-        }))}
+        onRequestClose={() =>
+          setSelectedExpense(prev => ({
+            ...prev,
+            isVisible: false,
+          }))
+        }
         users={users}
         data={selectedExpense.data}
       />

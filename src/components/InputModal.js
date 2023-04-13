@@ -1,18 +1,24 @@
 import {
-  Modal, StyleSheet, View, TouchableOpacity, Animated, TextInput, Pressable, ActivityIndicator,
+  Modal,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Animated,
+  TextInput,
+  Pressable,
+  ActivityIndicator,
+  Keyboard,
 } from 'react-native';
-import React, {
-  useEffect, useRef, useState, useCallback,
-} from 'react';
+import React, {useEffect, useRef, useState, useCallback} from 'react';
 import Toast from 'react-native-toast-message';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import EntIcon from 'react-native-vector-icons/Entypo';
-import { debounce } from 'lodash';
-import { FlatList } from 'react-native-gesture-handler';
+import {debounce} from 'lodash';
+import {FlatList} from 'react-native-gesture-handler';
 import AntIcon from 'react-native-vector-icons/AntDesign';
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+// import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import KeyboardView from './KeyboardView';
-import COLORS, { PADDING, RADIUS } from '../constants/Theme';
+import COLORS, {PADDING, RADIUS} from '../constants/Theme';
 import httpService from '../utils/httpService';
 import Body from './typography/Body';
 import i18n from '../utils/i18n';
@@ -62,27 +68,30 @@ export default function InputModal({
     }
   }, [input]);
 
-  const handleChangeText = (val) => {
+  const handleChangeText = val => {
     setInput(val);
     if (geoMatching) {
       delayedSearch(val);
     }
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const delayedSearch = useCallback(
-    debounce((val) => handleLocationQuery(val), 250),
+    debounce(val => handleLocationQuery(val), 250),
     [],
   );
 
-  const handleLocationQuery = async (val) => {
+  const handleLocationQuery = async val => {
     if (val.trim().length < 2) {
       return;
     }
 
     setSuggestionsLoading(true);
-    const res = await httpService.getLocationFromQuery(val).catch(() => setSuggestionsLoading(false));
+    const res = await httpService
+      .getLocationFromQuery(val)
+      .catch(() => setSuggestionsLoading(false));
 
-    const sugg = res.features.map((feat) => ({
+    const sugg = res.features.map(feat => ({
       string: feat.place_name,
       location: feat.center,
     }));
@@ -104,13 +113,13 @@ export default function InputModal({
 
     if (packingInput) {
       setInput('');
-      setMultiValues((prev) => [...prev, `${packingAmount} ${input}`]);
+      setMultiValues(prev => [...prev, `${packingAmount} ${input}`]);
       setPackingAmount(1);
       return;
     }
 
     setInput('');
-    setMultiValues((prev) => [...prev, input]);
+    setMultiValues(prev => [...prev, input]);
   };
 
   const handleOnPress = () => {
@@ -163,30 +172,27 @@ export default function InputModal({
     }
   };
 
-  const getSuggestionTile = (item) => (
+  const getSuggestionTile = item => (
     <Pressable
       onPress={() => {
         setInput(item.string);
         setSuggestion(item);
         setSuggestionData(null);
       }}
-      style={styles.suggestionTile}
-    >
-      <View style={{
-        backgroundColor: COLORS.neutral[100], borderRadius: 8, height: 25, width: 25, justifyContent: 'center', alignItems: 'center', marginRight: 12,
-      }}
-      >
-        <EntIcon
-          name="location-pin"
-          color={COLORS.neutral[300]}
-          size={18}
-        />
+      style={styles.suggestionTile}>
+      <View
+        style={{
+          backgroundColor: COLORS.neutral[100],
+          borderRadius: 8,
+          height: 25,
+          width: 25,
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginRight: 12,
+        }}>
+        <EntIcon name="location-pin" color={COLORS.neutral[300]} size={18} />
       </View>
-      <Body
-        type={1}
-        color={COLORS.neutral[700]}
-        text={item.string}
-      />
+      <Body type={1} color={COLORS.neutral[700]} text={item.string} />
     </Pressable>
   );
 
@@ -194,17 +200,15 @@ export default function InputModal({
     <Pressable style={styles.wrapContainer}>
       {multiValues.map((value, index) => (
         <View style={styles.chip}>
-          <Body
-            type={1}
-            color={COLORS.neutral[900]}
-            text={value}
-          />
+          <Body type={1} color={COLORS.neutral[900]} text={value} />
           <AntIcon
             name="closecircle"
             color={COLORS.neutral[300]}
             size={18}
-            style={{ marginLeft: 6 }}
-            onPress={() => setMultiValues((prev) => prev.filter((_, i) => index !== i))}
+            style={{marginLeft: 6}}
+            onPress={() =>
+              setMultiValues(prev => prev.filter((_, i) => index !== i))
+            }
             suppressHighlighting
           />
         </View>
@@ -214,63 +218,52 @@ export default function InputModal({
 
   const getPackingContainer = () => (
     <Pressable style={styles.packingContainer}>
-      <View style={{ flexDirection: 'row', flex: 1 }}>
-        <Body
-          type={1}
-          color={COLORS.neutral[300]}
-          text={i18n.t('How many')}
-        />
+      <View style={{flexDirection: 'row', flex: 1}}>
+        <Body type={1} color={COLORS.neutral[300]} text={i18n.t('How many')} />
         <Body
           numberOfLines={1}
           ellipsizeMode="tail"
           type={1}
-          style={{ marginLeft: 4, marginRight: 90 }}
+          style={{marginLeft: 4, marginRight: 90}}
           color={COLORS.neutral[900]}
           text={`${input}?`}
         />
       </View>
-      <View style={{
-        flexDirection: 'row', alignItems: 'center',
-      }}
-      >
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}>
         <Pressable
           onPress={() => {
-            setPackingAmount((prev) => prev - 1);
-            ReactNativeHapticFeedback.trigger('impactLight', {
-              enableVibrateFallback: true,
-              ignoreAndroidSystemSettings: true,
-            });
+            setPackingAmount(prev => prev - 1);
+            // ReactNativeHapticFeedback.trigger('impactLight', {
+            //   enableVibrateFallback: true,
+            //   ignoreAndroidSystemSettings: true,
+            // });
           }}
-          style={styles.counterContainer}
-        >
-          <Icon
-            name="minus"
-            size={16}
-            color={COLORS.neutral[700]}
-          />
+          style={styles.counterContainer}>
+          <Icon name="minus" size={16} color={COLORS.neutral[700]} />
         </Pressable>
         <Headline
           style={{
-            marginHorizontal: 6, minWidth: 20, textAlign: 'center',
+            marginHorizontal: 6,
+            minWidth: 20,
+            textAlign: 'center',
           }}
           type={4}
           text={packingAmount}
         />
         <Pressable
           onPress={() => {
-            setPackingAmount((prev) => prev + 1);
+            setPackingAmount(prev => prev + 1);
             ReactNativeHapticFeedback.trigger('impactLight', {
               enableVibrateFallback: true,
               ignoreAndroidSystemSettings: true,
             });
           }}
-          style={styles.counterContainer}
-        >
-          <Icon
-            name="plus"
-            size={16}
-            color={COLORS.neutral[700]}
-          />
+          style={styles.counterContainer}>
+          <Icon name="plus" size={16} color={COLORS.neutral[700]} />
         </Pressable>
       </View>
     </Pressable>
@@ -279,7 +272,11 @@ export default function InputModal({
   const getCounter = () => {
     const isMax = input.length === maxLength;
     return (
-      <Pressable style={[styles.counter, { borderColor: isMax ? COLORS.error[900] : COLORS.neutral[100] }]}>
+      <Pressable
+        style={[
+          styles.counter,
+          {borderColor: isMax ? COLORS.error[900] : COLORS.neutral[100]},
+        ]}>
         <Body
           type={2}
           color={isMax ? COLORS.error[900] : COLORS.neutral[500]}
@@ -297,93 +294,87 @@ export default function InputModal({
       collapsable
       transparent
       statusBarTranslucent
-      onRequestClose={onRequestClose}
-    >
+      onRequestClose={onRequestClose}>
       <TouchableOpacity
         activeOpacity={1}
         onPress={() => {
           onRequestClose();
           clearData();
         }}
-        style={{ backgroundColor: 'rgba(0,0,0,0.1)', flex: 1 }}
-      >
-        <KeyboardView
-          behavior="padding"
-          paddingBottom={0}
-          ignoreTouch
-        >
-          <Animated.View style={[styles.modalContainer, { transform: [{ translateY: animatedBottom }] }]}>
-            {((geoMatching && suggestionData) || (suggestionsLoading && suggestionData)) && (
-            <View style={styles.suggestionsContainer}>
-              {suggestionsLoading ? (
-                <ActivityIndicator
-                  style={{ marginVertical: 16 }}
-                  color={COLORS.neutral[300]}
-                />
-              )
-                : (
+        style={{backgroundColor: 'rgba(0,0,0,0.1)', flex: 1}}>
+        <KeyboardView behavior="padding" paddingBottom={0} ignoreTouch>
+          <Animated.View
+            style={[
+              styles.modalContainer,
+              {transform: [{translateY: animatedBottom}]},
+            ]}>
+            {((geoMatching && suggestionData) ||
+              (suggestionsLoading && suggestionData)) && (
+              <View style={styles.suggestionsContainer}>
+                {suggestionsLoading ? (
+                  <ActivityIndicator
+                    style={{marginVertical: 16}}
+                    color={COLORS.neutral[300]}
+                  />
+                ) : (
                   <FlatList
                     ListEmptyComponent={() => (
                       <Body
-                        style={{ textAlign: 'center', marginVertical: 16 }}
+                        style={{textAlign: 'center', marginVertical: 16}}
                         text={i18n.t('No results')}
                         color={COLORS.neutral[300]}
                       />
                     )}
                     data={suggestionData}
                     ItemSeparatorComponent={() => (
-                      <Divider
-                        omitPadding
-                        color={COLORS.neutral[50]}
-                      />
+                      <Divider omitPadding color={COLORS.neutral[50]} />
                     )}
-                    renderItem={({ item }) => getSuggestionTile(item)}
+                    renderItem={({item}) => getSuggestionTile(item)}
                   />
                 )}
-            </View>
+              </View>
             )}
-            {multipleInputs && multiValues.length > 0 && getMultipleValuesContainer()}
-            {topContent && !multiValues.length > 0 && !suggestionData && topContent}
+            {multipleInputs &&
+              multiValues.length > 0 &&
+              getMultipleValuesContainer()}
+            {topContent &&
+              !multiValues.length > 0 &&
+              !suggestionData &&
+              topContent}
             <View style={styles.innerContainer}>
               <TextInput
                 {...rest}
-                autoFocus
-                maxLength={maxLength}
+                autoFocus={true}
+                // maxLength={maxLength}
                 multiline={multiline}
                 value={input}
-                onChangeText={(val) => handleChangeText(val)}
+                onChangeText={val => handleChangeText(val)}
                 style={styles.textInput}
                 placeholderTextColor={COLORS.neutral[300]}
                 placeholder={placeholder}
               />
-              {((multipleInputs && multiValues.length > 0) || (!multipleInputs && input.length >= 1)) && (
-              <TouchableOpacity
-                onPress={handleOnPress}
-                activeOpacity={0.9}
-                style={styles.button}
-              >
-                <Icon
-                  color={COLORS.shades[0]}
-                  name="check"
-                  size={20}
-                />
-              </TouchableOpacity>
+              {((multipleInputs && multiValues.length > 0) ||
+                (!multipleInputs && input.length >= 1)) && (
+                <TouchableOpacity
+                  onPress={handleOnPress}
+                  activeOpacity={0.9}
+                  style={styles.button}>
+                  <Icon color={COLORS.shades[0]} name="check" size={20} />
+                </TouchableOpacity>
               )}
-              {(multipleInputs && input.length >= 1) && (
-              <TouchableOpacity
-                onPress={handleAdding}
-                activeOpacity={0.9}
-                style={styles.secondaryButton}
-              >
-                <Icon
-                  color={COLORS.neutral[900]}
-                  name="plus"
-                  size={20}
-                />
-              </TouchableOpacity>
+              {multipleInputs && input.length >= 1 && (
+                <TouchableOpacity
+                  onPress={handleAdding}
+                  activeOpacity={0.9}
+                  style={styles.secondaryButton}>
+                  <Icon color={COLORS.neutral[900]} name="plus" size={20} />
+                </TouchableOpacity>
               )}
             </View>
-            {multipleInputs && packingInput && input.length >= 1 && getPackingContainer()}
+            {multipleInputs &&
+              packingInput &&
+              input.length >= 1 &&
+              getPackingContainer()}
             {maxLength && getCounter()}
           </Animated.View>
         </KeyboardView>

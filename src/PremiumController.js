@@ -1,7 +1,7 @@
 export default class PremiumController {
   static modalRef;
 
-  static setModalRef = (ref) => {
+  static setModalRef = ref => {
     this.modalRef = ref;
   };
 

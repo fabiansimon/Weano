@@ -1,19 +1,26 @@
 import {
-  FlatList, StyleSheet, View, StatusBar, Pressable, Platform, ScrollView, RefreshControl,
+  FlatList,
+  StyleSheet,
+  View,
+  StatusBar,
+  Pressable,
+  Platform,
+  ScrollView,
+  RefreshControl,
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import EntIcon from 'react-native-vector-icons/Entypo';
-import React, { useState, useEffect, useRef } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import Animated from 'react-native-reanimated';
-import { useNavigation } from '@react-navigation/native';
-import { useLazyQuery, useQuery } from '@apollo/client';
+import {useNavigation} from '@react-navigation/native';
+import {useLazyQuery, useQuery} from '@apollo/client';
 import Toast from 'react-native-toast-message';
-import { MenuView } from '@react-native-menu/menu';
+import {MenuView} from '@react-native-menu/menu';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import RNFetchBlob from 'rn-fetch-blob';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import COLORS, { PADDING, RADIUS } from '../constants/Theme';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import COLORS, {PADDING, RADIUS} from '../constants/Theme';
 import Headline from '../components/typography/Headline';
 import i18n from '../utils/i18n';
 import ImageContainer from '../components/Trip/ImageContainer';
@@ -33,28 +40,31 @@ import userStore from '../stores/UserStore';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
-export default function MemoriesScreen({ route }) {
+export default function MemoriesScreen({route}) {
   // PARAMS
-  const { tripId, initShowStory } = route.params;
+  const {tripId, initShowStory} = route.params;
 
   // QUERIES
-  const { error, data } = useQuery(GET_IMAGES_FROM_TRIP, {
+  const {error, data} = useQuery(GET_IMAGES_FROM_TRIP, {
     variables: {
       tripId,
     },
     fetchPolicy: 'network-only',
   });
-  const [getImagesFromTrip, { data: updatedData }] = useLazyQuery(GET_IMAGES_FROM_TRIP, {
-    variables: {
-      tripId,
+  const [getImagesFromTrip, {data: updatedData}] = useLazyQuery(
+    GET_IMAGES_FROM_TRIP,
+    {
+      variables: {
+        tripId,
+      },
+      fetchPolicy: 'network-only',
     },
-    fetchPolicy: 'network-only',
-  });
+  );
 
   // STORES
-  const { images, userFreeImages } = activeTripStore((state) => state.activeTrip);
-  const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
-  const { isProMember } = userStore((state) => state.user);
+  const {images, userFreeImages} = activeTripStore(state => state.activeTrip);
+  const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
+  const {isProMember} = userStore(state => state.user);
 
   // STATE & MISC
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -68,11 +78,13 @@ export default function MemoriesScreen({ route }) {
 
   const onRefresh = () => {
     setRefreshing(true);
-    getImagesFromTrip().then(() => {
-      const { getImagesFromTrip: imageData } = updatedData;
-      updateTripState(imageData.images, imageData.userFreeImages);
-      setRefreshing(false);
-    }).catch(() => setRefreshing(false));
+    getImagesFromTrip()
+      .then(() => {
+        const {getImagesFromTrip: imageData} = updatedData;
+        updateTripState(imageData.images, imageData.userFreeImages);
+        setRefreshing(false);
+      })
+      .catch(() => setRefreshing(false));
   };
 
   const navigation = useNavigation();
@@ -85,7 +97,7 @@ export default function MemoriesScreen({ route }) {
 
   useEffect(() => {
     if (data) {
-      const { getImagesFromTrip: imageData } = data;
+      const {getImagesFromTrip: imageData} = data;
       updateTripState(imageData.images, imageData.userFreeImages);
     }
 
@@ -101,23 +113,30 @@ export default function MemoriesScreen({ route }) {
 
   useEffect(() => {
     if (images) {
-      setDateSelection([{
-        title: i18n.t('All images'),
-        images,
-      }, ...sortArr(images)]);
+      setDateSelection([
+        {
+          title: i18n.t('All images'),
+          images,
+        },
+        ...sortArr(images),
+      ]);
     }
   }, [images]);
 
-  const updateTripState = (imageData, freeImagesData) => updateActiveTrip({ images: imageData, userFreeImages: freeImagesData });
+  const updateTripState = (imageData, freeImagesData) =>
+    updateActiveTrip({images: imageData, userFreeImages: freeImagesData});
 
-  const sortArr = (arr) => {
+  const sortArr = arr => {
     const dataSet = [];
 
     for (let i = 0; i < arr.length; i += 1) {
-      const datestamp = Utils.getDateFromTimestamp(arr[i].createdAt / 1000, 'DDMMYY');
+      const datestamp = Utils.getDateFromTimestamp(
+        arr[i].createdAt / 1000,
+        'DDMMYY',
+      );
       const setSection = getMonthString(datestamp);
 
-      const index = dataSet.findIndex((d) => d.title === setSection);
+      const index = dataSet.findIndex(d => d.title === setSection);
 
       if (index < 0) {
         dataSet.push({
@@ -131,7 +150,7 @@ export default function MemoriesScreen({ route }) {
     return dataSet;
   };
 
-  const getMonthString = (month) => {
+  const getMonthString = month => {
     const day = month.slice(0, 2);
     let mm;
     if (month[2] === '0') {
@@ -168,13 +187,13 @@ export default function MemoriesScreen({ route }) {
     return [timeline, trip, download];
   };
 
-  const handleMenuOption = async ({ event }) => {
+  const handleMenuOption = async ({event}) => {
     if (event === 'trip') {
-      return navigation.navigate(ROUTES.tripScreen, { tripId });
+      return navigation.navigate(ROUTES.tripScreen, {tripId});
     }
 
     if (event === 'timeline') {
-      return navigation.navigate(ROUTES.timelineScreen, { tripId });
+      return navigation.navigate(ROUTES.timelineScreen, {tripId});
     }
 
     if (event === 'download') {
@@ -183,34 +202,44 @@ export default function MemoriesScreen({ route }) {
       }
       setDownloadIndex(0);
       for (let i = 0; i < images.length; i += 1) {
-        const { uri } = images[i];
+        const {uri} = images[i];
         // eslint-disable-next-line no-await-in-loop
         await RNFetchBlob.config({
           fileCache: true,
           appendExt: 'png',
-        // eslint-disable-next-line no-loop-func
-        }).fetch('GET', uri).then((res) => {
-          const isLast = i === images.length - 1;
-          Utils.downloadImage(res.data, !!isLast);
-          setDownloadIndex(isLast ? null : i);
-        }).catch((e) => {
-          Toast.show({
-            type: 'error',
-            text1: i18n.t('Whoops!'),
-            text2: e.message,
+          // eslint-disable-next-line no-loop-func
+        })
+          .fetch('GET', uri)
+          .then(res => {
+            const isLast = i === images.length - 1;
+            Utils.downloadImage(res.data, !!isLast);
+            setDownloadIndex(isLast ? null : i);
+          })
+          .catch(e => {
+            Toast.show({
+              type: 'error',
+              text1: i18n.t('Whoops!'),
+              text2: e.message,
+            });
+            setDownloadIndex(null);
           });
-          setDownloadIndex(null);
-        });
       }
     }
 
-    const usageLimit = JSON.parse(isProMember ? await asyncStorageDAO.getPremiumTierLimits() : await asyncStorageDAO.getFreeTierLimits()).images;
+    const usageLimit = JSON.parse(
+      isProMember
+        ? await asyncStorageDAO.getPremiumTierLimits()
+        : await asyncStorageDAO.getFreeTierLimits(),
+    ).images;
     if (images?.length >= usageLimit) {
       return PremiumController.showModal();
     }
 
     if (event === 'take') {
-      return navigation.navigate(ROUTES.cameraScreen, { tripId, onNavBack: () => navigation.goBack() });
+      return navigation.navigate(ROUTES.cameraScreen, {
+        tripId,
+        onNavBack: () => navigation.goBack(),
+      });
     }
 
     if (event === 'select') {
@@ -220,8 +249,12 @@ export default function MemoriesScreen({ route }) {
         includeBase64: true,
       };
 
-      ImageCropPicker.openPicker(options).then(async (image) => {
-        navigation.navigate(ROUTES.cameraScreen, { tripId, onNavBack: () => navigation.goBack(), preselectedImage: image });
+      ImageCropPicker.openPicker(options).then(async image => {
+        navigation.navigate(ROUTES.cameraScreen, {
+          tripId,
+          onNavBack: () => navigation.goBack(),
+          preselectedImage: image,
+        });
       });
     }
   };
@@ -229,10 +262,9 @@ export default function MemoriesScreen({ route }) {
   const getDateSelection = () => (
     <ScrollView
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{ paddingHorizontal: PADDING.m }}
-      style={{ marginHorizontal: -PADDING.m }}
-      horizontal
-    >
+      contentContainerStyle={{paddingHorizontal: PADDING.m}}
+      style={{marginHorizontal: -PADDING.m}}
+      horizontal>
       {dateSelection?.map((item, index) => {
         const isSelected = dateIndex === index;
         const backgroundColor = isSelected ? COLORS.shades[0] : 'transparent';
@@ -247,13 +279,8 @@ export default function MemoriesScreen({ route }) {
               paddingHorizontal: 13,
               paddingVertical: 8,
               marginRight: 2,
-            }}
-          >
-            <Body
-              type={2}
-              color={color}
-              text={item.title}
-            />
+            }}>
+            <Body type={2} color={color} text={item.title} />
           </Pressable>
         );
       })}
@@ -273,23 +300,25 @@ export default function MemoriesScreen({ route }) {
           isClear
           onPress={() => downloadIndex === null && navigation.goBack()}
         />
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginTop: 4,
+          }}>
           <Headline
             type={2}
             style={shadow}
             color={COLORS.shades[0]}
             text={i18n.t('Moments')}
           />
-          <View style={{ flexDirection: 'row', top: -10 }}>
+          <View style={{flexDirection: 'row', top: -10}}>
             {!isLoading && (
               <MenuView
                 style={styles.addIcon}
-                onPressAction={({ nativeEvent }) => handleMenuOption(nativeEvent)}
-                actions={getActions()}
-              >
-                <View
-                  style={styles.roundButton}
-                >
+                onPressAction={({nativeEvent}) => handleMenuOption(nativeEvent)}
+                actions={getActions()}>
+                <View style={styles.roundButton}>
                   <FeatherIcon
                     name="more-vertical"
                     color={COLORS.shades[0]}
@@ -299,27 +328,24 @@ export default function MemoriesScreen({ route }) {
               </MenuView>
             )}
             {images && images.length > 0 && (
-            <Pressable
-              onPress={() => {
-                setInitalIndex(0);
-                setStoryVisible(true);
-              }}
-              style={[styles.roundButton, { marginLeft: 5 }]}
-            >
-              <EntIcon
-                name="controller-play"
-                style={{ marginRight: -2 }}
-                color={COLORS.shades[0]}
-                size={22}
-              />
-            </Pressable>
+              <Pressable
+                onPress={() => {
+                  setInitalIndex(0);
+                  setStoryVisible(true);
+                }}
+                style={[styles.roundButton, {marginLeft: 5}]}>
+                <EntIcon
+                  name="controller-play"
+                  style={{marginRight: -2}}
+                  color={COLORS.shades[0]}
+                  size={22}
+                />
+              </Pressable>
             )}
           </View>
         </View>
         {images && images.length > 0 && (
-        <View style={{ marginTop: 10 }}>
-          {getDateSelection()}
-        </View>
+          <View style={{marginTop: 10}}>{getDateSelection()}</View>
         )}
       </SafeAreaView>
     );
@@ -332,13 +358,16 @@ export default function MemoriesScreen({ route }) {
         cacheImage={index < 20}
         tripId={tripId}
         onPress={() => {
-          setInitalIndex(images?.findIndex((img) => img._id === image._id) || 0);
+          setInitalIndex(images?.findIndex(img => img._id === image._id) || 0);
           setStoryVisible(true);
         }}
-        onDelete={(id) => {
-          updateActiveTrip({ images: images.filter((i) => i._id !== id), userFreeImages: userFreeImages + 1 });
+        onDelete={id => {
+          updateActiveTrip({
+            images: images.filter(i => i._id !== id),
+            userFreeImages: userFreeImages + 1,
+          });
         }}
-        style={{ marginLeft: isLeft ? 0 : 10, marginTop: 10 }}
+        style={{marginLeft: isLeft ? 0 : 10, marginTop: 10}}
         image={image}
       />
     );
@@ -349,7 +378,12 @@ export default function MemoriesScreen({ route }) {
     return (
       <View style={styles.loadingContainer}>
         <SafeAreaView edges={['bottom']}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}>
             <Body
               type={1}
               text={i18n.t('Downloading')}
@@ -357,15 +391,14 @@ export default function MemoriesScreen({ route }) {
             />
             <Body
               type={2}
-              style={{ marginLeft: 8 }}
+              style={{marginLeft: 8}}
               text={`${downloadIndex + 1}/${images.length} ${i18n.t('image')}`}
               color={COLORS.shades[0]}
             />
           </View>
           <View style={styles.loadingBar}>
-            <View style={[styles.progressBar, { width: `${percentage}%` }]} />
+            <View style={[styles.progressBar, {width: `${percentage}%`}]} />
           </View>
-
         </SafeAreaView>
       </View>
     );
@@ -376,7 +409,7 @@ export default function MemoriesScreen({ route }) {
     return (
       <MenuView
         style={styles.fabContainer}
-        onPressAction={({ nativeEvent }) => handleMenuOption(nativeEvent)}
+        onPressAction={({nativeEvent}) => handleMenuOption(nativeEvent)}
         actions={[
           {
             id: 'take',
@@ -398,38 +431,30 @@ export default function MemoriesScreen({ route }) {
               ios: 'photo',
             }),
           },
-        ]}
-      >
+        ]}>
         {isDisabled ? (
           <View
             activeOpacity={0.5}
-            style={[styles.fab, { backgroundColor: Utils.addAlpha(COLORS.primary[700], 0.3) }]}
-          >
+            style={[
+              styles.fab,
+              {backgroundColor: Utils.addAlpha(COLORS.primary[700], 0.3)},
+            ]}>
             <AccentBubble
               disabled
-              style={{ position: 'absolute', right: -2, top: -2 }}
+              style={{position: 'absolute', right: -2, top: -2}}
             />
-            <EntIcon
-              name="camera"
-              size={22}
-              color={COLORS.shades[0]}
-            />
+            <EntIcon name="camera" size={22} color={COLORS.shades[0]} />
           </View>
         ) : (
           <Animatable.View
             animation="pulse"
             iterationCount="infinite"
-            style={[styles.fab, { backgroundColor: COLORS.primary[700] }]}
-          >
+            style={[styles.fab, {backgroundColor: COLORS.primary[700]}]}>
             <AccentBubble
-              style={{ position: 'absolute', right: -2, top: -2 }}
+              style={{position: 'absolute', right: -2, top: -2}}
               text={userFreeImages}
             />
-            <EntIcon
-              name="camera"
-              size={22}
-              color={COLORS.shades[0]}
-            />
+            <EntIcon name="camera" size={22} color={COLORS.shades[0]} />
           </Animatable.View>
         )}
       </MenuView>
@@ -441,61 +466,66 @@ export default function MemoriesScreen({ route }) {
       <StatusBar barStyle="light-content" />
       <View style={styles.container}>
         {images && images.length > 0 && (
-        <AnimatedHeader
-          scrollY={scrollY}
-          maxHeight={110}
-          minHeight={10}
-          style={{ backgroundColor: COLORS.neutral[900], shadowOpacity: 0.85 }}
-        >
-          <SafeAreaView style={{
-            width: '100%',
-            paddingTop: 10,
-            paddingBottom: -24,
-            paddingHorizontal: PADDING.m,
-          }}
-          >
-            {getDateSelection()}
-          </SafeAreaView>
-        </AnimatedHeader>
+          <AnimatedHeader
+            scrollY={scrollY}
+            maxHeight={110}
+            minHeight={10}
+            style={{backgroundColor: COLORS.neutral[900], shadowOpacity: 0.85}}>
+            <SafeAreaView
+              style={{
+                width: '100%',
+                paddingTop: 10,
+                paddingBottom: -24,
+                paddingHorizontal: PADDING.m,
+              }}>
+              {getDateSelection()}
+            </SafeAreaView>
+          </AnimatedHeader>
         )}
         <Animated.ScrollView
-          refreshControl={(
+          refreshControl={
             <RefreshControl
               progressViewOffset={50}
               refreshing={refreshing}
               onRefresh={onRefresh}
             />
-          )}
+          }
           showsVerticalScrollIndicator={false}
           scrollEventThrottle={16}
           onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-            { useNativeDriver: true },
-          )}
-        >
+            [{nativeEvent: {contentOffset: {y: scrollY}}}],
+            {useNativeDriver: true},
+          )}>
           {getHeader()}
           <FlatList
             removeClippedSubviews
             showsVertiacalScrollIndicator={false}
             ListEmptyComponent={() => (
-              <View style={{ justifyContent: 'space-between', alignItems: 'center', marginTop: '60%' }}>
+              <View
+                style={{
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginTop: '60%',
+                }}>
                 <Body
                   type={1}
                   text={i18n.t('No memories captured yet')}
-                  style={{ marginBottom: 4 }}
+                  style={{marginBottom: 4}}
                   color={COLORS.shades[0]}
                 />
                 <Body
                   type={2}
-                  text={i18n.t("You will get a notification as soon as it's time to snap some memories 📸 ")}
-                  style={{ maxWidth: '80%', textAlign: 'center' }}
+                  text={i18n.t(
+                    "You will get a notification as soon as it's time to snap some memories 📸 ",
+                  )}
+                  style={{maxWidth: '80%', textAlign: 'center'}}
                   color={COLORS.neutral[500]}
                 />
               </View>
             )}
             data={dateSelection && dateSelection[dateIndex]?.images}
-            style={{ marginTop: -10, paddingBottom: 100 }}
-            renderItem={({ item, index }) => getImageTile(item, index)}
+            style={{marginTop: -10, paddingBottom: 100}}
+            renderItem={({item, index}) => getImageTile(item, index)}
             numColumns={3}
           />
         </Animated.ScrollView>
@@ -512,7 +542,6 @@ export default function MemoriesScreen({ route }) {
           isVisible={storyVisible}
         />
       </View>
-
     </>
   );
 }

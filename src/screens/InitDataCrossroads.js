@@ -1,14 +1,22 @@
 import {
-  Image, Linking, Platform, StatusBar, StyleSheet, View,
+  Image,
+  Linking,
+  Platform,
+  StatusBar,
+  StyleSheet,
+  View,
 } from 'react-native';
-import React, { useEffect, useState, useRef } from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import * as Notifications from 'expo-notifications';
-import { useNavigation } from '@react-navigation/native';
-import { useLazyQuery, useMutation } from '@apollo/client';
+import {useNavigation} from '@react-navigation/native';
+import {useLazyQuery, useMutation} from '@apollo/client';
 import Toast from 'react-native-toast-message';
-import {
-  flushFailedPurchasesCachedAsPendingAndroid, initConnection, purchaseErrorListener, purchaseUpdatedListener,
-} from 'react-native-iap';
+// import {
+//   flushFailedPurchasesCachedAsPendingAndroid,
+//   initConnection,
+//   purchaseErrorListener,
+//   purchaseUpdatedListener,
+// } from 'react-native-iap';
 import i18n from '../utils/i18n';
 import ROUTES from '../constants/Routes';
 import GET_INIT_USER_DATA from '../queries/getInitUserData';
@@ -23,15 +31,15 @@ const asyncStorageDAO = new AsyncStorageDAO();
 
 export default function InitDataCrossroads() {
   // QUERIES
-  const [getInitData, { error, data }] = useLazyQuery(GET_INIT_USER_DATA);
+  const [getInitData, {error, data}] = useLazyQuery(GET_INIT_USER_DATA);
 
   // MUTATIONS
   const [updateUser] = useMutation(UPDATE_USER);
 
   // STORES
-  const { authToken, pushToken } = userStore((state) => state.user);
-  const setTrips = tripsStore((state) => state.setTrips);
-  const updateUserData = userStore((state) => state.updateUserData);
+  const {authToken, pushToken} = userStore(state => state.user);
+  const setTrips = tripsStore(state => state.setTrips);
+  const updateUserData = userStore(state => state.updateUserData);
 
   // STATE & MISC
   const [init, setInit] = useState(false);
@@ -53,11 +61,11 @@ export default function InitDataCrossroads() {
   });
 
   const registerPushNotificationToken = async () => {
-    const { status: currentStatus } = Notifications.getPermissionsAsync();
+    const {status: currentStatus} = Notifications.getPermissionsAsync();
     let finalStatus = currentStatus;
 
     if (currentStatus !== 'granted') {
-      const { status } = await Notifications.requestPermissionsAsync();
+      const {status} = await Notifications.requestPermissionsAsync();
       finalStatus = status;
     }
 
@@ -101,15 +109,15 @@ export default function InitDataCrossroads() {
 
     if (authToken && notification && !deepLink) {
       if (notification.type === 'upload_reminder') {
-        navigation.navigate(ROUTES.cameraScreen, { tripId: notification.tripId });
+        navigation.navigate(ROUTES.cameraScreen, {tripId: notification.tripId});
         return;
       }
       if (notification.type === 'expense_reminder') {
-        navigation.navigate(ROUTES.tripScreen, { tripId: notification.tripId });
+        navigation.navigate(ROUTES.tripScreen, {tripId: notification.tripId});
         return;
       }
       if (notification.type === 'task_reminder') {
-        navigation.navigate(ROUTES.tripScreen, { tripId: notification.tripId });
+        navigation.navigate(ROUTES.tripScreen, {tripId: notification.tripId});
         return;
       }
     }
@@ -121,7 +129,9 @@ export default function InitDataCrossroads() {
 
     if (!authToken && notification && !deepLink) {
       if (notification.type === 'upload_reminder') {
-        navigation.navigate(ROUTES.signUpScreen, { uploadReminderId: notification.tripId });
+        navigation.navigate(ROUTES.signUpScreen, {
+          uploadReminderId: notification.tripId,
+        });
         return;
       }
     }
@@ -133,8 +143,8 @@ export default function InitDataCrossroads() {
 
   const checkInitStatus = async () => {
     if (authToken) {
-      await registerPushNotificationToken();
-      updateUserData({ authToken: token });
+      registerPushNotificationToken();
+      updateUserData({authToken: token});
       await getInitData();
       return;
     }
@@ -142,7 +152,7 @@ export default function InitDataCrossroads() {
     const token = await asyncStorageDAO.getAccessToken();
     if (token) {
       await registerPushNotificationToken();
-      updateUserData({ authToken: token });
+      updateUserData({authToken: token});
       setTimeout(() => {
         getInitData();
       }, 500);
@@ -156,9 +166,7 @@ export default function InitDataCrossroads() {
   const populateState = async () => {
     setInit(true);
     const res = data.getUserInitData;
-    const {
-      userData, trips, freeTierLimits, premiumTierLimits,
-    } = res;
+    const {userData, trips, freeTierLimits, premiumTierLimits} = res;
 
     await asyncStorageDAO.setFreeTierLimits(freeTierLimits);
     await asyncStorageDAO.setPremiumTierLimits(premiumTierLimits);
@@ -186,40 +194,50 @@ export default function InitDataCrossroads() {
         text2: error.message,
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, error]);
 
   useEffect(() => {
     checkInitStatus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authToken]);
 
   useEffect(() => {
     checkInitStatus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    notificationListener.current = Notifications.addNotificationReceivedListener((n) => {
-      if (n.notification) {
-        setNotification(n.notification.request.content.data);
-      }
-    });
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener(n => {
+        if (n.notification) {
+          setNotification(n.notification.request.content.data);
+        }
+      });
 
-    responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
-      setNotification(response.notification.request.content.data);
-    });
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener(response => {
+        setNotification(response.notification.request.content.data);
+      });
 
     return () => {
-      Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(
+        notificationListener.current,
+      );
       Notifications.removeNotificationSubscription(responseListener.current);
     };
   }, []);
 
   useEffect(() => {
     if (
-      lastNotificationResponse
-      && lastNotificationResponse.notification.request.content.data.url
-      && lastNotificationResponse.actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER
+      lastNotificationResponse &&
+      lastNotificationResponse.notification.request.content.data.url &&
+      lastNotificationResponse.actionIdentifier ===
+        Notifications.DEFAULT_ACTION_IDENTIFIER
     ) {
-      setNotification(lastNotificationResponse.notification.request.content.data);
+      setNotification(
+        lastNotificationResponse.notification.request.content.data,
+      );
     }
   }, [lastNotificationResponse]);
 
@@ -228,6 +246,7 @@ export default function InitDataCrossroads() {
       return;
     }
     handleNavigation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [notification]);
 
   useEffect(() => {
@@ -235,13 +254,14 @@ export default function InitDataCrossroads() {
       return;
     }
     handleNavigation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deepLink]);
 
-  const handleOpenUrl = (event) => {
+  const handleOpenUrl = event => {
     navigateHandler(event.url);
   };
 
-  const navigateHandler = async (url) => {
+  const navigateHandler = async url => {
     if (url) {
       const route = url.match(/[\d\w]+$/);
       const tripId = route[0].toString();
@@ -252,14 +272,14 @@ export default function InitDataCrossroads() {
       if (url.includes('invitation')) {
         setDeepLink({
           screen: ROUTES.invitationScreen,
-          params: { tripId },
+          params: {tripId},
         });
       }
     }
   };
 
   useEffect(() => {
-    Linking.getInitialURL().then((url) => {
+    Linking.getInitialURL().then(url => {
       navigateHandler(url);
     });
     if (Platform.OS === 'ios') {
@@ -270,44 +290,39 @@ export default function InitDataCrossroads() {
         Linking.removeAllListeners('url', handleOpenUrl);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    let purchaseUpdateSubscription;
-    let purchaseErrorSubscription;
-    (() => {
-      initConnection().then(() => {
-        flushFailedPurchasesCachedAsPendingAndroid()
-          .catch((err) => console.log(err))
-          .then(() => {
-            purchaseUpdateSubscription = purchaseUpdatedListener((purchase) => {
-              console.log(`purchase${purchase}`);
-            });
-          });
-        purchaseErrorSubscription = purchaseErrorListener(
-          (err) => {
-            console.warn('purchaseErrorListener', err);
-          },
-        );
-      });
-    })();
+  // useEffect(() => {
+  //   let purchaseUpdateSubscription;
+  //   let purchaseErrorSubscription;
+  //   (() => {
+  //     initConnection().then(() => {
+  //       flushFailedPurchasesCachedAsPendingAndroid()
+  //         .catch(err => console.log(err))
+  //         .then(() => {
+  //           purchaseUpdateSubscription = purchaseUpdatedListener(purchase => {
+  //             console.log(`purchase${purchase}`);
+  //           });
+  //         });
+  //       purchaseErrorSubscription = purchaseErrorListener(err => {
+  //         console.warn('purchaseErrorListener', err);
+  //       });
+  //     });
+  //   })();
 
-    return () => {
-      purchaseUpdateSubscription?.remove();
-      purchaseUpdateSubscription = null;
-      purchaseErrorSubscription?.remove();
-      purchaseErrorSubscription = null;
-    };
-  }, []);
+  //   return () => {
+  //     purchaseUpdateSubscription?.remove();
+  //     purchaseUpdateSubscription = null;
+  //     purchaseErrorSubscription?.remove();
+  //     purchaseErrorSubscription = null;
+  //   };
+  // }, []);
 
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
-      <Image
-        source={Logo}
-        resizeMode="center"
-        style={{ flex: 1 }}
-      />
+      <Image source={Logo} resizeMode="center" style={{flex: 1}} />
     </View>
   );
 }

@@ -1,12 +1,10 @@
-import {
-  View, StyleSheet, Pressable, Dimensions,
-} from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import {View, StyleSheet, Pressable, Dimensions} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
 import DraggableFlatList from 'react-native-draggable-flatlist';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, {useAnimatedStyle} from 'react-native-reanimated';
 import PagerView from 'react-native-pager-view';
 import Icon from 'react-native-vector-icons/Ionicons';
-import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
+import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import Headline from '../typography/Headline';
 import i18n from '../../utils/i18n';
 import Subtitle from '../typography/Subtitle';
@@ -35,55 +33,42 @@ export default function DestinationsSheet({
   const [expandedIndex, setExpandedIndex] = useState(-1);
   const [info, setInfo] = useState(null);
 
-  const { height } = Dimensions.get('window');
+  const {height} = Dimensions.get('window');
   const isLast = destinations.length <= 1;
   const pageRef = useRef();
   const animatedStyle = useAnimatedStyle(() => {
-    const translateY = Math.abs((height - position.value) - height);
+    const translateY = Math.abs(height - position.value - height);
     return {
-      transform: [{ translateY }],
+      transform: [{translateY}],
     };
   });
 
   const affiliateLinks = [
     {
       title: i18n.t('Sleep'),
-      icon: <Icon
-        name="ios-bed"
-        size={16}
-        color={COLORS.secondary[700]}
-      />,
+      icon: <Icon name="ios-bed" size={16} color={COLORS.secondary[700]} />,
       color: COLORS.secondary[700],
       type: 'sleep',
-
     },
     {
       title: i18n.t('Transport'),
-      icon: <Icon
-        name="airplane"
-        size={16}
-        color={COLORS.primary[700]}
-      />,
+      icon: <Icon name="airplane" size={16} color={COLORS.primary[700]} />,
       color: COLORS.primary[700],
       type: 'transport',
     },
     {
       title: i18n.t('Discover'),
-      icon: <Icon
-        name="compass-outline"
-        size={20}
-        color={COLORS.success[900]}
-      />,
+      icon: (
+        <Icon name="compass-outline" size={20} color={COLORS.success[900]} />
+      ),
       color: COLORS.success[900],
       type: 'discover',
     },
     {
       title: i18n.t('Food'),
-      icon: <Icon
-        name="ios-restaurant"
-        size={14}
-        color={COLORS.warning[900]}
-      />,
+      icon: (
+        <Icon name="ios-restaurant" size={14} color={COLORS.warning[900]} />
+      ),
       color: COLORS.warning[900],
       type: 'food',
     },
@@ -106,10 +91,8 @@ export default function DestinationsSheet({
     }, 100);
   };
 
-  const getDestinationTile = (destination) => {
-    const {
-      isActive, item, drag, getIndex,
-    } = destination;
+  const getDestinationTile = destination => {
+    const {isActive, item, drag, getIndex} = destination;
 
     const index = getIndex();
     return (
@@ -140,16 +123,17 @@ export default function DestinationsSheet({
   };
 
   const getAddTile = () => (
-    <Pressable
-      onPress={onAdd}
-      style={styles.tileContainer}
-    >
-      <View style={[styles.numberContainer, { backgroundColor: COLORS.neutral[300] }]}>
+    <Pressable onPress={onAdd} style={styles.tileContainer}>
+      <View
+        style={[
+          styles.numberContainer,
+          {backgroundColor: COLORS.neutral[300]},
+        ]}>
         <View style={styles.line} />
         <Subtitle
           type={1}
           color={COLORS.shades[0]}
-          style={{ marginRight: -0.5, fontWeight: '500' }}
+          style={{marginRight: -0.5, fontWeight: '500'}}
           text="+"
         />
       </View>
@@ -162,41 +146,46 @@ export default function DestinationsSheet({
   );
   return (
     <>
-      <Animated.View style={[{
-        minHeight: 50, backgroundColor: COLORS.neutral[50], bottom: -20, zIndex: 0,
-      }, animatedStyle]}
+      <Animated.View
+        style={[
+          {
+            minHeight: 50,
+            backgroundColor: COLORS.neutral[50],
+            bottom: -20,
+            zIndex: 0,
+          },
+          animatedStyle,
+        ]}
       />
       <Pressable
         // onPress={onPress}
-        style={{ flex: 1 }}
-      >
+        style={{flex: 1}}>
         <View style={styles.container}>
           <View style={styles.handler} />
           <PagerView
-            style={{ flex: 1 }}
-            ref={(node) => {
+            style={{flex: 1}}
+            ref={node => {
               // eslint-disable-next-line no-param-reassign
               navigateRef.current = node;
               pageRef.current = node;
             }}
-            onPageSelected={(e) => setScrollIndex(e.nativeEvent.position)}
-            scrollEnabled={false}
-          >
+            onPageSelected={e => setScrollIndex(e.nativeEvent.position)}
+            scrollEnabled={false}>
             <View>
               <Headline
                 type={4}
                 color={COLORS.neutral[900]}
                 text={i18n.t('Trip start')}
-                style={{ marginBottom: 10, marginTop: 18, marginLeft: PADDING.l }}
+                style={{marginBottom: 10, marginTop: 18, marginLeft: PADDING.l}}
               />
               <DraggableFlatList
                 data={destinations}
                 scrollEnabled={false}
-                onDragEnd={({ data }) => onDragEnded(data)}
-                keyExtractor={(item) => item.key}
-                renderItem={(item) => getDestinationTile(item)}
+                onDragEnd={({data}) => onDragEnded(data)}
+                keyExtractor={item => item.key}
+                renderItem={item => getDestinationTile(item)}
               />
-              {(!isRecent && destinations?.length < MAX_LENGTH) && getAddTile()}
+              {!isRecent && destinations?.length < MAX_LENGTH && getAddTile()}
             </View>
             <AffiliateInfoView
               amountPeople={amountPeople}
@@ -207,7 +196,6 @@ export default function DestinationsSheet({
           </PagerView>
         </View>
       </Pressable>
-
     </>
   );
 }

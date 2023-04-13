@@ -1,13 +1,11 @@
 /* eslint-disable react/jsx-curly-brace-presence */
-import {
-  ScrollView, StyleSheet, View,
-} from 'react-native';
-import React, { useState, useEffect } from 'react';
+import {ScrollView, StyleSheet, View} from 'react-native';
+import React, {useState, useEffect} from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
 import EntIcon from 'react-native-vector-icons/Entypo';
 import moment from 'moment';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import Headline from '../typography/Headline';
 import Divider from '../Divider';
 import i18n from '../../utils/i18n';
@@ -18,9 +16,9 @@ import CalendarDateTile from './CalendarDateTile';
 import FilterModal from '../FilterModal';
 import activeTripStore from '../../stores/ActiveTripStore';
 
-export default function CalendarAvailabilityContainer({ style, onPress }) {
+export default function CalendarAvailabilityContainer({style, onPress}) {
   // STORES
-  const { activeMembers } = activeTripStore((state) => state.activeTrip);
+  const {activeMembers} = activeTripStore(state => state.activeTrip);
 
   // STATE & MISC
   const [monthVisible, setMonthVisible] = useState(false);
@@ -92,7 +90,8 @@ export default function CalendarAvailabilityContainer({ style, onPress }) {
   const getDaysOfMonth = () => {
     const monthArray = [];
     const year = moment().year();
-    const month = currentMonth + 1 < 10 ? `0${currentMonth + 1}` : currentMonth + 1;
+    const month =
+      currentMonth + 1 < 10 ? `0${currentMonth + 1}` : currentMonth + 1;
     const days = moment(`${year}-${month}`).daysInMonth();
     const startDay = new Date(year, currentMonth, 1);
     const day = moment(startDay);
@@ -109,14 +108,16 @@ export default function CalendarAvailabilityContainer({ style, onPress }) {
     setdaysOfMonth(monthArray);
   };
 
-  const getAvailabilites = (date) => {
+  const getAvailabilites = date => {
     const day = date.dayData;
     let availableAmount = 0;
     for (let i = 0; i < activeMembers.length; i += 1) {
       const availabilites = activeMembers[i].available_dates;
       if (availabilites) {
         for (let j = 0; j < availabilites.length; j += 1) {
-          if (day === Utils.getDateFromTimestamp(availabilites[j], dateFormat)) {
+          if (
+            day === Utils.getDateFromTimestamp(availabilites[j], dateFormat)
+          ) {
             availableAmount += 1;
             break;
           }
@@ -132,7 +133,10 @@ export default function CalendarAvailabilityContainer({ style, onPress }) {
 
     if (person.available_dates) {
       for (let i = 0; i < person.available_dates.length; i += 1) {
-        const personDate = Utils.getDateFromTimestamp(person.available_dates[i], dateFormat);
+        const personDate = Utils.getDateFromTimestamp(
+          person.available_dates[i],
+          dateFormat,
+        );
         if (personDate === currentDate) {
           return true;
         }
@@ -141,78 +145,76 @@ export default function CalendarAvailabilityContainer({ style, onPress }) {
     return false;
   };
 
-  const getAvatarTile = (person) => (
-    <View style={{
-      height: CELL_HEIGHT,
-      width: CELL_WIDTH,
-      justifyContent: 'center',
-      alignItems: 'center',
-    }}
-    >
-      <Avatar
-        disabled
-        size={35}
-        data={person}
-      />
+  const getAvatarTile = person => (
+    <View
+      style={{
+        height: CELL_HEIGHT,
+        width: CELL_WIDTH,
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+      <Avatar disabled size={35} data={person} />
       <Subtitle
         type={2}
         text={person.name}
-        style={{ marginTop: 4 }}
+        style={{marginTop: 4}}
         color={COLORS.neutral[300]}
       />
     </View>
   );
 
   const getDateHeader = () => (
-    <View style={[styles.column, { height: CELL_HEIGHT, alignItems: 'center' }]}>
-      <View style={{ width: CELL_WIDTH }} />
-      {daysOfMonth && daysOfMonth.map((date) => {
-        const opacity = getAvailabilites(date);
-        return (
-          <CalendarDateTile
-            date={date}
-            style={{ width: CELL_WIDTH }}
-            opacity={opacity}
-          />
-        );
-      }) }
+    <View style={[styles.column, {height: CELL_HEIGHT, alignItems: 'center'}]}>
+      <View style={{width: CELL_WIDTH}} />
+      {daysOfMonth &&
+        daysOfMonth.map(date => {
+          const opacity = getAvailabilites(date);
+          return (
+            <CalendarDateTile
+              date={date}
+              style={{width: CELL_WIDTH}}
+              opacity={opacity}
+            />
+          );
+        })}
     </View>
   );
 
-  const getColumn = (index) => {
+  const getColumn = index => {
     const person = activeMembers[index];
 
     return (
       <View style={styles.column}>
         {getAvatarTile(person)}
-        {daysOfMonth && daysOfMonth.map((date) => {
-          const available = isAvailable(person, date);
-          return (
-            <TouchableOpacity
-              onPress={onPress || null}
-              style={{
-                height: CELL_HEIGHT,
-                width: CELL_WIDTH,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <View style={[styles.checkbox, {
-                backgroundColor: available ? COLORS.primary[700] : COLORS.neutral[50],
-                borderWidth: available ? 0 : 1,
-              }]}
-              >
-                {available && (
-                <EntIcon
-                  name="check"
-                  color={COLORS.shades[0]}
-                  size={16}
-                />
-                )}
-              </View>
-            </TouchableOpacity>
-          );
-        })}
+        {daysOfMonth &&
+          daysOfMonth.map(date => {
+            const available = isAvailable(person, date);
+            return (
+              <TouchableOpacity
+                onPress={onPress || null}
+                style={{
+                  height: CELL_HEIGHT,
+                  width: CELL_WIDTH,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                <View
+                  style={[
+                    styles.checkbox,
+                    {
+                      backgroundColor: available
+                        ? COLORS.primary[700]
+                        : COLORS.neutral[50],
+                      borderWidth: available ? 0 : 1,
+                    },
+                  ]}>
+                  {available && (
+                    <EntIcon name="check" color={COLORS.shades[0]} size={16} />
+                  )}
+                </View>
+              </TouchableOpacity>
+            );
+          })}
       </View>
     );
   };
@@ -223,26 +225,27 @@ export default function CalendarAvailabilityContainer({ style, onPress }) {
         <Icon
           name="arrowleft"
           suppressHighlighting
-          onPress={() => setCurrentMonth(currentMonth === 0 ? 11 : currentMonth - 1)}
+          onPress={() =>
+            setCurrentMonth(currentMonth === 0 ? 11 : currentMonth - 1)
+          }
           size={22}
         />
         <TouchableOpacity
           onPress={() => setMonthVisible(true)}
-          style={{ flex: 1, alignItems: 'center' }}
-        >
+          style={{flex: 1, alignItems: 'center'}}>
           <Headline type={4} text={Utils.getMonthFromInt(currentMonth)} />
         </TouchableOpacity>
         <Icon
           name="arrowright"
           suppressHighlighting
-          onPress={() => setCurrentMonth(currentMonth === 11 ? 0 : currentMonth + 1)}
+          onPress={() =>
+            setCurrentMonth(currentMonth === 11 ? 0 : currentMonth + 1)
+          }
           size={22}
         />
       </View>
       <ScrollView horizontal>
-        <View
-          style={{ paddingHorizontal: 8, marginTop: 10 }}
-        >
+        <View style={{paddingHorizontal: 8, marginTop: 10}}>
           {getDateHeader()}
           <Divider color={COLORS.neutral[50]} />
           {activeMembers.map((_, index) => getColumn(index))}
@@ -253,7 +256,7 @@ export default function CalendarAvailabilityContainer({ style, onPress }) {
         onRequestClose={() => setMonthVisible(false)}
         data={monthOptions}
         selectedIndex={currentMonth}
-        onPress={(m) => setCurrentMonth(m.value)}
+        onPress={m => setCurrentMonth(m.value)}
       />
     </View>
   );

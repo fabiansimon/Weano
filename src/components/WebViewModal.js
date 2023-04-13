@@ -1,24 +1,28 @@
-import { MenuView } from '@react-native-menu/menu';
-import React, { useState } from 'react';
+import {MenuView} from '@react-native-menu/menu';
+import React, {useState} from 'react';
 import {
-  StyleSheet, View, Modal, SafeAreaView, Platform, Linking,
+  StyleSheet,
+  View,
+  Modal,
+  SafeAreaView,
+  Platform,
+  Linking,
+  StatusBar,
 } from 'react-native';
 import WebView from 'react-native-webview';
 import Icon from 'react-native-vector-icons/Feather';
 import Clipboard from '@react-native-clipboard/clipboard';
-import COLORS, { PADDING } from '../constants/Theme';
+import COLORS, {PADDING} from '../constants/Theme';
 import i18n from '../utils/i18n';
 import BackButton from './BackButton';
 import Headline from './typography/Headline';
 
-export default function WebViewModal({
-  isVisible, onRequestClose, url, title,
-}) {
+export default function WebViewModal({isVisible, onRequestClose, url, title}) {
   const [loadingProgress, setLoadingProgress] = useState(0);
 
-  const handleMenuOption = ({ event }) => {
+  const handleMenuOption = ({event}) => {
     if (event === 'browser') {
-      return Linking.canOpenURL(url).then((supported) => {
+      return Linking.canOpenURL(url).then(supported => {
         if (supported) {
           Linking.openURL(url);
         }
@@ -37,26 +41,30 @@ export default function WebViewModal({
       transparent
       statusBarTranslucent
       useNativeDriver
-      onRequestClose={onRequestClose}
-    >
+      onRequestClose={onRequestClose}>
       <View style={styles.container}>
+        <StatusBar barStyle="light-content" />
         <SafeAreaView style={styles.header}>
           <BackButton
             closeIcon
-            style={{ marginLeft: PADDING.l }}
+            style={{marginLeft: PADDING.l}}
             isClear
             onPress={onRequestClose}
           />
-          <View style={{ position: 'absolute', width: '100%' }}>
+          <View style={{position: 'absolute', width: '100%'}}>
             <Headline
               type={4}
-              style={{ textAlign: 'center', position: 'absolute', alignSelf: 'center' }}
+              style={{
+                textAlign: 'center',
+                alignSelf: 'center',
+                marginBottom: 10,
+              }}
               text={title}
             />
           </View>
           <MenuView
             style={styles.moreIcon}
-            onPressAction={({ nativeEvent }) => handleMenuOption(nativeEvent)}
+            onPressAction={({nativeEvent}) => handleMenuOption(nativeEvent)}
             actions={[
               {
                 id: 'browser',
@@ -70,31 +78,29 @@ export default function WebViewModal({
                 id: 'copy',
                 title: i18n.t('Copy link'),
               },
-
-            ]}
-          >
-            <Icon
-              name="more-horizontal"
-              size={22}
-              color={COLORS.shades[100]}
-            />
+            ]}>
+            <Icon name="more-horizontal" size={22} color={COLORS.shades[100]} />
           </MenuView>
         </SafeAreaView>
-        {loadingProgress < 1 && <View style={{ height: 3, backgroundColor: COLORS.primary[700], width: `${loadingProgress * 100}%` }} />}
+        {loadingProgress < 1 && (
+          <View
+            style={{
+              height: 3,
+              backgroundColor: COLORS.primary[700],
+              width: `${loadingProgress * 100}%`,
+            }}
+          />
+        )}
         <WebView
-          onLoadProgress={({ nativeEvent }) => {
+          onLoadProgress={({nativeEvent}) => {
             setLoadingProgress(nativeEvent.progress);
           }}
-          // onScroll={(syntheticEvent) => {
-          //   const { contentOffset } = syntheticEvent.nativeEvent;
-          //   console.log(contentOffset);
-          // }}
           enableApplePay
           allowsLinkPreview
           allowFileAccess
           originWhitelist={['*']}
-          source={{ uri: url }}
-          style={{ height: '100%', width: '100%' }}
+          source={{uri: url}}
+          style={{height: '100%', width: '100%'}}
         />
       </View>
     </Modal>
@@ -110,7 +116,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     height: 70,
     paddingBottom: 14,
     borderBottomColor: COLORS.neutral[100],

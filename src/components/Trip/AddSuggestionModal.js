@@ -1,16 +1,19 @@
-import { StyleSheet, View } from 'react-native';
-import React, { useState } from 'react';
+import {StyleSheet, View} from 'react-native';
+import React, {useState} from 'react';
 import TitleModal from '../TitleModal';
 import i18n from '../../utils/i18n';
 import KeyboardView from '../KeyboardView';
 import Headline from '../typography/Headline';
-import COLORS, { PADDING } from '../../constants/Theme';
+import COLORS, {PADDING} from '../../constants/Theme';
 import TextField from '../TextField';
 import Chip from '../Chip';
 import Button from '../Button';
 
 export default function AddSuggestionModal({
-  isVisible, onRequestClose, data, setPollData,
+  isVisible,
+  onRequestClose,
+  data,
+  setPollData,
 }) {
   const [suggestion, setSuggestion] = useState('');
 
@@ -31,11 +34,15 @@ export default function AddSuggestionModal({
     <TitleModal
       isVisible={isVisible}
       onRequestClose={onRequestClose}
-      title={i18n.t('Add suggestion')}
-    >
+      title={i18n.t('Add suggestion')}>
       <KeyboardView paddingBottom={50}>
-        <View style={{ flex: 1 }}>
-          <View style={{ paddingHorizontal: PADDING.l, paddingTop: 25, paddingBottom: 15 }}>
+        <View style={{flex: 1}}>
+          <View
+            style={{
+              paddingHorizontal: PADDING.l,
+              paddingTop: 25,
+              paddingBottom: 15,
+            }}>
             <Headline
               type={3}
               text={i18n.t('Add a destiny')}
@@ -43,17 +50,18 @@ export default function AddSuggestionModal({
             />
             <TextField
               style={{
-                marginTop: 18, backgroundColor: COLORS.neutral[50],
+                marginTop: 18,
+                backgroundColor: COLORS.neutral[50],
               }}
               value={suggestion || null}
-              onChangeText={(val) => setSuggestion(val)}
+              onChangeText={val => setSuggestion(val)}
               placeholder={i18n.t('Barcelona, Spain')}
               onDelete={() => setSuggestion('')}
             />
             <View style={styles.wrapContainer}>
-              {data.map((sugg) => (
+              {data.map(sugg => (
                 <Chip
-                  style={{ marginBottom: 10, marginRight: 10 }}
+                  style={{marginBottom: 10, marginRight: 10}}
                   text={sugg.string}
                   onDelete={() => console.log('delete')}
                 />
@@ -63,7 +71,11 @@ export default function AddSuggestionModal({
           <Button
             text={i18n.t('Add')}
             onPress={handleSuggestion}
-            style={{ marginTop: 'auto', marginHorizontal: PADDING.m, marginBottom: 30 }}
+            style={{
+              marginTop: 'auto',
+              marginHorizontal: PADDING.m,
+              marginBottom: 30,
+            }}
           />
         </View>
       </KeyboardView>

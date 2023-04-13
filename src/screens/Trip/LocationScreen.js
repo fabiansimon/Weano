@@ -1,15 +1,13 @@
-import {
-  View, StyleSheet, Dimensions, Pressable, Image,
-} from 'react-native';
-import React, { useState, useRef, useEffect } from 'react';
+import {View, StyleSheet, Dimensions, Pressable, Image} from 'react-native';
+import React, {useState, useRef, useEffect} from 'react';
 import Animated from 'react-native-reanimated';
 // eslint-disable-next-line import/no-unresolved
-import { MAPBOX_TOKEN } from '@env';
+import {MAPBOX_TOKEN} from '@env';
 import Toast from 'react-native-toast-message';
-import { useMutation } from '@apollo/client';
+import {useMutation} from '@apollo/client';
 import MapboxGL from '@react-native-mapbox-gl/maps';
 import FeatherIcon from 'react-native-vector-icons/Feather';
-import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
+import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import HybridHeader from '../../components/HybridHeader';
 import INFORMATION from '../../constants/Information';
@@ -26,11 +24,11 @@ MapboxGL.setAccessToken(MAPBOX_TOKEN);
 
 export default function LocationScreen() {
   // MUTATIONS
-  const [updateTrip, { error }] = useMutation(UPDATE_TRIP);
+  const [updateTrip, {error}] = useMutation(UPDATE_TRIP);
 
   // STORES
-  const { location, id } = activeTripStore((state) => state.activeTrip);
-  const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
+  const {location, id} = activeTripStore(state => state.activeTrip);
+  const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
 
   // STATE & MISC
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -51,7 +49,7 @@ export default function LocationScreen() {
     }
   }, [error]);
 
-  const handleLocationInput = async (input) => {
+  const handleLocationInput = async input => {
     if (!input) {
       Toast.show({
         type: 'error',
@@ -61,7 +59,7 @@ export default function LocationScreen() {
       return;
     }
 
-    const { location: latlon, string: placeName } = input;
+    const {location: latlon, string: placeName} = input;
 
     const oldLocation = location;
     updateActiveTrip({
@@ -81,25 +79,27 @@ export default function LocationScreen() {
           tripId: id,
         },
       },
-    }).then(() => {
-      setTimeout(() => {
-        Toast.show({
-          type: 'success',
-          text1: i18n.t('Great!'),
-          text2: i18n.t('Location successful updated'),
-        });
-      }, 500);
-    }).catch((e) => {
-      updateActiveTrip({ location: oldLocation });
-      setTimeout(() => {
-        Toast.show({
-          type: 'error',
-          text1: i18n.t('Whoops!'),
-          text2: e.message,
-        });
-      }, 500);
-      console.log(e);
-    });
+    })
+      .then(() => {
+        setTimeout(() => {
+          Toast.show({
+            type: 'success',
+            text1: i18n.t('Great!'),
+            text2: i18n.t('Location successful updated'),
+          });
+        }, 500);
+      })
+      .catch(e => {
+        updateActiveTrip({location: oldLocation});
+        setTimeout(() => {
+          Toast.show({
+            type: 'error',
+            text1: i18n.t('Whoops!'),
+            text2: e.message,
+          });
+        }, 500);
+        console.log(e);
+      });
 
     setInputVisible(false);
   };
@@ -107,33 +107,26 @@ export default function LocationScreen() {
   const getLocationContainer = () => (
     <>
       <View style={styles.locationContainer}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <Headline
             type={4}
             text={i18n.t('Current destination')}
             color={COLORS.neutral[300]}
           />
-          <RoleChip
-            string={i18n.t('Set by host')}
-            isHost
-          />
+          <RoleChip string={i18n.t('Set by host')} isHost />
         </View>
         <Pressable
           onPress={() => isHost && setInputVisible(true)}
-          style={{ flexDirection: 'row', alignItems: 'center' }}
-        >
+          style={{flexDirection: 'row', alignItems: 'center'}}>
           <Headline
             type={3}
-            style={{ marginTop: 4 }}
+            style={{marginTop: 4}}
             text={location.placeName.split(',')[0]}
           />
           {isHost && (
-          <View style={styles.editButton}>
-            <FeatherIcon
-              name="edit"
-              color={COLORS.neutral[300]}
-            />
-          </View>
+            <View style={styles.editButton}>
+              <FeatherIcon name="edit" color={COLORS.neutral[300]} />
+            </View>
           )}
         </Pressable>
       </View>
@@ -146,23 +139,23 @@ export default function LocationScreen() {
           pitchEnabled={false}
           compassEnabled={false}
           rotateEnabled={false}
-          style={styles.map}
-        >
+          style={styles.map}>
           <MapboxGL.Camera
             zoomLevel={4}
             animated={false}
             ref={camera}
             centerCoordinate={location.latlon}
           />
-          <MapboxGL.MarkerView
-            coordinate={location.latlon}
-          >
-            <Image source={PinImage} style={{ height: 40, width: 50 }} resizeMode="contain" />
+          <MapboxGL.MarkerView coordinate={location.latlon}>
+            <Image
+              source={PinImage}
+              style={{height: 40, width: 50}}
+              resizeMode="contain"
+            />
           </MapboxGL.MarkerView>
         </MapboxGL.MapView>
       </View>
     </>
-
   );
 
   return (
@@ -170,17 +163,17 @@ export default function LocationScreen() {
       <HybridHeader
         title={i18n.t('Find location')}
         scrollY={scrollY}
-        info={INFORMATION.locationScreen}
-      >
+        info={INFORMATION.locationScreen}>
         <View style={styles.innerContainer}>
           {!location ? (
             <SetupContainer
               onPress={() => setInputVisible(true)}
               type="location"
-              style={{ marginBottom: 10 }}
+              style={{marginBottom: 10}}
             />
-          ) : getLocationContainer()}
-
+          ) : (
+            getLocationContainer()
+          )}
         </View>
       </HybridHeader>
       <InputModal
@@ -188,9 +181,8 @@ export default function LocationScreen() {
         geoMatching
         placeholder={i18n.t('Enter location')}
         onRequestClose={() => setInputVisible(false)}
-        onPress={(input) => handleLocationInput(input)}
+        onPress={input => handleLocationInput(input)}
       />
-
     </View>
   );
 }
