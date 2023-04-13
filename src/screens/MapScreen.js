@@ -3,7 +3,6 @@ import {NativeModules, Pressable, StyleSheet, View} from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
 import MapboxGL from '@rnmapbox/maps';
 import BottomSheet from '@gorhom/bottom-sheet';
-// eslint-disable-next-line import/no-unresolved
 import {MAPBOX_TOKEN} from '@env';
 import {useNavigation} from '@react-navigation/native';
 import BackButton from '../components/BackButton';
@@ -68,8 +67,7 @@ export default function MapScreen({route}) {
     }
 
     return (
-      <MapboxGL.MarkerView
-        coordinate={destinations[0].latlon}>
+      <MapboxGL.MarkerView coordinate={destinations[0].latlon}>
         <TripContainer
           onPress={() =>
             navigation.navigate(ROUTES.tripScreen, {tripId: trip.id})
@@ -98,9 +96,7 @@ export default function MapScreen({route}) {
         <Pressable
           style={styles.searchButton}
           onPress={() => setShowSearch(true)}>
-          <Icon
-            color={COLORS.shades[100]}
-            name="search1" size={20} />
+          <Icon color={COLORS.shades[100]} name="search1" size={20} />
         </Pressable>
       </View>
       <BottomSheet
@@ -130,7 +126,7 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'space-between',
     position: 'absolute',
-    top: StatusBarManager.HEIGHT ,
+    top: StatusBarManager.HEIGHT,
     paddingHorizontal: PADDING.m,
   },
   container: {

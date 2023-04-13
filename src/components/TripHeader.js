@@ -75,7 +75,7 @@ export default function TripHeader({
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: StatusBarManager.HEIGHT - (Platform.OS === 'android'? 30 : 20),
+    marginTop: StatusBarManager.HEIGHT - (Platform.OS === 'android' ? 30 : 15),
   },
   header: {
     flexDirection: 'row',

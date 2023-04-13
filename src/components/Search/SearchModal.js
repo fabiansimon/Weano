@@ -26,7 +26,7 @@ import Utils from '../../utils';
 
 const {StatusBarManager} = NativeModules;
 
-export default function LocationScreen({isVisible, onRequestClose, onPress}) {
+export default function SearchModal({isVisible, onRequestClose, onPress}) {
   // STORES
   const trips = tripsStore(state => state.trips);
 
@@ -123,11 +123,11 @@ export default function LocationScreen({isVisible, onRequestClose, onPress}) {
               }}>
               <Icon color={COLORS.shades[100]} name="close" size={22} />
             </Pressable>
-            <Headline type={3} text={i18n.t('Search')} />
+            <Headline type={4} text={i18n.t('Search')} />
             <View style={{width: 50}} />
           </View>
           <TextField
-            style={{ marginHorizontal: PADDING.m,}}
+            style={{marginHorizontal: PADDING.m}}
             value={term || null}
             onChangeText={val => handleSearchTerm(val)}
             onDelete={() => handleSearchTerm('')}

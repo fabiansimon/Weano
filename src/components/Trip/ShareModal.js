@@ -1,126 +1,122 @@
 import {
-  Modal,
   StyleSheet,
-  TouchableOpacity,
-  Animated,
   Dimensions,
+  View,
+  Pressable,
+  Platform,
+  Share,
 } from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import Toast from 'react-native-toast-message';
+import React from 'react';
 import QRCode from 'react-native-qrcode-svg';
 import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
-import Logo from '../../../assets/images/logo_blue.png';
-import Utils from '../../utils';
+import Logo from '../../../assets/images/logo_inverted.png';
 import i18n from '../../utils/i18n';
 import Body from '../typography/Body';
 import TitleModal from '../TitleModal';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 export default function ShareModal({isVisible, onRequestClose, value}) {
+  const {width} = Dimensions.get('window');
+
+  const handleShare = () => {
+    Share.share({
+      message: `Hey! You've been invited to join a trip! Click the link below to join! ${value}`,
+    });
+  };
+
+  const copyLink = () => {
+    Clipboard.setString(`${value}`);
+    Toast.show({
+      type: 'success',
+      text1: i18n.t('Copied!'),
+      text2: i18n.t('You can now send it to your friends'),
+    });
+  };
+
   return (
     <TitleModal
       isVisible={isVisible}
-      onRequestClose={() => {
-        setAmount('')
-        setTitle('');
-        setPaidBy(activeMembers.find((member) => member.id === userId));
-        onRequestClose();
-      }}
-      title={i18n.t('Expense')}
-      actionLabel={i18n.t('Create')}
-      onPress={handlePress}
-      isLoading={isLoading}
-      isDisabled={amount.length <= 0 || title.length <= 0}>
+      onRequestClose={onRequestClose}
+      title={i18n.t('Share Trip')}>
       <View style={styles.container}>
-        <View>
-          {getAmountContainer()}
-          {getDescriptionContainer()}
-          {getInfoContainer()}
-          {getSummaryContainer()}
+        <Body
+          type={2}
+          color={COLORS.neutral[500]}
+          text={i18n.t(
+            'Your friends can either join by scanning the code via their camera app or within the app.',
+          )}
+        />
+        <View style={{alignItems: 'center', marginTop: 30}}>
+          <QRCode
+            value={value}
+            logo={Logo}
+            size={width * 0.6}
+            color={COLORS.shades[100]}
+            logoBackgroundColor={COLORS.shades[0]}
+            logoBorderRadius={10}
+            logoMargin={1}
+          />
+          <Pressable
+            onPress={copyLink}
+            style={[styles.shareButton, {marginTop: 30}]}>
+            <Body
+              text={i18n.t('Copy link')}
+              color={COLORS.neutral[700]}
+              style={{
+                textAlign: 'left',
+                fontWeight: Platform.OS === 'android' ? '600' : '500',
+              }}
+            />
+            <Icon
+              style={{marginLeft: 8}}
+              name="content-copy"
+              color={COLORS.neutral[700]}
+              size={18}
+            />
+          </Pressable>
+          <Pressable
+            onPress={handleShare}
+            style={[styles.shareButton, {marginTop: 10}]}>
+            <Body
+              color={COLORS.neutral[700]}
+              style={{
+                textAlign: 'left',
+                fontWeight: Platform.OS === 'android' ? '600' : '500',
+              }}
+              text={i18n.t('Share invitation')}
+            />
+            <Icon
+              style={{marginLeft: 8}}
+              name="ios-share"
+              color={COLORS.neutral[700]}
+              size={18}
+            />
+          </Pressable>
         </View>
       </View>
-      <Toast config={toastConfig} />
     </TitleModal>
-    // <Modal
-    //   animationType="fade"
-    //   visible={isVisible}
-    //   useNativeDriver
-    //   collapsable
-    //   transparent
-    //   statusBarTranslucent
-    //   onRequestClose={onRequestClose}>
-    //   <TouchableOpacity
-    //     activeOpacity={1}
-    //     onPress={onRequestClose}
-    //     style={styles.container}>
-    //     <Animated.View
-    //       style={[
-    //         styles.innerContainer,
-    //         {transform: [{scale: animatedScale}]},
-    //       ]}>
-    //       <QRCode
-    //         value={value}
-    //         logo={Logo}
-    //         size={width}
-    //         color={COLORS.shades[0]}
-    //         enableLinearGradient
-    //         linearGradient={[COLORS.primary[300], COLORS.primary[900]]}
-    //         logoBackgroundColor={COLORS.shades[0]}
-    //         logoBorderRadius={100}
-    //         logoMargin={2}
-    //       />
-    //       <Body
-    //         style={{
-    //           maxWidth: width + 10,
-    //           marginTop: 10,
-    //         }}
-    //         type={2}
-    //         color={COLORS.neutral[900]}
-    //         text={i18n.t('Scan this QR code to join 🎉')}
-    //       />
-    //     </Animated.View>
-    //   </TouchableOpacity>
-    // </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  avatar: {
-    position: 'absolute',
-    top: 15,
-    right: 15,
-  },
-  innerContainer: {
-    alignItems: 'center',
-    paddingHorizontal: PADDING.m,
-    paddingVertical: PADDING.l,
-    paddingBottom: 10,
-    backgroundColor: COLORS.shades[0],
-    borderRadius: RADIUS.l,
-    alignSelf: 'center',
-  },
   container: {
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    paddingTop: PADDING.m,
+    paddingHorizontal: PADDING.m,
+    backgroundColor: COLORS.shades[0],
     flex: 1,
-    justifyContent: 'center',
   },
-  splitContainer: {
-    borderColor: COLORS.neutral[100],
-    backgroundColor: COLORS.neutral[50],
-    borderRadius: RADIUS.s,
-    borderWidth: 1,
-    marginTop: 20,
-  },
-  buttonContainer: {
-    marginTop: 10,
+  shareButton: {
+    width: '65%',
     flexDirection: 'row',
-  },
-  avatarOverlay: {
-    position: 'absolute',
-    backgroundColor: Utils.addAlpha(COLORS.shades[100], 0.5),
-    borderRadius: 100,
+    paddingHorizontal: 14,
+    minHeight: 45,
+    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.shades[0],
+    borderWidth: 1,
+    justifyContent: 'space-between',
     alignItems: 'center',
-    justifyContent: 'center',
-    height: 35,
-    width: 35,
-    flex: 1,
+    borderColor: COLORS.neutral[100],
   },
 });

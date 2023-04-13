@@ -37,6 +37,7 @@ import AsyncStorageDAO from '../utils/AsyncStorageDAO';
 import PremiumController from '../PremiumController';
 import ProUserBubble from '../components/ProUserBubble';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import ScannerModal from '../components/ScannerModal';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
@@ -54,6 +55,7 @@ export default function MainScreen() {
   // STATE & MISC
   const [createVisible, setCreateVisible] = useState(false);
   const [searchVisible, setSearchVisible] = useState(false);
+  const [scanVisible, setScanVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [index, setIndex] = useState(0);
   const [routes] = useState([
@@ -369,12 +371,16 @@ export default function MainScreen() {
           onRequestClose={() => setSearchVisible(false)}
           onPress={id => navigation.navigate(ROUTES.tripScreen, {tripId: id})}
         />
+        <ScannerModal
+          isVisible={scanVisible}
+          onRequestClose={() => setScanVisible(false)}
+        />
         <FAButton
           options={[
             {
               title: i18n.t('Join trip'),
               icon: 'scan',
-              onPress: () => console.log('Scan'),
+              onPress: () => setScanVisible(true),
             },
             {
               title: i18n.t('Create trip'),

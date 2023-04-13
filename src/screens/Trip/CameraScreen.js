@@ -18,7 +18,7 @@ import {Camera, CameraType, FlashMode} from 'expo-camera';
 import {manipulateAsync, FlipType} from 'expo-image-manipulator';
 import {PinchGestureHandler} from 'react-native-gesture-handler';
 import Video from 'react-native-video';
-import {BlurView} from '@react-native-community/blur';
+// import {BlurView} from '@react-native-community/blur';
 import {useQuery} from '@apollo/client';
 import {useNavigation} from '@react-navigation/native';
 import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
@@ -305,14 +305,14 @@ export default function CameraScreen({route}) {
           />
         </View>
       )}
-      {Platform.OS !== 'android' && (
+      {/* {Platform.OS !== 'android' && (
         <BlurView
           style={styles.blurView}
           blurType="dark"
           blurAmount={4}
           reducedTransparencyFallbackColor={COLORS.shades[0]}
         />
-      )}
+      )} */}
       <View style={styles.recordUnit}>
         {!isRecording && (
           <TouchableOpacity

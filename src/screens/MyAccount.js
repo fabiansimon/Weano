@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 20,
     flex: 1,
-    height: Dimensions.get('window').height * 0.8,
+    height: Dimensions.get('window').height * 0.7,
     marginHorizontal: PADDING.l,
   },
 });

@@ -53,7 +53,6 @@ const InternetCheckProvider = ({children}) => {
     }
   }, [isConnected]);
 
-  // eslint-disable-next-line react/jsx-no-constructed-context-values
   const data = {
     showNoConnectionAlert,
     isConnected,

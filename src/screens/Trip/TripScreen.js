@@ -91,7 +91,7 @@ export default function TripScreen({route}) {
   const [viewIndex, setViewIndex] = useState(0);
   const [currentTab, setCurrentTab] = useState(0);
   const [inputOpen, setInputOpen] = useState(null);
-  const [showQR, setShowQR] = useState(false);
+  const [shareVisible, setShareVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [calendarVisible, setCalendarVisible] = useState(false);
 
@@ -147,21 +147,11 @@ export default function TripScreen({route}) {
       case 'editThumbnail':
         addImageRef.current?.show();
         break;
-      case 'copy':
-        Clipboard.setString(
-          `${META_DATA.baseUrl}/redirect/invitation/${tripId}`,
-        );
-        Toast.show({
-          type: 'success',
-          text1: i18n.t('Copied!'),
-          text2: i18n.t('You can now send it to your friends'),
-        });
-        break;
       case 'delete':
         handleDeleteTrip();
         break;
-      case 'qr':
-        setShowQR(true);
+      case 'share':
+        setShareVisible(true);
         break;
 
       default:
@@ -654,18 +644,11 @@ export default function TripScreen({route}) {
                   ],
                 },
                 {
-                  id: 'copy',
-                  title: i18n.t('Copy invite link'),
+                  id: 'share',
+                  title: i18n.t('Share Trip'),
                   image: Platform.select({
                     ios: 'square.and.arrow.up',
                     android: 'ic_menu_share',
-                  }),
-                },
-                {
-                  id: 'qr',
-                  title: i18n.t('Show QR Code'),
-                  image: Platform.select({
-                    ios: 'qrcode',
                   }),
                 },
                 {
@@ -878,7 +861,7 @@ export default function TripScreen({route}) {
           <Animated.ScrollView
             refreshControl={
               <RefreshControl
-                enabled={data}
+                // enabled={data}
                 progressViewOffset={50}
                 refreshing={refreshing}
                 onRefresh={onRefresh}
@@ -966,8 +949,8 @@ export default function TripScreen({route}) {
             }
           />
           <ShareModal
-            isVisible={showQR}
-            onRequestClose={() => setShowQR(false)}
+            isVisible={shareVisible}
+            onRequestClose={() => setShareVisible(false)}
             value={`${META_DATA.baseUrl}/redirect/invitation/${tripId}`}
           />
           <CalendarModal
@@ -988,7 +971,8 @@ export default function TripScreen({route}) {
           />
         </View>
         {!inactive ? (
-          <DestinationScreen navigatePage={() => setViewIndex(0)} />
+          // <DestinationScreen navigatePage={() => setViewIndex(0)} />
+          <View />
         ) : (
           <View />
         )}

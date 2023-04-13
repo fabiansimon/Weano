@@ -24,7 +24,7 @@ import IndividualExpenseScreen from './src/screens/Trip/IndividualExpenseScreen'
 import ExpenseScreen from './src/screens/Trip/ExpenseScreen';
 import ChecklistScreen from './src/screens/Trip/ChecklistScreen';
 import MemoriesScreen from './src/screens/MemoriesScreen';
-// import CameraScreen from './src/screens/Trip/CameraScreen';
+import CameraScreen from './src/screens/Trip/CameraScreen';
 import PollScreen from './src/screens/Trip/PollScreen';
 import DocumentsScreen from './src/screens/Trip/DocumentsScreen';
 import TimelineScreen from './src/screens/TimelineScreen';
@@ -103,10 +103,10 @@ function App() {
                 component={ProfileScreen}
               />
               <Stack.Screen
-                  name={ROUTES.mapScreen}
-                  initialParams={{initTrip: null}}
-                  component={MapScreen}
-                />
+                name={ROUTES.mapScreen}
+                initialParams={{initTrip: null}}
+                component={MapScreen}
+              />
               <Stack.Screen
                 name={ROUTES.tripScreen}
                 options={{gestureEnabled: false}}
@@ -137,7 +137,7 @@ function App() {
                 initialParams={{initShowStory: false}}
                 component={MemoriesScreen}
               />
-              {/* <Stack.Screen
+              <Stack.Screen
                 name={ROUTES.cameraScreen}
                 initialParams={{
                   onNavBack: () =>
@@ -145,7 +145,7 @@ function App() {
                   preselectedImage: null,
                 }}
                 component={CameraScreen}
-              /> */}
+              />
               <Stack.Screen name={ROUTES.pollScreen} component={PollScreen} />
               <Stack.Screen
                 name={ROUTES.documentsScreen}
