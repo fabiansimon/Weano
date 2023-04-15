@@ -1,6 +1,7 @@
 import {
   ActivityIndicator,
   Image,
+  Platform,
   ScrollView,
   StyleSheet,
   View,
@@ -27,7 +28,6 @@ import JOIN_TRIP from '../mutations/joinTrip';
 import userStore from '../stores/UserStore';
 import Divider from '../components/Divider';
 import Avatar from '../components/Avatar';
-import DefaultImage from '../../assets/images/default_trip.png';
 
 export default function InvitationScreen({route}) {
   // PARAMS
@@ -154,7 +154,7 @@ export default function InvitationScreen({route}) {
         </View>
       </View>
       <View style={{marginHorizontal: 10, marginTop: 8}}>
-        <Headline type={3} isDense text={tripData && tripData.title} />
+        <Headline type={3} text={tripData && tripData.title} />
         <View
           style={{
             flexDirection: 'row',
@@ -202,7 +202,7 @@ export default function InvitationScreen({route}) {
             tripData?.description ||
             i18n.t('No description yet for this trip ✒️')
           }
-          style={{marginTop: 2, marginLeft: 6, color: COLORS.neutral[700]}}
+          style={{marginTop: 2, marginLeft: 6, color: COLORS.shades[100]}}
         />
       </View>
     </View>
@@ -236,7 +236,12 @@ export default function InvitationScreen({route}) {
                   />
                   {tripData && getTripInviteContainer()}
                 </View>
-                <View style={{width: '100%', height: 100}}>
+                <View
+                  style={{
+                    width: '100%',
+                    height: 100,
+                    marginBottom: Platform.OS === 'android' ? 18 : 0,
+                  }}>
                   <Button
                     isLoading={isLoading}
                     text={i18n.t('Continue')}

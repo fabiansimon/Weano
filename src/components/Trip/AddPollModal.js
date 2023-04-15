@@ -174,7 +174,7 @@ export default function AddPollModal({
         <ScrollView style={{marginBottom: 100}}>
           <View style={styles.container}>
             <View
-              style={{flexDirection: 'row', marginVertical: 20, width: '90%'}}>
+              style={{flexDirection: 'row', marginVertical: 20, width: '110%'}}>
               <TextInput
                 onChangeText={val => setTitle(val)}
                 style={styles.titleInput}

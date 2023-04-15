@@ -100,7 +100,7 @@ export default function MainScreen() {
   };
 
   const getTabBarHeight = () => {
-    const containerHeight = 200;
+    const containerHeight = 190;
     if (upcomingTrips.length > recentTrips.length) {
       return upcomingTrips.length * containerHeight;
     }
@@ -227,7 +227,7 @@ export default function MainScreen() {
     }
 
     return (
-      <View style={styles.tabStyle}>
+      <Pressable style={styles.tabStyle}>
         {upcomingTrips.map(trip => (
           <RecapCardMini
             key={trip.id}
@@ -239,9 +239,10 @@ export default function MainScreen() {
             data={trip}
           />
         ))}
-      </View>
+      </Pressable>
     );
   };
+
   const getRecentTab = () => {
     if (recentTrips.length <= 0) {
       return (
@@ -263,7 +264,7 @@ export default function MainScreen() {
     }
 
     return (
-      <View style={styles.tabStyle}>
+      <Pressable style={styles.tabStyle}>
         {recentTrips.map(trip => (
           <RecapCardMini
             key={trip.id}
@@ -275,7 +276,7 @@ export default function MainScreen() {
             data={trip}
           />
         ))}
-      </View>
+      </Pressable>
     );
   };
 
@@ -349,11 +350,10 @@ export default function MainScreen() {
               }}
               data={trips}
             />
-            <View
+            <Pressable
               style={{
                 marginHorizontal: -PADDING.l,
                 height: getTabBarHeight(),
-                minHeight: height * 0.6,
               }}>
               <TabView
                 navigationState={{index, routes}}
@@ -361,7 +361,7 @@ export default function MainScreen() {
                 renderTabBar={renderTabBar}
                 onIndexChange={setIndex}
               />
-            </View>
+            </Pressable>
           </View>
         </Animated.ScrollView>
         <CreateModal
@@ -374,6 +374,7 @@ export default function MainScreen() {
           onPress={id => navigation.navigate(ROUTES.tripScreen, {tripId: id})}
         />
         <ScannerModal
+          trips={trips}
           isVisible={scanVisible}
           onRequestClose={() => setScanVisible(false)}
         />

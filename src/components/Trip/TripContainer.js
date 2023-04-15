@@ -59,8 +59,11 @@ export default function TripContainer({
       onPress={e => onLongPress(e, trip.id)}
       disabled={disabled}>
       <Pressable
-        style={{marginRight: 14, maxWidth: width + 6}}
-        onPress={onPress}>
+        style={{
+          marginRight: 14,
+          maxWidth: width + 6,
+        }}
+        onPressOut={onPress}>
         <View
           style={[
             styles.outerTripContainer,

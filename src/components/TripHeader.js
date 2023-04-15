@@ -52,7 +52,7 @@ export default function TripHeader({
               <Body
                 style={{marginLeft: 2}}
                 type={1}
-                text={subtitle}
+                text={subtitle || ''}
                 color={COLORS.neutral[300]}
               />
             </View>

@@ -5,6 +5,7 @@ import {
   Dimensions,
   Pressable,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import Toast from 'react-native-toast-message';
 import React, {useState, useEffect} from 'react';
@@ -267,7 +268,7 @@ export default function StoryModal({
             }
             onLongPress={() => {
               setImageIndex(data.length - 1);
-              ReactNativeHapticFeedback.trigger('impactLight');
+              // ReactNativeHapticFeedback.trigger('impactLight');
             }}
             style={{
               flex: 1,
@@ -295,7 +296,7 @@ export default function StoryModal({
               {
                 overflow: 'hidden',
                 flex: 1,
-                backgroundColor: COLORS.neutral[900],
+                backgroundColor: COLORS.shades[100],
               },
               modalStyle,
             ]}>
@@ -342,7 +343,7 @@ const styles = StyleSheet.create({
     paddingBottom: 50,
     width: Dimensions.get('window').width,
     backgroundColor: COLORS.shades[100],
-    paddingTop: 16,
-    bottom: 0,
+    paddingTop: 14,
+    bottom: Platform.OS === 'android' ? -30 : 0,
   },
 });

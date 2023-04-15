@@ -9,6 +9,8 @@ import {
   Share,
   Image,
   Dimensions,
+  NativeModules,
+  Platform,
 } from 'react-native';
 import React, {useState, useEffect, useRef} from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -31,8 +33,12 @@ import UPLOAD_TRIP_IMAGE from '../mutations/uploadTripImage';
 import LoadingModal from './LoadingModal';
 import activeTripStore from '../stores/ActiveTripStore';
 import tripsStore from '../stores/TripsStore';
+import GradientOverlay from './GradientOverlay';
 // import activeTripStore from '../stores/ActiveTripStore';
+
 const AnimatedImage = Animated.createAnimatedComponent(Image);
+const {StatusBarManager} = NativeModules;
+console.log(NativeModules);
 export default function ImageModal({
   style,
   image,
@@ -225,7 +231,7 @@ export default function ImageModal({
             style={{marginRight: -2}}
           />
         </TouchableOpacity>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={handleShare}
           activeOpacity={0.8}
           style={[styles.roundButton, {marginLeft: 10}]}>
@@ -235,7 +241,7 @@ export default function ImageModal({
             color={Utils.addAlpha(COLORS.neutral[50], 0.9)}
             style={{marginRight: -2}}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       <Button
         text={i18n.t('Publish')}
@@ -330,12 +336,13 @@ export default function ImageModal({
           </View>
           {!isShared && (
             <>
+              <GradientOverlay />
               <KeyboardView
                 behavior="padding"
-                paddingBottom={-60}
+                paddingBottom={-50}
                 style={styles.textinputs}>
                 <View style={{flex: 1}} />
-                <View style={{marginLeft: PADDING.m, bottom: '17%'}}>
+                <View style={{marginLeft: PADDING.m, bottom: '15%'}}>
                   <TextInput
                     maxLength={20}
                     placeholder={i18n.t('Add a title')}
@@ -381,6 +388,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: COLORS.shades[0],
     letterSpacing: -0.6,
+    height: 50,
+    marginBottom: -25,
   },
   descriptionStyle: {
     marginTop: 6,
@@ -389,11 +398,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginRight: PADDING.l,
     letterSpacing: -0.6,
+    height: 50,
   },
   header: {
     paddingHorizontal: PADDING.m,
     position: 'absolute',
-    top: 60,
+    top: StatusBarManager.HEIGHT - (Platform.OS === 'android' ? 20 : 0),
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
@@ -401,7 +411,7 @@ const styles = StyleSheet.create({
   footer: {
     paddingHorizontal: PADDING.m,
     position: 'absolute',
-    bottom: 50,
+    bottom: Platform.OS === 'android' ? 30 : 50,
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
@@ -428,7 +438,6 @@ const styles = StyleSheet.create({
     height: '100%',
     width: '100%',
     position: 'absolute',
-    bottom: '16%',
   },
   doneContainer: {
     width: '100%',

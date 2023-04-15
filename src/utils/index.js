@@ -3,7 +3,7 @@ import moment from 'moment';
 import RNFS from 'react-native-fs';
 import FileViewer from 'react-native-file-viewer';
 
-import {Alert, Linking} from 'react-native';
+import {Alert, Linking, PermissionsAndroid, Platform} from 'react-native';
 
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 import Toast from 'react-native-toast-message';
@@ -69,7 +69,9 @@ export default class Utils {
    */
   static checkIsFuture(startDate) {
     const today = Date.now();
-    if (today > startDate * 1000) return false;
+    if (today > startDate * 1000) {
+      return false;
+    }
     return true;
   }
 
@@ -177,7 +179,17 @@ export default class Utils {
    * Convert MonthInt to a Month String
    * @param {image} image - image to download
    */
-  static downloadImage(image, showToast = true) {
+  static async downloadImage(image, showToast = true) {
+    const permission =
+      Platform.Version >= 33
+        ? PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES
+        : PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE;
+
+    const hasPermission = await PermissionsAndroid.check(permission);
+    if (!hasPermission) {
+      return;
+    }
+
     CameraRoll.save(image, {type: 'photo', album: 'Weano'});
     if (showToast) {
       setTimeout(() => {

@@ -22,15 +22,19 @@ import REMOVE_USER_FROM_TRIP from '../../mutations/removeUserFromTrip';
 import Utils from '../../utils';
 import ContactDetailModal from '../../components/ContactDetailModal';
 import SwipeView from '../../components/SwipeView';
+import userStore from '../../stores/UserStore';
 
 export default function InviteeScreen() {
   // MUTATIONS
   const [removeUser] = useMutation(REMOVE_USER_FROM_TRIP);
 
   // STORES
-  const {activeMembers, hostId, id} = activeTripStore(
-    state => state.activeTrip,
-  );
+  const {
+    activeMembers,
+    hostId,
+    id: tripId,
+  } = activeTripStore(state => state.activeTrip);
+  const {id: userId} = userStore(state => state.user);
   const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
 
   // STATE & MISC
@@ -42,12 +46,12 @@ export default function InviteeScreen() {
 
   const handleShare = () => {
     Share.share({
-      message: `Hey! You've been invited to join a trip! Click the link below to join! ${META_DATA.baseUrl}/redirect/invitation/${id}`,
+      message: `Hey! You've been invited to join a trip! Click the link below to join! ${META_DATA.baseUrl}/redirect/invitation/${tripId}`,
     });
   };
 
   const copyLink = () => {
-    Clipboard.setString(`${META_DATA.baseUrl}/redirect/invitation/${id}`);
+    Clipboard.setString(`${META_DATA.baseUrl}/redirect/invitation/${tripId}`);
     Toast.show({
       type: 'success',
       text1: i18n.t('Copied!'),
@@ -63,7 +67,7 @@ export default function InviteeScreen() {
     const param = invites.toString().replace(',', '&');
 
     await httpService
-      .sendInvitations(param, id)
+      .sendInvitations(param, tripId)
       .then(() => {
         Toast.show({
           type: 'success',
@@ -90,7 +94,7 @@ export default function InviteeScreen() {
           variables: {
             data: {
               id: removeUserId,
-              tripId: id,
+              tripId,
             },
           },
         })
@@ -118,10 +122,10 @@ export default function InviteeScreen() {
   };
 
   const getTile = ({item}) => {
-    const {firstName, lastName, email, id: userId} = item;
+    const {firstName, lastName, email, id} = item;
     return (
       <SwipeView
-        enabled={isHost}
+        enabled={isHost && userId !== id}
         string={i18n.t('Remove')}
         onDelete={() => handleDelete(userId)}>
         <Pressable

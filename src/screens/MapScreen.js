@@ -13,6 +13,7 @@ import Utils from '../utils';
 import ROUTES from '../constants/Routes';
 import SearchModal from '../components/Search/SearchModal';
 import TripContainer from '../components/Trip/TripContainer';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 const {StatusBarManager} = NativeModules;
 
@@ -27,7 +28,7 @@ export default function MapScreen({route}) {
 
   // STATE & MISC
   const [showSearch, setShowSearch] = useState(false);
-  const snapPoints = useMemo(() => ['22%', '90%'], []);
+  const snapPoints = useMemo(() => ['22%', '92%'], []);
   const sheetRef = useRef(null);
 
   const mapCamera = useRef();
@@ -67,7 +68,12 @@ export default function MapScreen({route}) {
     }
 
     return (
-      <MapboxGL.MarkerView coordinate={destinations[0].latlon}>
+      <MapboxGL.MarkerView
+        allowOverlap
+        key={trip.id}
+        surfaceView
+        requestDisallowInterceptTouchEvent
+        coordinate={destinations[0].latlon}>
         <TripContainer
           onPress={() =>
             navigation.navigate(ROUTES.tripScreen, {tripId: trip.id})
@@ -81,42 +87,44 @@ export default function MapScreen({route}) {
   };
 
   return (
-    <View style={styles.container}>
-      <MapboxGL.MapView
-        compassEnabled={false}
-        scaleBarEnabled={false}
-        rotateEnabled={false}
-        style={styles.map}
-        styleURL="mapbox://styles/fabiansimon/clezrm6w7002g01p9eu1n0aos">
-        <MapboxGL.Camera animationMode="moveTo" animated ref={mapCamera} />
-        {trips && trips.map(trip => renderTripPins(trip))}
-      </MapboxGL.MapView>
-      <View style={styles.header}>
-        <BackButton style={styles.backButton} />
-        <Pressable
-          style={styles.searchButton}
-          onPress={() => setShowSearch(true)}>
-          <Icon color={COLORS.shades[100]} name="search1" size={20} />
-        </Pressable>
+    <GestureHandlerRootView style={{flex: 1}}>
+      <View style={styles.container}>
+        <MapboxGL.MapView
+          compassEnabled={false}
+          scaleBarEnabled={false}
+          rotateEnabled={false}
+          style={styles.map}
+          styleURL="mapbox://styles/fabiansimon/clezrm6w7002g01p9eu1n0aos">
+          <MapboxGL.Camera animationMode="moveTo" animated ref={mapCamera} />
+          {trips && trips.map(trip => renderTripPins(trip))}
+        </MapboxGL.MapView>
+        <View style={styles.header}>
+          <BackButton style={styles.backButton} />
+          <Pressable
+            style={styles.searchButton}
+            onPress={() => setShowSearch(true)}>
+            <Icon color={COLORS.shades[100]} name="search1" size={20} />
+          </Pressable>
+        </View>
+        <BottomSheet
+          handleIndicatorStyle={{opacity: 0}}
+          backgroundStyle={{
+            backgroundColor: 'transparent',
+            borderRadius: 20,
+          }}
+          ref={sheetRef}
+          index={0}
+          snapPoints={snapPoints}
+          onClose={() => {}}>
+          <CountriesVisited data={trips} onPress={id => handleSearch(id)} />
+        </BottomSheet>
+        <SearchModal
+          isVisible={showSearch}
+          onRequestClose={() => setShowSearch(false)}
+          onPress={id => handleSearch(id)}
+        />
       </View>
-      <BottomSheet
-        handleIndicatorStyle={{opacity: 0}}
-        backgroundStyle={{
-          backgroundColor: 'transparent',
-          borderRadius: 20,
-        }}
-        ref={sheetRef}
-        index={0}
-        snapPoints={snapPoints}
-        onClose={() => {}}>
-        <CountriesVisited data={trips} onPress={id => handleSearch(id)} />
-      </BottomSheet>
-      <SearchModal
-        isVisible={showSearch}
-        onRequestClose={() => setShowSearch(false)}
-        onPress={id => handleSearch(id)}
-      />
-    </View>
+    </GestureHandlerRootView>
   );
 }
 

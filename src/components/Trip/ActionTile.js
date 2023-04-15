@@ -1,4 +1,11 @@
-import {Animated, Pressable, ScrollView, StyleSheet, View} from 'react-native';
+import {
+  Animated,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import React, {useState, useEffect, useRef} from 'react';
 import EntIcon from 'react-native-vector-icons/Entypo';
 import Icon from 'react-native-vector-icons/Fontisto';
@@ -25,13 +32,15 @@ export default function ActionTile({style, trip}) {
   const isActive = trip?.type === 'active';
   const isUpcoming = trip?.type === 'upcoming' || trip?.type === 'soon';
   const isRecap = trip?.type === 'recap';
-  const height = isActive
+  let height = isActive
     ? 150
     : isUpcoming && noTasks
     ? 130
     : isUpcoming && !noTasks
     ? 180
     : 105;
+
+  height = Platform.OS === 'android' ? height + 5 : height;
 
   const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 

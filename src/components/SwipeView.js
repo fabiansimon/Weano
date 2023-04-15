@@ -4,6 +4,7 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 import COLORS from '../constants/Theme';
 import i18n from '../utils/i18n';
 import Body from './typography/Body';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 const WIDTH = 100;
 
@@ -42,15 +43,17 @@ export default function SwipeView({
   };
 
   return (
-    <Swipeable
-      ref={swipeRef}
-      enabled={enabled}
-      friction={2}
-      enableTrackpadTwoFingerGesture
-      rightThreshold={20}
-      renderRightActions={renderRightAction}>
-      {children}
-    </Swipeable>
+    <GestureHandlerRootView style={{flex: 1}}>
+      <Swipeable
+        ref={swipeRef}
+        enabled={enabled}
+        friction={2}
+        enableTrackpadTwoFingerGesture
+        rightThreshold={20}
+        renderRightActions={renderRightAction}>
+        {children}
+      </Swipeable>
+    </GestureHandlerRootView>
   );
 }
 

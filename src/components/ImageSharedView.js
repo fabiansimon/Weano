@@ -1,4 +1,10 @@
-import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {
+  Image,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import FIcon from 'react-native-vector-icons/FontAwesome';
 import React from 'react';
@@ -110,6 +116,7 @@ const styles = StyleSheet.create({
   memoryContainer: {
     alignSelf: 'center',
     height: 30,
+    paddingTop: Platform.OS === 'android' ? 4 : 0,
     marginHorizontal: 6,
     borderRadius: 2,
     transform: [{skewX: '-8deg'}],

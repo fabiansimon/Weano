@@ -1,6 +1,6 @@
 import {View, StyleSheet, FlatList, Dimensions} from 'react-native';
 import React from 'react';
-import COLORS, {PADDING} from '../../constants/Theme';
+import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import Headline from '../typography/Headline';
 import i18n from '../../utils/i18n';
 import userStore from '../../stores/UserStore';
@@ -107,8 +107,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.neutral[50],
-    borderTopRightRadius: 20,
-    borderTopLeftRadius: 20,
+    borderTopRightRadius: RADIUS.s,
+    borderTopLeftRadius: RADIUS.s,
     shadowColor: COLORS.shades[100],
     shadowOpacity: 0.06,
     shadowRadius: 10,

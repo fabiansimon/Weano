@@ -60,6 +60,8 @@ import CalendarModal from '../../components/CalendarModal';
 import TripSlider from '../../components/Trip/TripSlider';
 import Animated from 'react-native-reanimated';
 import DestinationScreen from './DestinationsScreen';
+import REMOVE_USER_FROM_TRIP from '../../mutations/removeUserFromTrip';
+import userStore from '../../stores/UserStore';
 
 const {StatusBarManager} = NativeModules;
 
@@ -77,6 +79,7 @@ export default function TripScreen({route}) {
     });
 
   // MUTATIONS
+  const [removeUser] = useMutation(REMOVE_USER_FROM_TRIP);
   const [updateTrip, {error}] = useMutation(UPDATE_TRIP);
   const [deleteTrip] = useMutation(DELETE_TRIP_BY_ID);
 
@@ -85,6 +88,7 @@ export default function TripScreen({route}) {
   const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
   const setActiveTrip = activeTripStore(state => state.setActiveTrip);
   const removeTrip = tripsStore(state => state.removeTrip);
+  const {id} = userStore(state => state.user);
 
   // STATE & MISC
   const [viewIndex, setViewIndex] = useState(0);
@@ -149,6 +153,9 @@ export default function TripScreen({route}) {
       case 'delete':
         handleDeleteTrip();
         break;
+      case 'exit':
+        exitTrip();
+        break;
       case 'share':
         setShareVisible(true);
         break;
@@ -156,6 +163,36 @@ export default function TripScreen({route}) {
       default:
         break;
     }
+  };
+
+  const exitTrip = () => {
+    Utils.showConfirmationAlert(
+      i18n.t('Leave the trip'),
+      i18n.t('Are you sure you want to leave?'),
+      i18n.t('Yes'),
+      async () => {
+        await removeUser({
+          variables: {
+            data: {
+              id: id,
+              tripId: tripId,
+            },
+          },
+        })
+          .then(() => {
+            removeTrip(data.id);
+            navigation.navigate(ROUTES.mainScreen);
+          })
+          .catch(e => {
+            Toast.show({
+              type: 'error',
+              text1: i18n.t('Whoops!'),
+              text2: e.message,
+            });
+            console.log(`ERROR: ${e.message}`);
+          });
+      },
+    );
   };
 
   const onRefresh = () => {
@@ -465,6 +502,72 @@ export default function TripScreen({route}) {
     return tasks.filter(task => task.isDone).length === tasks.length;
   }, [data]);
 
+  const getMenuActions = () => {
+    const edit = {
+      id: 'edit',
+      title: i18n.t('Edit Trip'),
+      subactions: [
+        {
+          id: 'editTitle',
+          title: i18n.t('Edit title'),
+          attributes: {
+            disabled: !isHost,
+          },
+        },
+        {
+          id: 'editDescription',
+          title: i18n.t('Edit description'),
+          attributes: {
+            disabled: !isHost,
+          },
+        },
+        {
+          id: 'editThumbnail',
+          title: i18n.t('Edit thumbnail'),
+          attributes: {
+            disabled: !isHost,
+          },
+        },
+      ],
+    };
+
+    const share = {
+      id: 'share',
+      title: i18n.t('Share Trip'),
+      image: Platform.select({
+        ios: 'square.and.arrow.up',
+        android: 'ic_menu_share',
+      }),
+    };
+
+    const deleteTrip = {
+      id: 'delete',
+      title: i18n.t('Delete Trip'),
+      attributes: {
+        destructive: true,
+        disabled: !isHost,
+      },
+      image: Platform.select({
+        ios: 'trash',
+        android: 'ic_menu_delete',
+      }),
+    };
+
+    const exitTrip = {
+      id: 'exit',
+      title: i18n.t('Leave trip'),
+      attributes: {
+        destructive: true,
+      },
+    };
+
+    if (isHost) {
+      return [edit, share, deleteTrip, exitTrip];
+    }
+
+    return [edit, share, exitTrip];
+  };
+
   const statusData = [
     {
       name: i18n.t('Location'),
@@ -614,55 +717,7 @@ export default function TripScreen({route}) {
             <MenuView
               style={styles.addIcon}
               onPressAction={({nativeEvent}) => handleMenuOption(nativeEvent)}
-              actions={[
-                {
-                  id: 'edit',
-                  title: i18n.t('Edit Trip'),
-                  subactions: [
-                    {
-                      id: 'editTitle',
-                      title: i18n.t('Edit title'),
-                      attributes: {
-                        disabled: !isHost,
-                      },
-                    },
-                    {
-                      id: 'editDescription',
-                      title: i18n.t('Edit description'),
-                      attributes: {
-                        disabled: !isHost,
-                      },
-                    },
-                    {
-                      id: 'editThumbnail',
-                      title: i18n.t('Edit thumbnail'),
-                      attributes: {
-                        disabled: !isHost,
-                      },
-                    },
-                  ],
-                },
-                {
-                  id: 'share',
-                  title: i18n.t('Share Trip'),
-                  image: Platform.select({
-                    ios: 'square.and.arrow.up',
-                    android: 'ic_menu_share',
-                  }),
-                },
-                {
-                  id: 'delete',
-                  title: i18n.t('Delete Trip'),
-                  attributes: {
-                    destructive: true,
-                    disabled: !isHost,
-                  },
-                  image: Platform.select({
-                    ios: 'trash',
-                    android: 'ic_menu_delete',
-                  }),
-                },
-              ]}>
+              actions={getMenuActions()}>
               <FeatherIcon
                 name="more-vertical"
                 size={20}
@@ -740,7 +795,10 @@ export default function TripScreen({route}) {
             <Headline
               type={4}
               text={getDayDifference()}
-              style={{fontWeight: '600', fontSize: 14}}
+              style={{
+                fontWeight: Platform.OS === 'android' ? '700' : '600',
+                fontSize: 14,
+              }}
               color={COLORS.shades[0]}
             />
           </Animatable.View>
@@ -826,7 +884,7 @@ export default function TripScreen({route}) {
       {data?.thumbnailUri && (
         <FastImage
           style={styles.image}
-          resizeMode="center"
+          resizeMode="cover"
           source={{uri: data.thumbnailUri}}
         />
       )}

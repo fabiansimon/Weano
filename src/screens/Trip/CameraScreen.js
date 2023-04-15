@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import Icon from 'react-native-vector-icons/AntDesign';
 import IonIcons from 'react-native-vector-icons/Ionicons';
 import MatIcon from 'react-native-vector-icons/MaterialIcons';
@@ -16,7 +16,10 @@ import * as Animatable from 'react-native-animatable';
 import moment from 'moment';
 import {Camera, CameraType, FlashMode} from 'expo-camera';
 import {manipulateAsync, FlipType} from 'expo-image-manipulator';
-import {PinchGestureHandler} from 'react-native-gesture-handler';
+import {
+  GestureHandlerRootView,
+  PinchGestureHandler,
+} from 'react-native-gesture-handler';
 import Video from 'react-native-video';
 // import {BlurView} from '@react-native-community/blur';
 import {useQuery} from '@apollo/client';
@@ -33,8 +36,12 @@ import CHECK_FREE_IMAGES from '../../queries/checkFreeImages';
 import AccentBubble from '../../components/Trip/AccentBubble';
 import PremiumController from '../../PremiumController';
 import userStore from '../../stores/UserStore';
+import {LinearGradient} from 'expo-linear-gradient';
+import GradientOverlay from '../../components/GradientOverlay';
 
-let camera;
+const AnimatableTouchableOpacity =
+  Animatable.createAnimatableComponent(TouchableOpacity);
+
 export default function CameraScreen({route}) {
   // PARAMS
   const {tripId, onNavBack, preselectedImage} = route.params;
@@ -60,11 +67,13 @@ export default function CameraScreen({route}) {
   const [isRecording, setIsRecording] = useState(false);
   const [timer] = useState(120);
   const [freeImages, setFreeImages] = useState(0);
+  const cameraRef = useRef();
 
   const navigation = useNavigation();
 
   useEffect(() => {
     if (data) {
+      return;
       const {userFreeImages} = data.getImagesFromTrip;
       if (userFreeImages && userFreeImages > 0) {
         return setFreeImages(userFreeImages);
@@ -99,9 +108,6 @@ export default function CameraScreen({route}) {
     }
   }, [data]);
 
-  const AnimatableTouchableOpacity =
-    Animatable.createAnimatableComponent(TouchableOpacity);
-
   useEffect(() => {
     if (preselectedImage) {
       setCapturedImage(preselectedImage);
@@ -135,9 +141,9 @@ export default function CameraScreen({route}) {
       return;
     }
 
-    if (camera) {
-      camera.pausePreview();
-      const image = await camera.takePictureAsync({quality: 0.5});
+    if (cameraRef.current) {
+      // cameraRef.current.pausePreview();
+      const image = await cameraRef.current?.takePictureAsync({quality: 0.5});
       let flippedImage;
 
       if (cameraType === CameraType.front) {
@@ -148,10 +154,11 @@ export default function CameraScreen({route}) {
         );
       }
 
+      console.log(image);
       setCapturedImage(cameraType === CameraType.front ? flippedImage : image);
-      setTimeout(() => {
-        camera.resumePreview();
-      }, 500);
+      // setTimeout(() => {
+      //   cameraRef.current.resumePreview();
+      // }, 500);
     }
   };
 
@@ -295,7 +302,7 @@ export default function CameraScreen({route}) {
   );
 
   const getFooterContainer = () => (
-    <View>
+    <View style={{marginBottom: -20}}>
       {!isRecording && (
         <View style={styles.countdown}>
           <Headline
@@ -371,7 +378,7 @@ export default function CameraScreen({route}) {
     </View>
   );
 
-  const VideoPreview = () => (
+  const getVideoPreview = () => (
     <TouchableOpacity
       onPress={() => setCapturedVideo(null)}
       style={{
@@ -395,11 +402,11 @@ export default function CameraScreen({route}) {
   );
 
   if (capturedVideo) {
-    return <VideoPreview />;
+    return getVideoPreview();
   }
 
   return (
-    <>
+    <GestureHandlerRootView style={{flex: 1}}>
       <TouchableOpacity
         activeOpacity={1}
         style={{flex: 1}}
@@ -409,24 +416,26 @@ export default function CameraScreen({route}) {
             <>
               <Camera
                 style={{flex: 1}}
+                ratio="16:9"
                 flashMode={flashMode}
+                onCameraReady={() => console.log('Ready')}
                 zoom={zoom}
                 type={cameraType}
-                ref={r => {
-                  camera = r;
-                }}
+                ref={cameraRef}
               />
               <SafeAreaView style={styles.overlay} edges={['top']}>
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
                   {getRoundedBackButton()}
                   {getCaptureContainer()}
                 </View>
+                <GradientOverlay edges={['bottom']} />
                 {getFooterContainer()}
               </SafeAreaView>
             </>
           </View>
         </PinchGestureHandler>
       </TouchableOpacity>
+
       <ImageModal
         isVisible={capturedImage !== null}
         onRequestClose={() => setCapturedImage(null)}
@@ -442,7 +451,7 @@ export default function CameraScreen({route}) {
         tripId={tripId}
         isPreselected={preselectedImage}
       />
-    </>
+    </GestureHandlerRootView>
   );
 }
 

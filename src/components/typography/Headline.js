@@ -12,10 +12,25 @@ export default function Headline({
   ...otherProps
 }) {
   const fontSize = type === 4 ? 18 : type === 3 ? 20 : type === 2 ? 24 : 30;
-  const lineHeight =
-    !isDense && (type === 4 ? 22 : type === 3 ? 27 : type === 2 ? 33 : 41);
+  const lineHeight = !isDense
+    ? type === 4
+      ? 22
+      : type === 3
+      ? 27
+      : type === 2
+      ? 33
+      : 41
+    : 20;
   const fontWeight =
-    type === 4 ? '400' : type === 3 ? '500' : type === 2 ? Platform.OS === 'android' ? '700' : '600' : '700';
+    type === 4
+      ? '400'
+      : type === 3
+      ? '500'
+      : type === 2
+      ? Platform.OS === 'android'
+        ? '700'
+        : '600'
+      : '700';
   const fontFamily = 'WorkSans-Regular';
   const textColor = color || COLORS.shades[100];
 

@@ -157,44 +157,40 @@ export default function DestinationsSheet({
           animatedStyle,
         ]}
       />
-      <Pressable
-        // onPress={onPress}
-        style={{flex: 1}}>
-        <View style={styles.container}>
-          <View style={styles.handler} />
-          <PagerView
-            style={{flex: 1}}
-            ref={node => {
-              // eslint-disable-next-line no-param-reassign
-              navigateRef.current = node;
-              pageRef.current = node;
-            }}
-            onPageSelected={e => setScrollIndex(e.nativeEvent.position)}
-            scrollEnabled={false}>
-            <View>
-              <Headline
-                type={4}
-                color={COLORS.neutral[900]}
-                text={i18n.t('Trip start')}
-                style={{marginBottom: 10, marginTop: 18, marginLeft: PADDING.l}}
-              />
-              <DraggableFlatList
-                data={destinations}
-                scrollEnabled={false}
-                onDragEnd={({data}) => onDragEnded(data)}
-                keyExtractor={item => item.key}
-                renderItem={item => getDestinationTile(item)}
-              />
-              {!isRecent && destinations?.length < MAX_LENGTH && getAddTile()}
-            </View>
-            <AffiliateInfoView
-              amountPeople={amountPeople}
-              info={info}
-              destinations={destinations}
-              dateRange={dateRange}
+
+      <Pressable style={styles.container}>
+        <Pressable style={styles.handler} />
+        <PagerView
+          style={{flex: 1}}
+          ref={node => {
+            navigateRef.current = node;
+            pageRef.current = node;
+          }}
+          onPageSelected={e => setScrollIndex(e.nativeEvent.position)}
+          scrollEnabled={false}>
+          <View>
+            <Headline
+              type={4}
+              color={COLORS.neutral[900]}
+              text={i18n.t('Trip start')}
+              style={{marginBottom: 10, marginTop: 18, marginLeft: PADDING.l}}
             />
-          </PagerView>
-        </View>
+            <DraggableFlatList
+              data={destinations}
+              scrollEnabled={false}
+              onDragEnd={({data}) => onDragEnded(data)}
+              keyExtractor={item => item.key}
+              renderItem={item => getDestinationTile(item)}
+            />
+            {!isRecent && destinations?.length < MAX_LENGTH && getAddTile()}
+          </View>
+          <AffiliateInfoView
+            amountPeople={amountPeople}
+            info={info}
+            destinations={destinations}
+            dateRange={dateRange}
+          />
+        </PagerView>
       </Pressable>
     </>
   );

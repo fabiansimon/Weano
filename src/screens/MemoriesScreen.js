@@ -203,11 +203,10 @@ export default function MemoriesScreen({route}) {
       setDownloadIndex(0);
       for (let i = 0; i < images.length; i += 1) {
         const {uri} = images[i];
-        // eslint-disable-next-line no-await-in-loop
+
         await RNFetchBlob.config({
           fileCache: true,
           appendExt: 'png',
-          // eslint-disable-next-line no-loop-func
         })
           .fetch('GET', uri)
           .then(res => {
@@ -346,7 +345,13 @@ export default function MemoriesScreen({route}) {
           </View>
         </View>
         {images && images.length > 0 && (
-          <View style={{marginTop: 10, marginBottom: Platform.OS === 'android' ? 20 : 0}}>{getDateSelection()}</View>
+          <View
+            style={{
+              marginTop: 10,
+              marginBottom: Platform.OS === 'android' ? 20 : 0,
+            }}>
+            {getDateSelection()}
+          </View>
         )}
       </SafeAreaView>
     );
@@ -413,16 +418,6 @@ export default function MemoriesScreen({route}) {
         onPressAction={({nativeEvent}) => handleMenuOption(nativeEvent)}
         actions={[
           {
-            id: 'take',
-            title: i18n.t('Take a picture'),
-            attributes: {
-              disabled: isDisabled,
-            },
-            image: Platform.select({
-              ios: 'camera',
-            }),
-          },
-          {
             id: 'select',
             title: i18n.t('Select from Cameraroll'),
             attributes: {
@@ -430,6 +425,16 @@ export default function MemoriesScreen({route}) {
             },
             image: Platform.select({
               ios: 'photo',
+            }),
+          },
+          {
+            id: 'take',
+            title: i18n.t('Take a picture'),
+            attributes: {
+              disabled: isDisabled,
+            },
+            image: Platform.select({
+              ios: 'camera',
             }),
           },
         ]}>
@@ -442,6 +447,7 @@ export default function MemoriesScreen({route}) {
             ]}>
             <AccentBubble
               disabled
+              text={userFreeImages}
               style={{position: 'absolute', right: -2, top: -2}}
             />
             <EntIcon name="camera" size={22} color={COLORS.shades[0]} />
