@@ -73,7 +73,6 @@ export default function CameraScreen({route}) {
 
   useEffect(() => {
     if (data) {
-      return;
       const {userFreeImages} = data.getImagesFromTrip;
       if (userFreeImages && userFreeImages > 0) {
         return setFreeImages(userFreeImages);
