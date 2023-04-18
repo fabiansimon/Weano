@@ -27,7 +27,6 @@ export default function KeyboardView({
     );
   }
 
-  console.log('caleld');
   return (
     <TouchableWithoutFeedback
       style={[style, {flex: 1}]}

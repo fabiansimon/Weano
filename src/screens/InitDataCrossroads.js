@@ -61,7 +61,11 @@ export default function InitDataCrossroads() {
   });
 
   const registerPushNotificationToken = async () => {
-    const {status: currentStatus} = Notifications.getPermissionsAsync();
+    if (Platform.OS === 'android') {
+      return;
+    }
+
+    const {status: currentStatus} = await Notifications.getPermissionsAsync();
     let finalStatus = currentStatus;
 
     if (currentStatus !== 'granted') {
@@ -77,7 +81,9 @@ export default function InitDataCrossroads() {
       });
     }
 
+    console.log('yes');
     const token = (await Notifications.getExpoPushTokenAsync()).data;
+    console.log(token);
 
     if (!token) {
       return;
@@ -143,7 +149,7 @@ export default function InitDataCrossroads() {
 
   const checkInitStatus = async () => {
     if (authToken) {
-      registerPushNotificationToken();
+      await registerPushNotificationToken();
       updateUserData({authToken: token});
       await getInitData();
       return;

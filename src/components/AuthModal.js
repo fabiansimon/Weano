@@ -202,7 +202,6 @@ export default function AuthModal({
       setCode('');
       return;
     }
-    console.log('KLJSfÖKL');
 
     await loginUser({
       variables: {
@@ -235,7 +234,7 @@ export default function AuthModal({
             });
           }, 1000);
         }
-        console.log('ok');
+
         navigation.navigate(ROUTES.initDataCrossroads);
         onRequestClose();
       });

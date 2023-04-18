@@ -17,7 +17,7 @@ import FeatherIcon from 'react-native-vector-icons/Feather';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import {useNavigation} from '@react-navigation/native';
 import {ScrollView} from 'react-native-gesture-handler';
-import {useLazyQuery, useMutation} from '@apollo/client';
+import {rewriteURIForGET, useLazyQuery, useMutation} from '@apollo/client';
 import ActionSheet from 'react-native-actionsheet';
 import FastImage from 'react-native-fast-image';
 import ImageCropPicker from 'react-native-image-crop-picker';
@@ -502,6 +502,16 @@ export default function TripScreen({route}) {
     return tasks.filter(task => task.isDone).length === tasks.length;
   }, [data]);
 
+  const checkPackingListStatus = useCallback(() => {
+    if (!data) {
+      return false;
+    }
+
+    const {packingItems} = data;
+
+    return packingItems.filter(p => p.isPacked).length === packingItems.length;
+  }, [data]);
+
   const getMenuActions = () => {
     const edit = {
       id: 'edit',
@@ -574,6 +584,11 @@ export default function TripScreen({route}) {
       name: i18n.t('Date'),
       isDone: data?.dateRange?.startDate,
       onPress: () => (isHost ? setCalendarVisible(true) : null),
+    },
+    {
+      name: i18n.t('Packing'),
+      isDone: checkPackingListStatus(),
+      route: ROUTES.packlistScreen,
     },
     {
       name: i18n.t('Tasks'),
@@ -801,6 +816,7 @@ export default function TripScreen({route}) {
         </View>
         <ScrollView
           horizontal
+          contentContainerStyle={{paddingRight: 30}}
           style={{
             paddingHorizontal: PADDING.l,
             paddingTop: 14,
