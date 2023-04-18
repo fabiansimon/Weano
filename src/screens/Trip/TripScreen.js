@@ -533,11 +533,7 @@ export default function TripScreen({route}) {
 
     const share = {
       id: 'share',
-      title: i18n.t('Share Trip'),
-      image: Platform.select({
-        ios: 'square.and.arrow.up',
-        android: 'ic_menu_share',
-      }),
+      title: i18n.t('Invite friends'),
     };
 
     const deleteTrip = {
@@ -555,14 +551,14 @@ export default function TripScreen({route}) {
 
     const exitTrip = {
       id: 'exit',
-      title: i18n.t('Leave trip'),
+      title: i18n.t('Leave Trip'),
       attributes: {
         destructive: true,
       },
     };
 
     if (isHost) {
-      return [edit, share, deleteTrip, exitTrip];
+      return [edit, share, exitTrip, deleteTrip];
     }
 
     return [edit, share, exitTrip];
@@ -572,7 +568,7 @@ export default function TripScreen({route}) {
     {
       name: i18n.t('Location'),
       isDone: data?.destinations[0],
-      onPress: () => setViewIndex(prev => !prev),
+      onPress: () => setViewIndex(prev => (prev === 1 ? 0 : 1)),
     },
     {
       name: i18n.t('Date'),
@@ -741,7 +737,7 @@ export default function TripScreen({route}) {
               text={getLocationString()}
               fullWidth={false}
               icon="location-pin"
-              onPress={() => setViewIndex(prev => !prev)}
+              onPress={() => setViewIndex(prev => (prev === 1 ? 0 : 1))}
               backgroundColor={COLORS.shades[0]}
               textColor={COLORS.shades[100]}
               style={
@@ -906,7 +902,8 @@ export default function TripScreen({route}) {
             threshold={1.2}
             scrollY={scrollY}>
             <TripHeader
-              title={!inactive ? data?.title : i18n.t('Loading...')}
+              isLoading={inactive}
+              title={data?.title}
               id={data?.id}
               isActive={activeTrip.type === 'active'}
               subtitle={`${data?.destinations[0]?.placeName.split(',')[0]}`}
@@ -979,7 +976,7 @@ export default function TripScreen({route}) {
             ref={addImageRef}
             title={i18n.t('Choose an option')}
             options={[
-              'Cancel',
+              i18n.t('Cancel'),
               i18n.t('Choose from Camera Roll'),
               i18n.t('Take a picture'),
               i18n.t('Reset image'),
@@ -1031,12 +1028,13 @@ export default function TripScreen({route}) {
         {!inactive ? (
           <DestinationScreen navigatePage={() => setViewIndex(0)} />
         ) : (
+          // <View style={{flex: 1, backgroundColor: 'red'}} />
           <View />
         )}
       </PagerView>
       <TripSlider
         index={viewIndex}
-        onPress={() => setViewIndex(prev => !prev)}
+        onPress={() => setViewIndex(prev => (prev === 1 ? 0 : 1))}
       />
     </>
   );

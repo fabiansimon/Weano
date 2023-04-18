@@ -13,34 +13,31 @@ export default function KeyboardView({
   paddingBottom = 20,
   behavior = 'height',
 }) {
-  if (Platform.OS === 'android') {
-    return children;
-  }
-
   if (ignoreTouch) {
     return (
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? behavior : null}
+        behavior={behavior}
         style={[style, {flex: 1, backgroundColor: 'transparent'}]}
         keyboardVerticalOffset={Platform.select({
           ios: paddingBottom,
-          android: 500,
+          android: paddingBottom,
         })}>
         {children}
       </KeyboardAvoidingView>
     );
   }
 
+  console.log('caleld');
   return (
     <TouchableWithoutFeedback
       style={[style, {flex: 1}]}
       onPress={() => Keyboard.dismiss()}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? behavior : 'none'}
+        behavior={behavior}
         style={[{flex: 1, backgroundColor: 'transparent'}]}
         keyboardVerticalOffset={Platform.select({
           ios: paddingBottom,
-          android: 500,
+          android: paddingBottom,
         })}>
         {children}
       </KeyboardAvoidingView>

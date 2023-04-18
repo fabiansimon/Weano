@@ -7,7 +7,6 @@ import {
   TextInput,
   Pressable,
   ActivityIndicator,
-  Keyboard,
 } from 'react-native';
 import React, {useEffect, useRef, useState, useCallback} from 'react';
 import Toast from 'react-native-toast-message';
@@ -257,10 +256,10 @@ export default function InputModal({
         <Pressable
           onPress={() => {
             setPackingAmount(prev => prev + 1);
-            ReactNativeHapticFeedback.trigger('impactLight', {
-              enableVibrateFallback: true,
-              ignoreAndroidSystemSettings: true,
-            });
+            // ReactNativeHapticFeedback.trigger('impactLight', {
+            //   enableVibrateFallback: true,
+            //   ignoreAndroidSystemSettings: true,
+            // });
           }}
           style={styles.counterContainer}>
           <Icon name="plus" size={16} color={COLORS.neutral[700]} />

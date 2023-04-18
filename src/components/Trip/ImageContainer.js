@@ -2,11 +2,12 @@ import {
   Dimensions,
   Image,
   Platform,
+  Pressable,
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
 import Toast from 'react-native-toast-message';
-import React from 'react';
+import React, {useRef} from 'react';
 import FastImage from 'react-native-fast-image';
 import Animated from 'react-native-reanimated';
 import {MenuView} from '@react-native-menu/menu';
@@ -18,6 +19,7 @@ import Utils from '../../utils';
 import DELETE_IMAGE from '../../mutations/deleteImage';
 import userStore from '../../stores/UserStore';
 import Avatar from '../Avatar';
+import ActionSheet from 'react-native-actionsheet';
 
 export default function ImageContainer({
   style,
@@ -32,14 +34,18 @@ export default function ImageContainer({
 
   // STORES
   const {id} = userStore(state => state.user);
+
+  // STATES && MISC
+  const sheetRef = useRef();
+
   if (!image) {
     return;
   }
 
   const {uri, author} = image;
 
-  const handleOption = ({event}) => {
-    if (event === 'download') {
+  const handleOption = index => {
+    if (index === 1) {
       RNFetchBlob.config({
         fileCache: true,
         appendExt: 'png',
@@ -57,7 +63,7 @@ export default function ImageContainer({
         });
     }
 
-    if (event === 'delete') {
+    if (index === 2) {
       Utils.showConfirmationAlert(
         i18n.t('Remove Image'),
         i18n.t('Are you sure you want to delete and remove your image?'),
@@ -94,49 +100,13 @@ export default function ImageContainer({
     }
   };
 
-  const actions =
-    id === image.author._id
-      ? [
-          {
-            id: 'download',
-            title: i18n.t('Download picture'),
-            image: Platform.select({
-              ios: 'square.and.arrow.down',
-            }),
-          },
-          {
-            id: 'delete',
-            title: i18n.t('Delete Image'),
-            attributes: {
-              destructive: true,
-            },
-            image: Platform.select({
-              ios: 'trash',
-            }),
-          },
-        ]
-      : [
-          {
-            id: 'download',
-            title: i18n.t('Download picture'),
-            image: Platform.select({
-              ios: 'square.and.arrow.down',
-            }),
-          },
-        ];
-
-  const AnimatedTouchableOpacity =
-    Animated.createAnimatedComponent(TouchableOpacity);
   return (
-    <AnimatedTouchableOpacity
-      onPress={onPress}
-      activeOpacity={0.5}
-      style={[styles.container, style]}>
-      <MenuView
-        shouldOpenOnLongPress
-        style={{flex: 1}}
-        onPressAction={({nativeEvent}) => handleOption(nativeEvent)}
-        actions={actions}>
+    <>
+      <Pressable
+        onLongPress={() => sheetRef.current?.show()}
+        onPress={onPress}
+        activeOpacity={0.5}
+        style={[styles.container, style]}>
         {cacheImage ? (
           <FastImage source={{uri}} resizeMode="cover" style={styles.image} />
         ) : (
@@ -151,16 +121,24 @@ export default function ImageContainer({
             left: 10,
           }}
         />
-      </MenuView>
-    </AnimatedTouchableOpacity>
+      </Pressable>
+      <ActionSheet
+        ref={sheetRef}
+        title={i18n.t('Choose an option')}
+        options={[i18n.t('Cancel'), i18n.t('Download'), i18n.t('Delete')]}
+        cancelButtonIndex={0}
+        destructiveButtonIndex={2}
+        onPress={index => handleOption(index)}
+      />
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    width: Dimensions.get('window').width * 0.2975,
+    width: Dimensions.get('window').width * 0.318,
     aspectRatio: 9 / 16,
-    borderRadius: RADIUS.s,
+    borderRadius: 6,
     overflow: 'hidden',
   },
   image: {

@@ -5,7 +5,6 @@ import Toast from 'react-native-toast-message';
 import bbox from '@turf/bbox';
 import {lineString, lineString as makeLineString} from '@turf/helpers';
 import BottomSheet from '@gorhom/bottom-sheet';
-// eslint-disable-next-line import/no-unresolved
 import {MAPBOX_TOKEN} from '@env';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useSharedValue} from 'react-native-reanimated';
@@ -20,6 +19,7 @@ import Subtitle from '../../components/typography/Subtitle';
 import Body from '../../components/typography/Body';
 import activeTripStore from '../../stores/ActiveTripStore';
 import UPDATE_TRIP from '../../mutations/updateTrip';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 MapboxGL.setAccessToken(MAPBOX_TOKEN);
 const MAX_LENGTH = 15;
@@ -226,82 +226,84 @@ export default function DestinationScreen({navigatePage}) {
   };
 
   return (
-    <View style={styles.container}>
-      <MapboxGL.MapView
-        rotateEnabled={false}
-        style={styles.map}
-        styleURL="mapbox://styles/fabiansimon/clezrm6w7002g01p9eu1n0aos">
-        <MapboxGL.Camera animationMode="moveTo" animated ref={mapCamera} />
-        {destinationData &&
-          destinationData.map((location, index) =>
-            renderBubble(location, index),
-          )}
-        {renderLines()}
-      </MapboxGL.MapView>
-      <SafeAreaView edges={['top']} style={styles.header}>
-        <BackButton
-          style={{marginBottom: Platform.OS === 'android' ? 10 : 0}}
-          onPress={handleNavigation}
-          isClear
-        />
-        <View
-          style={{
-            position: 'absolute',
-            alignItems: 'center',
-            width: Dimensions.get('window').width,
-            bottom: 6,
-          }}>
-          <Body
-            type={1}
-            style={{fontWeight: '500', textAlign: 'center'}}
-            text={title}
+    <GestureHandlerRootView style={{flex: 1}}>
+      <View style={styles.container}>
+        <MapboxGL.MapView
+          rotateEnabled={false}
+          style={styles.map}
+          styleURL="mapbox://styles/fabiansimon/clezrm6w7002g01p9eu1n0aos">
+          <MapboxGL.Camera animationMode="moveTo" animated ref={mapCamera} />
+          {destinationData &&
+            destinationData.map((location, index) =>
+              renderBubble(location, index),
+            )}
+          {renderLines()}
+        </MapboxGL.MapView>
+        <SafeAreaView edges={['top']} style={styles.header}>
+          <BackButton
+            style={{marginBottom: Platform.OS === 'android' ? 10 : 0}}
+            onPress={handleNavigation}
+            isClear
           />
-          <Body
-            type={2}
-            style={{textAlign: 'center'}}
-            color={COLORS.neutral[300]}
-            text={Utils.getDateRange(dateRange)}
-          />
-        </View>
-      </SafeAreaView>
-      <BottomSheet
-        handleIndicatorStyle={{opacity: 0}}
-        backgroundStyle={{
-          backgroundColor: 'transparent',
-          borderRadius: 20,
-        }}
-        onChange={i => handleSheetChanges(i)}
-        ref={sheetRef}
-        index={0}
-        snapPoints={snapPoints}
-        animatedPosition={sheetPosition}>
-        <DestinationsSheet
-          setScrollIndex={setScrollIndex}
-          navigateRef={pageRef}
-          sheetIndex={expandedIndex}
-          dateRange={dateRange}
-          onReplace={() => {
-            setIsReplaced(true);
-            setInputVisible(true);
+          <View
+            style={{
+              position: 'absolute',
+              alignItems: 'center',
+              width: Dimensions.get('window').width,
+              bottom: 6,
+            }}>
+            <Body
+              type={1}
+              style={{fontWeight: '500', textAlign: 'center'}}
+              text={title}
+            />
+            <Body
+              type={2}
+              style={{textAlign: 'center'}}
+              color={COLORS.neutral[300]}
+              text={Utils.getDateRange(dateRange)}
+            />
+          </View>
+        </SafeAreaView>
+        <BottomSheet
+          handleIndicatorStyle={{opacity: 0}}
+          backgroundStyle={{
+            backgroundColor: 'transparent',
+            borderRadius: 20,
           }}
-          amountPeople={activeMembers?.length}
-          isRecent={type === 'recent'}
-          handleExpending={handleSheetTap}
-          position={sheetPosition}
-          onAdd={() => setInputVisible(true)}
-          onDelete={index => handleDeletion(index)}
-          onDragEnded={data => updateData(data)}
-          destinations={destinationData}
+          onChange={i => handleSheetChanges(i)}
+          ref={sheetRef}
+          index={0}
+          snapPoints={snapPoints}
+          animatedPosition={sheetPosition}>
+          <DestinationsSheet
+            setScrollIndex={setScrollIndex}
+            navigateRef={pageRef}
+            sheetIndex={expandedIndex}
+            dateRange={dateRange}
+            onReplace={() => {
+              setIsReplaced(true);
+              setInputVisible(true);
+            }}
+            amountPeople={activeMembers?.length}
+            isRecent={type === 'recent'}
+            handleExpending={handleSheetTap}
+            position={sheetPosition}
+            onAdd={() => setInputVisible(true)}
+            onDelete={index => handleDeletion(index)}
+            onDragEnded={data => updateData(data)}
+            destinations={destinationData}
+          />
+        </BottomSheet>
+        <InputModal
+          isVisible={inputVisible}
+          geoMatching
+          placeholder={i18n.t('Enter new destination')}
+          onRequestClose={() => setInputVisible(false)}
+          onPress={input => handleAddDestination(input)}
         />
-      </BottomSheet>
-      <InputModal
-        isVisible={inputVisible}
-        geoMatching
-        placeholder={i18n.t('Enter new destination')}
-        onRequestClose={() => setInputVisible(false)}
-        onPress={input => handleAddDestination(input)}
-      />
-    </View>
+      </View>
+    </GestureHandlerRootView>
   );
 }
 

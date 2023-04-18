@@ -130,15 +130,15 @@ export default function AuthModal({
   const checkCode = async () => {
     setIsLoading(true);
     const phoneNumber = `${country.dialCode}${phoneNr.trim()}`;
-    const res = await httpService
-      .checkVerificationCode(phoneNumber, code)
-      .catch(err =>
-        Toast.show({
-          type: 'error',
-          text1: i18n.t('Whoops!'),
-          text2: err.message,
-        }),
-      );
+    // const res = await httpService
+    //   .checkVerificationCode(phoneNumber, code)
+    //   .catch(err =>
+    //     Toast.show({
+    //       type: 'error',
+    //       text1: i18n.t('Whoops!'),
+    //       text2: err.message,
+    //     }),
+    //   );
 
     // return res.status;
     return 'approved';
@@ -202,6 +202,7 @@ export default function AuthModal({
       setCode('');
       return;
     }
+    console.log('KLJSfÖKL');
 
     await loginUser({
       variables: {
@@ -227,16 +228,16 @@ export default function AuthModal({
 
         // NOT WORKING ATM
         if (joinTripId) {
-          setTimeout(() => {
+          return setTimeout(() => {
             handleJoinTrip().then(() => {
               navigation.navigate(ROUTES.initDataCrossroads);
               onRequestClose();
             });
           }, 1000);
-        } else {
-          navigation.navigate(ROUTES.initDataCrossroads);
-          onRequestClose();
         }
+        console.log('ok');
+        navigation.navigate(ROUTES.initDataCrossroads);
+        onRequestClose();
       });
   };
 
@@ -325,8 +326,7 @@ export default function AuthModal({
                   marginBottom: 20,
                   alignSelf: 'center',
                 }}>
-                <CodeInput value={code}
-                  setValue={val => setCode(val)} />
+                <CodeInput value={code} setValue={val => setCode(val)} />
               </View>
               <Body
                 type={1}

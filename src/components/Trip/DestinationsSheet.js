@@ -1,4 +1,4 @@
-import {View, StyleSheet, Pressable, Dimensions} from 'react-native';
+import {View, StyleSheet, Pressable, Dimensions, Platform} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import Animated, {useAnimatedStyle} from 'react-native-reanimated';
@@ -144,12 +144,13 @@ export default function DestinationsSheet({
       />
     </Pressable>
   );
+
   return (
     <>
       <Animated.View
         style={[
           {
-            minHeight: 50,
+            minHeight: Platform.OS === 'android' ? 25 : 50,
             backgroundColor: COLORS.neutral[50],
             bottom: -20,
             zIndex: 0,

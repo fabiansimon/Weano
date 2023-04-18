@@ -373,7 +373,7 @@ export default function MemoriesScreen({route}) {
             userFreeImages: userFreeImages + 1,
           });
         }}
-        style={{marginLeft: isLeft ? 0 : 10, marginTop: 10}}
+        style={{marginLeft: isLeft ? 0 : 4, marginTop: 10}}
         image={image}
       />
     );

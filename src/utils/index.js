@@ -1,6 +1,6 @@
 import 'react-native-get-random-values';
 import moment from 'moment';
-import RNFS from 'react-native-fs';
+import RNFS, {stat} from 'react-native-fs';
 import FileViewer from 'react-native-file-viewer';
 
 import {Alert, Linking, PermissionsAndroid, Platform} from 'react-native';
@@ -180,14 +180,20 @@ export default class Utils {
    * @param {image} image - image to download
    */
   static async downloadImage(image, showToast = true) {
-    const permission =
-      Platform.Version >= 33
-        ? PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES
-        : PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE;
+    if (Platform.OS === 'android') {
+      const permission =
+        Platform.Version >= 33
+          ? PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES
+          : PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE;
 
-    const hasPermission = await PermissionsAndroid.check(permission);
-    if (!hasPermission) {
-      return;
+      const hasPermission = await PermissionsAndroid.check(permission);
+      if (!hasPermission) {
+        const status = await PermissionsAndroid.request(permission);
+
+        if (status !== 'granted') {
+          return;
+        }
+      }
     }
 
     CameraRoll.save(image, {type: 'photo', album: 'Weano'});
