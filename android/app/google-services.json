@@ -9,12 +9,20 @@
       "client_info": {
         "mobilesdk_app_id": "1:1011261400246:android:46c2c429000ca102e8b217",
         "android_client_info": {
-          "package_name": "com.fabiansimon.travelio"
+          "package_name": "com.travelio_project"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1011261400246-f21th14fhvm6r8hutpr3a7mseq2j1tsd.apps.googleusercontent.com",
+          "client_id": "1011261400246-rbmhli8l51n3v4q5rikgf5hjg4r8b0sq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.travelio_project",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "1011261400246-ora3gsn0hfhqhmethp3jt57tlma07ttf.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -29,6 +37,13 @@
             {
               "client_id": "1011261400246-f21th14fhvm6r8hutpr3a7mseq2j1tsd.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "1011261400246-bdljtrq5nsbf7ifut22n57kl8i6l2idv.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.travelio_project"
+              }
             }
           ]
         }

@@ -232,40 +232,35 @@ export default function MyAccountScreen() {
                 })
               }
             />
-            <InputField
-              style={{marginTop: 30}}
-              title={i18n.t('Phone number')}
-              value={phoneNumber}
-              onPress={() =>
-                setInputState({
-                  placeholder: phoneNumber,
-                  state: 'phoneNumber',
-                  keyboardType: 'phone-pad',
-                })
-              }
-            />
+            {phoneNumber && (
+              <InputField
+                style={{marginTop: 30}}
+                title={i18n.t('Phone number')}
+                value={phoneNumber}
+              />
+            )}
           </View>
-          <TouchableOpacity
-            onPress={handleDeleteAccount}
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            <IonIcon
-              name="ios-trash-outline"
-              color={COLORS.error[900]}
-              size={20}
-            />
-            <Body
-              style={{marginLeft: 8}}
-              color={COLORS.error[900]}
-              text={i18n.t('Delete Account')}
-              type={1}
-            />
-          </TouchableOpacity>
         </View>
       </HybridHeader>
+      <TouchableOpacity
+        onPress={handleDeleteAccount}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'absolute',
+          alignSelf: 'center',
+          marginBottom: Platform.OS === 'android' ? 20 : 50,
+          bottom: 0,
+        }}>
+        <IonIcon name="ios-trash-outline" color={COLORS.error[900]} size={20} />
+        <Body
+          style={{marginLeft: 8}}
+          color={COLORS.error[900]}
+          text={i18n.t('Delete Account')}
+          type={1}
+        />
+      </TouchableOpacity>
       <InputModal
         maxLength={
           (inputState?.state === 'firstName' ||
@@ -286,11 +281,13 @@ const InputField = ({title, value, onPress, style}) => (
   <Pressable style={style} onPress={onPress}>
     <View style={{flexDirection: 'row', alignItems: 'center'}}>
       <Body type={1} text={title} color={COLORS.neutral[900]} />
-      <FeatherIcon
-        name="edit"
-        style={{marginLeft: 6}}
-        color={COLORS.neutral[300]}
-      />
+      {onPress && (
+        <FeatherIcon
+          name="edit"
+          style={{marginLeft: 6}}
+          color={COLORS.neutral[300]}
+        />
+      )}
     </View>
     <Headline
       style={{
@@ -312,8 +309,6 @@ const styles = StyleSheet.create({
   innerContainer: {
     justifyContent: 'space-between',
     marginTop: 20,
-    flex: 1,
-    height: Dimensions.get('window').height * 0.7,
     marginHorizontal: PADDING.l,
   },
 });

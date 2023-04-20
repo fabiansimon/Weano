@@ -12,7 +12,7 @@ import COLORS, {PADDING} from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Headline from '../../components/typography/Headline';
 import Body from '../../components/typography/Body';
-// import TextField from '../../components/TextField';
+import Toast from 'react-native-toast-message';
 import AuthModal from '../../components/AuthModal';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import GoogleIcon from '../../../assets/icons/google_icon.svg';
@@ -23,17 +23,68 @@ import Utils from '../../utils';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
 import ROUTES from '../../constants/Routes';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {useMutation} from '@apollo/client';
+import LOGIN_USER from '../../mutations/loginUser';
+import userStore from '../../stores/UserStore';
+import AsyncStorageDAO from '../../utils/AsyncStorageDAO';
+
+const asyncStorageDAO = new AsyncStorageDAO();
 
 const {height, width} = Dimensions.get('window');
+
+GoogleSignin.configure({
+  webClientId:
+    '1011261400246-ora3gsn0hfhqhmethp3jt57tlma07ttf.apps.googleusercontent.com',
+});
 
 export default function SignUpScreen({invitationId, route}) {
   // PARAMS
   const {uploadReminderId} = route.params;
 
+  // MUTATIONS
+  const [loginUser] = useMutation(LOGIN_USER);
+
+  // STORES
+  const updateUserData = userStore(state => state.updateUserData);
+
   // STATE & MISC
   const [loginVisible, setLoginVisible] = useState(false);
 
   const navigation = useNavigation();
+
+  const handleAuthGoogle = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const {
+        user: {email},
+      } = await GoogleSignin.signIn();
+
+      await loginUser({
+        variables: {
+          user: {
+            email,
+          },
+        },
+      })
+        .catch(e => {
+          Toast.show({
+            type: 'error',
+            text1: i18n.t('Whoops!'),
+            text2: i18n.t('No user found'),
+          });
+          console.log(e);
+        })
+        .then(res => {
+          asyncStorageDAO.setAccessToken(res.data.loginUser);
+          asyncStorageDAO.setIsAuth(true);
+          updateUserData({authToken: res.data.loginUser});
+          navigation.navigate(ROUTES.initDataCrossroads);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const getContent = () => {
     return (
@@ -152,7 +203,7 @@ export default function SignUpScreen({invitationId, route}) {
             fullWidth
             textColor={COLORS.shades[100]}
             isSecondary
-            onPress={() => setLoginVisible(true)}
+            onPress={handleAuthGoogle}
             alignIcon="left"
             text={i18n.t('Continue with Google')}
           />

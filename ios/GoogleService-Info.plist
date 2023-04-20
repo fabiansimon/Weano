@@ -3,21 +3,23 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>918507986102-aljclphngvbkk6akrk71bhr39ur5e191.apps.googleusercontent.com</string>
+	<string>1011261400246-bdljtrq5nsbf7ifut22n57kl8i6l2idv.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.918507986102-aljclphngvbkk6akrk71bhr39ur5e191</string>
+	<string>com.googleusercontent.apps.1011261400246-bdljtrq5nsbf7ifut22n57kl8i6l2idv</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>1011261400246-lmpdtgt8qhvamrs9375arpbmf40i6cd9.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyBksVNlfGJfVzLVDf9rzVcA3-vLcXF71tA</string>
+	<string>AIzaSyAQQV0O9B33MboEHNWLApkENh27nwd9y5g</string>
 	<key>GCM_SENDER_ID</key>
-	<string>918507986102</string>
+	<string>1011261400246</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.fabiansimon.travelio</string>
 	<key>PROJECT_ID</key>
-	<string>travelioproject</string>
+	<string>travelioproject-a1d82</string>
 	<key>STORAGE_BUCKET</key>
-	<string>travelioproject.appspot.com</string>
+	<string>travelioproject-a1d82.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:918507986102:ios:29e441b63d686e5e839a17</string>
+	<string>1:1011261400246:ios:716ad81df872e451e8b217</string>
 </dict>
 </plist>

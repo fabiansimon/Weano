@@ -73,7 +73,6 @@ export default function AuthModal({
       }
       handleLogin();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code]);
 
   useEffect(() => {

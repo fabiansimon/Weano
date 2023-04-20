@@ -1,3 +1,4 @@
+$RNFirebaseAsStaticFramework = true
 require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
@@ -33,6 +34,7 @@ target 'travelio_project' do
     end
   end
   config = use_native_modules!
+  use_frameworks! :linkage => :static
 
    pre_install do |installer|
      $RNMapboxMaps.pre_install(installer)
@@ -52,7 +54,7 @@ target 'travelio_project' do
     #
     # Note that if you have use_frameworks! enabled, Flipper will not work and
     # you should disable the next line.
-    :flipper_configuration => flipper_config,
+    # :flipper_configuration => flipper_config,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )

@@ -3,6 +3,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import COLORS, {PADDING} from '../constants/Theme';
 import i18n from '../utils/i18n';
 import REGEX from '../constants/Regex';
+import Toast from 'react-native-toast-message';
 import Body from '../components/typography/Body';
 import Headline from '../components/typography/Headline';
 import TextField from '../components/TextField';
@@ -14,7 +15,20 @@ import WebViewModal from '../components/WebViewModal';
 import META_DATA from '../constants/MetaData';
 import AuthModal from '../components/AuthModal';
 import GoogleIcon from '../../assets/icons/google_icon.svg';
-import Divider from '../components/Divider';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {ApolloError, useMutation} from '@apollo/client';
+import REGISTER_USER from '../mutations/registerUser';
+import AsyncStorageDAO from '../utils/AsyncStorageDAO';
+import {useNavigation} from '@react-navigation/native';
+import userStore from '../stores/UserStore';
+import ROUTES from '../constants/Routes';
+
+const asyncStorageDAO = new AsyncStorageDAO();
+
+GoogleSignin.configure({
+  webClientId:
+    '1011261400246-ora3gsn0hfhqhmethp3jt57tlma07ttf.apps.googleusercontent.com',
+});
 
 const errorColors = {
   error: COLORS.error[700],
@@ -25,6 +39,12 @@ const errorColors = {
 export default function RegisterScreen({route}) {
   // PARAMS
   const {uploadReminderId, invitationId} = route.params;
+
+  // MUTATIONS
+  const [registerUser, {error}] = useMutation(REGISTER_USER);
+
+  // STORES
+  const updateUserData = userStore(state => state.updateUserData);
 
   // STATE & MISC
   const [errorChecks, setErrorChecks] = useState({
@@ -52,10 +72,51 @@ export default function RegisterScreen({route}) {
   const [email, setEmail] = useState('');
   const [webViewOption, setWebViewOption] = useState(null);
 
+  const navigation = useNavigation();
+
   useEffect(() => {
     checkForErrors();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [firstName, lastName, email]);
+
+  const handleAuthGoogle = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const {
+        user: {familyName, givenName, email},
+      } = await GoogleSignin.signIn();
+
+      await registerUser({
+        variables: {
+          user: {
+            email,
+            firstName: givenName,
+            lastName: familyName,
+          },
+        },
+      })
+        .catch(e => {
+          Toast.show({
+            type: 'error',
+            text1: i18n.t('Whoops!'),
+            text2: e,
+          });
+        })
+        .then(res => {
+          asyncStorageDAO.setAccessToken(res.data.registerUser);
+          asyncStorageDAO.setIsAuth(true);
+          updateUserData({authToken: res.data.registerUser});
+          navigation.navigate(ROUTES.initDataCrossroads);
+        });
+
+      return;
+    } catch (e) {
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('Whoops!'),
+        text2: i18n.t('Something went wrong'),
+      });
+    }
+  };
 
   const checkForErrors = () => {
     // First Name checks
@@ -277,15 +338,8 @@ export default function RegisterScreen({route}) {
               isSecondary
               icon={<GoogleIcon />}
               fullWidth
-              onPress={() => setRegisterVisible(true)}
+              onPress={handleAuthGoogle}
               text={i18n.t('Sign up with Google')}
-              isDisabled={
-                !(
-                  errorChecks.firstName.isValid &&
-                  errorChecks.lastName.isValid &&
-                  errorChecks.email.isValid
-                )
-              }
             />
           </View>
           <View
@@ -315,7 +369,7 @@ export default function RegisterScreen({route}) {
           }}>
           <Body
             type={2}
-            color={COLORS.shades[100]}
+            color={COLORS.neutral[700]}
             text={i18n.t('By signing up you are agreeing to our')}
           />
           <View style={{flexDirection: 'row'}}>
@@ -330,7 +384,7 @@ export default function RegisterScreen({route}) {
             />
             <Body
               type={2}
-              color={COLORS.shades[100]}
+              color={COLORS.neutral[700]}
               style={{marginHorizontal: 2}}
               text={i18n.t('and')}
             />
