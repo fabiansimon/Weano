@@ -1,7 +1,6 @@
 import {
   Dimensions,
   Image,
-  Platform,
   Pressable,
   StyleSheet,
   TouchableOpacity,
@@ -9,11 +8,8 @@ import {
 import Toast from 'react-native-toast-message';
 import React, {useRef} from 'react';
 import FastImage from 'react-native-fast-image';
-import Animated from 'react-native-reanimated';
-import {MenuView} from '@react-native-menu/menu';
 import RNFetchBlob from 'rn-fetch-blob';
 import {useMutation} from '@apollo/client';
-import {RADIUS} from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Utils from '../../utils';
 import DELETE_IMAGE from '../../mutations/deleteImage';
@@ -31,9 +27,6 @@ export default function ImageContainer({
 }) {
   // MUTATIONS
   const [deleteImage] = useMutation(DELETE_IMAGE);
-
-  // STORES
-  const {id} = userStore(state => state.user);
 
   // STATES && MISC
   const sheetRef = useRef();
@@ -102,7 +95,7 @@ export default function ImageContainer({
 
   return (
     <>
-      <Pressable
+      <TouchableOpacity
         onLongPress={() => sheetRef.current?.show()}
         onPress={onPress}
         activeOpacity={0.5}
@@ -121,7 +114,7 @@ export default function ImageContainer({
             left: 10,
           }}
         />
-      </Pressable>
+      </TouchableOpacity>
       <ActionSheet
         ref={sheetRef}
         title={i18n.t('Choose an option')}

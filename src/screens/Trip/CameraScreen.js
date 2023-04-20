@@ -153,7 +153,6 @@ export default function CameraScreen({route}) {
         );
       }
 
-      console.log(image);
       setCapturedImage(cameraType === CameraType.front ? flippedImage : image);
       // setTimeout(() => {
       //   cameraRef.current.resumePreview();
@@ -178,7 +177,7 @@ export default function CameraScreen({route}) {
 
   const endCaptureVideo = () => {
     setIsRecording(false);
-    camera.stopRecording();
+    cameraRef.stopRecording();
   };
 
   if (!permission) {
@@ -193,7 +192,7 @@ export default function CameraScreen({route}) {
             type={4}
             style={{marginRight: PADDING.xl}}
             color={COLORS.shades[0]}
-            text={i18n.t('Please allow us to access your camera 📸')}
+            text={i18n.t('Please allow us to access your camera')}
           />
           <Body
             type={2}
