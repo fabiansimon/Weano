@@ -28,7 +28,11 @@ export default function DocumentsScreen() {
   const [deleteDocument, {error}] = useMutation(DELETE_DOCUMENT);
 
   // STORES
-  const {documents, id: tripId} = activeTripStore(state => state.activeTrip);
+  const {
+    documents,
+    id: tripId,
+    type,
+  } = activeTripStore(state => state.activeTrip);
   const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
   const {id, isProMember} = userStore(state => state.user);
 
@@ -37,6 +41,8 @@ export default function DocumentsScreen() {
   const [isLoading, setIsLoading] = useState(false);
 
   const {height} = Dimensions.get('window');
+
+  console.log(type);
 
   useEffect(() => {
     if (error || deleteError) {
@@ -94,8 +100,7 @@ export default function DocumentsScreen() {
         : await asyncStorageDAO.getFreeTierLimits(),
     ).documents;
 
-
-    if (documents.filter((doc) => doc.creatorId === id)?.length >= usageLimit) {
+    if (documents.filter(doc => doc.creatorId === id)?.length >= usageLimit) {
       return PremiumController.showModal();
     }
 
@@ -220,6 +225,7 @@ export default function DocumentsScreen() {
         </View>
       </HybridHeader>
       <FAButton
+        isDisabled={type === 'recent'}
         isLoading={isLoading}
         icon="add"
         iconSize={28}

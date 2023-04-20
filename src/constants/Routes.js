@@ -10,6 +10,7 @@ const ROUTES = {
   memoriesScreen: 'memoriesScreen',
   cameraScreen: 'cameraScreen',
   signUpScreen: 'signUpScreen',
+  registerScreen: 'registerScreen',
   initDataCrossroads: 'initDataCrossroads',
   profileScreen: 'profileScreen',
   invitationScreen: 'invitationScreen',

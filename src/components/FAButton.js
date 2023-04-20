@@ -12,6 +12,8 @@ import COLORS, {PADDING, RADIUS} from '../constants/Theme';
 import Headline from './typography/Headline';
 import Utils from '../utils';
 import Body from './typography/Body';
+import PopUpModal from './PopUpModal';
+import i18n from '../utils/i18n';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -23,9 +25,12 @@ export default function FAButton({
   string,
   isLoading = false,
   options = [],
+  isDisabled = false,
 }) {
   // STATE && MISC
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
   const animatedOpacity = useRef(new Animated.Value(0)).current;
   const animatedOffset = useRef(new Animated.Value(0)).current;
 
@@ -116,14 +121,20 @@ export default function FAButton({
         {options?.map((option, index) => getOptionButton(option, index))}
         <Pressable
           disabled={isLoading}
-          onPress={() =>
-            options.length <= 0 ? onPress() : setIsExpanded(prev => !prev)
-          }
+          onPress={() => {
+            if (isDisabled) {
+              return setIsVisible(true);
+            }
+
+            options.length <= 0 ? onPress() : setIsExpanded(prev => !prev);
+          }}
           style={[
             styles.fab,
             {
               paddingHorizontal: string ? PADDING.l : 0,
-              backgroundColor: isExpanded
+              backgroundColor: isDisabled
+                ? Utils.addAlpha(COLORS.primary[700], 0.3)
+                : isExpanded
                 ? COLORS.neutral[900]
                 : COLORS.primary[700],
             },
@@ -143,6 +154,15 @@ export default function FAButton({
           )}
         </Pressable>
       </View>
+      <PopUpModal
+        isVisible={isVisible}
+        autoClose
+        title={i18n.t('Sorry!')}
+        subtitle={i18n.t(
+          "You can't add or edit any items after the trip is finished.",
+        )}
+        onRequestClose={() => setIsVisible(false)}
+      />
     </>
   );
 }
@@ -163,7 +183,7 @@ const styles = StyleSheet.create({
   },
   fabContainer: {
     position: 'absolute',
-    bottom: Platform.OS === 'android' ? 30: 40,
+    bottom: Platform.OS === 'android' ? 30 : 40,
     right: PADDING.l,
   },
   container: {

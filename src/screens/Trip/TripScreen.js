@@ -770,7 +770,11 @@ export default function TripScreen({route}) {
               icon={
                 <AntIcon color={COLORS.shades[100]} name="calendar" size={18} />
               }
-              onPress={() => (isHost ? setCalendarVisible(true) : null)}
+              onPress={() =>
+                isHost && data?.type !== 'recent'
+                  ? setCalendarVisible(true)
+                  : null
+              }
               backgroundColor={COLORS.shades[0]}
               textColor={COLORS.shades[100]}
               style={[

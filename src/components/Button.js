@@ -2,7 +2,7 @@ import {ActivityIndicator, StyleSheet, TouchableOpacity} from 'react-native';
 import React from 'react';
 // import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Icon from 'react-native-vector-icons/Entypo';
-import COLORS, {RADIUS} from '../constants/Theme';
+import COLORS, {PADDING, RADIUS} from '../constants/Theme';
 import Body from './typography/Body';
 
 export default function Button({
@@ -18,6 +18,7 @@ export default function Button({
   color,
   fullWidth = true,
   disableHaptics = false,
+  alignIcon = 'default',
   isLoading,
 }) {
   const flex = fullWidth ? 1 : 0;
@@ -35,9 +36,20 @@ export default function Button({
 
   const getIcon = () =>
     typeof icon.type === 'function' ? (
-      React.cloneElement(icon, {fill: color})
+      React.cloneElement(icon, {
+        fill: color,
+        height: 22,
+        style: alignIcon === 'left' ? {position: 'absolute', left: 12} : {},
+      })
     ) : (
-      <Icon name={icon} color={color} size={20} />
+      <Icon
+        name={icon}
+        color={color}
+        style={
+          alignIcon === 'left' ? {position: 'absolute', left: PADDING.m} : {}
+        }
+        size={20}
+      />
     );
 
   const getLoadingIndicator = () => (
@@ -63,9 +75,8 @@ export default function Button({
         style,
       ]}
       onPress={() => {
-        // eslint-disable-next-line no-unused-expressions
         !isLoading && onPress();
-        // eslint-disable-next-line no-unused-expressions
+
         // !disableHaptics &&
         //   ReactNativeHapticFeedback.trigger('impactLight', options);
       }}
@@ -95,6 +106,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: RADIUS.l,
+    borderRadius: RADIUS.xl,
   },
 });

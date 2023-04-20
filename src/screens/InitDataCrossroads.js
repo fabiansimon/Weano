@@ -328,7 +328,14 @@ export default function InitDataCrossroads() {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
-      <Image source={Logo} resizeMode="center" style={{flex: 1}} />
+      <View
+        style={{
+          flex: 1,
+          alignSelf: 'center',
+          justifyContent: 'center',
+        }}>
+        <Image source={Logo} resizeMode="contain" style={{height: 150}} />
+      </View>
     </View>
   );
 }

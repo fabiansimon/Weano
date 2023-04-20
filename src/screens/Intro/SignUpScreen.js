@@ -1,496 +1,178 @@
 import {
-  Animated,
   View,
   StyleSheet,
   Image,
   Pressable,
   StatusBar,
   Platform,
+  Dimensions,
 } from 'react-native';
-import React, {useState, useEffect, useRef} from 'react';
-import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
+import React, {useState} from 'react';
+import COLORS, {PADDING} from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Headline from '../../components/typography/Headline';
 import Body from '../../components/typography/Body';
 // import TextField from '../../components/TextField';
 import AuthModal from '../../components/AuthModal';
-// import GoogleIcon from '../../../assets/icons/google_icon.svg';
+import Icon from 'react-native-vector-icons/SimpleLineIcons';
+import GoogleIcon from '../../../assets/icons/google_icon.svg';
 import Button from '../../components/Button';
-import REGEX from '../../constants/Regex';
 import Logo from '../../../assets/images/logo_temp.png';
-import ImageCollage from '../../../assets/images/intro_collage.png';
+import BackgroundImage from '../../../assets/images/signup_background.png';
 import Utils from '../../utils';
-import WebViewModal from '../../components/WebViewModal';
-import META_DATA from '../../constants/MetaData';
-import SensorView from '../../components/SensorView';
-import BackButton from '../../components/BackButton';
-import KeyboardView from '../../components/KeyboardView';
-import TextField from '../../components/TextField';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {useNavigation} from '@react-navigation/native';
+import ROUTES from '../../constants/Routes';
 
-const errorColors = {
-  error: COLORS.error[700],
-  success: COLORS.success[700],
-  neutral: COLORS.neutral[300],
-};
+const {height, width} = Dimensions.get('window');
 
 export default function SignUpScreen({invitationId, route}) {
   // PARAMS
   const {uploadReminderId} = route.params;
 
   // STATE & MISC
-  const [errorChecks, setErrorChecks] = useState({
-    firstName: {
-      error: i18n.t('missing'),
-      color: errorColors.neutral,
-      isValid: false,
-    },
-    lastName: {
-      error: i18n.t('missing'),
-      color: errorColors.neutral,
-      isValid: false,
-    },
-    email: {
-      error: i18n.t('missing'),
-      color: errorColors.neutral,
-      isValid: false,
-    },
-  });
-  const lastNameRef = useRef();
-  const emailRef = useRef();
   const [loginVisible, setLoginVisible] = useState(false);
-  const [registerVisible, setRegisterVisible] = useState(false);
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [initIntro, setInitIntro] = useState(false);
-  const [webViewOption, setWebViewOption] = useState(null);
 
-  // ANIMATIONS
-  const animatedTranslateY = useRef(new Animated.Value(1000)).current;
-  const animatedImageY = useRef(new Animated.Value(0)).current;
-  const animatedBackButtonX = useRef(new Animated.Value(-100)).current;
-  const duration = 300;
+  const navigation = useNavigation();
 
-  useEffect(() => {
-    if (initIntro) {
-      Animated.spring(animatedTranslateY, {
-        toValue: 50,
-        duration,
-      }).start();
-      Animated.spring(animatedImageY, {
-        toValue: -500,
-        duration,
-      }).start();
-      Animated.spring(animatedBackButtonX, {
-        toValue: 0,
-        duration,
-      }).start();
-    } else {
-      Animated.spring(animatedTranslateY, {
-        toValue: 1000,
-        duration,
-      }).start();
-      Animated.spring(animatedImageY, {
-        toValue: 0,
-        duration,
-      }).start();
-      Animated.spring(animatedBackButtonX, {
-        toValue: -100,
-        duration,
-      }).start();
-    }
-  }, [animatedBackButtonX, animatedImageY, animatedTranslateY, initIntro]);
-
-  useEffect(() => {
-    checkForErrors();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [firstName, lastName, email]);
-
-  const checkForErrors = () => {
-    // First Name checks
-    if (firstName.length === 0) {
-      setErrorChecks(prev => ({
-        ...prev,
-        firstName: {
-          error: i18n.t('missing'),
-          color: errorColors.neutral,
-        },
-      }));
-    } else if (REGEX.name.test(firstName.trim())) {
-      setErrorChecks(prev => ({
-        ...prev,
-        firstName: {
-          error: i18n.t('contains invalid characters'),
-          color: errorColors.error,
-        },
-      }));
-    } else {
-      setErrorChecks(prev => ({
-        ...prev,
-        firstName: {
-          error: i18n.t('is valid'),
-          color: errorColors.success,
-          isValid: true,
-        },
-      }));
-    }
-
-    // Last Name checks
-    if (lastName.length === 0) {
-      setErrorChecks(prev => ({
-        ...prev,
-        lastName: {
-          error: i18n.t('missing'),
-          color: errorColors.neutral,
-        },
-      }));
-    } else if (REGEX.name.test(lastName.trim())) {
-      setErrorChecks(prev => ({
-        ...prev,
-        lastName: {
-          error: i18n.t('contains invalid characters'),
-          color: errorColors.error,
-        },
-      }));
-    } else {
-      setErrorChecks(prev => ({
-        ...prev,
-        lastName: {
-          error: i18n.t('is valid'),
-          color: errorColors.success,
-          isValid: true,
-        },
-      }));
-    }
-
-    // Email checks
-    if (email.length === 0) {
-      setErrorChecks(prev => ({
-        ...prev,
-        email: {
-          error: i18n.t('missing'),
-          color: errorColors.neutral,
-        },
-      }));
-    } else if (!email.toLowerCase().match(REGEX.email)) {
-      setErrorChecks(prev => ({
-        ...prev,
-        email: {
-          error: i18n.t('is not a valid email'),
-          color: errorColors.error,
-        },
-      }));
-    } else {
-      setErrorChecks(prev => ({
-        ...prev,
-        email: {
-          error: i18n.t('is valid'),
-          color: errorColors.success,
-          isValid: true,
-        },
-      }));
-    }
-  };
-
-  const getCheckList = () => (
-    <View style={{marginTop: 10}}>
-      {!errorChecks.firstName.isValid && firstName?.length >= 1 && (
-        <Body
-          type={2}
-          color={errorChecks.firstName.color}
-          text={`• ${i18n.t('First name')} ${errorChecks.firstName.error}`}
-        />
-      )}
-      {!errorChecks.lastName.isValid && lastName?.length >= 1 && (
-        <Body
-          type={2}
-          color={errorChecks.lastName.color}
-          text={`• ${i18n.t('Last name')} ${errorChecks.lastName.error}`}
-        />
-      )}
-      {!errorChecks.email.isValid && email?.length >= 1 && (
-        <Body
-          type={2}
-          color={errorChecks.email.color}
-          text={`• ${i18n.t('Email')} ${errorChecks.email.error}`}
-        />
-      )}
-    </View>
-  );
-
-  const getAuthContainer = () => (
-    <Animated.View
-      contentContainerStyle={{
-        justifyContent: 'space-between',
-        flex: 1,
-        paddingBottom: 50,
-      }}
-      style={[
-        styles.mainContainer,
-        {transform: [{translateY: animatedTranslateY}]},
-      ]}>
-      <KeyboardView paddingBottom={65}>
-        <>
-          <Headline type={2} text={i18n.t('Sign up 👋')} />
-          <Body
-            style={{marginTop: 4}}
-            color={COLORS.neutral[300]}
-            type={1}
-            text={i18n.t('Are you ready to make some memories?')}
+  const getContent = () => {
+    return (
+      <View
+        style={{
+          marginHorizontal: PADDING.m,
+          flex: 1,
+          paddingTop: Platform.OS === 'android' ? 10 : 0,
+          justifyContent: 'space-between',
+        }}>
+        <View>
+          <Image
+            style={{height: 40, width: 40}}
+            resizeMode="contain"
+            source={Logo}
           />
-          <View style={{marginTop: 20}}>
-            <View style={{flexDirection: 'row'}}>
-              <View style={{flex: 1, paddingRight: 8}}>
-                <Body
-                  color={COLORS.neutral[700]}
-                  type={2}
-                  style={{marginBottom: 6, marginLeft: 5}}
-                  text={i18n.t('First name')}
-                />
-                <TextField
-                  onDelete={() => setFirstName('')}
-                  returnKeyType="next"
-                  label={i18n.t('First name')}
-                  value={firstName || null}
-                  onChangeText={val => setFirstName(val)}
-                  style={
-                    firstName.length > 0
-                      ? errorChecks.firstName.isValid
-                        ? styles.validField
-                        : styles.invalidField
-                      : null
-                  }
-                  placeholder={i18n.t('John')}
-                />
-              </View>
-
-              <View style={{flex: 1}}>
-                <Body
-                  color={COLORS.neutral[700]}
-                  type={2}
-                  style={{marginBottom: 6, marginLeft: 5}}
-                  text={i18n.t('Last name')}
-                />
-                <TextField
-                  ref={lastNameRef}
-                  onDelete={() => setLastName('')}
-                  returnKeyType="next"
-                  label={i18n.t('Last name')}
-                  style={
-                    lastName.length > 0
-                      ? errorChecks.lastName.isValid
-                        ? styles.validField
-                        : styles.invalidField
-                      : null
-                  }
-                  value={lastName || null}
-                  onChangeText={val => setLastName(val)}
-                  placeholder={i18n.t('Doe')}
-                />
-              </View>
-            </View>
-            <View style={{marginTop: 12}}>
-              <Body
-                color={COLORS.neutral[700]}
-                type={2}
-                style={{marginBottom: 6, marginLeft: 5}}
-                text={i18n.t('Email')}
-              />
-              <TextField
-                ref={emailRef}
-                onDelete={() => setEmail('')}
-                keyboardType="email-address"
-                label={i18n.t('Email')}
-                value={email || null}
-                returnKeyType="done"
-                style={
-                  email.length > 0
-                    ? errorChecks.email.isValid
-                      ? styles.validField
-                      : styles.invalidField
-                    : null
-                }
-                autoCapitalize="none"
-                onChangeText={val => setEmail(val)}
-                placeholder={i18n.t('Your Email')}
-              />
-            </View>
-          </View>
-          {getCheckList()}
-        </>
-        <View
-          style={{
-            width: '100%',
-            height: 90,
-            marginTop: 'auto',
-          }}>
-          <Button
-            fullWidth
-            onPress={() => setRegisterVisible(true)}
-            text={i18n.t('Next')}
-            isDisabled={
-              !(
-                errorChecks.firstName.isValid &&
-                errorChecks.lastName.isValid &&
-                errorChecks.email.isValid
-              )
-            }
-          />
-          <Pressable
-            onPress={() => setLoginVisible(true)}
-            style={{
-              flexDirection: 'row',
-              marginTop: 15,
-              justifyContent: 'center',
-            }}>
-            <Body
+          <View style={{flexWrap: 'wrap', flexDirection: 'row'}}>
+            <Headline
               type={2}
-              color={COLORS.neutral[300]}
-              text={i18n.t('Already have an account?')}
+              color={COLORS.shades[0]}
+              style={{marginRight: 4}}
+              text={i18n.t('Create,')}
             />
-            <Body
+            <Headline
               type={2}
-              color={COLORS.primary[500]}
-              text={i18n.t('Log in instead')}
+              color={COLORS.shades[0]}
+              style={{marginRight: 4}}
+              text={i18n.t('capture')}
+            />
+            <Headline
+              type={2}
+              style={{fontWeight: '400', marginRight: 4}}
+              color={COLORS.shades[0]}
+              text={i18n.t('and')}
+            />
+            <Headline
+              type={2}
+              color={COLORS.shades[0]}
+              style={{marginRight: 4}}
+              text={i18n.t('preserve')}
+            />
+            <Headline
+              type={2}
+              color={COLORS.shades[0]}
+              style={{marginRight: 4}}
+              text={i18n.t('moments')}
+            />
+            <Headline
+              type={2}
+              style={{fontWeight: '400', marginRight: 4}}
+              color={COLORS.shades[0]}
+              text={i18n.t('that')}
+            />
+            <Headline
+              type={2}
+              style={{fontWeight: '400', marginRight: 4}}
+              color={COLORS.shades[0]}
+              text={i18n.t('you')}
+            />
+            <Headline
+              type={2}
+              color={COLORS.shades[0]}
+              style={{fontWeight: '400', marginRight: 4}}
+              text={i18n.t('never')}
+            />
+            <Headline
+              type={2}
+              style={{fontWeight: '400', marginRight: 4}}
+              color={COLORS.shades[0]}
+              text={i18n.t('wanted')}
+            />
+            <Headline
+              type={2}
+              style={{fontWeight: '400', marginRight: 4}}
+              color={COLORS.shades[0]}
+              text={i18n.t('to')}
+            />
+            <Headline
+              type={2}
+              style={{fontWeight: '400', marginRight: 4}}
+              color={COLORS.shades[0]}
+              text={i18n.t('forget')}
+            />
+          </View>
+          <View style={{flexDirection: 'row', marginTop: 8}}>
+            <Body
+              type={1}
+              color={COLORS.shades[0]}
               style={{
                 fontWeight: Platform.OS === 'android' ? '700' : '600',
-                marginLeft: 4,
+              }}
+              text={i18n.t('Log in')}
+            />
+            <Body
+              type={1}
+              color={COLORS.shades[0]}
+              text={i18n.t('to start!')}
+              style={{
+                marginHorizontal: 4,
+                marginTop: Platform.OS === 'android' ? 1 : 0,
               }}
             />
-          </Pressable>
+          </View>
         </View>
-      </KeyboardView>
-    </Animated.View>
-  );
-
-  const AnimatedImage = Animated.createAnimatedComponent(Image);
-
-  return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: COLORS.primary[700],
-        justifyContent: 'space-between',
-      }}>
-      <StatusBar barStyle="light-content" />
-      <SensorView>
-        <AnimatedImage
-          style={[
-            {width: '100%', height: 320},
-            {transform: [{translateY: animatedImageY}]},
-          ]}
-          source={ImageCollage}
-          resizeMode="cover"
-        />
-      </SensorView>
-      <View style={{marginHorizontal: PADDING.m}}>
-        <Image
-          source={Logo}
-          style={{
-            height: 50,
-            width: 40,
-            marginTop: 10,
-          }}
-        />
-        <View style={{flexWrap: 'wrap', flexDirection: 'row'}}>
-          <Headline
-            type={2}
-            color={COLORS.shades[0]}
-            style={{marginRight: 4}}
-            text={i18n.t('Create,')}
-          />
-          <Headline
-            type={2}
-            color={COLORS.shades[0]}
-            style={{marginRight: 4}}
-            text={i18n.t('capture')}
-          />
-          <Headline
-            type={2}
-            style={{fontWeight: '400', marginRight: 4}}
-            color={COLORS.shades[0]}
-            text={i18n.t('and')}
-          />
-          <Headline
-            type={2}
-            color={COLORS.shades[0]}
-            style={{marginRight: 4}}
-            text={i18n.t('preserve')}
-          />
-          <Headline
-            type={2}
-            color={COLORS.shades[0]}
-            style={{marginRight: 4}}
-            text={i18n.t('moments')}
-          />
-          <Headline
-            type={2}
-            style={{fontWeight: '400', marginRight: 4}}
-            color={COLORS.shades[0]}
-            text={i18n.t('that')}
-          />
-          <Headline
-            type={2}
-            style={{fontWeight: '400', marginRight: 4}}
-            color={COLORS.shades[0]}
-            text={i18n.t('you')}
-          />
-          <Headline
-            type={2}
-            color={COLORS.shades[0]}
-            style={{fontWeight: '400', marginRight: 4}}
-            text={i18n.t('never')}
-          />
-          <Headline
-            type={2}
-            style={{fontWeight: '400', marginRight: 4}}
-            color={COLORS.shades[0]}
-            text={i18n.t('wanted')}
-          />
-          <Headline
-            type={2}
-            style={{fontWeight: '400', marginRight: 4}}
-            color={COLORS.shades[0]}
-            text={i18n.t('to')}
-          />
-          <Headline
-            type={2}
-            style={{fontWeight: '400', marginRight: 4}}
-            color={COLORS.shades[0]}
-            text={i18n.t('forget')}
-          />
-        </View>
-        <Body
-          type={2}
-          style={{marginTop: 10}}
-          color={COLORS.shades[0]}
-          text={i18n.t('(Hey Verena 🇳🇿)')}
-        />
         <View
           style={{
-            width: '100%',
-            height: 170,
-            marginTop: '25%',
-            marginBottom: 40,
+            width: '90%',
+            height: 160,
+
+            marginBottom: Platform.OS === 'android' ? 20 : 8,
+            alignSelf: 'center',
           }}>
           <Button
+            icon={<GoogleIcon />}
+            style={{marginBottom: 8}}
             fullWidth
-            textColor={COLORS.primary[900]}
+            textColor={COLORS.shades[100]}
             isSecondary
             onPress={() => setLoginVisible(true)}
-            text={i18n.t('Log in')}
+            alignIcon="left"
+            text={i18n.t('Continue with Google')}
           />
           <Button
             fullWidth
-            onPress={() => setInitIntro(true)}
-            style={{
-              borderWidth: 1,
-              borderColor: COLORS.shades[0],
-              marginTop: 10,
-            }}
-            text={i18n.t('Sign up')}
+            alignIcon="left"
+            icon={<Icon name="phone" color={COLORS.shades[100]} size={22} />}
+            textColor={COLORS.shades[100]}
+            isSecondary
+            onPress={() => setLoginVisible(true)}
+            text={i18n.t('Log in with phone')}
           />
-          <View
+
+          <Pressable
+            onPress={() =>
+              navigation.navigate(ROUTES.registerScreen, {
+                invitationId,
+                uploadReminderId,
+              })
+            }
             style={{
               marginTop: 20,
               justifyContent: 'center',
@@ -499,105 +181,62 @@ export default function SignUpScreen({invitationId, route}) {
             <Body
               type={2}
               color={COLORS.shades[0]}
-              text={i18n.t('By signing up you are agreeing to our')}
+              text={i18n.t('No account?')}
             />
-            <View style={{flexDirection: 'row'}}>
-              <Body
-                onPress={() => setWebViewOption('terms')}
-                type={2}
-                color={COLORS.shades[0]}
-                style={{fontWeight: Platform.OS === 'android' ? '700' : '600'}}
-                text={i18n.t('Terms')}
-              />
-              <Body
-                type={2}
-                color={COLORS.shades[0]}
-                style={{marginHorizontal: 2}}
-                text={i18n.t('and')}
-              />
-              <Body
-                type={2}
-                onPress={() => setWebViewOption('pp')}
-                color={COLORS.shades[0]}
-                style={{fontWeight: Platform.OS === 'android' ? '700' : '600'}}
-                text={i18n.t('Privacy Policy')}
-              />
-            </View>
-          </View>
+            <Body
+              type={2}
+              color={COLORS.shades[0]}
+              style={{
+                fontWeight: Platform.OS === 'android' ? '700' : '600',
+              }}
+              text={i18n.t('Create Account')}
+            />
+          </Pressable>
         </View>
       </View>
-      {getAuthContainer()}
-      <Animated.View
-        style={[
-          {position: 'absolute', top: 50, left: PADDING.m},
-          {transform: [{translateX: animatedBackButtonX}]},
-        ]}>
-        <BackButton
-          onPress={() => setInitIntro(false)}
-          isClear
-          iconColor={COLORS.shades[0]}
+    );
+  };
+
+  return (
+    <>
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="light-content" />
+        <Image
+          source={BackgroundImage}
+          blurRadius={3}
+          resizeMode="contain"
+          style={styles.imageBackground}
         />
-      </Animated.View>
-      <AuthModal
-        isVisible={registerVisible}
-        onRequestClose={() => setRegisterVisible(false)}
-        registerData={{
-          firstName: firstName.trim(),
-          lastName: lastName.trim(),
-          email,
-        }}
-        joinTripId={invitationId}
-        uploadReminderId={uploadReminderId}
-      />
+        <View style={styles.overlay} />
+        {getContent()}
+      </SafeAreaView>
       <AuthModal
         isVisible={loginVisible}
         onRequestClose={() => setLoginVisible(false)}
         joinTripId={invitationId}
         uploadReminderId={uploadReminderId}
       />
-      <WebViewModal
-        isVisible={webViewOption !== null}
-        onRequestClose={() => setWebViewOption(null)}
-        url={
-          webViewOption === 'pp'
-            ? META_DATA.privacyPolicyUrl
-            : META_DATA.termUrl
-        }
-        title={
-          webViewOption === 'pp'
-            ? i18n.t('Privacy Policy')
-            : i18n.t('Terms & Conditions')
-        }
-      />
-    </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    justifyContent: 'space-between',
+  container: {
     flex: 1,
-    paddingBottom: Platform.OS === 'android' ? 20 : 50,
-    backgroundColor: COLORS.shades[0],
-    borderTopRightRadius: RADIUS.m,
-    borderTopLeftRadius: RADIUS.m,
-    paddingHorizontal: PADDING.l,
-    paddingTop: PADDING.l,
-    marginTop: 110,
-    marginBottom: 50,
+    backgroundColor: COLORS.shades[100],
+    justifyContent: 'space-between',
+  },
+  imageBackground: {
+    top: -25,
+    height: height + 50,
+    alignSelf: 'center',
     position: 'absolute',
-    width: '100%',
-    height: '88%',
-    bottom: 0,
   },
-  validField: {
-    borderWidth: 1,
-    borderColor: COLORS.success[500],
-    backgroundColor: Utils.addAlpha(COLORS.success[500], 0.1),
-  },
-  invalidField: {
-    borderWidth: 1,
-    borderColor: COLORS.error[500],
-    backgroundColor: Utils.addAlpha(COLORS.error[500], 0.1),
+  overlay: {
+    flex: 1,
+    position: 'absolute',
+    height,
+    width,
+    backgroundColor: Utils.addAlpha(COLORS.shades[100], 0.6),
   },
 });

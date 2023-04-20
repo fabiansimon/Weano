@@ -40,6 +40,7 @@ export default function ExpenseScreen() {
     id: tripId,
     location,
     currency,
+    type,
   } = activeTripStore(state => state.activeTrip);
   const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
   const {id, firstName, isProMember} = userStore(state => state.user);
@@ -403,7 +404,12 @@ export default function ExpenseScreen() {
           </View>
         </View>
       </HybridHeader>
-      <FAButton icon="add" iconSize={28} onPress={() => setShowModal(true)} />
+      <FAButton
+        icon="add"
+        iconSize={28}
+        isDisabled={type === 'recent'}
+        onPress={() => setShowModal(true)}
+      />
       <AddExpenseModal
         currency={currency}
         isVisible={showModal}

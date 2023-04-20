@@ -30,6 +30,7 @@ import DocumentsScreen from './src/screens/Trip/DocumentsScreen';
 import TimelineScreen from './src/screens/TimelineScreen';
 import MyAccountScreen from './src/screens/MyAccount';
 import PacklistScreen from './src/screens/Trip/PacklistScreen';
+import RegisterScreen from './src/screens/RegisterScreen';
 // import PremiumModal from './src/components/PremiumModal';
 
 const Stack = createNativeStackNavigator();
@@ -163,6 +164,10 @@ function App() {
               <Stack.Screen
                 name={ROUTES.packlistScreen}
                 component={PacklistScreen}
+              />
+              <Stack.Screen
+                name={ROUTES.registerScreen}
+                component={RegisterScreen}
               />
             </Stack.Navigator>
           </NavigationContainer>

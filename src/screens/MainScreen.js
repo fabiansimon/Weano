@@ -354,6 +354,7 @@ export default function MainScreen() {
               style={{
                 marginHorizontal: -PADDING.l,
                 height: getTabBarHeight(),
+                minHeight: 200,
               }}>
               <TabView
                 navigationState={{index, routes}}

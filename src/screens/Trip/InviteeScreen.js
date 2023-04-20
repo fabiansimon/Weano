@@ -33,6 +33,7 @@ export default function InviteeScreen() {
     activeMembers,
     hostId,
     id: tripId,
+    type,
   } = activeTripStore(state => state.activeTrip);
   const {id: userId} = userStore(state => state.user);
   const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
@@ -207,6 +208,7 @@ export default function InviteeScreen() {
         />
       </HybridHeader>
       <FAButton
+        isDisabled={type === 'recent'}
         icon="add"
         iconSize={28}
         onPress={() => setInputVisible(true)}

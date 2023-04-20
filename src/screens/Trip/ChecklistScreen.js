@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import Animated from 'react-native-reanimated';
-import {TouchableOpacity} from 'react-native-gesture-handler';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import {useMutation} from '@apollo/client';
 import Toast from 'react-native-toast-message';
@@ -49,6 +48,7 @@ export default function ChecklistScreen() {
     privateTasks,
     id: tripId,
     dateRange,
+    type,
   } = activeTripStore(state => state.activeTrip);
   const {id: userId, isProMember} = userStore(state => state.user);
   const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
@@ -79,7 +79,6 @@ export default function ChecklistScreen() {
   }, [error]);
 
   const taskCount = isDone => {
-    // eslint-disable-next-line no-unsafe-optional-chaining
     const length =
       privateTasks?.filter(task => task.isDone === isDone).length +
       mutualTasks?.filter(task => task.isDone === isDone).length;
@@ -103,7 +102,6 @@ export default function ChecklistScreen() {
 
     let addString = '';
     if (difference > 0) {
-      // eslint-disable-next-line eqeqeq
       addString = `\n${i18n.t('Only')} ${difference} ${
         difference == 1 ? i18n.t('day left') : i18n.t('days left')
       }⏳`;
@@ -522,6 +520,7 @@ export default function ChecklistScreen() {
         onPress={data => handleChange(data)}
       />
       <FAButton
+        isDisabled={type === 'recent'}
         isLoading={isLoading}
         icon="add"
         iconSize={28}

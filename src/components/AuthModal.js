@@ -245,10 +245,17 @@ export default function AuthModal({
       isVisible={isVisible}
       onRequestClose={onRequestClose}
       title={isLogin ? i18n.t('Log in') : i18n.t('Authenticate')}>
-      <KeyboardView behavior="padding" paddingBottom={50}>
+      <KeyboardView
+        behavior="padding"
+        paddingBottom={Platform.OS === 'android' ? 10 : 40}>
         <View style={styles.container}>
           <PagerView style={{flex: 1}} ref={pageRef} scrollEnabled={false}>
-            <View style={{padding: PADDING.l, justifyContent: 'space-between'}}>
+            <View
+              style={{
+                padding: PADDING.l,
+                justifyContent: 'space-between',
+                marginBottom: 10,
+              }}>
               <View>
                 <Headline
                   type={4}

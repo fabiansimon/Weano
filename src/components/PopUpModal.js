@@ -1,7 +1,6 @@
-import {Modal, StyleSheet, TouchableOpacity} from 'react-native';
-import React from 'react';
+import {Modal, Platform, StyleSheet, TouchableOpacity} from 'react-native';
+import React, {useEffect} from 'react';
 import COLORS from '../constants/Theme';
-import Headline from './typography/Headline';
 import Body from './typography/Body';
 
 export default function PopUpModal({
@@ -11,7 +10,17 @@ export default function PopUpModal({
   title,
   subtitle,
   children,
+  autoClose = false,
 }) {
+  useEffect(() => {
+    if (isVisible && autoClose) {
+      setTimeout(() => {
+        onRequestClose();
+      }, 4000);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isVisible]);
+
   return (
     <Modal
       animationType="fade"
@@ -25,8 +34,18 @@ export default function PopUpModal({
         activeOpacity={1}
         onPress={onRequestClose}>
         <TouchableOpacity activeOpacity={1} style={[styles.content, style]}>
-          <Headline type={2} text={title} />
-          <Body text={subtitle} color={COLORS.neutral[900]} />
+          <Body
+            type={1}
+            style={{fontWeight: Platform.OS === 'android' ? '700' : '600'}}
+            text={title}
+            color={COLORS.shades[100]}
+          />
+          <Body
+            type={2}
+            style={{marginTop: 4}}
+            text={subtitle}
+            color={COLORS.neutral[900]}
+          />
           {children}
         </TouchableOpacity>
       </TouchableOpacity>
@@ -42,8 +61,8 @@ const styles = StyleSheet.create({
   },
   content: {
     width: '90%',
-    paddingHorizontal: 25,
-    paddingVertical: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 15,
     borderRadius: 14,
     alignSelf: 'center',
     backgroundColor: COLORS.shades[0],

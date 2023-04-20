@@ -43,6 +43,7 @@ export default function PacklistScreen() {
     packingItems,
     id: tripId,
     dateRange,
+    type,
   } = activeTripStore(state => state.activeTrip);
   const {isProMember} = userStore(state => state.user);
   const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
@@ -398,6 +399,7 @@ export default function PacklistScreen() {
         autoClose
       />
       <FAButton
+        isDisabled={type === 'recent'}
         isLoading={isLoading}
         icon="add"
         iconSize={28}
