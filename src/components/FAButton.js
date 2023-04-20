@@ -64,7 +64,6 @@ export default function FAButton({
         useNativeDriver: false,
       }).start();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isExpanded]);
 
   const getOptionButton = (option, index) => {
