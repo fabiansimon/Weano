@@ -11,7 +11,7 @@ import {
 import * as Animatable from 'react-native-animatable';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import EntIcon from 'react-native-vector-icons/Entypo';
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import Animated from 'react-native-reanimated';
 import {useNavigation} from '@react-navigation/native';
 import {useLazyQuery, useQuery} from '@apollo/client';
@@ -37,6 +37,8 @@ import AccentBubble from '../components/Trip/AccentBubble';
 import AsyncStorageDAO from '../utils/AsyncStorageDAO';
 import PremiumController from '../PremiumController';
 import userStore from '../stores/UserStore';
+import MemoriesSkeleton from '../components/MemoriesSkeleton';
+import tripsStore from '../stores/TripsStore';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
@@ -63,12 +65,13 @@ export default function MemoriesScreen({route}) {
 
   // STORES
   const {images, userFreeImages} = activeTripStore(state => state.activeTrip);
+  const trips = tripsStore(state => state.trips);
   const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
   const {isProMember} = userStore(state => state.user);
 
   // STATE & MISC
   const scrollY = useRef(new Animated.Value(0)).current;
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [dateSelection, setDateSelection] = useState(null);
   const [dateIndex, setDateIndex] = useState(0);
   const [storyVisible, setStoryVisible] = useState(false);
@@ -99,6 +102,7 @@ export default function MemoriesScreen({route}) {
     if (data) {
       const {getImagesFromTrip: imageData} = data;
       updateTripState(imageData.images, imageData.userFreeImages);
+      setIsLoading(false);
     }
 
     if (error) {
@@ -268,6 +272,9 @@ export default function MemoriesScreen({route}) {
         const isSelected = dateIndex === index;
         const backgroundColor = isSelected ? COLORS.shades[0] : 'transparent';
         const color = isSelected ? COLORS.shades[100] : COLORS.neutral[50];
+        const borderColor = isSelected
+          ? 'transparent'
+          : Utils.addAlpha(COLORS.neutral[50], 0.1);
         return (
           <Pressable
             onPress={() => setDateIndex(index)}
@@ -275,9 +282,11 @@ export default function MemoriesScreen({route}) {
               flex: null,
               borderRadius: 100,
               backgroundColor,
+              borderColor,
+              borderWidth: 0.5,
               paddingHorizontal: 13,
               paddingVertical: 8,
-              marginRight: 2,
+              marginRight: 4,
             }}>
             <Body type={2} color={color} text={item.title} />
           </Pressable>
@@ -285,6 +294,23 @@ export default function MemoriesScreen({route}) {
       })}
     </ScrollView>
   );
+
+  const getTripData = useCallback(() => {
+    const {
+      destinations,
+      dateRange: {startDate},
+      title,
+    } = trips.find(trip => trip.id === tripId);
+    const location = destinations[0].placeName.split(',');
+    const destination = location[location.length - 1].trim();
+
+    const diff = Utils.getDaysDifference(startDate, null, true);
+
+    return {
+      title,
+      subtitle: `${destination}, ${diff} ${i18n.t('days ago')}`,
+    };
+  }, [tripId]);
 
   const getHeader = () => {
     const shadow = {
@@ -305,13 +331,22 @@ export default function MemoriesScreen({route}) {
             flexDirection: 'row',
             justifyContent: 'space-between',
             marginTop: 4,
+            marginBottom: 4,
           }}>
-          <Headline
-            type={2}
-            style={shadow}
-            color={COLORS.shades[0]}
-            text={i18n.t('Moments')}
-          />
+          <View style={{flex: 1}}>
+            <Headline
+              type={3}
+              style={shadow}
+              color={COLORS.shades[0]}
+              text={getTripData().title}
+            />
+            <Body
+              type={2}
+              style={shadow}
+              color={Utils.addAlpha(COLORS.neutral[50], 0.7)}
+              text={getTripData().subtitle}
+            />
+          </View>
           <View style={{flexDirection: 'row', top: -10}}>
             {!isLoading && (
               <MenuView
@@ -504,37 +539,41 @@ export default function MemoriesScreen({route}) {
             {useNativeDriver: true},
           )}>
           {getHeader()}
-          <FlatList
-            removeClippedSubviews
-            showsVertiacalScrollIndicator={false}
-            ListEmptyComponent={() => (
-              <View
-                style={{
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginTop: '60%',
-                }}>
-                <Body
-                  type={1}
-                  text={i18n.t('No memories captured yet')}
-                  style={{marginBottom: 4}}
-                  color={COLORS.shades[0]}
-                />
-                <Body
-                  type={2}
-                  text={i18n.t(
-                    "You will get a notification as soon as it's time to snap some memories 📸 ",
-                  )}
-                  style={{maxWidth: '80%', textAlign: 'center'}}
-                  color={COLORS.neutral[500]}
-                />
-              </View>
-            )}
-            data={dateSelection && dateSelection[dateIndex]?.images}
-            style={{marginTop: -10, paddingBottom: 100}}
-            renderItem={({item, index}) => getImageTile(item, index)}
-            numColumns={3}
-          />
+          {isLoading ? (
+            <MemoriesSkeleton />
+          ) : (
+            <FlatList
+              removeClippedSubviews
+              showsVertiacalScrollIndicator={false}
+              ListEmptyComponent={() => (
+                <View
+                  style={{
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginTop: '60%',
+                  }}>
+                  <Body
+                    type={1}
+                    text={i18n.t('No memories captured yet')}
+                    style={{marginBottom: 4}}
+                    color={COLORS.shades[0]}
+                  />
+                  <Body
+                    type={2}
+                    text={i18n.t(
+                      "You will get a notification as soon as it's time to snap some memories 📸 ",
+                    )}
+                    style={{maxWidth: '80%', textAlign: 'center'}}
+                    color={COLORS.neutral[500]}
+                  />
+                </View>
+              )}
+              data={dateSelection && dateSelection[dateIndex]?.images}
+              style={{marginTop: -14, paddingBottom: 100}}
+              renderItem={({item, index}) => getImageTile(item, index)}
+              numColumns={3}
+            />
+          )}
         </Animated.ScrollView>
 
         {downloadIndex !== null && getDownloadContainer()}

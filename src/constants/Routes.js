@@ -4,7 +4,6 @@ const ROUTES = {
   mapScreen: 'MapScreen',
   checklistScreen: 'ChecklistScreen',
   inviteeScreen: 'InviteeScreen',
-  locationScreen: 'locationScreen',
   expenseScreen: 'expenseScreen',
   individualExpenseScreen: 'individualExpenseScreen',
   memoriesScreen: 'memoriesScreen',
@@ -19,6 +18,7 @@ const ROUTES = {
   myAccountScreen: 'myAccountScreen',
   documentsScreen: 'documentsScreen',
   packlistScreen: 'packlistScreen',
+  storyScreen: 'storyScreen',
 };
 
 export default ROUTES;

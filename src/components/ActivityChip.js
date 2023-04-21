@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import {Platform, StyleSheet} from 'react-native';
 import React from 'react';
 import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
 import {View} from 'react-native-animatable';
@@ -8,11 +8,10 @@ import Utils from '../utils';
 import {RADIUS} from '../constants/Theme';
 
 export default function ActivityChip({style, data, onPress}) {
-  const {color, title, icon} = data;
-
   if (!data) {
     return <View />;
   }
+  const {color, title, icon} = data;
 
   return (
     <Pressable
@@ -33,7 +32,11 @@ export default function ActivityChip({style, data, onPress}) {
         type={1}
         text={title}
         color={color}
-        style={{fontWeight: '500', marginLeft: 4, fontSize: 15}}
+        style={{
+          fontWeight: Platform.OS === 'android' ? '600' : '500',
+          marginLeft: 4,
+          fontSize: 15,
+        }}
       />
     </Pressable>
   );

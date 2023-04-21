@@ -164,7 +164,8 @@ export default function DestinationScreen({navigatePage}) {
 
   const handleNavigation = () => {
     if (scrollIndex !== 0) {
-      return pageRef.current?.setPage(0);
+      setScrollIndex(0);
+      return pageRef.current?.scrollTo({x: 0});
     }
 
     if (expandedIndex !== 0) {
@@ -322,6 +323,7 @@ const styles = StyleSheet.create({
     shadowOffset: {width: 0, height: 10},
     shadowOpacity: 0.1,
     shadowRadius: 10,
+    elevation: 10,
   },
   container: {
     width: '100%',

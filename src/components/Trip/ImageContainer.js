@@ -1,10 +1,4 @@
-import {
-  Dimensions,
-  Image,
-  Pressable,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import {Dimensions, Image, StyleSheet, TouchableOpacity} from 'react-native';
 import Toast from 'react-native-toast-message';
 import React, {useRef} from 'react';
 import FastImage from 'react-native-fast-image';
@@ -13,7 +7,6 @@ import {useMutation} from '@apollo/client';
 import i18n from '../../utils/i18n';
 import Utils from '../../utils';
 import DELETE_IMAGE from '../../mutations/deleteImage';
-import userStore from '../../stores/UserStore';
 import Avatar from '../Avatar';
 import ActionSheet from 'react-native-actionsheet';
 
@@ -107,7 +100,7 @@ export default function ImageContainer({
         )}
         <Avatar
           size={26}
-          avatarUri={author.avatarUri}
+          avatarUri={author?.avatarUri}
           style={{
             position: 'absolute',
             bottom: 10,

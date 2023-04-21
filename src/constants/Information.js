@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import i18n from '../utils/i18n';
 
 const INFORMATION = {

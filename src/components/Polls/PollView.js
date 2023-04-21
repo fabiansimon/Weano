@@ -5,7 +5,6 @@ import React from 'react';
 import Icon from 'react-native-vector-icons/Feather';
 import {useMutation} from '@apollo/client';
 import Toast from 'react-native-toast-message';
-// eslint-disable-next-line import/no-named-as-default
 import {MenuView} from '@react-native-menu/menu';
 import PollTile from './PollTile';
 import Headline from '../typography/Headline';

@@ -11,8 +11,11 @@ import Subtitle from '../typography/Subtitle';
 import Body from '../typography/Body';
 import TripStopTile from './TripStopTile';
 import AffiliateInfoView from './AffiliateInfoView';
+import {GestureHandlerRootView, ScrollView} from 'react-native-gesture-handler';
 
 const MAX_LENGTH = 15;
+
+const {width, height} = Dimensions.get('window');
 
 export default function DestinationsSheet({
   destinations,
@@ -33,9 +36,9 @@ export default function DestinationsSheet({
   const [expandedIndex, setExpandedIndex] = useState(-1);
   const [info, setInfo] = useState(null);
 
-  const {height} = Dimensions.get('window');
   const isLast = destinations.length <= 1;
   const pageRef = useRef();
+
   const animatedStyle = useAnimatedStyle(() => {
     const translateY = Math.abs(height - position.value - height);
     return {
@@ -55,6 +58,7 @@ export default function DestinationsSheet({
       icon: <Icon name="airplane" size={16} color={COLORS.primary[700]} />,
       color: COLORS.primary[700],
       type: 'transport',
+      isDisbled: destinations.length <= 1,
     },
     {
       title: i18n.t('Discover'),
@@ -87,7 +91,8 @@ export default function DestinationsSheet({
     });
 
     setTimeout(() => {
-      pageRef.current?.setPage(1);
+      setScrollIndex(1);
+      pageRef.current?.scrollTo({x: 1000});
     }, 100);
   };
 
@@ -95,10 +100,12 @@ export default function DestinationsSheet({
     const {isActive, item, drag, getIndex} = destination;
 
     const index = getIndex();
+    const activeLinks = affiliateLinks.filter(link => !link.isDisbled);
+
     return (
       <TripStopTile
         onInfoTap={(t, _item) => handleFurtherInfo(t, _item)}
-        links={affiliateLinks}
+        links={activeLinks}
         onDelete={onDelete}
         onReplace={onReplace}
         index={index}
@@ -146,7 +153,7 @@ export default function DestinationsSheet({
   );
 
   return (
-    <>
+    <GestureHandlerRootView style={{flex: 1}}>
       <Animated.View
         style={[
           {
@@ -159,17 +166,20 @@ export default function DestinationsSheet({
         ]}
       />
 
-      <Pressable style={styles.container}>
+      <Pressable onPress={handleExpending} style={styles.container}>
         <Pressable style={styles.handler} />
-        <PagerView
-          style={{flex: 1}}
+        <ScrollView
           ref={node => {
             navigateRef.current = node;
             pageRef.current = node;
           }}
-          onPageSelected={e => setScrollIndex(e.nativeEvent.position)}
-          scrollEnabled={false}>
-          <View>
+          scrollEnabled={false}
+          showsVerticalScrollIndicator={false}
+          horizontal
+          contentContainerStyle={{
+            width: width * 2,
+          }}>
+          <View style={{width}}>
             <Headline
               type={4}
               color={COLORS.neutral[900]}
@@ -191,9 +201,9 @@ export default function DestinationsSheet({
             destinations={destinations}
             dateRange={dateRange}
           />
-        </PagerView>
+        </ScrollView>
       </Pressable>
-    </>
+    </GestureHandlerRootView>
   );
 }
 

@@ -1,4 +1,4 @@
-import {Image, Pressable, StyleSheet, View} from 'react-native';
+import {Dimensions, Image, Pressable, StyleSheet, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import EntIcon from 'react-native-vector-icons/Entypo';
 import ActivityChip from '../ActivityChip';
@@ -6,12 +6,13 @@ import i18n from '../../utils/i18n';
 import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import Body from '../typography/Body';
 import Headline from '../typography/Headline';
-import AirbnbLogo from '../../../assets/images/airbnb.png';
-import BookinLogo from '../../../assets/images/booking.png';
-import HostelworldLogo from '../../../assets/images/hostelworld.png';
 import Utils from '../../utils';
 import WebViewModal from '../WebViewModal';
 import CalendarModal from '../CalendarModal';
+import {AFFILIATE_DATA} from '../../constants/AffiliateData';
+
+const DAY_SECONDS = 86400;
+const {width} = Dimensions.get('window');
 
 export default function AffiliateInfoView({
   info,
@@ -21,20 +22,58 @@ export default function AffiliateInfoView({
 }) {
   // STATE & MISC
   const [nightsCounter, setNightsCounter] = useState(0);
+  const [locations, setLocations] = useState([]);
   const [calendarVisible, setCalendarVisible] = useState(false);
   const [dates, setDates] = useState({
     start: 0,
     end: 0,
   });
   const [webInfo, setWebInfo] = useState({
-    title: 'Hostelworld',
-    url: 'www.google.com',
+    title: '',
+    url: '',
     isVisible: false,
   });
 
   const ONE_DAY = 86400;
 
   const {startDate, endDate} = dateRange;
+
+  useEffect(() => {
+    if (!info) {
+      return;
+    }
+
+    const {type} = info.link;
+    const {index} = info;
+
+    if (!type === 'transport') {
+      return;
+    }
+
+    if (destinations.length <= 1) {
+      return setLocations([destinations[0].placeName]);
+    }
+
+    if (!destinations[index - 1]) {
+      return setLocations([
+        destinations[index].placeName,
+        destinations[index + 1].placeName,
+      ]);
+    }
+    return setLocations([
+      destinations[index - 1].placeName,
+      destinations[index].placeName,
+    ]);
+  }, [info]);
+
+  useEffect(() => {
+    if (!isSleep) {
+      return;
+    }
+    const diff = Utils.getDaysDifference(dates.start, dates.end, true);
+
+    setNightsCounter(diff);
+  }, [dates]);
 
   useEffect(() => {
     if (!info) {
@@ -120,28 +159,10 @@ export default function AffiliateInfoView({
 
   const textData = getTextData();
 
-  const affData = [
-    {
-      title: 'Hostelworld',
-      type: 'hostelworld',
-      url: 'https://www.hostelworld.com',
-    },
-    {
-      title: 'Airbnb',
-      type: 'airbnb',
-      url: 'https://www.airbnb.com',
-    },
-    {
-      title: 'Booking',
-      type: 'booking',
-      url: 'https://www.booking.com',
-    },
-  ];
-
-  const handleWeb = type => {
+  const handleWeb = data => {
     setWebInfo({
-      ...affData.find(data => data.type === type),
-      url: generateUrl(type),
+      title: data.title,
+      url: generateUrl(data.type),
       isVisible: true,
     });
   };
@@ -155,32 +176,53 @@ export default function AffiliateInfoView({
     // https://www.airbnb.co.uk/s/Oaxaca/homes?query=Oaxac&checkin=2023-03-19&checkout=2023-04-04&adults=2
     // https://www.booking.com/ss=mexico%20city&checkin=2023-03-23&checkout=2023-03-26&group_adults=1
     // https://www.getyourguide.co.uk/s?q=Oaxaca%20de%20JuarezMexico&date_from=2023-08-02&date_to=2023-08-04
-    const AIRBNB_URL = `https://www.airbnb.com/s/${location}/homes?query=${location}&checkin=${checkIn}&checkout=${checkOut}&adults=${adults}`;
-    const BOOKING_URL = `https://www.booking.com/ss=${location}&checkin=${checkIn}&checkout=${checkOut}&group_adults=${adults}`;
-    const YOURGUIDE_URL = `https://getyourguide.com/s?q=${location}&date_from=${checkIn}`;
+    // https://www.tripadvisor.com/Search?q=mexico%20city
+    // https://www.viator.com/searchResults/all?text=Oaxaca+de+Juarez
+    // https://www.rome2rio.com/map/Vienna/Mexico-City
+    // https://www.hostelworld.com/findabed.php/ChosenCity.Mexico-City/ChosenCountry.Mexico
+    // https://www.google.com/search?q=oaxaca+mexico+to+mexico+city+aug+14th+2023
+    // https://www.google.com/maps/search/restaurants+mexico+city
 
-    if (type === 'airbnb') {
-      return AIRBNB_URL;
-    }
-    if (type === 'booking') {
-      return BOOKING_URL;
-    }
-    if (type === 'hostelworld') {
-      return YOURGUIDE_URL;
-    }
-    if (type === 'hostelworld') {
-      return BOOKING_URL;
+    switch (type) {
+      case 'hostelworld':
+        return `https://www.hostelworld.com/findabed.php/ChosenCity.${location
+          .split(',')[0]
+          .replace(' ', '-')
+          .trim()}`;
+      case 'airbnb':
+        return `https://www.airbnb.com/s/${location}/homes?query=${location}&checkin=${checkIn}&checkout=${checkOut}&adults=${adults}`;
+      case 'booking':
+        return `https://www.booking.com/ss=${location}&checkin=${checkIn}&checkout=${checkOut}&group_adults=${adults}`;
+      case 'hostelworld':
+        return `https://www.booking.com/ss=${location}&checkin=${checkIn}&checkout=${checkOut}&group_adults=${adults}`;
+      case 'yourGuide':
+        return `https://getyourguide.com/s?q=${location}&date_from=${checkIn}`;
+      case 'viator':
+        return `https://www.viator.com/searchResults/all?text=${location}`;
+      case 'tripAdvisor':
+        return `https://www.tripadvisor.com/Search?q=${location.split(',')[0]}`;
+      case 'rome2rio':
+        return `https://www.rome2rio.com/map/${locations[0]}/{${locations[1]}}`;
+      case 'googleTransport':
+        return `https://www.google.com/search?q=${locations[0]}+to+${locations[1]}+${checkIn}`;
+      case 'googleFood':
+        return `https://www.google.com/maps/search/restaurants+in+${location}`;
+      default:
+        break;
     }
   };
 
   const handleCounter = amount => {
+    let newEnd;
     if (amount === -1) {
-      setNightsCounter(prev => (prev > 1 ? prev - 1 : 1));
+      newEnd = dates.end - DAY_SECONDS;
     } else {
-      setNightsCounter(prev => prev + 1);
+      newEnd = dates.end + DAY_SECONDS;
     }
 
-    const newEnd = dates.start + nightsCounter * ONE_DAY;
+    if (newEnd < dates.start + DAY_SECONDS) {
+      return;
+    }
 
     setDates(prev => ({
       start: prev.start,
@@ -188,18 +230,51 @@ export default function AffiliateInfoView({
     }));
   };
 
-  const getSimpleButton = (image, string, _onPress) => (
-    <Pressable onPress={_onPress} style={styles.simpleButton}>
-      <Image style={{height: 18, width: 18}} source={image} />
-      <Body type={1} style={{fontWeight: '500', marginLeft: 6}} text={string} />
-    </Pressable>
-  );
+  const getButtonContainer = () => {
+    let data;
+    switch (link.type) {
+      case 'sleep':
+        data = AFFILIATE_DATA.sleep;
+        break;
+      case 'transport':
+        data = AFFILIATE_DATA.transport;
+        break;
+      case 'discover':
+        data = AFFILIATE_DATA.discover;
+        break;
+      case 'food':
+        data = AFFILIATE_DATA.food;
+        break;
+      default:
+        break;
+    }
+
+    return (
+      <View style={styles.buttonContainer}>
+        {data.map(d => {
+          const {title, logo} = d;
+
+          return (
+            <Pressable onPress={() => handleWeb(d)} style={styles.simpleButton}>
+              <Image style={{height: 18, width: 18}} source={logo} />
+              <Body
+                type={1}
+                style={{fontWeight: '500', marginLeft: 6}}
+                text={title}
+              />
+            </Pressable>
+          );
+        })}
+      </View>
+    );
+  };
 
   return (
     <>
       <View
         style={{
-          marginHorizontal: PADDING.l,
+          paddingHorizontal: PADDING.l,
+          width,
           alignItems: 'flex-start',
           marginTop: 30,
         }}>
@@ -211,8 +286,11 @@ export default function AffiliateInfoView({
           style={{marginTop: 12, marginBottom: 2}}
         />
         <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
-          <Headline type={4} text={destinations[index].placeName} />
-          {destinations[index + 1] && isTransport && (
+          <Headline
+            type={4}
+            text={isTransport ? locations[0] : destinations[index].placeName}
+          />
+          {isTransport && (
             <>
               <Body
                 style={{marginHorizontal: 4}}
@@ -220,7 +298,7 @@ export default function AffiliateInfoView({
                 color={COLORS.neutral[300]}
                 text={i18n.t('to')}
               />
-              <Headline type={4} text={destinations[index + 1].placeName} />
+              <Headline type={4} text={locations[1]} />
             </>
           )}
         </View>
@@ -261,7 +339,7 @@ export default function AffiliateInfoView({
                 height: 40,
                 justifyContent: 'center',
               }}>
-              <EntIcon name="minus" size={20} />
+              <EntIcon name="minus" color={COLORS.shades[100]} size={20} />
             </Pressable>
             <View
               style={{justifyContent: 'center', flex: 1, alignItems: 'center'}}>
@@ -285,7 +363,7 @@ export default function AffiliateInfoView({
                 height: 40,
                 justifyContent: 'center',
               }}>
-              <EntIcon name="plus" size={20} />
+              <EntIcon name="plus" color={COLORS.shades[100]} size={20} />
             </Pressable>
           </View>
         )}
@@ -295,13 +373,7 @@ export default function AffiliateInfoView({
           text={textData?.title}
         />
         <Body type={1} color={COLORS.neutral[300]} text={textData?.subtitle} />
-        <View style={{flexDirection: 'row', marginBottom: 6, marginTop: 30}}>
-          {getSimpleButton(BookinLogo, 'Booking', () => handleWeb('booking'))}
-          {getSimpleButton(AirbnbLogo, 'Airbnb', () => handleWeb('airbnb'))}
-        </View>
-        {getSimpleButton(HostelworldLogo, 'Hostelworld', () =>
-          handleWeb('hostelworld'),
-        )}
+        {getButtonContainer()}
       </View>
       <WebViewModal
         url={webInfo?.url}
@@ -321,7 +393,7 @@ export default function AffiliateInfoView({
         initialStartDate={dates?.start}
         initialEndDate={dates?.end}
         onApplyClick={datesData => {
-          if (isSleep) {
+          if (!isSleep) {
             setDates({
               start: datesData.timestamp / 1000 || 0,
               end: 0,
@@ -332,7 +404,6 @@ export default function AffiliateInfoView({
               end: datesData.end.timestamp / 1000 || 0,
             });
           }
-
           setCalendarVisible(false);
         }}
       />
@@ -353,15 +424,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   simpleButton: {
+    marginBottom: 6,
     marginRight: 6,
     borderRadius: 100,
     borderColor: COLORS.neutral[100],
     borderWidth: 1,
     backgroundColor: COLORS.shades[0],
     flexDirection: 'row',
-    height: 42,
+    minHeight: 42,
     paddingHorizontal: 16,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  buttonContainer: {
+    marginTop: 20,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
 });

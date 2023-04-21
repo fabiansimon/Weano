@@ -19,7 +19,6 @@ import ProfileScreen from './src/screens/ProfileScreen';
 import MapScreen from './src/screens/MapScreen';
 import TripScreen from './src/screens/Trip/TripScreen';
 import InviteeScreen from './src/screens/Trip/InviteeScreen';
-// import LocationScreen from './src/components/Search/SearchModal';
 import IndividualExpenseScreen from './src/screens/Trip/IndividualExpenseScreen';
 import ExpenseScreen from './src/screens/Trip/ExpenseScreen';
 import ChecklistScreen from './src/screens/Trip/ChecklistScreen';
@@ -117,10 +116,6 @@ function App() {
                 name={ROUTES.inviteeScreen}
                 component={InviteeScreen}
               />
-              {/* <Stack.Screen
-                  name={ROUTES.locationScreen}
-                  component={LocationScreen}
-                /> */}
               <Stack.Screen
                 name={ROUTES.individualExpenseScreen}
                 component={IndividualExpenseScreen}
