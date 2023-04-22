@@ -12,7 +12,7 @@ import * as Animatable from 'react-native-animatable';
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import EntIcon from 'react-native-vector-icons/Entypo';
 import React, {useState, useEffect, useRef, useCallback} from 'react';
-import Animated from 'react-native-reanimated';
+import Animated, {sub} from 'react-native-reanimated';
 import {useNavigation} from '@react-navigation/native';
 import {useLazyQuery, useQuery} from '@apollo/client';
 import Toast from 'react-native-toast-message';
@@ -301,14 +301,22 @@ export default function MemoriesScreen({route}) {
       dateRange: {startDate},
       title,
     } = trips.find(trip => trip.id === tripId);
+
+    let subtitle;
     const location = destinations[0].placeName.split(',');
     const destination = location[location.length - 1].trim();
 
-    const diff = Utils.getDaysDifference(startDate, null, true);
+    const diff = Utils.getDaysDifference(startDate, null, false);
+
+    if (diff > 0) {
+      subtitle = `${destination}, ${i18n.t('in')} ${diff} ${i18n.t('days')}`;
+    } else {
+      subtitle = `${destination}, ${Math.abs(diff)} ${i18n.t('days ago')}`;
+    }
 
     return {
       title,
-      subtitle: `${destination}, ${diff} ${i18n.t('days ago')}`,
+      subtitle,
     };
   }, [tripId]);
 

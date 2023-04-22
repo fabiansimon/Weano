@@ -10,13 +10,7 @@ import Avatar from './Avatar';
 import Subtitle from './typography/Subtitle';
 
 export default function RecapCardMini({data, style, onPress, onLongPress}) {
-  const {
-    destinations,
-    dateRange,
-    title,
-    activeMembers,
-    // eslint-disable-next-line react/destructuring-assignment
-  } = data;
+  const {destinations, dateRange, title, activeMembers} = data;
 
   const getDayDifference = dates => {
     if (!dates) {

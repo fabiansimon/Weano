@@ -62,8 +62,11 @@ import Animated from 'react-native-reanimated';
 import DestinationScreen from './DestinationsScreen';
 import REMOVE_USER_FROM_TRIP from '../../mutations/removeUserFromTrip';
 import userStore from '../../stores/UserStore';
+import {LinearGradient} from 'expo-linear-gradient';
 
 const {StatusBarManager} = NativeModules;
+
+const {width} = Dimensions.get('window');
 
 export default function TripScreen({route}) {
   // PARAMS
@@ -715,6 +718,40 @@ export default function TripScreen({route}) {
       <View style={styles.handler} />
       <View style={styles.bodyContainer}>
         <View style={{paddingHorizontal: PADDING.l}}>
+          <View style={styles.infoHeader}>
+            {isHost ? (
+              <View style={styles.hostContainer}>
+                <Icon color={COLORS.shades[0]} name="person" />
+                <Body
+                  type={2}
+                  style={{
+                    fontWeight: Platform.OS === 'android' ? '600' : '500',
+                    marginLeft: 4,
+                  }}
+                  color={COLORS.shades[0]}
+                  text={i18n.t('You are host')}
+                />
+              </View>
+            ) : (
+              <View />
+            )}
+            {data?.type === 'recent' ? (
+              <View style={styles.lockedContainer}>
+                <Icon color={COLORS.shades[0]} name="md-lock-closed" />
+                <Body
+                  type={2}
+                  style={{
+                    fontWeight: Platform.OS === 'android' ? '600' : '500',
+                    marginLeft: 4,
+                  }}
+                  color={COLORS.shades[0]}
+                  text={i18n.t('Trip is locked')}
+                />
+              </View>
+            ) : (
+              <View />
+            )}
+          </View>
           <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
             <Headline
               onPress={() => isHost && setInputOpen('title')}
@@ -865,46 +902,58 @@ export default function TripScreen({route}) {
   );
 
   const getHeaderImage = () => (
-    <Animated.View
-      style={{
-        backgroundColor: COLORS.shades[100],
-        position: 'absolute',
-        zIndex: 0,
-        height: IMAGE_HEIGHT,
-        width,
-        transform: [
-          {
-            translateY: scrollY.interpolate({
-              inputRange: [-IMAGE_HEIGHT, 0, IMAGE_HEIGHT],
-              outputRange: [IMAGE_HEIGHT / 2, 0, -IMAGE_HEIGHT / 3],
-            }),
-            scale: scrollY.interpolate({
-              inputRange: [-IMAGE_HEIGHT, 0, IMAGE_HEIGHT],
-              outputRange: [2, 1, 1],
-            }),
-          },
-        ],
-      }}>
-      <Image
-        style={styles.image}
-        resizeMode="cover"
-        source={DefaultImage}
-        blurRadius={5}
-      />
-      {!inactive && (
-        <View style={styles.addImage}>
-          <Headline type={3} text={i18n.t('Add Trip Image')} color="white" />
-          <Icon name="image" size={32} color="white" />
-        </View>
-      )}
-      {data?.thumbnailUri && (
-        <FastImage
+    <>
+      <Animated.View
+        style={{
+          backgroundColor: COLORS.shades[100],
+          position: 'absolute',
+          zIndex: 0,
+          height: IMAGE_HEIGHT,
+          width,
+          transform: [
+            {
+              translateY: scrollY.interpolate({
+                inputRange: [-IMAGE_HEIGHT, 0, IMAGE_HEIGHT],
+                outputRange: [IMAGE_HEIGHT / 2, 0, -IMAGE_HEIGHT / 3],
+              }),
+              scale: scrollY.interpolate({
+                inputRange: [-IMAGE_HEIGHT, 0, IMAGE_HEIGHT],
+                outputRange: [2, 1, 1],
+              }),
+            },
+          ],
+        }}>
+        <Image
           style={styles.image}
           resizeMode="cover"
-          source={{uri: data.thumbnailUri}}
+          source={DefaultImage}
+          blurRadius={5}
         />
-      )}
-    </Animated.View>
+        {!inactive && (
+          <View style={styles.addImage}>
+            <Headline type={3} text={i18n.t('Add Trip Image')} color="white" />
+            <Icon name="image" size={32} color="white" />
+          </View>
+        )}
+        {data?.thumbnailUri && (
+          <FastImage
+            style={styles.image}
+            resizeMode="cover"
+            source={{uri: data.thumbnailUri}}
+          />
+        )}
+        <LinearGradient
+          style={{
+            height: 70,
+            width,
+            bottom: 0,
+            position: 'absolute',
+            opacity: 0.5,
+          }}
+          colors={['transparent', COLORS.neutral[900]]}
+        />
+      </Animated.View>
+    </>
   );
 
   return (
@@ -1155,5 +1204,29 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.shades[0],
     borderColor: COLORS.neutral[100],
     borderRadius: RADIUS.l,
+  },
+  infoHeader: {
+    width,
+    paddingHorizontal: PADDING.s,
+    flexDirection: 'row',
+    position: 'absolute',
+    justifyContent: 'space-between',
+    top: -50,
+  },
+  hostContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.primary[700],
+    borderRadius: RADIUS.xl,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  lockedContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: RADIUS.xl,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    backgroundColor: COLORS.shades[100],
   },
 });

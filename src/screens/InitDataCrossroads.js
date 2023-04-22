@@ -81,9 +81,7 @@ export default function InitDataCrossroads() {
       });
     }
 
-    console.log('yes');
     const token = (await Notifications.getExpoPushTokenAsync()).data;
-    console.log(token);
 
     if (!token) {
       return;
@@ -108,42 +106,44 @@ export default function InitDataCrossroads() {
   };
 
   const handleNavigation = () => {
+    console.log(notification);
+
     if (authToken && !notification && !deepLink) {
-      navigation.navigate(ROUTES.mainScreen);
-      return;
+      return navigation.navigate(ROUTES.mainScreen);
     }
 
     if (authToken && notification && !deepLink) {
       if (notification.type === 'upload_reminder') {
-        navigation.navigate(ROUTES.cameraScreen, {tripId: notification.tripId});
-        return;
+        return navigation.navigate(ROUTES.cameraScreen, {
+          tripId: notification.tripId,
+        });
       }
       if (notification.type === 'expense_reminder') {
-        navigation.navigate(ROUTES.tripScreen, {tripId: notification.tripId});
-        return;
+        return navigation.navigate(ROUTES.tripScreen, {
+          tripId: notification.tripId,
+        });
       }
       if (notification.type === 'task_reminder') {
-        navigation.navigate(ROUTES.tripScreen, {tripId: notification.tripId});
-        return;
+        return navigation.navigate(ROUTES.tripScreen, {
+          tripId: notification.tripId,
+        });
       }
     }
 
     if (authToken && !notification && deepLink) {
-      navigation.navigate(deepLink.screen, deepLink.params);
-      return;
+      return navigation.navigate(deepLink.screen, deepLink.params);
     }
 
     if (!authToken && notification && !deepLink) {
       if (notification.type === 'upload_reminder') {
-        navigation.navigate(ROUTES.signUpScreen, {
+        return navigation.navigate(ROUTES.signUpScreen, {
           uploadReminderId: notification.tripId,
         });
-        return;
       }
     }
 
     if (!authToken && !notification && !deepLink) {
-      navigation.navigate(ROUTES.navigate(ROUTES.signUpScreen));
+      return navigation.navigate(ROUTES.navigate(ROUTES.signUpScreen));
     }
   };
 
@@ -200,17 +200,14 @@ export default function InitDataCrossroads() {
         text2: error.message,
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, error]);
 
   useEffect(() => {
     checkInitStatus();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authToken]);
 
   useEffect(() => {
     checkInitStatus();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -252,7 +249,6 @@ export default function InitDataCrossroads() {
       return;
     }
     handleNavigation();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [notification]);
 
   useEffect(() => {
@@ -260,7 +256,6 @@ export default function InitDataCrossroads() {
       return;
     }
     handleNavigation();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deepLink]);
 
   const handleOpenUrl = event => {
@@ -296,7 +291,6 @@ export default function InitDataCrossroads() {
         Linking.removeAllListeners('url', handleOpenUrl);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // useEffect(() => {

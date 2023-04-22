@@ -28,13 +28,7 @@ export default function SearchResultTile({style, data, onPress}) {
           />
         </View>
       </View>
-      <View style={styles.chevronContainer}>
-        <Icon
-          name="chevron-small-right"
-          size={22}
-          color={COLORS.neutral[300]}
-        />
-      </View>
+      <Icon name="chevron-small-right" size={22} color={COLORS.neutral[300]} />
     </Pressable>
   );
 }
@@ -45,9 +39,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     backgroundColor: COLORS.shades[0],
-    minHeight: 68,
-    borderRadius: RADIUS.s,
-    borderWidth: 1,
+    minHeight: 50,
+    borderRadius: 8,
     paddingVertical: 8,
     borderColor: COLORS.neutral[100],
     paddingHorizontal: PADDING.s,
