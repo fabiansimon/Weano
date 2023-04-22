@@ -70,7 +70,7 @@ const {width} = Dimensions.get('window');
 
 export default function TripScreen({route}) {
   // PARAMS
-  const {tripId} = route.params;
+  const {tripId, isJoined = false} = route.params;
 
   // QUERIES
   const [getTripData, {error: fetchError, data: tripData, loading}] =
@@ -90,7 +90,9 @@ export default function TripScreen({route}) {
   const activeTrip = activeTripStore(state => state.activeTrip);
   const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
   const setActiveTrip = activeTripStore(state => state.setActiveTrip);
+  const trips = tripsStore(state => state.trips);
   const removeTrip = tripsStore(state => state.removeTrip);
+  const addTrip = tripsStore(state => state.addTrip);
   const {id} = userStore(state => state.user);
 
   // STATE & MISC
@@ -131,8 +133,6 @@ export default function TripScreen({route}) {
 
   const themeColor =
     activeTrip.type === 'active' ? COLORS.error[900] : COLORS.primary[700];
-
-  const {width} = Dimensions.get('window');
 
   const navigatePage = index => {
     if (!inactive) {
@@ -217,7 +217,11 @@ export default function TripScreen({route}) {
     }
 
     if (tripData) {
-      setActiveTrip(tripData.getTripById);
+      const _trip = tripData.getTripById;
+      if (isJoined) {
+        addTrip(_trip);
+      }
+      setActiveTrip(_trip);
     }
   }, [error, fetchError, tripData]);
 
@@ -929,7 +933,7 @@ export default function TripScreen({route}) {
           source={DefaultImage}
           blurRadius={5}
         />
-        {!inactive && (
+        {!inactive && isHost && (
           <View style={styles.addImage}>
             <Headline type={3} text={i18n.t('Add Trip Image')} color="white" />
             <Icon name="image" size={32} color="white" />
@@ -1097,7 +1101,6 @@ export default function TripScreen({route}) {
         {!inactive ? (
           <DestinationScreen navigatePage={() => setViewIndex(0)} />
         ) : (
-          // <View style={{flex: 1, backgroundColor: 'red'}} />
           <View />
         )}
       </PagerView>

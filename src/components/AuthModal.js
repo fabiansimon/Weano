@@ -31,7 +31,7 @@ export default function AuthModal({
   isVisible,
   onRequestClose,
   registerData,
-  joinTripId,
+  inviteId,
 }) {
   // MUTATIONS
   const [registerUser, {error: registerError}] = useMutation(REGISTER_USER);
@@ -88,20 +88,6 @@ export default function AuthModal({
     setTimeout(() => {
       pageRef.current?.setPage(index);
     }, 100);
-  };
-
-  const handleJoinTrip = async () => {
-    await joinTrip({
-      variables: {
-        tripId: joinTripId,
-      },
-    }).catch(e => {
-      Toast.show({
-        type: 'error',
-        text1: i18n.t('Whoops!'),
-        text2: e.message,
-      });
-    });
   };
 
   const requestCode = async () => {
@@ -175,21 +161,12 @@ export default function AuthModal({
       })
       .then(res => {
         asyncStorageDAO.setAccessToken(res.data.registerUser);
-        asyncStorageDAO.setIsAuth(true);
         updateUserData({authToken: res.data.registerUser});
 
-        // NOT WORKING ATM
-        if (joinTripId) {
-          setTimeout(() => {
-            handleJoinTrip().then(() => {
-              navigation.navigate(ROUTES.initDataCrossroads);
-              onRequestClose();
-            });
-          }, 500);
-        } else {
-          navigation.navigate(ROUTES.initDataCrossroads);
-          onRequestClose();
-        }
+        navigation.push(ROUTES.initDataCrossroads, {
+          inviteId: inviteId || null,
+        });
+        onRequestClose();
       });
   };
 
@@ -221,20 +198,11 @@ export default function AuthModal({
       })
       .then(res => {
         asyncStorageDAO.setAccessToken(res.data.loginUser);
-        asyncStorageDAO.setIsAuth(true);
         updateUserData({authToken: res.data.loginUser});
 
-        // NOT WORKING ATM
-        if (joinTripId) {
-          return setTimeout(() => {
-            handleJoinTrip().then(() => {
-              navigation.navigate(ROUTES.initDataCrossroads);
-              onRequestClose();
-            });
-          }, 1000);
-        }
-
-        navigation.navigate(ROUTES.initDataCrossroads);
+        navigation.push(ROUTES.initDataCrossroads, {
+          inviteId: inviteId || null,
+        });
         onRequestClose();
       });
   };

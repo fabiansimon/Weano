@@ -1,14 +1,14 @@
 import {
   ActivityIndicator,
+  Alert,
   Image,
   Platform,
-  ScrollView,
+  StatusBar,
   StyleSheet,
   View,
 } from 'react-native';
 import Toast from 'react-native-toast-message';
 import React, {useRef, useEffect, useState} from 'react';
-import PagerView from 'react-native-pager-view';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Entypo';
@@ -21,13 +21,13 @@ import COLORS, {PADDING, RADIUS} from '../constants/Theme';
 import Body from '../components/typography/Body';
 import Utils from '../utils';
 import Button from '../components/Button';
-import SignUpScreen from './Intro/SignUpScreen';
 import ROUTES from '../constants/Routes';
 import GET_INVITATION_TRIP_DATA from '../queries/getInvitationTripData';
 import JOIN_TRIP from '../mutations/joinTrip';
 import userStore from '../stores/UserStore';
 import Divider from '../components/Divider';
 import Avatar from '../components/Avatar';
+import BackButton from '../components/BackButton';
 
 export default function InvitationScreen({route}) {
   // PARAMS
@@ -42,60 +42,40 @@ export default function InvitationScreen({route}) {
   // MUTAIONS
   const [joinTrip, {jError}] = useMutation(JOIN_TRIP);
 
-  // STORES
-  const {authToken} = userStore(state => state.user);
-
   // STATE & MISC
   const [tripData, setTripData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const pageRef = useRef();
 
   const navigation = useNavigation();
 
-  const isAuth = authToken !== '';
-
   useEffect(() => {
-    if (error || jError) {
-      Toast.show({
-        type: 'error',
-        text1: i18n.t('Whoops!'),
-        text2: error ? error.message : jError.message,
-      });
-    }
-
     if (data) {
       const {getTripById} = data;
       setTripData(getTripById);
     }
   }, [data, error, jError]);
 
-  const handlePress = () => {
-    if (!isAuth) {
-      pageRef.current?.setPage(1);
-      return;
-    }
-    handleJoinTrip();
-  };
-
   const handleJoinTrip = async () => {
     setIsLoading(true);
-    await joinTrip({
-      variables: {
-        tripId,
-      },
-    })
-      .catch(e => {
-        Toast.show({
-          type: 'error',
-          text1: i18n.t('Whoops!'),
-          text2: e.message,
-        });
-      })
-      .then(() => {
-        navigation.navigate(ROUTES.initDataCrossroads);
-      });
 
-    setIsLoading(false);
+    try {
+      await joinTrip({
+        variables: {
+          tripId,
+        },
+      }).then(() => {
+        setIsLoading(false);
+        return navigation.navigate(ROUTES.tripScreen, {tripId, isJoined: true});
+      });
+    } catch (e) {
+      setIsLoading(false);
+      Alert.alert(i18n.t('Whoops'), e.message, [
+        {
+          text: i18n.t('Ok'),
+          onPress: () => navigation.navigate(ROUTES.mainScreen),
+        },
+      ]);
+    }
   };
 
   const getDateRange = () => {
@@ -113,11 +93,11 @@ export default function InvitationScreen({route}) {
 
   const handleDecline = async () => {
     Utils.showConfirmationAlert(
-      i18n.t('Decline Invitation'),
-      i18n.t('Are you sure you want to decline the invitation?'),
-      i18n.t('Decline'),
+      i18n.t('Leave'),
+      i18n.t('Are you sure you want to leave without joining the trip?'),
+      i18n.t('Leave'),
       async () => {
-        navigation.navigate(ROUTES.initDataCrossroads);
+        navigation.navigate(ROUTES.mainScreen);
       },
     );
   };
@@ -210,56 +190,49 @@ export default function InvitationScreen({route}) {
 
   return (
     <View style={{flex: 1}}>
+      <StatusBar barStyle={'dark-content'} />
       {loading || !data || error ? (
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
           <ActivityIndicator />
         </View>
       ) : (
-        <PagerView
-          style={{flex: 1, backgroundColor: COLORS.neutral[50]}}
-          ref={pageRef}
-          scrollEnabled={false}>
-          <SafeAreaView style={{flex: 1, marginRight: 2}}>
-            <KeyboardView paddingBottom={40}>
-              <View style={styles.inviteContainer}>
-                <View>
-                  <Headline
-                    type={3}
-                    text={i18n.t("You've been invited!")}
-                    color={COLORS.shades[100]}
-                  />
-                  <Body
-                    type={1}
-                    text={i18n.t("Let's go! What are you waiting for?")}
-                    style={{marginTop: 2}}
-                    color={COLORS.neutral[300]}
-                  />
-                  {tripData && getTripInviteContainer()}
-                </View>
-                <View
-                  style={{
-                    width: '100%',
-                    height: 100,
-                    marginBottom: Platform.OS === 'android' ? 18 : 0,
-                  }}>
-                  <Button
-                    isLoading={isLoading}
-                    text={i18n.t('Continue')}
-                    onPress={handlePress}
-                  />
-                  <Body
-                    type={1}
-                    text={i18n.t('Decline Invitation')}
-                    onPress={handleDecline}
-                    style={{marginTop: 18, textAlign: 'center'}}
-                    color={COLORS.neutral[300]}
-                  />
-                </View>
+        <SafeAreaView style={{flex: 1, marginRight: 2}}>
+          <KeyboardView paddingBottom={40}>
+            <View style={styles.inviteContainer}>
+              <View>
+                <BackButton
+                  onPress={handleDecline}
+                  isClear
+                  style={{marginBottom: 10}}
+                />
+                <Headline
+                  type={3}
+                  text={i18n.t("You've been invited!")}
+                  color={COLORS.shades[100]}
+                />
+                <Body
+                  type={1}
+                  text={i18n.t("Let's go! What are you waiting for?")}
+                  style={{marginTop: 2}}
+                  color={COLORS.neutral[300]}
+                />
+                {tripData && getTripInviteContainer()}
               </View>
-            </KeyboardView>
-          </SafeAreaView>
-          {!isAuth ? <SignUpScreen invitationId={tripId} /> : <View />}
-        </PagerView>
+              <View
+                style={{
+                  width: '100%',
+                  height: 55,
+                  marginBottom: Platform.OS === 'android' ? 18 : 0,
+                }}>
+                <Button
+                  isLoading={isLoading}
+                  text={i18n.t('Join Trip')}
+                  onPress={handleJoinTrip}
+                />
+              </View>
+            </View>
+          </KeyboardView>
+        </SafeAreaView>
       )}
     </View>
   );

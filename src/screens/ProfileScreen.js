@@ -247,7 +247,11 @@ export default function ProfileScreen() {
       </Pressable>
 
       <Headline type={2} text={`${user?.firstName} ${user?.lastName}`} />
-      <Body type={1} text={user?.phoneNumber} color={COLORS.neutral[300]} />
+      <Body
+        type={1}
+        text={user?.phoneNumber || user?.email}
+        color={COLORS.neutral[300]}
+      />
       {user?.isProMember && <ProUserBubble style={{marginTop: 4}} />}
     </>
   );

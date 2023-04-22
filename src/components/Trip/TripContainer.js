@@ -16,6 +16,7 @@ export default function TripContainer({
   disabled = true,
   size,
   isDense = false,
+  onPressOut,
   onPress,
 }) {
   const {
@@ -63,7 +64,8 @@ export default function TripContainer({
           marginRight: 14,
           maxWidth: width + 6,
         }}
-        onPressOut={onPress}>
+        onPress={onPress || null}
+        onPressOut={onPressOut || null}>
         <View
           style={[
             styles.outerTripContainer,

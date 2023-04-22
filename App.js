@@ -1,6 +1,11 @@
 import React, {useEffect, useRef} from 'react';
 import {LogBox, StatusBar, View} from 'react-native';
-import {ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  ApolloLink,
+} from '@apollo/client';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import AsyncStorageDAO from './src/utils/AsyncStorageDAO';
@@ -43,7 +48,7 @@ function App() {
 
   const client = new ApolloClient({
     uri: `${META_DATA.baseUrl}/graphql`,
-    // uri: 'http://10.100.31.19:4000/graphql',
+    // uri: 'http://10.100.31.19:4000/graphql-',
     cache: new InMemoryCache(),
     headers: {Authorization: authToken || ''},
   });
@@ -79,6 +84,7 @@ function App() {
             <Stack.Navigator screenOptions={{headerShown: false}}>
               <Stack.Screen
                 name={ROUTES.initDataCrossroads}
+                initialParams={{inviteId: null}}
                 component={InitDataCrossroads}
               />
               <Stack.Screen

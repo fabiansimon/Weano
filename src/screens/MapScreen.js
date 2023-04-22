@@ -75,7 +75,7 @@ export default function MapScreen({route}) {
         requestDisallowInterceptTouchEvent
         coordinate={destinations[0].latlon}>
         <TripContainer
-          onPress={() =>
+          onPressOut={() =>
             navigation.navigate(ROUTES.tripScreen, {tripId: trip.id})
           }
           isDense

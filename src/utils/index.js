@@ -298,4 +298,29 @@ export default class Utils {
 
     return difference;
   }
+  /**
+   * Get Trip type
+   * @param {Number} dateRange - e.g. dateRange of Trip
+   * @return {String} Type of trip in string
+   */
+  static getTripTypeFromDate(dateRange) {
+    const {startDate, endDate} = dateRange;
+    let now = new Date();
+    now.setHours(23, 59, 59, 59);
+    const nowTimeStamp = now.getTime() / 1000;
+
+    let type = '';
+
+    if (startDate < nowTimeStamp && endDate < nowTimeStamp) {
+      type = 'recent';
+    } else if (startDate < nowTimeStamp && endDate > nowTimeStamp) {
+      type = 'active';
+    } else if ((startDate - nowTimeStamp) / 86400 < 7) {
+      type = 'soon';
+    } else if (startDate > nowTimeStamp && endDate > nowTimeStamp) {
+      type = 'upcoming';
+    }
+
+    return type;
+  }
 }

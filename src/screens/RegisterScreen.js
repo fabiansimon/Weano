@@ -38,10 +38,10 @@ const errorColors = {
 
 export default function RegisterScreen({route}) {
   // PARAMS
-  const {uploadReminderId, invitationId} = route.params;
+  const {uploadReminderId, inviteId} = route.params;
 
   // MUTATIONS
-  const [registerUser, {error}] = useMutation(REGISTER_USER);
+  const [registerUser] = useMutation(REGISTER_USER);
 
   // STORES
   const updateUserData = userStore(state => state.updateUserData);
@@ -103,9 +103,10 @@ export default function RegisterScreen({route}) {
         })
         .then(res => {
           asyncStorageDAO.setAccessToken(res.data.registerUser);
-          asyncStorageDAO.setIsAuth(true);
           updateUserData({authToken: res.data.registerUser});
-          navigation.navigate(ROUTES.initDataCrossroads);
+          navigation.push(ROUTES.initDataCrossroads, {
+            inviteId: inviteId || null,
+          });
         });
 
       return;
@@ -408,7 +409,7 @@ export default function RegisterScreen({route}) {
           lastName: lastName.trim(),
           email,
         }}
-        joinTripId={invitationId}
+        joinTripId={inviteId}
         uploadReminderId={uploadReminderId}
       />
       <WebViewModal

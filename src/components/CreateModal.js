@@ -79,7 +79,9 @@ export default function CreateModal({isVisible, onRequestClose}) {
   };
 
   const handleChange = isBack => {
-    if (pageIndex === 0 && isBack) return;
+    if (pageIndex === 0 && isBack) {
+      return;
+    }
     if (pageIndex === createData.length - 1 && !isBack) {
       handleData();
       return;
@@ -184,6 +186,10 @@ export default function CreateModal({isVisible, onRequestClose}) {
       })
       .then(res => {
         const id = res.data.createTrip;
+        const type = Utils.getTripTypeFromDate({
+          startDate: dates.start,
+          endDate: dates.end,
+        });
         httpService.sendInvitations(param, id);
         addTripState({
           id,
@@ -208,7 +214,7 @@ export default function CreateModal({isVisible, onRequestClose}) {
             endDate: dates.end,
             startDate: dates.start,
           },
-          type: 'upcoming',
+          type,
         });
       });
 

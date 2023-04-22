@@ -2,7 +2,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const keys = {
   accessToken: 'access_token',
-  isAuth: 'isAuth',
   freeTierLimits: 'freeTierLimits',
   premiumTierLimits: 'premiumTierLimits',
 };
@@ -26,14 +25,6 @@ class AsyncStorageDAO {
 
   clearAccessToken() {
     return AsyncStorage.removeItem(keys.accessToken);
-  }
-
-  setIsAuth(val) {
-    return AsyncStorage.setItem(keys.isAuth, JSON.stringify(val));
-  }
-
-  getIsAuth() {
-    return AsyncStorage.getItem(keys.isAuth);
   }
 
   setFreeTierLimits(val) {

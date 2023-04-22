@@ -65,7 +65,7 @@ export default function MyAccountScreen() {
       async () => {
         deleteUser();
         await asyncStorageDAO.clearAccessToken();
-        navigation.navigate(ROUTES.initDataCrossroads);
+        navigation.push(ROUTES.initDataCrossroads);
       },
     );
   };
@@ -225,11 +225,13 @@ export default function MyAccountScreen() {
               title={i18n.t('Email')}
               value={email}
               onPress={() =>
-                setInputState({
-                  placeholder: email,
-                  state: 'email',
-                  keyboardType: 'email-address',
-                })
+                phoneNumber
+                  ? setInputState({
+                      placeholder: email,
+                      state: 'email',
+                      keyboardType: 'email-address',
+                    })
+                  : null
               }
             />
             {phoneNumber && (

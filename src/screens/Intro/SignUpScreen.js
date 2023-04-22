@@ -38,9 +38,9 @@ GoogleSignin.configure({
     '1011261400246-ora3gsn0hfhqhmethp3jt57tlma07ttf.apps.googleusercontent.com',
 });
 
-export default function SignUpScreen({invitationId, route}) {
+export default function SignUpScreen({route}) {
   // PARAMS
-  const {uploadReminderId} = route.params;
+  const {uploadReminderId, inviteId} = route.params;
 
   // MUTATIONS
   const [loginUser] = useMutation(LOGIN_USER);
@@ -77,9 +77,8 @@ export default function SignUpScreen({invitationId, route}) {
         })
         .then(res => {
           asyncStorageDAO.setAccessToken(res.data.loginUser);
-          asyncStorageDAO.setIsAuth(true);
           updateUserData({authToken: res.data.loginUser});
-          navigation.navigate(ROUTES.initDataCrossroads);
+          navigation.push(ROUTES.initDataCrossroads, inviteId);
         });
     } catch (error) {
       console.log(error);
@@ -220,7 +219,7 @@ export default function SignUpScreen({invitationId, route}) {
           <Pressable
             onPress={() =>
               navigation.navigate(ROUTES.registerScreen, {
-                invitationId,
+                inviteId,
                 uploadReminderId,
               })
             }
@@ -264,7 +263,7 @@ export default function SignUpScreen({invitationId, route}) {
       <AuthModal
         isVisible={loginVisible}
         onRequestClose={() => setLoginVisible(false)}
-        joinTripId={invitationId}
+        joinTripId={inviteId}
         uploadReminderId={uploadReminderId}
       />
     </>

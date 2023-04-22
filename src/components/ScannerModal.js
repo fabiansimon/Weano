@@ -44,6 +44,7 @@ export default function ScannerModal({isVisible, onRequestClose, trips}) {
     setTimeout(() => {
       navigation.navigate(ROUTES.invitationScreen, {
         tripId,
+        fromDeeplink: false,
       });
     }, 300);
 
