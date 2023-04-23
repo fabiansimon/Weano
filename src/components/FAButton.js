@@ -5,8 +5,10 @@ import {
   View,
   Animated,
   Platform,
+  Dimensions,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import AntIcon from 'react-native-vector-icons/AntDesign';
 import React, {useEffect, useRef, useState} from 'react';
 import COLORS, {PADDING, RADIUS} from '../constants/Theme';
 import Headline from './typography/Headline';
@@ -17,6 +19,8 @@ import i18n from '../utils/i18n';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
+const {width} = Dimensions.get('window');
+
 export default function FAButton({
   style,
   onPress,
@@ -26,6 +30,7 @@ export default function FAButton({
   isLoading = false,
   options = [],
   isDisabled = false,
+  description,
 }) {
   // STATE && MISC
   const [isExpanded, setIsExpanded] = useState(false);
@@ -117,6 +122,31 @@ export default function FAButton({
         ]}
       />
       <View style={styles.fabContainer}>
+        {!isExpanded && description && (
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'flex-end',
+              justifyContent: 'flex-end',
+              position: 'absolute',
+              width,
+              right: 65,
+            }}>
+            <Body
+              style={{
+                textAlign: 'left',
+              }}
+              color={COLORS.neutral[300]}
+              type={2}
+              text={description}
+            />
+            <AntIcon
+              name="arrowright"
+              style={{marginBottom: 3, marginLeft: 2}}
+              color={COLORS.neutral[300]}
+            />
+          </View>
+        )}
         {options?.map((option, index) => getOptionButton(option, index))}
         <Pressable
           disabled={isLoading}

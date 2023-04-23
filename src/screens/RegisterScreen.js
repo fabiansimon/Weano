@@ -81,16 +81,12 @@ export default function RegisterScreen({route}) {
   const handleAuthGoogle = async () => {
     try {
       await GoogleSignin.hasPlayServices();
-      const {
-        user: {familyName, givenName, email},
-      } = await GoogleSignin.signIn();
+      const {idToken: googleIdToken} = await GoogleSignin.signIn();
 
       await registerUser({
         variables: {
           user: {
-            email,
-            firstName: givenName,
-            lastName: familyName,
+            googleIdToken,
           },
         },
       })

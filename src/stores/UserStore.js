@@ -20,6 +20,24 @@ const userStore = create(set => ({
         isProMember: data.isProMember || null,
       },
     })),
+  clearUserData: () =>
+    set(() => ({
+      user: {
+        id: null,
+        avatarUri: null,
+        email: null,
+        expenses: null,
+        firstName: null,
+        lastName: null,
+        images: null,
+        phoneNumber: null,
+        trips: null,
+        pushToken: null,
+        friends: null,
+        countriesVisited: null,
+        isProMember: null,
+      },
+    })),
   updateUserData: data =>
     set(state => ({
       user: {

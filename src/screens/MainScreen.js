@@ -119,7 +119,6 @@ export default function MainScreen() {
         text2: error.message,
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, error]);
 
   const handleLongPress = ({nativeEvent: {name}}, {id}) => {
@@ -129,16 +128,16 @@ export default function MainScreen() {
       });
     }
     if (name === i18n.t('See memories')) {
-      return navigation.navigate(ROUTES.memoriesScreen, {
+      return navigation.push(ROUTES.memoriesScreen, {
         tripId: id,
         initShowStory: true,
       });
     }
     if (name === i18n.t('Visit on Map')) {
-      return navigation.navigate(ROUTES.mapScreen, {initTrip: id});
+      return navigation.push(ROUTES.mapScreen, {initTrip: id});
     }
     if (name === i18n.t('Capture a memory')) {
-      return navigation.navigate(ROUTES.cameraScreen, {tripId: id});
+      return navigation.push(ROUTES.cameraScreen, {tripId: id});
     }
   };
 
@@ -165,7 +164,7 @@ export default function MainScreen() {
         />
       </View>
       <Pressable
-        onPress={() => navigation.navigate(ROUTES.profileScreen)}
+        onPress={() => navigation.push(ROUTES.profileScreen)}
         isSecondary
         style={styles.searchButton}>
         <IonIcon name="ios-person" color={COLORS.neutral[900]} size={18} />
@@ -211,9 +210,13 @@ export default function MainScreen() {
       return (
         <View style={[styles.tabStyle, {marginTop: 20, marginLeft: 10}]}>
           <Body
-            type={1}
+            type={2}
+            color={COLORS.neutral[700]}
             text={i18n.t('No upcoming trips 🥱')}
-            style={{marginBottom: 4}}
+            style={{
+              marginBottom: 4,
+              fontWeight: Platform.OS === 'android' ? '600' : '500',
+            }}
           />
           <Body
             type={2}
@@ -232,7 +235,7 @@ export default function MainScreen() {
           <RecapCardMini
             key={trip.id}
             onPress={() =>
-              navigation.navigate(ROUTES.tripScreen, {tripId: trip.id})
+              navigation.push(ROUTES.tripScreen, {tripId: trip.id})
             }
             onLongPress={e => handleLongPress(e, trip)}
             style={{marginTop: 10}}
@@ -248,9 +251,12 @@ export default function MainScreen() {
       return (
         <View style={[styles.tabStyle, {marginTop: 20, marginLeft: 10}]}>
           <Body
-            type={1}
+            type={2}
             text={i18n.t('No recent trips 👎🏻')}
-            style={{marginBottom: 4}}
+            style={{
+              marginBottom: 4,
+              fontWeight: Platform.OS === 'android' ? '600' : '500',
+            }}
           />
           <Body
             type={2}
@@ -270,7 +276,7 @@ export default function MainScreen() {
             key={trip.id}
             onLongPress={e => handleLongPress(e, trip)}
             onPress={() =>
-              navigation.navigate(ROUTES.tripScreen, {tripId: trip.id})
+              navigation.push(ROUTES.tripScreen, {tripId: trip.id})
             }
             style={{marginTop: 10}}
             data={trip}
@@ -372,7 +378,7 @@ export default function MainScreen() {
         <SearchModal
           isVisible={searchVisible}
           onRequestClose={() => setSearchVisible(false)}
-          onPress={id => navigation.navigate(ROUTES.tripScreen, {tripId: id})}
+          onPress={id => navigation.push(ROUTES.tripScreen, {tripId: id})}
         />
         <ScannerModal
           trips={trips}
@@ -380,6 +386,11 @@ export default function MainScreen() {
           onRequestClose={() => setScanVisible(false)}
         />
         <FAButton
+          description={
+            trips.length <= 0
+              ? i18n.t('Create or join \nyour friends trip')
+              : null
+          }
           options={[
             {
               title: i18n.t('Join trip'),

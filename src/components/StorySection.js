@@ -7,7 +7,9 @@ import i18n from '../utils/i18n';
 import ROUTES from '../constants/Routes';
 import Label from './typography/Label';
 import Headline from './typography/Headline';
+import Icon from 'react-native-vector-icons/AntDesign';
 import TripContainer from './Trip/TripContainer';
+import Utils from '../utils';
 
 export default function StorySection({
   style,
@@ -18,24 +20,73 @@ export default function StorySection({
   const navigation = useNavigation();
   const [sortedData, setSortedData] = useState([]);
 
+  const getEmptyContainer = () => {
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+        }}>
+        <View style={{alignItems: 'center', marginTop: 2}}>
+          <View style={styles.emptyContainer} />
+          <View
+            style={[
+              styles.placeholder,
+              {height: 10, marginTop: 10, marginBottom: 4, width: 43},
+            ]}
+          />
+          <View style={[styles.placeholder, {height: 7, width: 28}]} />
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            width: '55%',
+            marginLeft: 28,
+            marginTop: 4,
+          }}>
+          <Icon
+            name="arrowleft"
+            style={{marginTop: 4, marginRight: 4}}
+            color={COLORS.neutral[300]}
+          />
+          <Body
+            style={{
+              textAlign: 'right',
+            }}
+            color={COLORS.neutral[300]}
+            numberOfLines={3}
+            ellipsizeMode="tail"
+            type={2}
+            text={i18n.t('Your memories will be shown here')}
+          />
+        </View>
+      </View>
+    );
+  };
+
   useEffect(() => {
     if (!data) {
       return;
     }
 
     setSortedData(
-      data.slice().sort((a, b) => {
-        if (a.type === 'active' && b.type !== 'active') {
-          return -1;
-        }
-        return 0;
-      }),
+      data
+        .slice()
+        .filter(({type}) => type !== 'upcoming' && type !== 'soon')
+        .sort((a, b) => {
+          if (a.type === 'active' && b.type !== 'active') {
+            return -1;
+          }
+          return 0;
+        }),
     );
   }, [data]);
 
   return (
     <View style={style}>
-      <ScrollView horizontal contentContainerStyle={contentContainerStyle}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={contentContainerStyle}>
         <Pressable
           onPress={() => navigation.navigate(ROUTES.mapScreen)}
           style={{marginRight: 14}}>
@@ -56,26 +107,28 @@ export default function StorySection({
             text={`${data.length} ${i18n.t('Trips')}`}
           />
         </Pressable>
-        {sortedData.map(trip => {
-          const {type} = trip;
-          if (type === 'upcoming' || type === 'soon') {
-            return;
-          }
-          return (
-            <TripContainer
-              key={trip.id}
-              disabled={false}
-              onPress={() =>
-                navigation.navigate(ROUTES.memoriesScreen, {
-                  tripId: trip.id,
-                  initShowStory: true,
-                })
+        {sortedData.length > 0
+          ? sortedData.map(trip => {
+              const {type} = trip;
+              if (type === 'upcoming' || type === 'soon') {
+                return;
               }
-              onLongPress={onLongPress}
-              trip={trip}
-            />
-          );
-        })}
+              return (
+                <TripContainer
+                  key={trip.id}
+                  disabled={false}
+                  onPress={() =>
+                    navigation.navigate(ROUTES.memoriesScreen, {
+                      tripId: trip.id,
+                      initShowStory: true,
+                    })
+                  }
+                  onLongPress={onLongPress}
+                  trip={trip}
+                />
+              );
+            })
+          : getEmptyContainer()}
       </ScrollView>
     </View>
   );
@@ -91,5 +144,19 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  emptyContainer: {
+    height: 68,
+    width: 68,
+    backgroundColor: COLORS.neutral[100],
+    borderWidth: 0.5,
+    borderColor: Utils.addAlpha(COLORS.neutral[300], 0.1),
+    borderRadius: 20,
+  },
+  placeholder: {
+    backgroundColor: COLORS.neutral[100],
+    borderWidth: 0.5,
+    borderColor: Utils.addAlpha(COLORS.neutral[300], 0.1),
+    borderRadius: 4,
   },
 });

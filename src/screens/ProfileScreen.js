@@ -35,6 +35,7 @@ export default function ProfileScreen() {
   // STORE
   const user = userStore(state => state.user);
   const updateUserState = userStore(state => state.updateUserData);
+  const clearUserData = userStore(state => state.clearUserData);
 
   // STATE & MISC
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -57,22 +58,22 @@ export default function ProfileScreen() {
   const statData = [
     {
       title: i18n.t('Trips'),
-      amount: user.trips && user.trips.length,
+      amount: user?.trips && user.trips.length,
     },
     {
       title: i18n.t('Moments'),
-      amount: user.images && user.images.length,
+      amount: user?.images && user.images.length,
     },
     {
       title: i18n.t('Countries'),
-      amount: user.countriesVisited && user.countriesVisited.length,
+      amount: user?.countriesVisited && user.countriesVisited.length,
     },
     {
       title: i18n.t('Friends'),
       amount:
-        user.friends && user.friends.length - 1 < 0
+        user?.friends && user.friends.length - 1 < 0
           ? 0
-          : user.friends.length - 1,
+          : user?.friends?.length - 1,
     },
   ];
 
@@ -211,8 +212,8 @@ export default function ProfileScreen() {
           console.log(e);
         }
         await asyncStorageDAO.logout();
-        updateUserState({authToken: ''});
-        navigation.navigate(ROUTES.signUpScreen);
+        clearUserData();
+        navigation.push(ROUTES.signUpScreen);
       },
     );
   };

@@ -56,14 +56,12 @@ export default function SignUpScreen({route}) {
   const handleAuthGoogle = async () => {
     try {
       await GoogleSignin.hasPlayServices();
-      const {
-        user: {email},
-      } = await GoogleSignin.signIn();
+      const {idToken: googleIdToken} = await GoogleSignin.signIn();
 
       await loginUser({
         variables: {
           user: {
-            email,
+            googleIdToken,
           },
         },
       })

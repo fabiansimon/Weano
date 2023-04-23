@@ -204,15 +204,7 @@ export default function InitDataCrossroads({route}) {
     if (data && !init) {
       populateState();
     }
-
-    if (error) {
-      Toast.show({
-        type: 'error',
-        text1: i18n.t('Whoops!'),
-        text2: error.message,
-      });
-    }
-  }, [data, error]);
+  }, [data]);
 
   useEffect(() => {
     checkInitStatus();

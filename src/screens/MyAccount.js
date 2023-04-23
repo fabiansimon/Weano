@@ -40,6 +40,7 @@ export default function MyAccountScreen() {
     state => state.user,
   );
   const updateUserState = userStore(state => state.updateUserData);
+  const clearUserData = userStore(state => state.clearUserData);
 
   // STATE & MISC
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -64,6 +65,7 @@ export default function MyAccountScreen() {
       i18n.t('Delete'),
       async () => {
         deleteUser();
+        clearUserData();
         await asyncStorageDAO.clearAccessToken();
         navigation.push(ROUTES.initDataCrossroads);
       },
@@ -224,15 +226,6 @@ export default function MyAccountScreen() {
               style={{marginTop: 30}}
               title={i18n.t('Email')}
               value={email}
-              onPress={() =>
-                phoneNumber
-                  ? setInputState({
-                      placeholder: email,
-                      state: 'email',
-                      keyboardType: 'email-address',
-                    })
-                  : null
-              }
             />
             {phoneNumber && (
               <InputField
