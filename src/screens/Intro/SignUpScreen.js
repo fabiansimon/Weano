@@ -7,7 +7,7 @@ import {
   Platform,
   Dimensions,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import COLORS, {PADDING} from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Headline from '../../components/typography/Headline';

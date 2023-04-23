@@ -104,14 +104,8 @@ export default function RegisterScreen({route}) {
             inviteId: inviteId || null,
           });
         });
-
-      return;
     } catch (e) {
-      Toast.show({
-        type: 'error',
-        text1: i18n.t('Whoops!'),
-        text2: i18n.t('Something went wrong'),
-      });
+      console.log(e);
     }
   };
 
