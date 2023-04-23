@@ -32,6 +32,7 @@ import i18n from '../utils/i18n';
 import Body from './typography/Body';
 import Avatar from './Avatar';
 import toastConfig from '../constants/ToastConfig';
+import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 export default function StoryModal({
   data,
@@ -254,7 +255,7 @@ export default function StoryModal({
             }
             onLongPress={() => {
               setImageIndex(0);
-              // ReactNativeHapticFeedback.trigger('impactLight');
+              RNReactNativeHapticFeedback.trigger('impactLight');
             }}
             style={{
               flex: 1,
@@ -268,7 +269,7 @@ export default function StoryModal({
             }
             onLongPress={() => {
               setImageIndex(data.length - 1);
-              // ReactNativeHapticFeedback.trigger('impactLight');
+              RNReactNativeHapticFeedback.trigger('impactLight');
             }}
             style={{
               flex: 1,

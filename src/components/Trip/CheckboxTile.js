@@ -7,6 +7,7 @@ import COLORS from '../../constants/Theme';
 import Body from '../typography/Body';
 import userManagement from '../../utils/userManagement';
 import i18n from '../../utils/i18n';
+import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 export default function CheckboxTile({
   style,
@@ -38,10 +39,10 @@ export default function CheckboxTile({
         disabled={disabled}
         onPress={() => {
           onPress();
-          // ReactNativeHapticFeedback.trigger('impactLight', {
-          //   enableVibrateFallback: true,
-          //   ignoreAndroidSystemSettings: true,
-          // });
+          RNReactNativeHapticFeedback.trigger('impactLight', {
+            enableVibrateFallback: true,
+            ignoreAndroidSystemSettings: true,
+          });
         }}>
         <View
           style={[

@@ -574,6 +574,9 @@ export default function TripScreen({route}) {
       },
     };
 
+    if (isHost && data?.activeMembers.length <= 1) {
+      return [edit, share, deleteTrip];
+    }
     if (isHost) {
       return [edit, share, exitTrip, deleteTrip];
     }

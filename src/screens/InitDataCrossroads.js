@@ -1,11 +1,4 @@
-import {
-  Image,
-  Linking,
-  Platform,
-  StatusBar,
-  StyleSheet,
-  View,
-} from 'react-native';
+import {Image, Linking, StatusBar, StyleSheet, View} from 'react-native';
 import React, {useEffect, useState, useRef} from 'react';
 import * as Notifications from 'expo-notifications';
 import {useNavigation} from '@react-navigation/native';
@@ -26,15 +19,24 @@ import AsyncStorageDAO from '../utils/AsyncStorageDAO';
 import tripsStore from '../stores/TripsStore';
 import UPDATE_USER from '../mutations/updateUser';
 import Logo from '../../assets/images/logo_temp.png';
+import * as TaskManager from 'expo-task-manager';
 
 const asyncStorageDAO = new AsyncStorageDAO();
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 export default function InitDataCrossroads({route}) {
   // PARAMS
   const {inviteId} = route.params;
 
   // QUERIES
-  const [getInitData, {error, data}] = useLazyQuery(GET_INIT_USER_DATA, {
+  const [getInitData, {data}] = useLazyQuery(GET_INIT_USER_DATA, {
     fetchPolicy: 'network-only',
   });
 
@@ -57,19 +59,15 @@ export default function InitDataCrossroads({route}) {
 
   const navigation = useNavigation();
 
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowAlert: true,
-      shouldPlaySound: false,
-      shouldSetBadge: false,
-    }),
+  const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK';
+
+  TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, ({data}) => {
+    setNotification(data.body);
   });
 
-  const registerPushNotificationToken = async () => {
-    if (Platform.OS === 'android') {
-      return;
-    }
+  Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
 
+  const registerPushNotificationToken = async () => {
     const {status: currentStatus} = await Notifications.getPermissionsAsync();
     let finalStatus = currentStatus;
 

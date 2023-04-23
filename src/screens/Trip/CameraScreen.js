@@ -38,6 +38,7 @@ import PremiumController from '../../PremiumController';
 import userStore from '../../stores/UserStore';
 import {LinearGradient} from 'expo-linear-gradient';
 import GradientOverlay from '../../components/GradientOverlay';
+import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 const AnimatableTouchableOpacity =
   Animatable.createAnimatableComponent(TouchableOpacity);
@@ -135,6 +136,11 @@ export default function CameraScreen({route}) {
   };
 
   const handleCapture = async () => {
+    RNReactNativeHapticFeedback.trigger('impactHeavy', {
+      enableVibrateFallback: true,
+      ignoreAndroidSystemSettings: true,
+    });
+
     if (isRecording) {
       endCaptureVideo();
       return;
@@ -310,14 +316,6 @@ export default function CameraScreen({route}) {
           />
         </View>
       )}
-      {/* {Platform.OS !== 'android' && (
-        <BlurView
-          style={styles.blurView}
-          blurType="dark"
-          blurAmount={4}
-          reducedTransparencyFallbackColor={COLORS.shades[0]}
-        />
-      )} */}
       <View style={styles.recordUnit}>
         {!isRecording && (
           <TouchableOpacity
@@ -416,7 +414,6 @@ export default function CameraScreen({route}) {
                 style={{flex: 1}}
                 ratio="16:9"
                 flashMode={flashMode}
-                onCameraReady={() => console.log('Ready')}
                 zoom={zoom}
                 type={cameraType}
                 ref={cameraRef}

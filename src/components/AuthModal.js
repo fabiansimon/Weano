@@ -32,11 +32,11 @@ export default function AuthModal({
   onRequestClose,
   registerData,
   inviteId,
+  onRegisterPress,
 }) {
   // MUTATIONS
   const [registerUser, {error: registerError}] = useMutation(REGISTER_USER);
   const [loginUser, {error: loginError}] = useMutation(LOGIN_USER);
-  const [joinTrip, {error: joinError}] = useMutation(JOIN_TRIP);
 
   // STORES
   const updateUserData = userStore(state => state.updateUserData);
@@ -53,17 +53,6 @@ export default function AuthModal({
 
   const navigation = useNavigation();
   const isLogin = !registerData;
-
-  useEffect(() => {
-    if (loginError || registerError || joinError) {
-      Toast.show({
-        type: 'error',
-        text1: i18n.t('Whoops!'),
-        text2:
-          loginError?.message || registerError?.message || joinError?.message,
-      });
-    }
-  }, [loginError, registerError, joinError]);
 
   useEffect(() => {
     if (code.length === 4) {
@@ -261,6 +250,7 @@ export default function AuthModal({
                         onRequestClose();
                         setCode('');
                         setPhoneNr('');
+                        onRegisterPress();
                       }}
                       style={{marginTop: 6, textDecorationLine: 'underline'}}
                       text={i18n.t('Register')}

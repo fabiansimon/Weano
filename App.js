@@ -1,11 +1,6 @@
 import React, {useEffect, useRef} from 'react';
-import {LogBox, StatusBar, View} from 'react-native';
-import {
-  ApolloClient,
-  InMemoryCache,
-  ApolloProvider,
-  ApolloLink,
-} from '@apollo/client';
+import {LogBox, StatusBar} from 'react-native';
+import {ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import AsyncStorageDAO from './src/utils/AsyncStorageDAO';
@@ -35,15 +30,17 @@ import TimelineScreen from './src/screens/TimelineScreen';
 import MyAccountScreen from './src/screens/MyAccount';
 import PacklistScreen from './src/screens/Trip/PacklistScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
-// import PremiumModal from './src/components/PremiumModal';
+import PremiumModal from './src/components/PremiumModal';
 
 const Stack = createNativeStackNavigator();
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
 function App() {
+  // STORES
   const updateUserData = userStore(state => state.updateUserData);
   const {authToken} = userStore(state => state.user);
+
   const navigationRef = useRef();
 
   const client = new ApolloClient({
@@ -173,7 +170,7 @@ function App() {
           </NavigationContainer>
         </ApolloProvider>
       </InternetCheckProvider>
-      {/* <PremiumModal /> */}
+      <PremiumModal />
       <Toast topOffset={60} position="top" config={toastConfig} />
     </>
   );

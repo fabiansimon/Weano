@@ -75,8 +75,6 @@ export default function MainScreen() {
       .catch(() => setRefreshing(false));
   };
 
-  const {height} = Dimensions.get('window');
-
   const upcomingTrips = trips.filter(
     trip => trip.type === 'upcoming' || trip.type === 'soon',
   );
@@ -215,7 +213,7 @@ export default function MainScreen() {
             text={i18n.t('No upcoming trips 🥱')}
             style={{
               marginBottom: 4,
-              fontWeight: Platform.OS === 'android' ? '600' : '500',
+              fontWeight: Platform.OS === 'android' ? '700' : '500',
             }}
           />
           <Body
@@ -255,7 +253,7 @@ export default function MainScreen() {
             text={i18n.t('No recent trips 👎🏻')}
             style={{
               marginBottom: 4,
-              fontWeight: Platform.OS === 'android' ? '600' : '500',
+              fontWeight: Platform.OS === 'android' ? '700' : '500',
             }}
           />
           <Body

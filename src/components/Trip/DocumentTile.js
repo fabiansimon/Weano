@@ -6,6 +6,7 @@ import Utils from '../../utils';
 import Body from '../typography/Body';
 import COLORS from '../../constants/Theme';
 import SwipeView from '../SwipeView';
+import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 export default function DocumentTile({
   style,
@@ -25,10 +26,10 @@ export default function DocumentTile({
         <TouchableHighlight
           onPress={() => {
             onPress();
-            // ReactNativeHapticFeedback.trigger('impactLight', {
-            //   enableVibrateFallback: true,
-            //   ignoreAndroidSystemSettings: true,
-            // });
+            RNReactNativeHapticFeedback.trigger('impactLight', {
+              enableVibrateFallback: true,
+              ignoreAndroidSystemSettings: true,
+            });
           }}
           underlayColor={COLORS.neutral[100]}
           style={styles.docContainer}>

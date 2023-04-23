@@ -8,6 +8,7 @@ import Subtitle from '../typography/Subtitle';
 import SwipeView from '../SwipeView';
 import Body from '../typography/Body';
 import ActivityChip from '../ActivityChip';
+import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 export default function TripStopTile({
   isLast,
@@ -54,7 +55,7 @@ export default function TripStopTile({
           onPress={onPress}
           onLongPress={() => {
             drag();
-            // ReactNativeHapticFeedback.trigger('impactLight');
+            RNReactNativeHapticFeedback.trigger('impactLight');
           }}
           disabled={isActive}
           style={styles.tileContainer}>

@@ -15,7 +15,7 @@ import EntIcon from 'react-native-vector-icons/Entypo';
 import {debounce} from 'lodash';
 import {FlatList} from 'react-native-gesture-handler';
 import AntIcon from 'react-native-vector-icons/AntDesign';
-// import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import KeyboardView from './KeyboardView';
 import COLORS, {PADDING, RADIUS} from '../constants/Theme';
 import httpService from '../utils/httpService';
@@ -74,7 +74,6 @@ export default function InputModal({
     }
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const delayedSearch = useCallback(
     debounce(val => handleLocationQuery(val), 250),
     [],
@@ -123,9 +122,13 @@ export default function InputModal({
 
   const handleOnPress = () => {
     if (multipleInputs) {
+      if (input.length > 0) {
+        onPress([...multiValues, `${packingAmount} ${input}`]);
+        return clearData();
+      }
+
       onPress(multiValues);
-      clearData();
-      return;
+      return clearData();
     }
 
     if (geoMatching) {
@@ -236,10 +239,10 @@ export default function InputModal({
         <Pressable
           onPress={() => {
             setPackingAmount(prev => prev - 1);
-            // ReactNativeHapticFeedback.trigger('impactLight', {
-            //   enableVibrateFallback: true,
-            //   ignoreAndroidSystemSettings: true,
-            // });
+            ReactNativeHapticFeedback.trigger('impactLight', {
+              enableVibrateFallback: true,
+              ignoreAndroidSystemSettings: true,
+            });
           }}
           style={styles.counterContainer}>
           <Icon name="minus" size={16} color={COLORS.neutral[700]} />
@@ -256,10 +259,10 @@ export default function InputModal({
         <Pressable
           onPress={() => {
             setPackingAmount(prev => prev + 1);
-            // ReactNativeHapticFeedback.trigger('impactLight', {
-            //   enableVibrateFallback: true,
-            //   ignoreAndroidSystemSettings: true,
-            // });
+            ReactNativeHapticFeedback.trigger('impactLight', {
+              enableVibrateFallback: true,
+              ignoreAndroidSystemSettings: true,
+            });
           }}
           style={styles.counterContainer}>
           <Icon name="plus" size={16} color={COLORS.neutral[700]} />

@@ -263,6 +263,12 @@ export default function SignUpScreen({route}) {
         onRequestClose={() => setLoginVisible(false)}
         joinTripId={inviteId}
         uploadReminderId={uploadReminderId}
+        onRegisterPress={() =>
+          navigation.navigate(ROUTES.registerScreen, {
+            inviteId,
+            uploadReminderId,
+          })
+        }
       />
     </>
   );

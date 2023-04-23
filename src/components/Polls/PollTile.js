@@ -5,6 +5,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import COLORS, {RADIUS} from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Body from '../typography/Body';
+import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 export default function PollTile({
   style,
@@ -32,10 +33,10 @@ export default function PollTile({
       activeOpacity={0.9}
       onPress={() => {
         onPress();
-        // ReactNativeHapticFeedback.trigger('impactHeavy', {
-        //   enableVibrateFallback: true,
-        //   ignoreAndroidSystemSettings: true,
-        // });
+        RNReactNativeHapticFeedback.trigger('impactHeavy', {
+          enableVibrateFallback: true,
+          ignoreAndroidSystemSettings: true,
+        });
       }}
       style={style}>
       <View style={[styles.optionTileContainer, {height}]}>

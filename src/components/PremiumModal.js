@@ -35,8 +35,8 @@ import Divider from './Divider';
 import Utils from '../utils';
 import Subtitle from './typography/Subtitle';
 
-// eslint-disable-next-line import/no-named-as-default
 import PremiumController from '../PremiumController';
+import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 const PremiumModal = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -132,10 +132,10 @@ const PremiumModal = () => {
       <TouchableHighlight
         underlayColor={COLORS.neutral[100]}
         onPress={() => {
-          // ReactNativeHapticFeedback.trigger('impactHeavy', {
-          //   enableVibrateFallback: true,
-          //   ignoreAndroidSystemSettings: true,
-          // });
+          RNReactNativeHapticFeedback.trigger('impactHeavy', {
+            enableVibrateFallback: true,
+            ignoreAndroidSystemSettings: true,
+          });
 
           handleSubscribtion(productId);
         }}

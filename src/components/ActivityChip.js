@@ -6,6 +6,7 @@ import {View} from 'react-native-animatable';
 import Body from './typography/Body';
 import Utils from '../utils';
 import {RADIUS} from '../constants/Theme';
+import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 export default function ActivityChip({style, data, onPress}) {
   if (!data) {
@@ -25,7 +26,7 @@ export default function ActivityChip({style, data, onPress}) {
           return;
         }
         onPress();
-        // ReactNativeHapticFeedback.trigger('impactLight');
+        RNReactNativeHapticFeedback.trigger('impactLight');
       }}>
       {icon}
       <Body

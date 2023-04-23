@@ -29,6 +29,7 @@ import ADD_PACKING_LIST from '../../mutations/addPackingList';
 import DELETE_PACKING_ITEM from '../../mutations/deletePackingitem';
 import UPDATE_PACKING_ITEM from '../../mutations/updatePackingItem';
 import PremiumController from '../../PremiumController';
+import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
@@ -166,10 +167,10 @@ export default function PacklistScreen() {
       return;
     }
 
-    // ReactNativeHapticFeedback.trigger('impactLight', {
-    //   enableVibrateFallback: true,
-    //   ignoreAndroidSystemSettings: true,
-    // });
+    RNReactNativeHapticFeedback.trigger('impactLight', {
+      enableVibrateFallback: true,
+      ignoreAndroidSystemSettings: true,
+    });
     const {_id, isPacked, amount} = data;
 
     const oldData = packingItems;

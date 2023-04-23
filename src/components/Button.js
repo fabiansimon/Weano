@@ -1,9 +1,9 @@
 import {ActivityIndicator, StyleSheet, TouchableOpacity} from 'react-native';
 import React from 'react';
-// import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Icon from 'react-native-vector-icons/Entypo';
 import COLORS, {PADDING, RADIUS} from '../constants/Theme';
 import Body from './typography/Body';
+import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 export default function Button({
   style,
@@ -76,9 +76,8 @@ export default function Button({
       ]}
       onPress={() => {
         !isLoading && onPress();
-
-        // !disableHaptics &&
-        //   ReactNativeHapticFeedback.trigger('impactLight', options);
+        !disableHaptics &&
+          RNReactNativeHapticFeedback.trigger('impactLight', options);
       }}
       disabled={isDisabled}>
       {icon && !isLoading && getIcon()}

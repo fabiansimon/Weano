@@ -93,7 +93,7 @@ android {
     ndkVersion rootProject.ext.ndkVersion
 
     compileSdkVersion rootProject.ext.compileSdkVersion
-
+    
     namespace "com.travelio_project"
     defaultConfig {
         applicationId "com.travelio_project"
@@ -102,6 +102,7 @@ android {
         multiDexEnabled true    
         versionCode 9
         versionName "0.18"
+        missingDimensionStrategy "store", "play"
     }
 
     splits {
