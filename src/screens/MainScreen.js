@@ -15,7 +15,6 @@ import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/AntDesign';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import {useLazyQuery} from '@apollo/client';
-import Toast from 'react-native-toast-message';
 import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
 import COLORS, {PADDING, RADIUS} from '../constants/Theme';
 import Headline from '../components/typography/Headline';
@@ -44,7 +43,7 @@ const asyncStorageDAO = new AsyncStorageDAO();
 
 export default function MainScreen() {
   // QUERIES
-  const [getTripsForUser, {error, data}] = useLazyQuery(GET_TRIPS_FOR_USER, {
+  const [getTripsForUser, {data}] = useLazyQuery(GET_TRIPS_FOR_USER, {
     fetchPolicy: 'network-only',
   });
 
@@ -109,15 +108,7 @@ export default function MainScreen() {
     if (data) {
       setTrips(data.getTripsForUser);
     }
-
-    if (error) {
-      Toast.show({
-        type: 'error',
-        text1: i18n.t('Whoops!'),
-        text2: error.message,
-      });
-    }
-  }, [data, error]);
+  }, [data]);
 
   const handleLongPress = ({nativeEvent: {name}}, {id}) => {
     if (name === i18n.t('Invite Friends')) {
@@ -386,7 +377,7 @@ export default function MainScreen() {
         <FAButton
           description={
             trips.length <= 0
-              ? i18n.t('Create or join \nyour friends trip')
+              ? i18n.t('Create or join \na trip right here')
               : null
           }
           options={[

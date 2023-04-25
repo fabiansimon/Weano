@@ -943,7 +943,7 @@ export default function TripScreen({route}) {
             <Icon name="image" size={32} color="white" />
           </View>
         )}
-        {data?.thumbnailUri && (
+        {data?.thumbnailUri && !inactive && (
           <FastImage
             style={styles.image}
             resizeMode="cover"

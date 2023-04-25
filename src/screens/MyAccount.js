@@ -64,10 +64,10 @@ export default function MyAccountScreen() {
       i18n.t('Are you sure you want to delete your Account?'),
       i18n.t('Delete'),
       async () => {
-        deleteUser();
+        await deleteUser();
         clearUserData();
         await asyncStorageDAO.clearAccessToken();
-        navigation.push(ROUTES.initDataCrossroads);
+        navigation.push(ROUTES.signUpScreen);
       },
     );
   };
