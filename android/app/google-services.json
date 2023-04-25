@@ -7,14 +7,14 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1011261400246:android:46c2c429000ca102e8b217",
+        "mobilesdk_app_id": "1:1011261400246:android:a65cc93f959327d7e8b217",
         "android_client_info": {
           "package_name": "com.travelio_project"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1011261400246-rbmhli8l51n3v4q5rikgf5hjg4r8b0sq.apps.googleusercontent.com",
+          "client_id": "1011261400246-p7ld76q619g1pn73psvtk8k8aopkgft5.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.travelio_project",
@@ -42,7 +42,7 @@
               "client_id": "1011261400246-bdljtrq5nsbf7ifut22n57kl8i6l2idv.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.travelio_project"
+                "bundle_id": "com.fabiansimon.travelio"
               }
             }
           ]

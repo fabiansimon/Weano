@@ -253,7 +253,7 @@ export default function TripScreen({route}) {
             });
 
             removeTrip(data.id);
-            navigation.push(ROUTES.mainScreen);
+            navigation.navigate(ROUTES.mainScreen);
           })
           .catch(e => {
             Toast.show({
