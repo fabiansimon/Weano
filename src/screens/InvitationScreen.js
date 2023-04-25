@@ -24,10 +24,10 @@ import Button from '../components/Button';
 import ROUTES from '../constants/Routes';
 import GET_INVITATION_TRIP_DATA from '../queries/getInvitationTripData';
 import JOIN_TRIP from '../mutations/joinTrip';
-import userStore from '../stores/UserStore';
 import Divider from '../components/Divider';
 import Avatar from '../components/Avatar';
 import BackButton from '../components/BackButton';
+import InvitationScreenSkeleton from '../components/InvitationScreenSkeleton';
 
 export default function InvitationScreen({route}) {
   // PARAMS
@@ -48,6 +48,8 @@ export default function InvitationScreen({route}) {
 
   const navigation = useNavigation();
 
+  const inactive = loading || !data || error;
+
   useEffect(() => {
     if (data) {
       const {getTripById} = data;
@@ -65,14 +67,14 @@ export default function InvitationScreen({route}) {
         },
       }).then(() => {
         setIsLoading(false);
-        return navigation.navigate(ROUTES.tripScreen, {tripId, isJoined: true});
+        return navigation.push(ROUTES.tripScreen, {tripId});
       });
     } catch (e) {
       setIsLoading(false);
       Alert.alert(i18n.t('Whoops'), e.message, [
         {
           text: i18n.t('Ok'),
-          onPress: () => navigation.navigate(ROUTES.mainScreen),
+          onPress: () => navigation.push(ROUTES.mainScreen),
         },
       ]);
     }
@@ -92,12 +94,16 @@ export default function InvitationScreen({route}) {
   };
 
   const handleDecline = async () => {
+    if (inactive) {
+      return navigation.push(ROUTES.mainScreen);
+    }
+
     Utils.showConfirmationAlert(
       i18n.t('Leave'),
       i18n.t('Are you sure you want to leave without joining the trip?'),
       i18n.t('Leave'),
       async () => {
-        navigation.navigate(ROUTES.mainScreen);
+        navigation.push(ROUTES.mainScreen);
       },
     );
   };
@@ -135,16 +141,14 @@ export default function InvitationScreen({route}) {
       </View>
       <View style={{marginHorizontal: 10, marginTop: 8}}>
         <Headline type={3} text={tripData && tripData.title} />
-        <View
-          style={{
-            flexDirection: 'row',
-            marginTop: 8,
-            marginBottom: 2,
-            marginHorizontal: -PADDING.m,
-            paddingLeft: PADDING.m,
-          }}>
+        <View style={styles.detailsContainer}>
           <View
-            style={{flexDirection: 'row', alignItems: 'center', marginTop: 2}}>
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginRight: 12,
+              marginBottom: 4,
+            }}>
             <Icon name="location-pin" color={COLORS.neutral[900]} size={18} />
             <Body
               type={1}
@@ -158,7 +162,7 @@ export default function InvitationScreen({route}) {
           </View>
           <View
             style={{
-              marginLeft: 12,
+              marginBottom: 4,
               flexDirection: 'row',
               alignItems: 'center',
             }}>
@@ -189,22 +193,19 @@ export default function InvitationScreen({route}) {
   );
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{flex: 1, backgroundColor: COLORS.shades[0]}}>
       <StatusBar barStyle={'dark-content'} />
-      {loading || !data || error ? (
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <ActivityIndicator />
-        </View>
-      ) : (
-        <SafeAreaView style={{flex: 1, marginRight: 2}}>
-          <KeyboardView paddingBottom={40}>
-            <View style={styles.inviteContainer}>
-              <View>
-                <BackButton
-                  onPress={handleDecline}
-                  isClear
-                  style={{marginBottom: 10}}
-                />
+
+      <SafeAreaView style={{flex: 1, marginRight: 2}}>
+        <View style={styles.inviteContainer}>
+          <View>
+            <BackButton
+              onPress={handleDecline}
+              isClear
+              style={{marginBottom: 10}}
+            />
+            {!inactive ? (
+              <>
                 <Headline
                   type={3}
                   text={i18n.t("You've been invited!")}
@@ -217,23 +218,27 @@ export default function InvitationScreen({route}) {
                   color={COLORS.neutral[300]}
                 />
                 {tripData && getTripInviteContainer()}
-              </View>
-              <View
-                style={{
-                  width: '100%',
-                  height: 55,
-                  marginBottom: Platform.OS === 'android' ? 18 : 0,
-                }}>
-                <Button
-                  isLoading={isLoading}
-                  text={i18n.t('Join Trip')}
-                  onPress={handleJoinTrip}
-                />
-              </View>
+              </>
+            ) : (
+              <InvitationScreenSkeleton />
+            )}
+          </View>
+          {!inactive && (
+            <View
+              style={{
+                width: '100%',
+                height: 55,
+                marginBottom: Platform.OS === 'android' ? 18 : 0,
+              }}>
+              <Button
+                isLoading={isLoading}
+                text={i18n.t('Join Trip')}
+                onPress={handleJoinTrip}
+              />
             </View>
-          </KeyboardView>
-        </SafeAreaView>
-      )}
+          )}
+        </View>
+      </SafeAreaView>
     </View>
   );
 }
@@ -246,7 +251,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   tripInvite: {
-    // overflow: 'hidden',
     marginTop: 50,
     borderRadius: RADIUS.s,
     backgroundColor: COLORS.shades[0],
@@ -258,5 +262,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 20,
     shadowOffset: {},
+  },
+  detailsContainer: {
+    flexWrap: 'wrap',
+    marginTop: 8,
+    flexDirection: 'row',
+    marginBottom: 2,
+    marginHorizontal: -10,
+    paddingLeft: PADDING.m,
   },
 });

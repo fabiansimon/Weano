@@ -212,7 +212,7 @@ export default function PacklistScreen() {
   const getItem = item => {
     const {isPacked, amount} = item;
     return (
-      <SwipeView onDelete={() => handleDeletion(item)}>
+      <SwipeView onPress={() => handleDeletion(item)}>
         <CheckboxTile
           style={{
             paddingHorizontal: PADDING.xl,

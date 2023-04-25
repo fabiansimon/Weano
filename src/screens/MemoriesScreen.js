@@ -239,7 +239,7 @@ export default function MemoriesScreen({route}) {
     }
 
     if (event === 'take') {
-      return navigation.navigate(ROUTES.cameraScreen, {
+      return navigation.push(ROUTES.cameraScreen, {
         tripId,
         onNavBack: () => navigation.goBack(),
       });
@@ -253,7 +253,7 @@ export default function MemoriesScreen({route}) {
       };
 
       ImageCropPicker.openPicker(options).then(async image => {
-        navigation.navigate(ROUTES.cameraScreen, {
+        navigation.push(ROUTES.cameraScreen, {
           tripId,
           onNavBack: () => navigation.goBack(),
           preselectedImage: image,

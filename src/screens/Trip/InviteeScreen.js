@@ -23,15 +23,17 @@ import Utils from '../../utils';
 import ContactDetailModal from '../../components/ContactDetailModal';
 import SwipeView from '../../components/SwipeView';
 import userStore from '../../stores/UserStore';
+import UPDATE_TRIP from '../../mutations/updateTrip';
 
 export default function InviteeScreen() {
   // MUTATIONS
   const [removeUser] = useMutation(REMOVE_USER_FROM_TRIP);
+  const [updateTrip] = useMutation(UPDATE_TRIP);
 
   // STORES
   const {
     activeMembers,
-    hostId,
+    hostIds,
     id: tripId,
     type,
   } = activeTripStore(state => state.activeTrip);
@@ -122,24 +124,65 @@ export default function InviteeScreen() {
     );
   };
 
+  const updateHost = hostId => {
+    Utils.showConfirmationAlert(
+      i18n.t('Make user host?'),
+      i18n.t('Are you sure you want to make the user a host?'),
+      i18n.t('Yes'),
+      async () => {
+        console.log(tripId);
+        console.log(hostId);
+        await updateTrip({
+          variables: {
+            trip: {
+              newHost: hostId,
+              tripId,
+            },
+          },
+        })
+          .then(() => {
+            Toast.show({
+              type: 'success',
+              text1: i18n.t('Whooray!'),
+              text2: i18n.t('User is now host'),
+            });
+            updateActiveTrip({
+              hostIds: [...hostIds, hostId],
+            });
+          })
+          .catch(e => {
+            Toast.show({
+              type: 'error',
+              text1: i18n.t('Whoops!'),
+              text2: e.message,
+            });
+            console.log(`ERROR: ${e.message}`);
+          });
+      },
+      false,
+    );
+  };
+
   const getTile = ({item}) => {
     const {firstName, lastName, email, id} = item;
     return (
       <SwipeView
-        enabled={isHost && userId !== id}
-        string={i18n.t('Remove')}
-        onDelete={() => handleDelete(userId)}>
-        <Pressable
-          onPress={() => setShowUser(item)}
-          style={{
-            flex: 1,
-            paddingHorizontal: PADDING.l,
-            backgroundColor: COLORS.shades[0],
-            height: 58,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}>
+        enabled={isHost}
+        multipleOptions={[
+          {
+            backgroundColor: COLORS.error[900],
+            string: i18n.t('Remove'),
+            onPress: () => handleDelete(userId),
+            isDisabled: !hostIds.includes(userId) || userId === id,
+          },
+          {
+            backgroundColor: COLORS.primary[700],
+            string: i18n.t('Make host'),
+            onPress: () => updateHost(id),
+            isInactive: hostIds.includes(id),
+          },
+        ]}>
+        <Pressable onPress={() => setShowUser(item)} style={styles.inviteeTile}>
           <Avatar data={item} size={40} style={{marginRight: 10}} />
           <View style={{marginRight: 'auto'}}>
             <Body
@@ -149,7 +192,7 @@ export default function InviteeScreen() {
             />
             <Body type={2} color={COLORS.neutral[300]} text={`${email}`} />
           </View>
-          <RoleChip isHost={item.id === hostId} />
+          <RoleChip isHost={hostIds.includes(item.id)} />
         </Pressable>
       </SwipeView>
     );
@@ -271,5 +314,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingTop: 20,
+  },
+  inviteeTile: {
+    flex: 1,
+    paddingHorizontal: PADDING.l,
+    backgroundColor: COLORS.shades[0],
+    height: 58,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
 });

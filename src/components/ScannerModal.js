@@ -42,7 +42,7 @@ export default function ScannerModal({isVisible, onRequestClose, trips}) {
     }
 
     setTimeout(() => {
-      navigation.navigate(ROUTES.invitationScreen, {
+      navigation.push(ROUTES.invitationScreen, {
         tripId,
         fromDeeplink: false,
       });

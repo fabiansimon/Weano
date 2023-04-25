@@ -22,6 +22,7 @@ export default function DestinationsSheet({
   onDragEnded,
   onAdd,
   onDelete,
+  isHost,
   position,
   handleExpending,
   onReplace,
@@ -106,6 +107,7 @@ export default function DestinationsSheet({
       <TripStopTile
         onInfoTap={(t, _item) => handleFurtherInfo(t, _item)}
         links={activeLinks}
+        isHost={isHost}
         onDelete={onDelete}
         onReplace={onReplace}
         index={index}
@@ -130,7 +132,7 @@ export default function DestinationsSheet({
   };
 
   const getAddTile = () => (
-    <Pressable onPress={onAdd} style={styles.tileContainer}>
+    <Pressable disabled={!isHost} onPress={onAdd} style={styles.tileContainer}>
       <View
         style={[
           styles.numberContainer,
@@ -144,11 +146,27 @@ export default function DestinationsSheet({
           text="+"
         />
       </View>
-      <Body
-        color={COLORS.neutral[300]}
-        type={1}
-        text={i18n.t('Add another stop')}
-      />
+      <View>
+        <Body
+          color={COLORS.neutral[300]}
+          type={1}
+          style={{marginTop: 2}}
+          text={i18n.t('Add another stop')}
+        />
+        {!isHost && (
+          <View style={styles.lockedContainer}>
+            <Icon color={COLORS.neutral[500]} size={12} name="md-lock-closed" />
+            <Subtitle
+              type={2}
+              style={{
+                marginLeft: 4,
+              }}
+              color={COLORS.neutral[500]}
+              text={i18n.t('Must be host')}
+            />
+          </View>
+        )}
+      </View>
     </Pressable>
   );
 
@@ -241,5 +259,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: RADIUS.xl,
+  },
+  lockedContainer: {
+    marginRight: 'auto',
+    marginTop: 6,
+    marginLeft: -2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: RADIUS.xl,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    backgroundColor: COLORS.neutral[100],
   },
 });

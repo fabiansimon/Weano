@@ -136,7 +136,7 @@ export default function ActionTile({style, trip}) {
         {openTasks?.map(task => (
           <CheckboxTile
             key={task.id}
-            onPress={() => navigation.navigate(ROUTES.tripScreen, {tripId: id})}
+            onPress={() => navigation.push(ROUTES.tripScreen, {tripId: id})}
             item={task}
             style={{marginRight: 20}}
             userList={activeMembers}
@@ -253,7 +253,7 @@ export default function ActionTile({style, trip}) {
   return (
     <AnimatedPressable
       onPress={() =>
-        navigation.navigate(
+        navigation.push(
           isActive || isUpcoming ? ROUTES.tripScreen : ROUTES.memoriesScreen,
           {tripId: id},
         )

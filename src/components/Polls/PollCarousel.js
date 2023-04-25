@@ -6,6 +6,7 @@ import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import EmptyDataContainer from '../EmptyDataContainer';
 import ROUTES from '../../constants/Routes';
+import userManagement from '../../utils/userManagement';
 
 export default function PollCarousel({data, onPress}) {
   const isEmpty = data.length <= 0;
@@ -15,19 +16,21 @@ export default function PollCarousel({data, onPress}) {
       horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={{paddingRight: 20}}
-      renderItem={({item}) => (
-        <PollView
-          onNavigation={onPress}
-          isMinimized
-          style={styles.view}
-          data={item}
-          title={item.title}
-          subtitle={Utils.getDateFromTimestamp(
-            item.createdAt / 1000,
-            'DD.MM.YYYY • HH:mm',
-          )}
-        />
-      )}
+      renderItem={({item}) => {
+        return (
+          <PollView
+            onNavigation={onPress}
+            isMinimized
+            style={styles.view}
+            data={item}
+            title={item.title}
+            // subtitle={Utils.getDateFromTimestamp(
+            //   item.createdAt / 1000,
+            //   'DD.MM.YYYY • HH:mm',
+            // )}
+          />
+        );
+      }}
     />
   ) : (
     <EmptyDataContainer

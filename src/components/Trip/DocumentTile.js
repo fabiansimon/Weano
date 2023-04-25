@@ -7,6 +7,8 @@ import Body from '../typography/Body';
 import COLORS from '../../constants/Theme';
 import SwipeView from '../SwipeView';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import userManagement from '../../utils/userManagement';
+import i18n from '../../utils/i18n';
 
 export default function DocumentTile({
   style,
@@ -18,10 +20,10 @@ export default function DocumentTile({
   if (!data) {
     return <View />;
   }
-  const {createdAt} = data;
+  const {createdAt, creatorId} = data;
 
   return (
-    <SwipeView enabled={deleteEnabled} onDelete={onDelete}>
+    <SwipeView enabled={deleteEnabled} onPress={onDelete}>
       <View style={style}>
         <TouchableHighlight
           onPress={() => {
@@ -51,10 +53,12 @@ export default function DocumentTile({
               />
               <Body
                 type={2}
-                text={Utils.getDateFromTimestamp(
+                text={`${i18n.t('by')} ${
+                  userManagement.convertIdToUser(creatorId).firstName
+                } • ${Utils.getDateFromTimestamp(
                   createdAt / 1000,
-                  'HH:mm DD/MM/YYYY ',
-                )}
+                  'DD/MM/YYYY',
+                )}`}
                 color={COLORS.neutral[300]}
               />
             </View>

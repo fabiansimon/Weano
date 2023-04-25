@@ -1,5 +1,5 @@
 import React, {useRef} from 'react';
-import {Animated, Pressable, StyleSheet} from 'react-native';
+import {Animated, Pressable, StyleSheet, View} from 'react-native';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import COLORS from '../constants/Theme';
 import i18n from '../utils/i18n';
@@ -9,36 +9,66 @@ import {GestureHandlerRootView} from 'react-native-gesture-handler';
 const WIDTH = 100;
 
 export default function SwipeView({
-  onDelete,
+  onPress,
   string,
   children,
   enabled,
   backgroundColor = COLORS.error[900],
+  multipleOptions,
 }) {
-  const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
   const swipeRef = useRef();
 
+  const options = multipleOptions?.filter(option => !option.isDisabled);
+
   const renderRightAction = (_, dragX) => {
+    const maxInput = options ? WIDTH * options.length : WIDTH;
+
     const translateX = dragX.interpolate({
-      inputRange: [0, 100],
+      inputRange: [0, maxInput],
       outputRange: [50, WIDTH],
     });
     return (
-      <AnimatedPressable
-        style={[
-          styles.rightAction,
-          {transform: [{translateX}], backgroundColor},
-        ]}
-        onPress={() => {
-          onDelete();
-          swipeRef.current?.close();
-        }}>
-        <Body
-          type={1}
-          color={COLORS.shades[0]}
-          text={string || i18n.t('Delete')}
-        />
-      </AnimatedPressable>
+      <Animated.View
+        style={[{transform: [{translateX}], flexDirection: 'row'}]}>
+        {!multipleOptions ? (
+          <Pressable
+            onPress={() => {
+              onPress();
+              swipeRef.current?.close();
+            }}
+            style={[styles.rightAction, {backgroundColor}]}>
+            <Body
+              type={2}
+              style={{fontWeight: '500'}}
+              color={COLORS.shades[0]}
+              text={string || i18n.t('Delete')}
+            />
+          </Pressable>
+        ) : (
+          options.map(option => {
+            const {backgroundColor: bg, string, onPress, isInactive} = option;
+            return (
+              <Pressable
+                disabled={isInactive}
+                onPress={() => {
+                  onPress();
+                  swipeRef.current?.close();
+                }}
+                style={[
+                  styles.rightAction,
+                  {backgroundColor: isInactive ? COLORS.neutral[300] : bg},
+                ]}>
+                <Body
+                  type={2}
+                  style={{fontWeight: '500'}}
+                  color={COLORS.shades[0]}
+                  text={string}
+                />
+              </Pressable>
+            );
+          })
+        )}
+      </Animated.View>
     );
   };
 
@@ -62,5 +92,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: WIDTH,
+    height: '100%',
   },
 });

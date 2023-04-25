@@ -1,5 +1,3 @@
-/* eslint-disable no-mixed-operators */
-/* eslint-disable prefer-const */
 import {Platform, Pressable, StyleSheet, View} from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Feather';
@@ -7,7 +5,6 @@ import {useMutation} from '@apollo/client';
 import Toast from 'react-native-toast-message';
 import {MenuView} from '@react-native-menu/menu';
 import PollTile from './PollTile';
-import Headline from '../typography/Headline';
 import Body from '../typography/Body';
 import COLORS from '../../constants/Theme';
 import i18n from '../../utils/i18n';
@@ -17,6 +14,7 @@ import activeTripStore from '../../stores/ActiveTripStore';
 import VOTE_FOR_POLL from '../../mutations/voteForPoll';
 import userStore from '../../stores/UserStore';
 import Divider from '../Divider';
+import Subtitle from '../typography/Subtitle';
 
 const MAX_LENGTH = 2;
 
@@ -24,7 +22,6 @@ export default function PollView({
   style,
   data,
   title,
-  subtitle,
   onPress,
   isMinimized = false,
   onNavigation,
@@ -95,6 +92,7 @@ export default function PollView({
   };
 
   const header = data ? title : i18n.t('Be the first one to add one!');
+  const creator = userManagement.convertIdToUser(data?.creatorId);
 
   return (
     <Pressable onPress={onNavigation} style={[styles.pollContainer, style]}>
@@ -105,12 +103,12 @@ export default function PollView({
           marginHorizontal: 5,
         }}>
         <View>
-          <Headline type={4} text={header} />
+          <Body type={1} style={{fontWeight: '500'}} text={header} />
           <Body
             type={2}
-            text={subtitle}
+            text={`${i18n.t('Created by')} ${creator?.firstName}`}
             color={COLORS.neutral[300]}
-            style={{marginBottom: 16, marginTop: 2}}
+            style={{marginBottom: 16}}
           />
         </View>
         {onPress ? (
@@ -140,7 +138,6 @@ export default function PollView({
         )}
       </View>
       {data.options.map((option, index) => {
-        // eslint-disable-next-line no-mixed-operators
         if ((isMinimized && index < 2) || !isMinimized) {
           return (
             <PollTile

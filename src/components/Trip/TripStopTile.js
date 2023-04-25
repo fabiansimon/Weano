@@ -18,6 +18,7 @@ export default function TripStopTile({
   isActive,
   drag,
   item,
+  isHost,
   links,
   onInfoTap,
   isExpanded,
@@ -47,7 +48,8 @@ export default function TripStopTile({
 
   return (
     <SwipeView
-      onDelete={() => (isLast ? onReplace() : onDelete(index))}
+      enabled={isHost}
+      onPress={() => (isLast ? onReplace() : onDelete(index))}
       backgroundColor={isLast ? COLORS.primary[700] : COLORS.error[900]}
       string={isLast ? i18n.t('Replace') : i18n.t('Delete')}>
       <ScaleDecorator activeScale={1.05}>

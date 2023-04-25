@@ -12,7 +12,6 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import EntIcon from 'react-native-vector-icons/Entypo';
 import COLORS, {PADDING, RADIUS} from '../constants/Theme';
 import i18n from '../utils/i18n';
-// eslint-disable-next-line import/no-cycle
 import Avatar from './Avatar';
 import Body from './typography/Body';
 import Headline from './typography/Headline';
@@ -85,14 +84,14 @@ function ContactDetailModal({isVisible, onRequestClose, data}) {
               style={{width: '100%', height: 100, borderRadius: RADIUS.m}}
             />
             <View style={styles.overlay} />
-            <EntIcon
+            {/* <EntIcon
               suppressHighlighting
               onPress={() => console.log('hello')}
               name="info-with-circle"
               size={18}
               color={COLORS.primary[50]}
               style={{position: 'absolute', top: 20, right: 20}}
-            />
+            /> */}
             <Avatar
               disabled
               size={70}
@@ -107,28 +106,30 @@ function ContactDetailModal({isVisible, onRequestClose, data}) {
             />
             <Body
               type={1}
-              text={data && data.phoneNumber}
+              text={data?.phoneNumber || data?.email}
               color={COLORS.neutral[300]}
             />
-            <View style={styles.bottomRow}>
-              {getRoundButton(
-                'phone',
-                i18n.t('Audio call'),
-                () => data && Linking.openURL(`tel:${data.phoneNumber}`),
-              )}
-              <View style={{width: PADDING.m}} />
-              {getRoundButton(
-                'save',
-                i18n.t('Save Nr'),
-                () =>
-                  data &&
-                  Utils.openPhoneNumber(
-                    data.phoneNumber,
-                    data.firstName,
-                    data.lastName,
-                  ),
-              )}
-            </View>
+            {data?.phoneNumber && (
+              <View style={styles.bottomRow}>
+                {getRoundButton(
+                  'phone',
+                  i18n.t('Audio call'),
+                  () => data && Linking.openURL(`tel:${data.phoneNumber}`),
+                )}
+                <View style={{width: PADDING.m}} />
+                {getRoundButton(
+                  'save',
+                  i18n.t('Save Nr'),
+                  () =>
+                    data &&
+                    Utils.openPhoneNumber(
+                      data.phoneNumber,
+                      data.firstName,
+                      data.lastName,
+                    ),
+                )}
+              </View>
+            )}
           </View>
         </Animated.View>
       </TouchableOpacity>
@@ -141,7 +142,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 30,
-    marginBottom: 20,
   },
   container: {
     flex: 1,
@@ -160,6 +160,7 @@ const styles = StyleSheet.create({
     padding: PADDING.s,
     alignItems: 'center',
     backgroundColor: COLORS.shades[0],
+    paddingBottom: 20,
     borderRadius: RADIUS.l,
   },
   handler: {

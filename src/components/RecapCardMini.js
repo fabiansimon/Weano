@@ -58,6 +58,7 @@ export default function RecapCardMini({data, style, onPress, onLongPress}) {
     <ContextMenu
       previewBackgroundColor={COLORS.neutral[50]}
       actions={actions}
+      disabled={!onLongPress}
       onPress={e => onLongPress(e)}>
       <Pressable style={[styles.container, style]} onPress={onPress}>
         <View>
@@ -90,7 +91,7 @@ export default function RecapCardMini({data, style, onPress, onLongPress}) {
               {
                 backgroundColor: Utils.addAlpha(
                   !isRecent ? COLORS.success[700] : COLORS.primary[700],
-                  0.15,
+                  0.2,
                 ),
               },
             ]}>

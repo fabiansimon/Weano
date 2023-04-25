@@ -12,7 +12,7 @@ export default function PollTile({
   item,
   onPress,
   isActive,
-  height = 45,
+  height = 40,
   data /* activeMembers, */,
 }) {
   const color = isActive ? COLORS.shades[0] : COLORS.neutral[500];
@@ -30,7 +30,6 @@ export default function PollTile({
 
   return (
     <Pressable
-      activeOpacity={0.9}
       onPress={() => {
         onPress();
         RNReactNativeHapticFeedback.trigger('impactHeavy', {
@@ -65,10 +64,9 @@ export default function PollTile({
                   justifyContent: 'space-between',
                   flex: 1,
                 }}>
-                <Body type={1} color={COLORS.neutral[500]} text={item.option} />
+                <Body type={2} color={COLORS.neutral[500]} text={item.option} />
                 <Body
                   type={2}
-                  style={{fontWeight: '400'}}
                   color={COLORS.neutral[500]}
                   text={`${item.votes.length} ${i18n.t('votes')}`}
                 />

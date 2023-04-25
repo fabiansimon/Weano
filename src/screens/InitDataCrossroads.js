@@ -204,9 +204,9 @@ export default function InitDataCrossroads({route}) {
     }
   }, [data]);
 
-  useEffect(() => {
-    checkInitStatus();
-  }, [authToken]);
+  // useEffect(() => {
+  //   checkInitStatus();
+  // }, [authToken]);
 
   useEffect(() => {
     checkInitStatus();

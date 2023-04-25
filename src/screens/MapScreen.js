@@ -1,4 +1,4 @@
-import React, {useMemo, useRef, useState, useEffect} from 'react';
+import React, {useMemo, useRef, useState, useEffect, useCallback} from 'react';
 import {NativeModules, Pressable, StyleSheet, View} from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
 import MapboxGL from '@rnmapbox/maps';
@@ -28,7 +28,9 @@ export default function MapScreen({route}) {
 
   // STATE & MISC
   const [showSearch, setShowSearch] = useState(false);
-  const snapPoints = useMemo(() => ['22%', '92%'], []);
+  const [expandIndex, setExpandIndex] = useState(0);
+  const snapPoints = useMemo(() => ['22%', '98%'], []);
+
   const sheetRef = useRef(null);
 
   const mapCamera = useRef();
@@ -42,6 +44,14 @@ export default function MapScreen({route}) {
       }, 500);
     }
   }, [initTrip]);
+
+  const toggleExpansion = () => {
+    sheetRef.current.snapToIndex(expandIndex ? 0 : 1);
+  };
+
+  const handleSheetChanges = useCallback(i => {
+    setExpandIndex(i);
+  }, []);
 
   const handleSearch = id => {
     sheetRef.current.snapToIndex(0);
@@ -76,7 +86,7 @@ export default function MapScreen({route}) {
         coordinate={destinations[0].latlon}>
         <TripContainer
           onPressOut={() =>
-            navigation.navigate(ROUTES.tripScreen, {tripId: trip.id})
+            navigation.push(ROUTES.tripScreen, {tripId: trip.id})
           }
           isDense
           size={40}
@@ -113,10 +123,15 @@ export default function MapScreen({route}) {
             borderRadius: 20,
           }}
           ref={sheetRef}
+          onChange={i => handleSheetChanges(i)}
           index={0}
           snapPoints={snapPoints}
           onClose={() => {}}>
-          <CountriesVisited data={trips} onPress={id => handleSearch(id)} />
+          <CountriesVisited
+            onTap={toggleExpansion}
+            data={trips}
+            onPress={id => handleSearch(id)}
+          />
         </BottomSheet>
         <SearchModal
           isVisible={showSearch}

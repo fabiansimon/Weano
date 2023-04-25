@@ -6,11 +6,10 @@ const activeTripStore = create(set => ({
     set(() => ({
       activeTrip: {
         id: data.id || null,
-        hostId: data.hostId || null,
+        hostIds: data.hostIds || null,
         thumbnailUri: data.thumbnailUri || null,
         title: data.title || null,
         description: data.description || null,
-        // location: data.location || null,
         destinations: data.destinations || null,
         expenses: data.expenses || null,
         activeMembers: data.activeMembers || null,
@@ -35,11 +34,10 @@ const activeTripStore = create(set => ({
     set(state => ({
       activeTrip: {
         id: data.id || state.activeTrip.id,
-        hostId: data.hostId || state.activeTrip.hostId,
+        hostIds: data.hostIds || state.activeTrip.hostIds,
         thumbnailUri: data.thumbnailUri || state.activeTrip.thumbnailUri,
         title: data.title || state.activeTrip.title,
         description: data.description || state.activeTrip.description,
-        // location: data.location || state.activeTrip.location,
         destinations: data.destinations || state.activeTrip.destinations,
         expenses: data.expenses || state.activeTrip.expenses,
         activeMembers: data.activeMembers || state.activeTrip.activeMembers,

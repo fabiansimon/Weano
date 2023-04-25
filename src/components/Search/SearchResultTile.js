@@ -5,11 +5,29 @@ import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import Body from '../typography/Body';
 import Utils from '../../utils';
 
-export default function SearchResultTile({style, data, onPress}) {
-  const {title, destinations, dateRange} = data;
+export default function SearchResultTile({
+  style,
+  data,
+  onPress,
+  showIndicator = false,
+}) {
+  const {title, destinations, dateRange, type} = data;
   const location = destinations[0];
+
+  const indicatorColor =
+    type === 'recent'
+      ? COLORS.primary[500]
+      : type === 'active'
+      ? COLORS.error[700]
+      : COLORS.success[700];
+
   return (
     <Pressable onPress={onPress} style={[styles.container, style]}>
+      {showIndicator && (
+        <View
+          style={[styles.typeIndicator, {backgroundColor: indicatorColor}]}
+        />
+      )}
       <View style={{maxWidth: '84%'}}>
         <Body type={1} text={title} />
         <View
@@ -42,6 +60,8 @@ const styles = StyleSheet.create({
     minHeight: 50,
     borderRadius: 8,
     paddingVertical: 8,
+    overflow: 'hidden',
+    borderWidth: 0.5,
     borderColor: COLORS.neutral[100],
     paddingHorizontal: PADDING.s,
   },
@@ -52,5 +72,13 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.neutral[50],
     height: 25,
     width: 25,
+  },
+  typeIndicator: {
+    width: 3.5,
+    borderTopRightRadius: RADIUS.xl,
+    borderBottomRightRadius: RADIUS.xl,
+    height: '80%',
+    marginLeft: -PADDING.s,
+    marginRight: -14,
   },
 });

@@ -11,9 +11,9 @@ const toastConfig = {
       style={[
         styles.container,
         {
-          borderColor: COLORS.success[700],
-          borderLeftColor: COLORS.success[700],
-          backgroundColor: COLORS.success[900],
+          borderColor: COLORS.success[500],
+          borderLeftColor: COLORS.success[500],
+          backgroundColor: COLORS.success[700],
         },
       ]}
       text1Style={styles.textOne}
@@ -27,9 +27,9 @@ const toastConfig = {
       style={[
         styles.container,
         {
-          borderColor: COLORS.warning[700],
-          borderLeftColor: COLORS.warning[700],
-          backgroundColor: COLORS.warning[900],
+          borderColor: COLORS.warning[500],
+          borderLeftColor: COLORS.warning[500],
+          backgroundColor: COLORS.warning[700],
         },
       ]}
       text1Style={styles.textOne}
@@ -43,9 +43,9 @@ const toastConfig = {
       style={[
         styles.container,
         {
-          borderColor: COLORS.error[700],
-          borderLeftColor: COLORS.error[700],
-          backgroundColor: COLORS.error[900],
+          borderColor: COLORS.error[500],
+          borderLeftColor: COLORS.error[500],
+          backgroundColor: COLORS.error[700],
         },
       ]}
       text1Style={styles.textOne}

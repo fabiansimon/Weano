@@ -88,7 +88,7 @@ export default function StorySection({
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={contentContainerStyle}>
         <Pressable
-          onPress={() => navigation.navigate(ROUTES.mapScreen)}
+          onPress={() => navigation.push(ROUTES.mapScreen)}
           style={{marginRight: 14}}>
           <View style={styles.mapButton}>
             <Headline type={1} text="🌍" />
@@ -118,7 +118,7 @@ export default function StorySection({
                   key={trip.id}
                   disabled={false}
                   onPress={() =>
-                    navigation.navigate(ROUTES.memoriesScreen, {
+                    navigation.push(ROUTES.memoriesScreen, {
                       tripId: trip.id,
                       initShowStory: true,
                     })

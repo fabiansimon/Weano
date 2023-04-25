@@ -20,7 +20,6 @@ import LOGIN_USER from '../mutations/loginUser';
 import AsyncStorageDAO from '../utils/AsyncStorageDAO';
 import httpService from '../utils/httpService';
 import userStore from '../stores/UserStore';
-import JOIN_TRIP from '../mutations/joinTrip';
 import Utils from '../utils';
 import CountrySelectorModal from './CountrySelectorModal';
 import CountryData from '../constants/Countries';
@@ -35,8 +34,8 @@ export default function AuthModal({
   onRegisterPress,
 }) {
   // MUTATIONS
-  const [registerUser, {error: registerError}] = useMutation(REGISTER_USER);
-  const [loginUser, {error: loginError}] = useMutation(LOGIN_USER);
+  const [registerUser] = useMutation(REGISTER_USER);
+  const [loginUser] = useMutation(LOGIN_USER);
 
   // STORES
   const updateUserData = userStore(state => state.updateUserData);

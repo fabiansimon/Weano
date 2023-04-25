@@ -6,7 +6,7 @@ import {useMutation} from '@apollo/client';
 import Toast from 'react-native-toast-message';
 import i18n from '../utils/i18n';
 import Headline from './typography/Headline';
-import COLORS, {PADDING} from '../constants/Theme';
+import COLORS, {PADDING, RADIUS} from '../constants/Theme';
 import TextField from './TextField';
 import Button from './Button';
 import KeyboardView from './KeyboardView';
@@ -23,6 +23,7 @@ import InputModal from './InputModal';
 import httpService from '../utils/httpService';
 import userStore from '../stores/UserStore';
 import toastConfig from '../constants/ToastConfig';
+import TitleModal from './TitleModal';
 
 export default function CreateModal({isVisible, onRequestClose}) {
   // MUTATIONS
@@ -300,10 +301,10 @@ export default function CreateModal({isVisible, onRequestClose}) {
       {!invitees || invitees?.length < 1 ? (
         <Body
           type={2}
-          style={{flex: 1, maxWidth: '80%'}}
+          style={{flex: 1, maxWidth: '90%'}}
           color={COLORS.neutral[300]}
           text={i18n.t(
-            "Don't worry, you can also invite people once the trip is created 🤷‍♂️",
+            'Send them an invitation via email now, or add them later within the app. The choice is yours 🫡',
           )}
         />
       ) : (
@@ -447,7 +448,7 @@ export default function CreateModal({isVisible, onRequestClose}) {
           <View style={styles.buttonContainer}>
             {pageIndex !== 0 && (
               <BackButton
-                style={{height: 50, width: 50}}
+                style={{height: 50, width: 50, borderRadius: RADIUS.xl}}
                 onPress={() => handleChange(true)}
               />
             )}

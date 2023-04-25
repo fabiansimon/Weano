@@ -1,27 +1,29 @@
-import {View, StyleSheet, FlatList, Dimensions} from 'react-native';
+import {View, StyleSheet, FlatList, Dimensions, Pressable} from 'react-native';
 import React from 'react';
 import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import Headline from '../typography/Headline';
 import i18n from '../../utils/i18n';
 import userStore from '../../stores/UserStore';
 import Body from '../typography/Body';
-import SearchResultTile from '../Search/SearchResultTile';
 import Utils from '../../utils';
+import RecapCardMini from '../RecapCardMini';
 
-export default function CountriesVisited({onPress, data}) {
+export default function CountriesVisited({onPress, data, onTap}) {
   // STORES
   const {firstName, countriesVisited} = userStore(state => state.user);
 
-  const recentTrips = data.filter(trip => trip.type === 'recent').length;
-  const activeTrips = data.filter(trip => trip.type === 'active').length;
+  const recentTrips = data.filter(trip => trip.type === 'recent');
+  const activeTrips = data.filter(trip => trip.type === 'active');
   const upcomingTrips = data.filter(
     trip => trip.type === 'upcoming' || trip.type === 'soon',
-  ).length;
+  );
+
+  const _trips = [...activeTrips, ...upcomingTrips, ...recentTrips];
 
   const {width} = Dimensions.get('window');
 
   return (
-    <View style={{flex: 1}}>
+    <Pressable onPress={onTap} style={{flex: 1}}>
       <View style={styles.handler} />
       <View style={styles.container}>
         <View style={styles.header}>
@@ -50,9 +52,9 @@ export default function CountriesVisited({onPress, data}) {
                 ]}>
                 <Body
                   type={2}
-                  color={COLORS.error[700]}
+                  color={COLORS.error[900]}
                   style={{fontWeight: '500'}}
-                  text={`${activeTrips} ${i18n.t('Active')}`}
+                  text={`${activeTrips.length} ${i18n.t('Active')}`}
                 />
               </View>
               <View
@@ -62,9 +64,9 @@ export default function CountriesVisited({onPress, data}) {
                 ]}>
                 <Body
                   type={2}
-                  color={COLORS.success[700]}
+                  color={COLORS.success[900]}
                   style={{fontWeight: '500'}}
-                  text={`${upcomingTrips} ${i18n.t('Upcoming')}`}
+                  text={`${upcomingTrips.length} ${i18n.t('Upcoming')}`}
                 />
               </View>
               <View
@@ -76,43 +78,47 @@ export default function CountriesVisited({onPress, data}) {
                   type={2}
                   color={COLORS.primary[700]}
                   style={{fontWeight: '500'}}
-                  text={`${recentTrips} ${i18n.t('Recent')}`}
+                  text={`${recentTrips.length} ${i18n.t('Recent')}`}
                 />
               </View>
             </View>
           </View>
         </View>
         <FlatList
-          style={{paddingTop: 14, paddingHorizontal: PADDING.m}}
+          style={{paddingTop: 14, paddingHorizontal: PADDING.s}}
           ListEmptyComponent={() => (
             <Body
               style={{alignSelf: 'center', marginTop: 10}}
-              type={1}
+              type={2}
               text={i18n.t('No Trips to show 😢')}
               color={COLORS.neutral[300]}
             />
           )}
-          data={data}
+          data={_trips}
           ItemSeparatorComponent={() => <View style={{height: 10}} />}
           renderItem={({item}) => (
-            <SearchResultTile onPress={() => onPress(item.id)} data={item} />
+            <RecapCardMini
+              key={item.id}
+              onPress={() => onPress(item.id)}
+              data={item}
+            />
           )}
         />
       </View>
-    </View>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    overflow: 'hidden',
     backgroundColor: COLORS.neutral[50],
     borderTopRightRadius: RADIUS.s,
     borderTopLeftRadius: RADIUS.s,
     shadowColor: COLORS.shades[100],
     shadowOpacity: 0.06,
     shadowRadius: 10,
-    paddingVertical: PADDING.m,
   },
   handler: {
     alignSelf: 'center',
@@ -120,13 +126,20 @@ const styles = StyleSheet.create({
     height: 7,
     borderRadius: 100,
     backgroundColor: COLORS.shades[0],
-    marginBottom: 10,
+    marginBottom: 5,
   },
   header: {
+    borderTopRightRadius: RADIUS.s,
+    borderTopLeftRadius: RADIUS.s,
+    backgroundColor: COLORS.shades[0],
+    paddingVertical: 12,
     paddingHorizontal: PADDING.m,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
+    shadowColor: COLORS.shades[100],
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
   },
   titleContainer: {
     paddingVertical: 4,

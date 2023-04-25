@@ -70,7 +70,7 @@ const {width} = Dimensions.get('window');
 
 export default function TripScreen({route}) {
   // PARAMS
-  const {tripId, isJoined = false} = route.params;
+  const {tripId} = route.params;
 
   // QUERIES
   const [getTripData, {error: fetchError, data: tripData, loading}] =
@@ -90,9 +90,9 @@ export default function TripScreen({route}) {
   const activeTrip = activeTripStore(state => state.activeTrip);
   const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
   const setActiveTrip = activeTripStore(state => state.setActiveTrip);
-  const trips = tripsStore(state => state.trips);
   const removeTrip = tripsStore(state => state.removeTrip);
   const addTrip = tripsStore(state => state.addTrip);
+  const trips = tripsStore(state => state.trips);
   const {id} = userStore(state => state.user);
 
   // STATE & MISC
@@ -218,9 +218,10 @@ export default function TripScreen({route}) {
 
     if (tripData) {
       const _trip = tripData.getTripById;
-      if (isJoined) {
+      if (trips.findIndex(trip => trip.id === _trip.id) === -1) {
         addTrip(_trip);
       }
+
       setActiveTrip(_trip);
     }
   }, [error, fetchError, tripData]);
@@ -252,7 +253,7 @@ export default function TripScreen({route}) {
             });
 
             removeTrip(data.id);
-            navigation.navigate(ROUTES.mainScreen);
+            navigation.push(ROUTES.mainScreen);
           })
           .catch(e => {
             Toast.show({
@@ -578,7 +579,7 @@ export default function TripScreen({route}) {
       return [edit, share, deleteTrip];
     }
     if (isHost) {
-      return [edit, share, exitTrip, deleteTrip];
+      return [edit, share, exitTrip];
     }
 
     return [edit, share, exitTrip];
@@ -612,7 +613,7 @@ export default function TripScreen({route}) {
       title: i18n.t('Documents'),
       trailing: (
         <Headline
-          onPress={() => navigation.navigate(ROUTES.documentsScreen)}
+          onPress={() => navigation.push(ROUTES.documentsScreen)}
           type={4}
           style={{textDecorationLine: 'underline'}}
           text={i18n.t('see all')}
@@ -627,7 +628,7 @@ export default function TripScreen({route}) {
       title: i18n.t('Expenses'),
       trailing: (
         <Headline
-          onPress={() => navigation.navigate(ROUTES.expenseScreen)}
+          onPress={() => navigation.push(ROUTES.expenseScreen)}
           type={4}
           style={{textDecorationLine: 'underline'}}
           text={i18n.t('see all')}
@@ -641,7 +642,7 @@ export default function TripScreen({route}) {
       title: i18n.t('Packing list'),
       trailing: (
         <Headline
-          onPress={() => navigation.navigate(ROUTES.packlistScreen)}
+          onPress={() => navigation.push(ROUTES.packlistScreen)}
           type={4}
           style={{textDecorationLine: 'underline'}}
           text={i18n.t('see all')}
@@ -660,7 +661,7 @@ export default function TripScreen({route}) {
       trailing: (
         <Headline
           ref={checklistRef}
-          onPress={() => navigation.navigate(ROUTES.checklistScreen)}
+          onPress={() => navigation.push(ROUTES.checklistScreen)}
           type={4}
           style={{textDecorationLine: 'underline'}}
           text={i18n.t('see all')}
@@ -670,7 +671,7 @@ export default function TripScreen({route}) {
       ref: checklistRef,
       content: (
         <ChecklistContainer
-          onPress={() => navigation.navigate(ROUTES.checklistScreen)}
+          onPress={() => navigation.push(ROUTES.checklistScreen)}
         />
       ),
     },
@@ -679,7 +680,7 @@ export default function TripScreen({route}) {
       trailing: (
         <Headline
           ref={pollsRef}
-          onPress={() => navigation.navigate(ROUTES.pollScreen)}
+          onPress={() => navigation.push(ROUTES.pollScreen)}
           type={4}
           style={{textDecorationLine: 'underline'}}
           text={i18n.t('see all')}
@@ -690,7 +691,7 @@ export default function TripScreen({route}) {
       omitPadding: true,
       content: data?.polls && (
         <PollCarousel
-          onPress={() => navigation.navigate(ROUTES.pollScreen)}
+          onPress={() => navigation.push(ROUTES.pollScreen)}
           data={data?.polls}
         />
       ),
@@ -700,7 +701,7 @@ export default function TripScreen({route}) {
       trailing: (
         <Headline
           ref={travelersRef}
-          onPress={() => navigation.navigate(ROUTES.inviteeScreen)}
+          onPress={() => navigation.push(ROUTES.inviteeScreen)}
           type={4}
           style={{textDecorationLine: 'underline'}}
           text={i18n.t('see all')}
@@ -710,7 +711,7 @@ export default function TripScreen({route}) {
       ref: travelersRef,
       content: (
         <InviteeContainer
-          onPress={() => navigation.navigate(ROUTES.inviteeScreen)}
+          onPress={() => navigation.push(ROUTES.inviteeScreen)}
           data={data?.activeMembers}
           onLayout={e => {
             console.log(`Invitees: ${e.nativeEvent.layout.y}`);
@@ -875,7 +876,7 @@ export default function TripScreen({route}) {
               style={{marginRight: 10}}
               data={item}
               onPress={() =>
-                item.onPress ? item.onPress() : navigation.navigate(item.route)
+                item.onPress ? item.onPress() : navigation.push(item.route)
               }
             />
           ))}
@@ -1036,7 +1037,7 @@ export default function TripScreen({route}) {
           <Pressable
             onPress={() =>
               data
-                ? navigation.navigate(ROUTES.memoriesScreen, {tripId: data.id})
+                ? navigation.push(ROUTES.memoriesScreen, {tripId: data.id})
                 : null
             }
             style={styles.memoryButton}>
@@ -1102,7 +1103,10 @@ export default function TripScreen({route}) {
           />
         </View>
         {!inactive ? (
-          <DestinationScreen navigatePage={() => setViewIndex(0)} />
+          <DestinationScreen
+            navigatePage={() => setViewIndex(0)}
+            isHost={isHost}
+          />
         ) : (
           <View />
         )}

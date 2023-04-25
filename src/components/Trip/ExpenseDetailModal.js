@@ -17,6 +17,7 @@ import i18n from '../../utils/i18n';
 import Button from '../Button';
 import Utils from '../../utils';
 import userStore from '../../stores/UserStore';
+import userManagement from '../../utils/userManagement';
 
 export default function ExpenseDetailModal({
   isVisible,
@@ -40,6 +41,7 @@ export default function ExpenseDetailModal({
 
   const isCreator = userId === data?.paidBy;
   const splitees = members.filter(member => member.isIncluded);
+  const {avatarUri, firstName} = userManagement.convertIdToUser(data?.paidBy);
 
   useEffect(() => {
     toggleModal();
@@ -60,7 +62,7 @@ export default function ExpenseDetailModal({
       setSplitAmonut(null);
       return;
     }
-    setSplitAmonut(data.amount / payingMembers);
+    setSplitAmonut((data.amount / payingMembers).toFixed(2));
   }, [members]);
 
   const toggleModal = () => {
@@ -128,18 +130,20 @@ export default function ExpenseDetailModal({
             styles.innerContainer,
             {transform: [{scale: animatedScale}]},
           ]}>
-          <Avatar style={styles.avatar} isSelf size={35} />
-          <Headline
-            text={data?.title}
-            style={{paddingTop: 2}}
-            color={COLORS.neutral[700]}
-            type={4}
-          />
+          <Avatar style={styles.avatar} avatarUri={avatarUri} size={35} />
+          <Headline text={data?.title} color={COLORS.neutral[700]} type={4} />
+
           <Headline
             text={`${currency?.symbol}${data?.amount}`}
             color={COLORS.neutral[700]}
             type={1}
           />
+          <Body
+            text={`${i18n.t('Paid by')} ${firstName}`}
+            color={COLORS.neutral[300]}
+            type={2}
+          />
+
           <View
             style={[styles.splitContainer, {marginBottom: isCreator ? 20 : 0}]}>
             <Pressable>
@@ -182,24 +186,27 @@ export default function ExpenseDetailModal({
                   <TouchableOpacity
                     onPress={() => addToSplit(splitee)}
                     activeOpacity={0.9}
-                    style={{alignItems: 'center', width: 50}}>
-                    <View>
-                      <Avatar size={35} disabled data={splitee} />
-                      {splitee.isIncluded && (
-                        <View style={styles.avatarOverlay}>
-                          <Icon
-                            name="checkmark-circle-outline"
-                            size={22}
-                            color={COLORS.shades[0]}
-                          />
-                        </View>
-                      )}
-                    </View>
+                    style={{
+                      alignItems: 'center',
+                      width: 48,
+                      marginRight: 4,
+                    }}>
+                    <Avatar size={35} disabled data={splitee} />
+                    {splitee.isIncluded && (
+                      <View style={styles.avatarOverlay}>
+                        <Icon
+                          name="checkmark-circle-outline"
+                          size={22}
+                          color={COLORS.shades[0]}
+                        />
+                      </View>
+                    )}
                     <Body
                       type={2}
                       text={splitee?.firstName}
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
                       style={{
-                        fontWeight: splitee.isIncluded ? '500' : '400',
                         marginTop: 4,
                       }}
                       color={
@@ -274,7 +281,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.neutral[50],
     borderRadius: RADIUS.s,
     borderWidth: 1,
-    marginTop: 20,
+    marginTop: 14,
   },
   buttonContainer: {
     marginTop: 10,

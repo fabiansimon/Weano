@@ -213,7 +213,7 @@ export default function MainScreen() {
             text={i18n.t('No upcoming trips 🥱')}
             style={{
               marginBottom: 4,
-              fontWeight: Platform.OS === 'android' ? '700' : '500',
+              fontWeight: '500',
             }}
           />
           <Body
@@ -253,7 +253,7 @@ export default function MainScreen() {
             text={i18n.t('No recent trips 👎🏻')}
             style={{
               marginBottom: 4,
-              fontWeight: Platform.OS === 'android' ? '700' : '500',
+              fontWeight: '500',
             }}
           />
           <Body

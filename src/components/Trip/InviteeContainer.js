@@ -5,10 +5,18 @@ import activeTripStore from '../../stores/ActiveTripStore';
 import Avatar from '../Avatar';
 import Body from '../typography/Body';
 import RoleChip from '../RoleChip';
+import userManagement from '../../utils/userManagement';
 
 export default function InviteeContainer({onPress}) {
   // STORES
-  const {activeMembers, hostId} = activeTripStore(state => state.activeTrip);
+  const {activeMembers, hostIds} = activeTripStore(state => state.activeTrip);
+
+  activeMembers.sort((a, b) => {
+    if (hostIds.includes(a.id) && !hostIds.includes(b.id)) {
+      return -1;
+    }
+    return 0;
+  });
 
   const getUserTile = item => {
     const {firstName, lastName, id, email} = item;
@@ -33,7 +41,7 @@ export default function InviteeContainer({onPress}) {
               text={`${firstName} ${lastName}`}
             />
             <RoleChip
-              isHost={hostId === id}
+              isHost={hostIds.includes(id)}
               style={{top: -2, marginLeft: 10}}
             />
           </View>
@@ -49,7 +57,7 @@ export default function InviteeContainer({onPress}) {
         scrollEnabled
         contentContainerStyle={{paddingRight: 30}}
         style={{marginHorizontal: -PADDING.l, paddingHorizontal: PADDING.l}}>
-        {activeMembers && activeMembers.map(member => getUserTile(member))}
+        {activeMembers?.map(member => getUserTile(member))}
       </ScrollView>
     </View>
   );
@@ -66,6 +74,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.neutral[100],
     marginRight: 10,
-    width: 300,
+    minWidth: 300,
   },
 });

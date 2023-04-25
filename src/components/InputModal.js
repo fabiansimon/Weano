@@ -122,8 +122,13 @@ export default function InputModal({
 
   const handleOnPress = () => {
     if (multipleInputs) {
-      if (input.length > 0) {
+      if (input.length > 0 && !emailInput) {
         onPress([...multiValues, `${packingAmount} ${input}`]);
+        return clearData();
+      }
+
+      if (input.length > 0 && emailInput) {
+        onPress([...multiValues, input]);
         return clearData();
       }
 

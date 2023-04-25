@@ -204,8 +204,9 @@ export default function DocumentsScreen() {
               />
             )}
             renderItem={({item}) => {
-              const onPress =
-                item.creatorId === id ? () => handleDelete(item) : null;
+              const isCreator = item.creatorId === id;
+              const onPress = isCreator ? () => handleDelete(item) : null;
+
               return (
                 <DocumentTile
                   style={{
@@ -216,6 +217,7 @@ export default function DocumentsScreen() {
                     Utils.openDocumentFromUrl(item.uri, item.title)
                   }
                   onDelete={onPress}
+                  deleteEnabled={isCreator}
                   showMenu
                   data={item}
                 />

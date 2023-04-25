@@ -80,7 +80,7 @@ export default function ProfileScreen() {
   const profileLinks = [
     {
       title: i18n.t('My Account'),
-      onPress: () => navigation.navigate(ROUTES.myAccountScreen),
+      onPress: () => navigation.push(ROUTES.myAccountScreen),
       icon: (
         <IonIcon
           name="person-circle-outline"
@@ -211,9 +211,9 @@ export default function ProfileScreen() {
         } catch (e) {
           console.log(e);
         }
+        navigation.push(ROUTES.signUpScreen);
         await asyncStorageDAO.logout();
         clearUserData();
-        navigation.push(ROUTES.signUpScreen);
       },
     );
   };

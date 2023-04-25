@@ -9,7 +9,7 @@ const GET_TRIP_BY_ID = gql`
       }
       userFreeImages
       id
-      hostId
+      hostIds
       thumbnailUri
       title
       description

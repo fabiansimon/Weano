@@ -20,11 +20,12 @@ import Body from '../../components/typography/Body';
 import activeTripStore from '../../stores/ActiveTripStore';
 import UPDATE_TRIP from '../../mutations/updateTrip';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import userStore from '../../stores/UserStore';
 
 MapboxGL.setAccessToken(MAPBOX_TOKEN);
 const MAX_LENGTH = 15;
 
-export default function DestinationScreen({navigatePage}) {
+export default function DestinationScreen({navigatePage, isHost}) {
   // MUTATIONS
   const [updateTrip] = useMutation(UPDATE_TRIP);
 
@@ -278,6 +279,7 @@ export default function DestinationScreen({navigatePage}) {
           snapPoints={snapPoints}
           animatedPosition={sheetPosition}>
           <DestinationsSheet
+            isHost={isHost}
             setScrollIndex={setScrollIndex}
             navigateRef={pageRef}
             sheetIndex={expandedIndex}

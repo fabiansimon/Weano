@@ -26,10 +26,12 @@ export default function DocumentsContainer({style, data}) {
   }
   return (
     <Pressable
-      onPress={() => navigation.navigate(ROUTES.documentsScreen)}
+      onPress={() => navigation.push(ROUTES.documentsScreen)}
       style={[styles.container, style]}>
       {data.map((doc, index) => {
-        if (index >= MAX_LENGTH) return;
+        if (index >= MAX_LENGTH) {
+          return;
+        }
         return (
           <DocumentTile
             deleteEnabled={false}

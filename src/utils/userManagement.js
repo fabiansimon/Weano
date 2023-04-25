@@ -24,12 +24,17 @@ function convertIdToUser(id, userList) {
  * @param {String} userId - User ID
  */
 function isHost(userId) {
-  const {hostId} = activeTripStore(state => state.activeTrip);
+  const {hostIds} = activeTripStore(state => state.activeTrip);
   const {id: user} = userStore(state => state.user);
-  if (userId) {
-    return hostId === userId;
+
+  if (!hostIds) {
+    return false;
   }
-  return hostId === user;
+
+  if (userId) {
+    return hostIds.includes(userId);
+  }
+  return hostIds.includes(user);
 }
 
 export default {convertIdToUser, isHost};

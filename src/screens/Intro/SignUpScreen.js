@@ -58,6 +58,7 @@ export default function SignUpScreen({route}) {
       await GoogleSignin.hasPlayServices();
       const {idToken: googleIdToken} = await GoogleSignin.signIn();
 
+      console.log(googleIdToken);
       await loginUser({
         variables: {
           user: {
@@ -216,7 +217,7 @@ export default function SignUpScreen({route}) {
 
           <Pressable
             onPress={() =>
-              navigation.navigate(ROUTES.registerScreen, {
+              navigation.push(ROUTES.registerScreen, {
                 inviteId,
                 uploadReminderId,
               })
@@ -264,7 +265,7 @@ export default function SignUpScreen({route}) {
         joinTripId={inviteId}
         uploadReminderId={uploadReminderId}
         onRegisterPress={() =>
-          navigation.navigate(ROUTES.registerScreen, {
+          navigation.push(ROUTES.registerScreen, {
             inviteId,
             uploadReminderId,
           })

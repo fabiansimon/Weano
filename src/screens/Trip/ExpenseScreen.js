@@ -38,7 +38,7 @@ export default function ExpenseScreen() {
     expenses,
     activeMembers: users,
     id: tripId,
-    location,
+    title,
     currency,
     type,
   } = activeTripStore(state => state.activeTrip);
@@ -85,7 +85,12 @@ export default function ExpenseScreen() {
   };
 
   const handleSendingReminder = async data => {
-    const {splitees, amount, currency: currencySymbol, title} = data;
+    const {
+      splitees,
+      amount,
+      currency: currencySymbol,
+      title: expenseTitle,
+    } = data;
 
     const receivers = [];
     for (let i = 0; i < splitees.length; i += 1) {
@@ -95,16 +100,18 @@ export default function ExpenseScreen() {
       }
     }
 
+    const description = `${i18n.t('You owe')} ${firstName} ${i18n.t(
+      'from the',
+    )} ${title} ${i18n.t('Trip')} ${currencySymbol}${amount} ${i18n.t(
+      'for',
+    )} '${expenseTitle}'`;
+
     await sendReminder({
       variables: {
         data: {
           receivers,
           title: i18n.t('Hey, pay up! 💰'),
-          description: `${i18n.t('You owe')} ${firstName} ${i18n.t(
-            'from the',
-          )} ${location.placeName.split(',')[0]} ${i18n.t(
-            'Trip',
-          )} ${currencySymbol}${amount} ${i18n.t('for')} '${title}'`,
+          description,
           tripId,
           type: 'expense_reminder',
         },
@@ -122,6 +129,7 @@ export default function ExpenseScreen() {
         }));
       })
       .catch(e => {
+        console.log('up');
         Toast.show({
           type: 'error',
           text1: i18n.t('Whoops!'),
@@ -382,8 +390,13 @@ export default function ExpenseScreen() {
             <FlatList
               ListEmptyComponent={
                 <Body
-                  style={{textAlign: 'center', marginTop: 0}}
-                  text={i18n.t('No expenses yet 😕')}
+                  type={2}
+                  style={{textAlign: 'center', paddingHorizontal: 6}}
+                  text={
+                    showTotal
+                      ? i18n.t('No expenses added yet 😕')
+                      : i18n.t("You didn't add any expenses yet 😕")
+                  }
                   color={COLORS.neutral[300]}
                 />
               }
