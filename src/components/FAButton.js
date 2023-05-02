@@ -38,6 +38,7 @@ export default function FAButton({
 
   const animatedOpacity = useRef(new Animated.Value(0)).current;
   const animatedOffset = useRef(new Animated.Value(0)).current;
+  const animatedRotation = useRef(new Animated.Value(0)).current;
 
   const duration = 200;
 
@@ -55,6 +56,12 @@ export default function FAButton({
         bounciness: 0.2,
         useNativeDriver: false,
       }).start();
+      Animated.spring(animatedRotation, {
+        toValue: 1,
+        duration,
+        bounciness: 0.2,
+        useNativeDriver: false,
+      }).start();
     } else {
       Animated.spring(animatedOpacity, {
         toValue: 0,
@@ -68,8 +75,19 @@ export default function FAButton({
         bounciness: 0.2,
         useNativeDriver: false,
       }).start();
+      Animated.spring(animatedRotation, {
+        toValue: 0,
+        duration,
+        bounciness: 0.2,
+        useNativeDriver: false,
+      }).start();
     }
   }, [isExpanded]);
+
+  const iconRotation = animatedRotation.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '45deg'],
+  });
 
   const getOptionButton = (option, index) => {
     const {title, icon: iconName, onPress: onTap} = option;
@@ -148,7 +166,7 @@ export default function FAButton({
           </View>
         )}
         {options?.map((option, index) => getOptionButton(option, index))}
-        <Pressable
+        <AnimatedPressable
           disabled={isLoading}
           onPress={() => {
             if (isDisabled) {
@@ -160,6 +178,7 @@ export default function FAButton({
           style={[
             styles.fab,
             {
+              transform: [{rotate: iconRotation}],
               paddingHorizontal: string ? PADDING.l : 0,
               backgroundColor: isDisabled
                 ? Utils.addAlpha(COLORS.primary[700], 0.3)
@@ -174,14 +193,10 @@ export default function FAButton({
           ) : (
             <>
               <Headline type={4} color={COLORS.shades[0]} text={string} />
-              <Icon
-                name={isExpanded ? 'close' : icon}
-                color={COLORS.shades[0]}
-                size={iconSize}
-              />
+              <Icon name={icon} color={COLORS.shades[0]} size={iconSize} />
             </>
           )}
-        </Pressable>
+        </AnimatedPressable>
       </View>
       <PopUpModal
         isVisible={isVisible}

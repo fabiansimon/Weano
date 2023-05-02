@@ -9,6 +9,7 @@ import Utils from '../../utils';
 import DELETE_IMAGE from '../../mutations/deleteImage';
 import Avatar from '../Avatar';
 import ActionSheet from 'react-native-actionsheet';
+import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 export default function ImageContainer({
   style,
@@ -89,7 +90,13 @@ export default function ImageContainer({
   return (
     <>
       <TouchableOpacity
-        onLongPress={() => sheetRef.current?.show()}
+        onLongPress={() => {
+          RNReactNativeHapticFeedback.trigger('impactHeavy', {
+            enableVibrateFallback: true,
+            ignoreAndroidSystemSettings: true,
+          });
+          sheetRef.current?.show();
+        }}
         onPress={onPress}
         activeOpacity={0.5}
         style={[styles.container, style]}>

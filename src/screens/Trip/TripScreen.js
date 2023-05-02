@@ -285,18 +285,25 @@ export default function TripScreen({route}) {
       mediaType: 'photo',
       includeBase64: true,
     };
+
     if (index === 0) {
       return;
     }
 
     if (index === 1) {
-      ImageCropPicker.openPicker(options).then(async image => {
+      await ImageCropPicker.openPicker(options).then(async image => {
+        if (!image) {
+          return;
+        }
         uploadImage(image);
       });
     }
 
     if (index === 2) {
-      ImageCropPicker.openCamera(options).then(async image => {
+      await ImageCropPicker.openCamera(options).then(async image => {
+        if (!image) {
+          return;
+        }
         uploadImage(image);
       });
     }
@@ -339,11 +346,6 @@ export default function TripScreen({route}) {
         },
       }).catch(e => {
         updateActiveTrip({thumbnailUri: oldUri});
-        Toast.show({
-          type: 'error',
-          text1: i18n.t('Whoops!'),
-          text2: e.message,
-        });
       });
     } catch (e) {
       Toast.show({

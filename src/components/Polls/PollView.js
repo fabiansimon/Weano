@@ -14,7 +14,6 @@ import activeTripStore from '../../stores/ActiveTripStore';
 import VOTE_FOR_POLL from '../../mutations/voteForPoll';
 import userStore from '../../stores/UserStore';
 import Divider from '../Divider';
-import Subtitle from '../typography/Subtitle';
 
 const MAX_LENGTH = 2;
 
@@ -106,7 +105,9 @@ export default function PollView({
           <Body type={1} style={{fontWeight: '500'}} text={header} />
           <Body
             type={2}
-            text={`${i18n.t('Created by')} ${creator?.firstName}`}
+            text={`${i18n.t('Created by')} ${
+              creator?.firstName || i18n.t('deleted user')
+            }`}
             color={COLORS.neutral[300]}
             style={{marginBottom: 16}}
           />

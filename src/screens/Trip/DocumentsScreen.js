@@ -32,6 +32,7 @@ export default function DocumentsScreen() {
     documents,
     id: tripId,
     type,
+    activeMembers,
   } = activeTripStore(state => state.activeTrip);
   const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
   const {id, isProMember} = userStore(state => state.user);
@@ -59,7 +60,7 @@ export default function DocumentsScreen() {
   const handleDelete = ({_id}) => {
     Utils.showConfirmationAlert(
       i18n.t('Delete Document'),
-      i18n.t('Are you sure you want to delete your Document?'),
+      i18n.t('Are you sure you want to delete your document?'),
       i18n.t('Yes'),
       async () => {
         await deleteDocument({
@@ -205,7 +206,9 @@ export default function DocumentsScreen() {
             )}
             renderItem={({item}) => {
               const isCreator = item.creatorId === id;
-              const onPress = isCreator ? () => handleDelete(item) : null;
+              const isDeletedUser = !activeMembers.includes(item.creatorId);
+              const onPress =
+                isCreator || isDeletedUser ? () => handleDelete(item) : null;
 
               return (
                 <DocumentTile
@@ -217,7 +220,7 @@ export default function DocumentsScreen() {
                     Utils.openDocumentFromUrl(item.uri, item.title)
                   }
                   onDelete={onPress}
-                  deleteEnabled={isCreator}
+                  deleteEnabled={isCreator || isDeletedUser}
                   showMenu
                   data={item}
                 />

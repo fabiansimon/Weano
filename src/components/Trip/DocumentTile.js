@@ -54,7 +54,8 @@ export default function DocumentTile({
               <Body
                 type={2}
                 text={`${i18n.t('by')} ${
-                  userManagement.convertIdToUser(creatorId).firstName
+                  userManagement.convertIdToUser(creatorId)?.firstName ||
+                  i18n.t('deleted user')
                 } • ${Utils.getDateFromTimestamp(
                   createdAt / 1000,
                   'DD/MM/YYYY',

@@ -237,7 +237,7 @@ export default function ActionTile({style, trip}) {
   const getMinimizedTitle = () => (
     <View style={{marginLeft: 2, flexDirection: 'row'}}>
       <Body style={{fontWeight: '500'}} type={1} text={tripTitle} />
-      {tripTitle?.length < 18 && (
+      {tripTitle?.length < 16 && (
         <Body
           style={{fontWeight: '400'}}
           type={1}

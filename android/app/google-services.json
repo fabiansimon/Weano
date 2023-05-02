@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "1011261400246-p7ld76q619g1pn73psvtk8k8aopkgft5.apps.googleusercontent.com",
+          "client_id": "1011261400246-od5go9bfl9feppa7hh926l5gq18ks2f9.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.travelio_project",
-            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+            "certificate_hash": "2638d8e9b3080d7ea468c744bf7195c3cee43d96"
           }
         },
         {

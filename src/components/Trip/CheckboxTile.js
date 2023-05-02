@@ -74,7 +74,7 @@ export default function CheckboxTile({
                   />
                   <Body
                     type={2}
-                    text={user?.firstName || i18n.t('Private')}
+                    text={user?.firstName || i18n.t('Deleted user')}
                     color={isDone ? COLORS.success[700] : COLORS.neutral[300]}
                     style={{marginLeft: 4}}
                   />

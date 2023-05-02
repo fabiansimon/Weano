@@ -27,7 +27,11 @@ export default function PollScreen() {
   const [deletePoll, {error: deleteError}] = useMutation(DELETE_POLL);
 
   // STORES
-  const {polls, id: tripId} = activeTripStore(state => state.activeTrip);
+  const {
+    polls,
+    id: tripId,
+    activeMembers,
+  } = activeTripStore(state => state.activeTrip);
   const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
   const user = userStore(state => state.user);
 
@@ -194,8 +198,12 @@ export default function PollScreen() {
               />
             )}
             renderItem={({item}) => {
+              const isDeletedUser = !activeMembers.includes(item.creatorId);
               const onPress =
-                user.id === item.creatorId ? () => handleDelete(item) : null;
+                user.id === item?.creatorId || isDeletedUser
+                  ? () => handleDelete(item)
+                  : null;
+
               return (
                 <PollView
                   style={{marginHorizontal: 5}}

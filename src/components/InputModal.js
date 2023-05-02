@@ -5,8 +5,8 @@ import {
   TouchableOpacity,
   Animated,
   TextInput,
-  Pressable,
   ActivityIndicator,
+  Pressable,
 } from 'react-native';
 import React, {useEffect, useRef, useState, useCallback} from 'react';
 import Toast from 'react-native-toast-message';
@@ -181,7 +181,7 @@ export default function InputModal({
 
   const getSuggestionTile = item => (
     <Pressable
-      onPress={() => {
+      onTouchStart={() => {
         setInput(item.string);
         setSuggestion(item);
         setSuggestionData(null);
@@ -282,7 +282,9 @@ export default function InputModal({
       <Pressable
         style={[
           styles.counter,
-          {borderColor: isMax ? COLORS.error[900] : COLORS.neutral[100]},
+          {
+            borderColor: isMax ? COLORS.error[900] : COLORS.neutral[100],
+          },
         ]}>
         <Body
           type={2}
@@ -308,8 +310,11 @@ export default function InputModal({
           onRequestClose();
           clearData();
         }}
-        style={{backgroundColor: 'rgba(0,0,0,0.1)', flex: 1}}>
-        <KeyboardView behavior="padding" paddingBottom={0} ignoreTouch>
+        style={{
+          backgroundColor: 'rgba(0,0,0,0.1)',
+          flex: 1,
+        }}>
+        <KeyboardView behavior="height" paddingBottom={0} ignoreTouch>
           <Animated.View
             style={[
               styles.modalContainer,
@@ -317,7 +322,7 @@ export default function InputModal({
             ]}>
             {((geoMatching && suggestionData) ||
               (suggestionsLoading && suggestionData)) && (
-              <View style={styles.suggestionsContainer}>
+              <Pressable style={styles.suggestionsContainer}>
                 {suggestionsLoading ? (
                   <ActivityIndicator
                     style={{marginVertical: 16}}
@@ -339,7 +344,7 @@ export default function InputModal({
                     renderItem={({item}) => getSuggestionTile(item)}
                   />
                 )}
-              </View>
+              </Pressable>
             )}
             {multipleInputs &&
               multiValues.length > 0 &&
@@ -348,11 +353,11 @@ export default function InputModal({
               !multiValues.length > 0 &&
               !suggestionData &&
               topContent}
-            <View style={styles.innerContainer}>
+            <Pressable style={styles.innerContainer}>
               <TextInput
                 {...rest}
                 autoFocus={true}
-                // maxLength={maxLength}
+                maxLength={maxLength}
                 multiline={multiline}
                 value={input}
                 onChangeText={val => handleChangeText(val)}
@@ -377,7 +382,7 @@ export default function InputModal({
                   <Icon color={COLORS.neutral[900]} name="plus" size={20} />
                 </TouchableOpacity>
               )}
-            </View>
+            </Pressable>
             {multipleInputs &&
               packingInput &&
               input.length >= 1 &&
@@ -395,6 +400,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     maxHeight: '90%',
     marginTop: 'auto',
+    backgroundColor: 'transparent',
     shadowOffset: {
       height: -10,
     },

@@ -23,6 +23,7 @@ import userStore from '../stores/UserStore';
 import Utils from '../utils';
 import CountrySelectorModal from './CountrySelectorModal';
 import CountryData from '../constants/Countries';
+import moment from 'moment';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
@@ -78,8 +79,54 @@ export default function AuthModal({
     }, 100);
   };
 
+  const checkCodeAttemps = async () => {
+    return true;
+    const codeUsage = await asyncStorageDAO.getCodeUsage();
+
+    if (!codeUsage) {
+      asyncStorageDAO.setCodeUsage(
+        JSON.stringify({
+          attempt: 1,
+          day: moment(new Date()).startOf('day'),
+        }),
+      );
+
+      return true;
+    }
+
+    const {attempt, day} = JSON.parse(codeUsage);
+    const today = moment(new Date()).startOf('day');
+
+    if (new Date(day) * 1 === new Date(today) * 1 && attempt > 2) {
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('Whoops!'),
+        text2: i18n.t(
+          'You have exceeded your daily limit for code verifications ',
+        ),
+      });
+      return false;
+    }
+
+    asyncStorageDAO.setCodeUsage(
+      JSON.stringify({
+        attempt: attempt + 1,
+        day: moment(new Date()).startOf('day'),
+      }),
+    );
+
+    return true;
+  };
+
   const requestCode = async () => {
+    if (!(await checkCodeAttemps())) {
+      return;
+    }
+
+    console.log('call');
     setIsLoading(true);
+    navigatePage(1);
+    return;
     const phoneNumber = `+${country.dialCode}${phoneNr.trim()}`;
     await httpService
       .getVerificationCode(phoneNumber)
@@ -103,15 +150,15 @@ export default function AuthModal({
   const checkCode = async () => {
     setIsLoading(true);
     const phoneNumber = `${country.dialCode}${phoneNr.trim()}`;
-    // const res = await httpService
-    //   .checkVerificationCode(phoneNumber, code)
-    //   .catch(err =>
-    //     Toast.show({
-    //       type: 'error',
-    //       text1: i18n.t('Whoops!'),
-    //       text2: err.message,
-    //     }),
-    //   );
+    const res = await httpService
+      .checkVerificationCode(phoneNumber, code)
+      .catch(err =>
+        Toast.show({
+          type: 'error',
+          text1: i18n.t('Whoops!'),
+          text2: err.message,
+        }),
+      );
 
     // return res.status;
     return 'approved';
@@ -259,13 +306,12 @@ export default function AuthModal({
                 )}
               </View>
               <Button
-                isDisabled={phoneNr.length < 8}
+                // isDisabled={phoneNr.length < 8}
                 isLoading={false}
                 fullWidth
                 text={i18n.t('Next')}
                 onPress={() => {
-                  // requestCode();
-                  navigatePage(1);
+                  requestCode();
                 }}
               />
             </View>

@@ -5,7 +5,7 @@ import {isEmpty} from 'lodash';
 import COLORS from '../constants/Theme';
 import DefaultAvatar from '../../assets/images/default_avatar.png';
 import Headline from './typography/Headline';
-// eslint-disable-next-line import/no-cycle
+
 import ContactDetailModal from './ContactDetailModal';
 import userStore from '../stores/UserStore';
 

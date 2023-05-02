@@ -139,7 +139,7 @@ export default function ExpenseDetailModal({
             type={1}
           />
           <Body
-            text={`${i18n.t('Paid by')} ${firstName}`}
+            text={`${i18n.t('Paid by')} ${firstName || i18n.t('deleted user')}`}
             color={COLORS.neutral[300]}
             type={2}
           />

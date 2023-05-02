@@ -4,6 +4,7 @@ const keys = {
   accessToken: 'access_token',
   freeTierLimits: 'freeTierLimits',
   premiumTierLimits: 'premiumTierLimits',
+  codeUsage: 'codeUsage',
 };
 
 class AsyncStorageDAO {
@@ -41,6 +42,17 @@ class AsyncStorageDAO {
 
   async getPremiumTierLimits() {
     return AsyncStorage.getItem(keys.premiumTierLimits);
+  }
+
+  setCodeUsage(val) {
+    return AsyncStorage.setItem(keys.codeUsage, val);
+  }
+
+  async getCodeUsage() {
+    return AsyncStorage.getItem(keys.codeUsage);
+  }
+  clearCodeUsage() {
+    return AsyncStorage.removeItem(keys.codeUsage);
   }
 }
 

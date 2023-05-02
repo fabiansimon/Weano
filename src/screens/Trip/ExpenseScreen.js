@@ -372,7 +372,7 @@ export default function ExpenseScreen() {
             }}>
             <View>
               <Headline type={1} text={`${currency.symbol}${getTotal()}`} />
-              <Headline
+              <Body
                 type={4}
                 text={i18n.t('total expenses')}
                 color={COLORS.neutral[300]}

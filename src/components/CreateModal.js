@@ -23,7 +23,6 @@ import InputModal from './InputModal';
 import httpService from '../utils/httpService';
 import userStore from '../stores/UserStore';
 import toastConfig from '../constants/ToastConfig';
-import TitleModal from './TitleModal';
 
 export default function CreateModal({isVisible, onRequestClose}) {
   // MUTATIONS
@@ -81,8 +80,11 @@ export default function CreateModal({isVisible, onRequestClose}) {
 
   const handleChange = isBack => {
     if (pageIndex === 0 && isBack) {
+      onRequestClose();
+      cleanData();
       return;
     }
+
     if (pageIndex === createData.length - 1 && !isBack) {
       handleData();
       return;
@@ -446,12 +448,10 @@ export default function CreateModal({isVisible, onRequestClose}) {
             style={{alignSelf: 'center', marginBottom: 20}}
           />
           <View style={styles.buttonContainer}>
-            {pageIndex !== 0 && (
-              <BackButton
-                style={{height: 50, width: 50, borderRadius: RADIUS.xl}}
-                onPress={() => handleChange(true)}
-              />
-            )}
+            <BackButton
+              style={{height: 50, width: 50, borderRadius: RADIUS.xl}}
+              onPress={() => handleChange(true)}
+            />
             <Button
               isLoading={loading}
               text={i18n.t('Continue')}

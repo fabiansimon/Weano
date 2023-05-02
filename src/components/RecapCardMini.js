@@ -10,7 +10,7 @@ import Avatar from './Avatar';
 import Subtitle from './typography/Subtitle';
 
 export default function RecapCardMini({data, style, onPress, onLongPress}) {
-  const {destinations, dateRange, title, activeMembers} = data;
+  const {destinations, dateRange, title, activeMembers, type} = data;
 
   const getDayDifference = dates => {
     if (!dates) {
@@ -24,9 +24,20 @@ export default function RecapCardMini({data, style, onPress, onLongPress}) {
   };
 
   const daysDifference = getDayDifference(dateRange);
-  const isRecent = daysDifference < 0;
+  const isRecent = type === 'recent';
+  const isActive = type === 'active';
+
+  const color = isRecent
+    ? COLORS.primary
+    : isActive
+    ? COLORS.error
+    : COLORS.success;
 
   const getDayString = () => {
+    if (isActive) {
+      return i18n.t('Active');
+    }
+
     if (isRecent) {
       return `${Math.abs(daysDifference)} ${i18n.t('days ago')}`;
     }
@@ -89,16 +100,13 @@ export default function RecapCardMini({data, style, onPress, onLongPress}) {
             style={[
               styles.daysContainer,
               {
-                backgroundColor: Utils.addAlpha(
-                  !isRecent ? COLORS.success[700] : COLORS.primary[700],
-                  0.2,
-                ),
+                backgroundColor: Utils.addAlpha(color[700], 0.2),
               },
             ]}>
             <Subtitle
               type={1}
               text={getDayString()}
-              color={!isRecent ? COLORS.success[900] : COLORS.primary[700]}
+              color={color[isRecent ? 700 : 900]}
             />
           </View>
           <View style={{flexDirection: 'row'}}>

@@ -84,14 +84,6 @@ function ContactDetailModal({isVisible, onRequestClose, data}) {
               style={{width: '100%', height: 100, borderRadius: RADIUS.m}}
             />
             <View style={styles.overlay} />
-            {/* <EntIcon
-              suppressHighlighting
-              onPress={() => console.log('hello')}
-              name="info-with-circle"
-              size={18}
-              color={COLORS.primary[50]}
-              style={{position: 'absolute', top: 20, right: 20}}
-            /> */}
             <Avatar
               disabled
               size={70}
