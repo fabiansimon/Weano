@@ -237,6 +237,7 @@ export default function CreateModal({isVisible, onRequestClose}) {
         placeholder={i18n.t('Select a date')}
       />
       <CalendarModal
+        minDate={true}
         onApplyClick={datesData => {
           setCalendarVisible(false);
           const {timestamp: endDate} = datesData.end;

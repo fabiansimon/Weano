@@ -10,6 +10,7 @@ import Utils from '../../utils';
 import WebViewModal from '../WebViewModal';
 import CalendarModal from '../CalendarModal';
 import {AFFILIATE_DATA} from '../../constants/AffiliateData';
+import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 const DAY_SECONDS = 86400;
 const {width} = Dimensions.get('window');
@@ -213,6 +214,11 @@ export default function AffiliateInfoView({
   };
 
   const handleCounter = amount => {
+    RNReactNativeHapticFeedback.trigger('impactHeavy', {
+      enableVibrateFallback: true,
+      ignoreAndroidSystemSettings: true,
+    });
+
     let newEnd;
     if (amount === -1) {
       newEnd = dates.end - DAY_SECONDS;
@@ -288,7 +294,7 @@ export default function AffiliateInfoView({
         <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
           <Headline
             type={4}
-            text={isTransport ? locations[0] : destinations[index].placeName}
+            text={isTransport ? locations[0] : destinations[index]?.placeName}
           />
           {isTransport && (
             <>
@@ -387,6 +393,7 @@ export default function AffiliateInfoView({
         title={webInfo?.title}
       />
       <CalendarModal
+        minDate={false}
         isVisible={calendarVisible}
         onRequestClose={() => setCalendarVisible(false)}
         isSingleDate={!isSleep}

@@ -11,7 +11,7 @@ import Headline from './typography/Headline';
 const CalendarModal = ({
   isVisible,
   onRequestClose,
-  minDate = new Date(),
+  minDate = true,
   initialStartDate,
   initialEndDate,
   isSingleDate = false,
@@ -196,7 +196,7 @@ const CalendarModal = ({
       onPress={handleApply}>
       <CalendarList
         style={{paddingTop: 10}}
-        minDate={minDate}
+        minDate={minDate ? new Date() : null}
         markingType="period"
         onDayPress={day => onDayTap(day)}
         markedDates={getDateRange}

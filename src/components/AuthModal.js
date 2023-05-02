@@ -80,7 +80,6 @@ export default function AuthModal({
   };
 
   const checkCodeAttemps = async () => {
-    return true;
     const codeUsage = await asyncStorageDAO.getCodeUsage();
 
     if (!codeUsage) {
@@ -123,10 +122,8 @@ export default function AuthModal({
       return;
     }
 
-    console.log('call');
     setIsLoading(true);
     navigatePage(1);
-    return;
     const phoneNumber = `+${country.dialCode}${phoneNr.trim()}`;
     await httpService
       .getVerificationCode(phoneNumber)

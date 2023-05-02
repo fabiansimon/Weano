@@ -1088,6 +1088,7 @@ export default function TripScreen({route}) {
             value={`${META_DATA.baseUrl}/redirect/invitation/${tripId}`}
           />
           <CalendarModal
+            minDate={false}
             isVisible={calendarVisible}
             onRequestClose={() => setCalendarVisible(false)}
             initialStartDate={data?.dateRange?.startDate}

@@ -23,6 +23,7 @@ import SearchResultTile from './SearchResultTile';
 import Body from '../typography/Body';
 import REGEX from '../../constants/Regex';
 import Utils from '../../utils';
+import EmptyDataContainer from '../EmptyDataContainer';
 
 const {StatusBarManager} = NativeModules;
 
@@ -177,7 +178,7 @@ export default function SearchModal({isVisible, onRequestClose, onPress}) {
                 )}
               />
             )}
-            {term.length >= 1 && (
+            {term.length >= 1 ? (
               <>
                 <View
                   style={[
@@ -211,6 +212,25 @@ export default function SearchModal({isVisible, onRequestClose, onPress}) {
                   )}
                 />
               </>
+            ) : (
+              <View style={{marginTop: 12, marginLeft: 5}}>
+                <Body
+                  type={2}
+                  color={COLORS.neutral[700]}
+                  text={i18n.t('No trips added yet 🥱')}
+                  style={{
+                    marginBottom: 4,
+                    fontWeight: '500',
+                  }}
+                />
+                <Body
+                  type={2}
+                  color={COLORS.neutral[300]}
+                  text={i18n.t(
+                    'Come back when you have joined or created a trip 🫡',
+                  )}
+                />
+              </View>
             )}
           </ScrollView>
         </View>
