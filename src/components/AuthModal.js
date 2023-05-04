@@ -96,7 +96,7 @@ export default function AuthModal({
     const {attempt, day} = JSON.parse(codeUsage);
     const today = moment(new Date()).startOf('day');
 
-    if (new Date(day) * 1 === new Date(today) * 1 && attempt > 2) {
+    if (new Date(day) * 1 === new Date(today) * 1 && attempt > 3) {
       Toast.show({
         type: 'error',
         text1: i18n.t('Whoops!'),
@@ -157,8 +157,7 @@ export default function AuthModal({
         }),
       );
 
-    // return res.status;
-    return 'approved';
+    return res.status;
   };
 
   const handleRegister = async () => {

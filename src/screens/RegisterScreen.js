@@ -298,6 +298,7 @@ export default function RegisterScreen({route}) {
               />
               <TextField
                 ref={emailRef}
+                autoCorrect={false}
                 onDelete={() => setEmail('')}
                 keyboardType="email-address"
                 label={i18n.t('Email')}

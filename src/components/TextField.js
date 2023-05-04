@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import {
   TextInput,
   StyleSheet,
@@ -57,7 +56,6 @@ export default function TextField({
     }
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const delayedSearch = useCallback(
     debounce(val => handleLocationQuery(val), 250),
     [],

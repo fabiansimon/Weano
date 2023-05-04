@@ -2,7 +2,6 @@ import {
   View,
   StyleSheet,
   Modal,
-  SafeAreaView,
   Pressable,
   SectionList,
   ScrollView,
@@ -13,7 +12,7 @@ import {
 } from 'react-native';
 import React, {useState} from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
-import COLORS, {PADDING} from '../../constants/Theme';
+import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Headline from '../typography/Headline';
 import TextField from '../TextField';
@@ -23,7 +22,6 @@ import SearchResultTile from './SearchResultTile';
 import Body from '../typography/Body';
 import REGEX from '../../constants/Regex';
 import Utils from '../../utils';
-import EmptyDataContainer from '../EmptyDataContainer';
 
 const {StatusBarManager} = NativeModules;
 
@@ -143,6 +141,31 @@ export default function SearchModal({isVisible, onRequestClose, onPress}) {
               <SectionList
                 scrollEnabled={false}
                 sections={data}
+                ListEmptyComponent={() => (
+                  <View style={{marginTop: 12, alignItems: 'center'}}>
+                    <View style={styles.emptyIcon}>
+                      <Body
+                        style={{fontSize: 30, lineHeight: 60}}
+                        color={COLORS.neutral[300]}
+                        text={i18n.t('🌴')}
+                      />
+                    </View>
+                    <Body
+                      type={2}
+                      color={COLORS.neutral[700]}
+                      text={i18n.t('Looks deserted here...')}
+                      style={{
+                        marginTop: 8,
+                        fontWeight: '500',
+                      }}
+                    />
+                    <Body
+                      type={2}
+                      color={COLORS.neutral[300]}
+                      text={i18n.t('Come back once you added some trips')}
+                    />
+                  </View>
+                )}
                 renderSectionHeader={({
                   section: {title, data: sectionData, type},
                 }) => {
@@ -178,7 +201,7 @@ export default function SearchModal({isVisible, onRequestClose, onPress}) {
                 )}
               />
             )}
-            {term.length >= 1 ? (
+            {term.length >= 1 && (
               <>
                 <View
                   style={[
@@ -212,25 +235,6 @@ export default function SearchModal({isVisible, onRequestClose, onPress}) {
                   )}
                 />
               </>
-            ) : (
-              <View style={{marginTop: 12, marginLeft: 5}}>
-                <Body
-                  type={2}
-                  color={COLORS.neutral[700]}
-                  text={i18n.t('No trips added yet 🥱')}
-                  style={{
-                    marginBottom: 4,
-                    fontWeight: '500',
-                  }}
-                />
-                <Body
-                  type={2}
-                  color={COLORS.neutral[300]}
-                  text={i18n.t(
-                    'Come back when you have joined or created a trip 🫡',
-                  )}
-                />
-              </View>
             )}
           </ScrollView>
         </View>
@@ -259,5 +263,14 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     marginBottom: 10,
     marginTop: 4,
+  },
+  emptyIcon: {
+    borderRadius: RADIUS.xl,
+    height: 60,
+    width: 60,
+    marginTop: '20%',
+    backgroundColor: COLORS.neutral[100],
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
