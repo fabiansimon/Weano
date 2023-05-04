@@ -2,7 +2,7 @@ import gql from 'graphql-tag';
 
 const GET_INVITATION_TRIP_DATA = gql`
   query GetTripById($tripId: String) {
-    getTripById(tripId: $tripId) {
+    getTripById(tripId: $tripId, isInvitation: true) {
       id
       hostIds
       thumbnailUri

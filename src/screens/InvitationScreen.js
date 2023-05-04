@@ -1,5 +1,4 @@
 import {
-  ActivityIndicator,
   Alert,
   Image,
   Platform,
@@ -7,14 +6,12 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import Toast from 'react-native-toast-message';
-import React, {useRef, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Entypo';
 import {useNavigation} from '@react-navigation/native';
 import {useMutation, useQuery} from '@apollo/client';
-import KeyboardView from '../components/KeyboardView';
 import Headline from '../components/typography/Headline';
 import i18n from '../utils/i18n';
 import COLORS, {PADDING, RADIUS} from '../constants/Theme';
