@@ -7,6 +7,7 @@ import {
   ScrollView,
   TouchableHighlight,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import React, {
   forwardRef,
@@ -18,14 +19,7 @@ import React, {
 } from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
-import {
-  initConnection,
-  getProducts,
-  endConnection,
-  requestSubscription,
-} from 'react-native-iap';
-
-// import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import Toast from 'react-native-toast-message';
 import COLORS, {PADDING, RADIUS} from '../constants/Theme';
 import Logo from '../../assets/images/logo_blue.png';
 import Headline from './typography/Headline';
@@ -37,6 +31,8 @@ import Subtitle from './typography/Subtitle';
 
 import PremiumController from '../PremiumController';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import Purchases from 'react-native-purchases';
+import PopUpModal from './PopUpModal';
 
 const PremiumModal = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -60,33 +56,55 @@ const PremiumModal = () => {
     }),
     [],
   );
+
   useEffect(() => {
     (async () => {
-      await initConnection();
-      setProducts(await getProducts({skus: ['pro_subscription_v1']}));
+      try {
+        const offerings = await Purchases.getOfferings();
+        if (offerings.current !== null) {
+          const {availablePackages} = offerings.current;
+
+          const {
+            product: {priceString, title, description},
+          } = availablePackages[0];
+          setProducts([
+            {
+              title,
+              priceString,
+              description,
+            },
+          ]);
+        }
+      } catch (e) {
+        console.log(e);
+      }
     })();
   }, []);
 
-  const handleSubscribtion = async (sku, offerToken) => {
-    setIsLoading(true);
+  const handlePurchase = async () => {
+    const product =
+      Platform.OS === 'android' ? 'weanopro:weano-monthly' : 'weano_0350_1m';
+
     try {
-      requestSubscription(
-        {sku},
-        // ...(offerToken && { subscriptionOffers: [{ sku, offerToken }] }),
-      ).then(res => {
-        console.log(res);
-        setIsLoading(false);
-        setIsVisible(false);
-      });
-    } catch (err) {
-      setIsLoading(false);
-      console.warn(err.code, err.message);
+      const purchaseMade = await Purchases.purchasePackage(product);
+      if (purchaseMade.customerInfo.entitlements.active.pro) {
+        // Unlock that great "pro" content
+      }
+    } catch (e) {
+      console.log(e);
+      if (!e.userCancelled) {
+        Toast.show({
+          type: 'error',
+          text1: i18n.t('Whoops!'),
+          text2: i18n.t('Something went wrong'),
+        });
+      }
     }
   };
 
   const features = [
     {
-      title: i18n.t('📸  Make more memories'),
+      title: i18n.t('📸  Create more memories!'),
       subtitle: i18n.t('Store up to 100 images per trip (yes one hundred)'),
     },
     {
@@ -94,13 +112,13 @@ const PremiumModal = () => {
       subtitle: i18n.t('Create and store as many trips as you like'),
     },
     {
-      title: i18n.t('👀  Increased storage for planning'),
+      title: i18n.t('👀  Increased storage for planning!'),
       subtitle: i18n.t(
         'Upload as many documents, expenses, polls and tasks as you wish',
       ),
     },
     {
-      title: i18n.t('🏄‍♀️  Travel with more friends'),
+      title: i18n.t('🏄‍♀️  Travel with more friends!'),
       subtitle: i18n.t(
         'Invite as many people as you wish. The more the merrier',
       ),
@@ -115,19 +133,10 @@ const PremiumModal = () => {
   );
 
   const getOfferTile = offer => {
-    const {
-      subscriptionPeriodNumberIOS: months,
-      price,
-      isBest = true,
-      productId,
-    } = offer;
-    const total = (price * months).toFixed(2);
-    const title = `$${total} / ${months} ${i18n.t('Months')} (${price} ${i18n.t(
-      'per Months',
-    )})`;
-    const subtitle = `${i18n.t('instead of')} $${(total * 2).toFixed(
-      2,
-    )} ${i18n.t('for')} ${months} ${i18n.t('Months')}`;
+    const {title: _title, priceString, description} = offer;
+
+    const title = `${priceString} ${_title}`;
+
     return (
       <TouchableHighlight
         underlayColor={COLORS.neutral[100]}
@@ -136,12 +145,11 @@ const PremiumModal = () => {
             enableVibrateFallback: true,
             ignoreAndroidSystemSettings: true,
           });
-
-          handleSubscribtion(productId);
+          handlePurchase();
         }}
-        style={[styles.offerTile, isBest && styles.bestContainer]}>
+        style={[styles.offerTile, styles.bestContainer]}>
         <>
-          {isBest && (
+          {true && (
             <View style={styles.bestHeader}>
               <Icon name="ios-star" color={COLORS.shades[0]} />
               <Subtitle
@@ -166,7 +174,7 @@ const PremiumModal = () => {
             ) : (
               <>
                 <Body type={1} color={COLORS.neutral[900]} text={title} />
-                <Body type={2} color={COLORS.neutral[300]} text={subtitle} />
+                <Body type={2} color={COLORS.neutral[300]} text={description} />
               </>
             )}
           </View>
@@ -174,6 +182,17 @@ const PremiumModal = () => {
       </TouchableHighlight>
     );
   };
+
+  return (
+    <PopUpModal
+      onRequestClose={() => setIsVisible(false)}
+      isVisible={isVisible}
+      title={i18n.t('Sorry!')}
+      subtitle={i18n.t(
+        "You can't add any more at this point. Please either delete other items to add another one.",
+      )}
+    />
+  );
 
   return (
     <Modal

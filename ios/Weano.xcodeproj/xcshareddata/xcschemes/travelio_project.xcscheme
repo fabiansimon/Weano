@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "travelio_project.app"
-               BlueprintName = "travelio_project"
-               ReferencedContainer = "container:travelio_project.xcodeproj">
+               BuildableName = "Weano.app"
+               BlueprintName = "Weano"
+               ReferencedContainer = "container:Weano.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "travelio_projectTests.xctest"
-               BlueprintName = "travelio_projectTests"
-               ReferencedContainer = "container:travelio_project.xcodeproj">
+               BuildableName = "WeanoTests.xctest"
+               BlueprintName = "WeanoTests"
+               ReferencedContainer = "container:Weano.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "travelio_project.app"
-            BlueprintName = "travelio_project"
-            ReferencedContainer = "container:travelio_project.xcodeproj">
+            BuildableName = "Weano.app"
+            BlueprintName = "Weano"
+            ReferencedContainer = "container:Weano.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "travelio_project.app"
-            BlueprintName = "travelio_project"
-            ReferencedContainer = "container:travelio_project.xcodeproj">
+            BuildableName = "Weano.app"
+            BlueprintName = "Weano"
+            ReferencedContainer = "container:Weano.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

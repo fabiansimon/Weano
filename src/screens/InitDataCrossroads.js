@@ -4,12 +4,6 @@ import * as Notifications from 'expo-notifications';
 import {useNavigation} from '@react-navigation/native';
 import {useLazyQuery, useMutation} from '@apollo/client';
 import Toast from 'react-native-toast-message';
-// import {
-//   flushFailedPurchasesCachedAsPendingAndroid,
-//   initConnection,
-//   purchaseErrorListener,
-//   purchaseUpdatedListener,
-// } from 'react-native-iap';
 import i18n from '../utils/i18n';
 import ROUTES from '../constants/Routes';
 import GET_INIT_USER_DATA from '../queries/getInitUserData';
@@ -20,6 +14,7 @@ import tripsStore from '../stores/TripsStore';
 import UPDATE_USER from '../mutations/updateUser';
 import Logo from '../../assets/images/logo_temp.png';
 import * as TaskManager from 'expo-task-manager';
+import Purchases from 'react-native-purchases';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
@@ -187,12 +182,23 @@ export default function InitDataCrossroads({route}) {
     await asyncStorageDAO.setFreeTierLimits(freeTierLimits);
     await asyncStorageDAO.setPremiumTierLimits(premiumTierLimits);
 
+    let isProMember = false;
+
+    const customerInfo = await Purchases.getCustomerInfo();
+
+    if (customerInfo.entitlements.active?.pro) {
+      isProMember = true;
+    }
+
     if (trips) {
       setTrips(trips);
     }
 
     if (userData) {
-      updateUserData(userData);
+      updateUserData({
+        ...userData,
+        isProMember,
+      });
     }
 
     handleNavigation();
@@ -290,32 +296,6 @@ export default function InitDataCrossroads({route}) {
       Linking.removeAllListeners('url', handleOpenUrl);
     };
   }, []);
-
-  // useEffect(() => {
-  //   let purchaseUpdateSubscription;
-  //   let purchaseErrorSubscription;
-  //   (() => {
-  //     initConnection().then(() => {
-  //       flushFailedPurchasesCachedAsPendingAndroid()
-  //         .catch(err => console.log(err))
-  //         .then(() => {
-  //           purchaseUpdateSubscription = purchaseUpdatedListener(purchase => {
-  //             console.log(`purchase${purchase}`);
-  //           });
-  //         });
-  //       purchaseErrorSubscription = purchaseErrorListener(err => {
-  //         console.warn('purchaseErrorListener', err);
-  //       });
-  //     });
-  //   })();
-
-  //   return () => {
-  //     purchaseUpdateSubscription?.remove();
-  //     purchaseUpdateSubscription = null;
-  //     purchaseErrorSubscription?.remove();
-  //     purchaseErrorSubscription = null;
-  //   };
-  // }, []);
 
   return (
     <View style={styles.container}>

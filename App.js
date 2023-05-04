@@ -1,5 +1,5 @@
 import React, {useEffect, useRef} from 'react';
-import {LogBox, StatusBar} from 'react-native';
+import {LogBox, Platform, StatusBar} from 'react-native';
 import {ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -31,7 +31,9 @@ import MyAccountScreen from './src/screens/MyAccount';
 import PacklistScreen from './src/screens/Trip/PacklistScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
 import PremiumModal from './src/components/PremiumModal';
-import {APP_TOKEN} from '@env';
+import Purchases, {LOG_LEVEL} from 'react-native-purchases';
+
+import {APP_TOKEN, IOS_REV_CAT_KEY, ANDROID_REV_CAT_KEY} from '@env';
 
 const Stack = createNativeStackNavigator();
 
@@ -64,6 +66,16 @@ function App() {
 
   useEffect(() => {
     checkAuth();
+  }, []);
+
+  useEffect(() => {
+    Purchases.setLogLevel(LOG_LEVEL.VERBOSE);
+    if (Platform.OS === 'android') {
+      Purchases.configure({apiKey: ANDROID_REV_CAT_KEY});
+    }
+    if (Platform.OS === 'ios') {
+      Purchases.configure({apiKey: IOS_REV_CAT_KEY});
+    }
   }, []);
 
   Notifications.setNotificationHandler({

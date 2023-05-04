@@ -1246,7 +1246,7 @@
     node-forge "^1.2.1"
     nullthrows "^1.1.1"
 
-"@expo/config-plugins@6.0.1", "@expo/config-plugins@^6.0.1", "@expo/config-plugins@~6.0.0":
+"@expo/config-plugins@6.0.1", "@expo/config-plugins@~6.0.0":
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/@expo/config-plugins/-/config-plugins-6.0.1.tgz#827cb34c51f725d8825b0768df6550c1cf81d457"
   integrity sha512-6mqZutxeibXFeqFfoZApFUEH2n1RxGXYMHCdJrDj4eXDBBFZ3aJ0XBoroZcHHHvfRieEsf54vNyJoWp7JZGj8g==
@@ -8430,13 +8430,6 @@ react-native-haptic-feedback@^2.0.3:
   resolved "https://registry.yarnpkg.com/react-native-haptic-feedback/-/react-native-haptic-feedback-2.0.3.tgz#09133b2175503831c04798cb0dc63ae91e3959c1"
   integrity sha512-7+qvcxXZts/hA+HOOIFyM1x9m9fn/TJVSTgXaoQ8uT4gLc97IMvqHQ559tDmnlth+hHMzd3HRMpmRLWoKPL0DA==
 
-react-native-iap@^12.10.5:
-  version "12.10.5"
-  resolved "https://registry.yarnpkg.com/react-native-iap/-/react-native-iap-12.10.5.tgz#d9def0191bcc8d414a017a9b11f48730fca87155"
-  integrity sha512-KVIgIiz3EE0esPVSZiavKSN2NeUarURA5JJUh6XUGXSsM9YTS3pZaJZpHo8Z62vbsXceg17N5soCnlyvaNmIIQ==
-  dependencies:
-    "@expo/config-plugins" "^6.0.1"
-
 react-native-image-crop-picker@^0.39.0:
   version "0.39.0"
   resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.39.0.tgz#9cb8e8ffb0e8ab06f7b3227cadf077169e225eba"
@@ -8456,6 +8449,11 @@ react-native-pager-view@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/react-native-pager-view/-/react-native-pager-view-6.2.0.tgz#51380d93fbe47f6380dc71d613a787bf27a4ca37"
   integrity sha512-pf9OnL/Tkr+5s4Gjmsn7xh91PtJLDa6qxYa/bmtUhd/+s4cQdWQ8DIFoOFghwZIHHHwVdWtoXkp6HtpjN+r20g==
+
+react-native-purchases@^5.14.0:
+  version "5.14.0"
+  resolved "https://registry.yarnpkg.com/react-native-purchases/-/react-native-purchases-5.14.0.tgz#2c1d00d9e91a015c673b1c381e31b21fc686aaa2"
+  integrity sha512-cek8SdFJ8obcKh3OwEQvSd8WLKhs4jsVRsTTfJnGZMXlxFXfv1GS0F4BnAD/eP5J1GcAUw1RGyJB9gC/iqoglw==
 
 react-native-qrcode-svg@^6.2.0:
   version "6.2.0"
