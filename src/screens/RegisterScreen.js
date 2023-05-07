@@ -365,7 +365,7 @@ export default function RegisterScreen({route}) {
             text={i18n.t('By signing up you are agreeing to our')}
           />
           <View style={{flexDirection: 'row'}}>
-            <Body
+            {/* <Body
               onPress={() => setWebViewOption('terms')}
               type={2}
               color={COLORS.shades[100]}
@@ -379,7 +379,7 @@ export default function RegisterScreen({route}) {
               color={COLORS.neutral[700]}
               style={{marginHorizontal: 2}}
               text={i18n.t('and')}
-            />
+            /> */}
             <Body
               type={2}
               onPress={() => setWebViewOption('pp')}
