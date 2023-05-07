@@ -47,10 +47,12 @@ function App() {
   const navigationRef = useRef();
 
   const client = new ApolloClient({
+    // uri: 'https://www.weano.app/graphql',
     uri: `${META_DATA.baseUrl}/graphql`,
-    // uri: 'http://10.100.31.181:4000/graphql',
+    // uri: 'http://10.100.31.140:4000/graphql',
     // uri: 'http://192.168.0.76:4000/graphql',
     cache: new InMemoryCache(),
+
     headers: {
       Authorization: authToken || '',
       'App-Token': APP_TOKEN,

@@ -57,7 +57,6 @@ export default function SignUpScreen({route}) {
     try {
       await GoogleSignin.hasPlayServices();
       const {idToken: googleIdToken} = await GoogleSignin.signIn();
-
       await loginUser({
         variables: {
           user: {

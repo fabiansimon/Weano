@@ -137,35 +137,10 @@ export default function SearchModal({isVisible, onRequestClose, onPress}) {
               marginHorizontal: PADDING.m,
               paddingTop: 10,
             }}>
-            {term.length < 1 && (
+            {term.length < 1 && trips.length > 0 && (
               <SectionList
                 scrollEnabled={false}
                 sections={data}
-                ListEmptyComponent={() => (
-                  <View style={{marginTop: 12, alignItems: 'center'}}>
-                    <View style={styles.emptyIcon}>
-                      <Body
-                        style={{fontSize: 30, lineHeight: 60}}
-                        color={COLORS.neutral[300]}
-                        text={i18n.t('🌴')}
-                      />
-                    </View>
-                    <Body
-                      type={2}
-                      color={COLORS.neutral[700]}
-                      text={i18n.t('Looks deserted here...')}
-                      style={{
-                        marginTop: 8,
-                        fontWeight: '500',
-                      }}
-                    />
-                    <Body
-                      type={2}
-                      color={COLORS.neutral[300]}
-                      text={i18n.t('Come back once you added some trips')}
-                    />
-                  </View>
-                )}
                 renderSectionHeader={({
                   section: {title, data: sectionData, type},
                 }) => {
@@ -200,6 +175,31 @@ export default function SearchModal({isVisible, onRequestClose, onPress}) {
                   />
                 )}
               />
+            )}
+            {term.length === 0 && trips.length === 0 && (
+              <View style={{marginTop: 12, alignItems: 'center'}}>
+                <View style={styles.emptyIcon}>
+                  <Body
+                    style={{fontSize: 30, lineHeight: 60}}
+                    color={COLORS.neutral[300]}
+                    text={i18n.t('🌴')}
+                  />
+                </View>
+                <Body
+                  type={2}
+                  color={COLORS.neutral[700]}
+                  text={i18n.t('Looks deserted here...')}
+                  style={{
+                    marginTop: 8,
+                    fontWeight: '500',
+                  }}
+                />
+                <Body
+                  type={2}
+                  color={COLORS.neutral[300]}
+                  text={i18n.t('Come back once you added some trips')}
+                />
+              </View>
             )}
             {term.length >= 1 && (
               <>
