@@ -226,21 +226,23 @@ export default function SignUpScreen({route}) {
         <View
           style={{
             width: '90%',
-            height: 220,
+            height: Platform.OS === 'ios' ? 220 : 160,
             marginBottom: Platform.OS === 'android' ? 20 : 8,
             alignSelf: 'center',
           }}>
-          <AppleAuthentication.AppleAuthenticationButton
-            buttonType={
-              AppleAuthentication.AppleAuthenticationButtonType.CONTINUE
-            }
-            buttonStyle={
-              AppleAuthentication.AppleAuthenticationButtonStyle.WHITE
-            }
-            cornerRadius={100}
-            style={{height: 48, marginBottom: 6}}
-            onPress={handleAuthApple}
-          />
+          {Platform.OS === 'ios' && (
+            <AppleAuthentication.AppleAuthenticationButton
+              buttonType={
+                AppleAuthentication.AppleAuthenticationButtonType.CONTINUE
+              }
+              buttonStyle={
+                AppleAuthentication.AppleAuthenticationButtonStyle.WHITE
+              }
+              cornerRadius={100}
+              style={{height: 48, marginBottom: 6}}
+              onPress={handleAuthApple}
+            />
+          )}
           <Button
             icon={<GoogleIcon />}
             style={{marginBottom: 8}}

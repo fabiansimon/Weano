@@ -380,20 +380,22 @@ export default function RegisterScreen({route}) {
               text={i18n.t('Sign up with Google')}
             />
           </View>
-          <AppleAuthentication.AppleAuthenticationButton
-            buttonType={
-              AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP
-            }
-            buttonStyle={
-              AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
-            }
-            cornerRadius={100}
-            style={{
-              height: 48,
-              marginBottom: 6,
-            }}
-            onPress={handleAuthApple}
-          />
+          {Platform.OS === 'ios' && (
+            <AppleAuthentication.AppleAuthenticationButton
+              buttonType={
+                AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP
+              }
+              buttonStyle={
+                AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
+              }
+              cornerRadius={100}
+              style={{
+                height: 48,
+                marginBottom: 6,
+              }}
+              onPress={handleAuthApple}
+            />
+          )}
 
           <Body
             type={2}
