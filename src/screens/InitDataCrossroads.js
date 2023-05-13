@@ -79,7 +79,11 @@ export default function InitDataCrossroads({route}) {
       });
     }
 
-    const token = (await Notifications.getExpoPushTokenAsync()).data;
+    const token = (
+      await Notifications.getExpoPushTokenAsync({
+        projectId: 'de5514f3-d75a-40d5-80f9-c8ff0fba37f5',
+      })
+    ).data;
 
     if (!token) {
       return;

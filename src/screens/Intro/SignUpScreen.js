@@ -28,6 +28,7 @@ import {useMutation} from '@apollo/client';
 import LOGIN_USER from '../../mutations/loginUser';
 import userStore from '../../stores/UserStore';
 import AsyncStorageDAO from '../../utils/AsyncStorageDAO';
+import * as AppleAuthentication from 'expo-apple-authentication';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
@@ -79,6 +80,42 @@ export default function SignUpScreen({route}) {
         });
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const handleAuthApple = async () => {
+    try {
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+
+      await loginUser({
+        variables: {
+          user: {
+            appleIdToken: credential.identityToken,
+          },
+        },
+      })
+        .catch(e => {
+          Toast.show({
+            type: 'error',
+            text1: i18n.t('Whoops!'),
+            text2: e.message,
+          });
+        })
+        .then(res => {
+          if (!res) {
+            return;
+          }
+          asyncStorageDAO.setAccessToken(res.data.loginUser);
+          updateUserData({authToken: res.data.loginUser});
+          navigation.push(ROUTES.initDataCrossroads, inviteId);
+        });
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -185,14 +222,25 @@ export default function SignUpScreen({route}) {
             />
           </View>
         </View>
+
         <View
           style={{
             width: '90%',
-            height: 160,
-
+            height: 220,
             marginBottom: Platform.OS === 'android' ? 20 : 8,
             alignSelf: 'center',
           }}>
+          <AppleAuthentication.AppleAuthenticationButton
+            buttonType={
+              AppleAuthentication.AppleAuthenticationButtonType.CONTINUE
+            }
+            buttonStyle={
+              AppleAuthentication.AppleAuthenticationButtonStyle.WHITE
+            }
+            cornerRadius={100}
+            style={{height: 48, marginBottom: 6}}
+            onPress={handleAuthApple}
+          />
           <Button
             icon={<GoogleIcon />}
             style={{marginBottom: 8}}
@@ -212,7 +260,6 @@ export default function SignUpScreen({route}) {
             onPress={() => setLoginVisible(true)}
             text={i18n.t('Log in with phone')}
           />
-
           <Pressable
             onPress={() =>
               navigation.push(ROUTES.registerScreen, {

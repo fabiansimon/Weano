@@ -16,12 +16,13 @@ import META_DATA from '../constants/MetaData';
 import AuthModal from '../components/AuthModal';
 import GoogleIcon from '../../assets/icons/google_icon.svg';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
-import {ApolloError, useMutation} from '@apollo/client';
+import {useMutation} from '@apollo/client';
 import REGISTER_USER from '../mutations/registerUser';
 import AsyncStorageDAO from '../utils/AsyncStorageDAO';
 import {useNavigation} from '@react-navigation/native';
 import userStore from '../stores/UserStore';
 import ROUTES from '../constants/Routes';
+import * as AppleAuthentication from 'expo-apple-authentication';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
@@ -77,6 +78,51 @@ export default function RegisterScreen({route}) {
   useEffect(() => {
     checkForErrors();
   }, [firstName, lastName, email]);
+
+  const handleAuthApple = async () => {
+    try {
+      const {
+        email: appleEmail,
+        fullName: {familyName, givenName},
+        identityToken,
+      } = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+
+      await registerUser({
+        variables: {
+          user: {
+            appleIdToken: identityToken,
+            firstName: givenName,
+            lastName: familyName,
+            email: appleEmail,
+          },
+        },
+      })
+        .catch(e => {
+          console.log(e);
+          Toast.show({
+            type: 'error',
+            text1: i18n.t('Whoops!'),
+            text2: e.message,
+          });
+        })
+        .then(res => {
+          if (!res) {
+            return;
+          }
+          asyncStorageDAO.setAccessToken(res.data.registerUser);
+          updateUserData({authToken: res.data.registerUser});
+          navigation.push(ROUTES.initDataCrossroads, registerUser);
+        });
+      // signed in
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const handleAuthGoogle = async () => {
     try {
@@ -324,7 +370,7 @@ export default function RegisterScreen({route}) {
             style={{
               width: '100%',
               height: 50,
-              marginBottom: 10,
+              marginBottom: 6,
             }}>
             <Button
               isSecondary
@@ -334,6 +380,27 @@ export default function RegisterScreen({route}) {
               text={i18n.t('Sign up with Google')}
             />
           </View>
+          <AppleAuthentication.AppleAuthenticationButton
+            buttonType={
+              AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP
+            }
+            buttonStyle={
+              AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
+            }
+            cornerRadius={100}
+            style={{
+              height: 48,
+              marginBottom: 6,
+            }}
+            onPress={handleAuthApple}
+          />
+
+          <Body
+            type={2}
+            text={i18n.t('Or')}
+            style={{marginBottom: 6, alignSelf: 'center'}}
+            color={COLORS.neutral[300]}
+          />
           <View
             style={{
               width: '100%',
@@ -342,7 +409,7 @@ export default function RegisterScreen({route}) {
             <Button
               fullWidth
               onPress={() => setRegisterVisible(true)}
-              text={i18n.t('Sign up')}
+              text={i18n.t('Sign up with phone')}
               isDisabled={
                 !(
                   errorChecks.firstName.isValid &&
