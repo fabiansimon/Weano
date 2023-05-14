@@ -1,6 +1,6 @@
 import {Dimensions, Image, StyleSheet, TouchableOpacity} from 'react-native';
 import Toast from 'react-native-toast-message';
-import React, {useRef} from 'react';
+import React, {useMemo, useRef} from 'react';
 import FastImage from 'react-native-fast-image';
 import RNFetchBlob from 'rn-fetch-blob';
 import {useMutation} from '@apollo/client';
@@ -28,6 +28,17 @@ export default function ImageContainer({
   if (!image) {
     return;
   }
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const sheetOptions = useMemo(() => {
+    let options = [i18n.t('Cancel'), i18n.t('Download')];
+
+    if (onDelete) {
+      options.push(i18n.t('Delete'));
+    }
+
+    return options;
+  }, [onDelete]);
 
   const {uri, author} = image;
 
@@ -118,7 +129,7 @@ export default function ImageContainer({
       <ActionSheet
         ref={sheetRef}
         title={i18n.t('Choose an option')}
-        options={[i18n.t('Cancel'), i18n.t('Download'), i18n.t('Delete')]}
+        options={sheetOptions}
         cancelButtonIndex={0}
         destructiveButtonIndex={2}
         onPress={index => handleOption(index)}

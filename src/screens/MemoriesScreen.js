@@ -67,7 +67,7 @@ export default function MemoriesScreen({route}) {
   const {images, userFreeImages} = activeTripStore(state => state.activeTrip);
   const trips = tripsStore(state => state.trips);
   const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
-  const {isProMember} = userStore(state => state.user);
+  const {isProMember, id: userId} = userStore(state => state.user);
 
   // STATE & MISC
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -406,6 +406,10 @@ export default function MemoriesScreen({route}) {
 
   const getImageTile = (image, index) => {
     const isLeft = index % 1;
+    const {
+      author: {_id: creatorId},
+    } = image;
+
     return (
       <ImageContainer
         cacheImage={index < 20}
@@ -414,12 +418,16 @@ export default function MemoriesScreen({route}) {
           setInitalIndex(images?.findIndex(img => img._id === image._id) || 0);
           setStoryVisible(true);
         }}
-        onDelete={id => {
-          updateActiveTrip({
-            images: images.filter(i => i._id !== id),
-            userFreeImages: userFreeImages + 1,
-          });
-        }}
+        onDelete={
+          creatorId === userId
+            ? id => {
+                updateActiveTrip({
+                  images: images.filter(i => i._id !== id),
+                  userFreeImages: userFreeImages + 1,
+                });
+              }
+            : null
+        }
         style={{marginLeft: isLeft ? 0 : 4, marginTop: 10}}
         image={image}
       />

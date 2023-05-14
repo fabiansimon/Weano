@@ -49,7 +49,7 @@ function App() {
   const client = new ApolloClient({
     // uri: 'https://www.weano.app/graphql',
     uri: `${META_DATA.baseUrl}/graphql`,
-    // uri: 'http://10.100.31.39:4000/graphql',
+    // uri: 'http://10.100.31.98:4000/graphql',
     // uri: 'http://192.168.0.76:4000/graphql',
     cache: new InMemoryCache(),
 

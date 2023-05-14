@@ -15,6 +15,7 @@ import WebViewModal from '../components/WebViewModal';
 import META_DATA from '../constants/MetaData';
 import AuthModal from '../components/AuthModal';
 import GoogleIcon from '../../assets/icons/google_icon.svg';
+import AppleIcon from '../../assets/icons/apple_icon.svg';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {useMutation} from '@apollo/client';
 import REGISTER_USER from '../mutations/registerUser';
@@ -381,20 +382,20 @@ export default function RegisterScreen({route}) {
             />
           </View>
           {Platform.OS === 'ios' && (
-            <AppleAuthentication.AppleAuthenticationButton
-              buttonType={
-                AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP
-              }
-              buttonStyle={
-                AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
-              }
-              cornerRadius={100}
+            <View
               style={{
-                height: 48,
+                width: '100%',
+                height: 50,
                 marginBottom: 6,
-              }}
-              onPress={handleAuthApple}
-            />
+              }}>
+              <Button
+                isSecondary
+                icon={<AppleIcon />}
+                fullWidth
+                onPress={handleAuthApple}
+                text={i18n.t('Sign up with Apple')}
+              />
+            </View>
           )}
 
           <Body

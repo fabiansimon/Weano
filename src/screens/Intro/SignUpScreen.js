@@ -15,8 +15,9 @@ import Body from '../../components/typography/Body';
 import Toast from 'react-native-toast-message';
 import AuthModal from '../../components/AuthModal';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
-import GoogleIcon from '../../../assets/icons/google_icon.svg';
 import Button from '../../components/Button';
+import GoogleIcon from '../../../assets/icons/google_icon.svg';
+import AppleIcon from '../../../assets/icons/apple_icon.svg';
 import Logo from '../../../assets/images/logo_temp.png';
 import BackgroundImage from '../../../assets/images/signup_background.png';
 import Utils from '../../utils';
@@ -231,16 +232,15 @@ export default function SignUpScreen({route}) {
             alignSelf: 'center',
           }}>
           {Platform.OS === 'ios' && (
-            <AppleAuthentication.AppleAuthenticationButton
-              buttonType={
-                AppleAuthentication.AppleAuthenticationButtonType.CONTINUE
-              }
-              buttonStyle={
-                AppleAuthentication.AppleAuthenticationButtonStyle.WHITE
-              }
-              cornerRadius={100}
-              style={{height: 48, marginBottom: 6}}
+            <Button
+              icon={<AppleIcon style={{marginLeft: -22}} />}
+              style={{marginBottom: 8}}
+              fullWidth
+              textColor={COLORS.shades[100]}
+              isSecondary
               onPress={handleAuthApple}
+              alignIcon="left"
+              text={i18n.t('Continue with Apple')}
             />
           )}
           <Button
