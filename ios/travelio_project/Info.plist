@@ -19,7 +19,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.93</string>
+	<string>1.95</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>UIBackgroundModes</key>
@@ -48,11 +48,11 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>39</string>
+	<string>41</string>
 	<key>LSApplicationCategoryType</key>
 	<string></string>
 	<key>LSRequiresIPhoneOS</key>
-	<true/>
+	<false/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSExceptionDomains</key>
@@ -65,15 +65,15 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Allow Weano to use the camera</string>
+	<string>Allow access to your camera to take and upload pictures.</string>
 	<key>NSContactsUsageDescription</key>
-	<string>We need to access your contacts, so you&apos;re able to add them to the trip</string>
+	<string>Allow access to your contacts to invite your friends.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We need to access your location</string>
+	<string>Allow access to your location to display your location on the map.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Allow Weano to use the microphone</string>
+	<string>Allow access to your microphone to record videos.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>We need access to your camera roll for you to upload an image</string>
+	<string>Allow access to photos to upload photos from your library.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>WorkSans-Black.ttf</string>

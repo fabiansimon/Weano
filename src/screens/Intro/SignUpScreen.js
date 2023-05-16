@@ -30,6 +30,7 @@ import LOGIN_USER from '../../mutations/loginUser';
 import userStore from '../../stores/UserStore';
 import AsyncStorageDAO from '../../utils/AsyncStorageDAO';
 import * as AppleAuthentication from 'expo-apple-authentication';
+import REGISTER_USER from '../../mutations/registerUser';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
@@ -46,6 +47,7 @@ export default function SignUpScreen({route}) {
 
   // MUTATIONS
   const [loginUser] = useMutation(LOGIN_USER);
+  const [registerUser] = useMutation(REGISTER_USER);
 
   // STORES
   const updateUserData = userStore(state => state.updateUserData);
@@ -92,6 +94,38 @@ export default function SignUpScreen({route}) {
           AppleAuthentication.AppleAuthenticationScope.EMAIL,
         ],
       });
+
+      if (credential?.fullName?.givenName !== null) {
+        const {
+          fullName: {familyName, givenName},
+          email,
+        } = credential;
+        await registerUser({
+          variables: {
+            user: {
+              appleIdToken: credential.identityToken,
+              firstName: givenName,
+              lastName: familyName,
+              email,
+            },
+          },
+        })
+          .catch(e => {
+            Toast.show({
+              type: 'error',
+              text1: i18n.t('Whoops!'),
+              text2: e.message,
+            });
+          })
+          .then(res => {
+            if (!res) {
+              return;
+            }
+            asyncStorageDAO.setAccessToken(res.data.registerUser);
+            updateUserData({authToken: res.data.registerUser});
+            navigation.push(ROUTES.initDataCrossroads, inviteId);
+          });
+      }
 
       await loginUser({
         variables: {
