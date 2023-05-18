@@ -1085,7 +1085,7 @@ export default function TripScreen({route}) {
           <ShareModal
             isVisible={shareVisible}
             onRequestClose={() => setShareVisible(false)}
-            value={`${META_DATA.baseUrl}/redirect/invitation/${tripId}`}
+            value={`${META_DATA.websiteUrl}/redirect/invitation/${tripId}`}
           />
           <CalendarModal
             minDate={false}
