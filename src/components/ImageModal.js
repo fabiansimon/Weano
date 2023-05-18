@@ -141,7 +141,10 @@ export default function ImageModal({
     const data = isPreselected ? image.data : image;
 
     try {
-      const {Location} = await httpService.uploadToS3(data, !isPreselected);
+      const {Location, Key} = await httpService.uploadToS3(
+        data,
+        !isPreselected,
+      );
 
       await uploadTripImage({
         variables: {
@@ -150,6 +153,7 @@ export default function ImageModal({
             title: title || '',
             description: description || '',
             tripId,
+            s3Key: Key,
           },
         },
       }).then(res => {

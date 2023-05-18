@@ -37,7 +37,7 @@ export default function DocumentsContainer({style, data}) {
             deleteEnabled={false}
             style={{marginTop: index !== 0 ? 14 : 0}}
             data={doc}
-            onPress={() => Utils.openDocumentFromUrl(doc.uri, doc.title)}
+            onPress={() => Utils.openDocumentFromUrl(doc.uri, doc.title, true)}
           />
         );
       })}

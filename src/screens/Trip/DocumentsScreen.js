@@ -19,6 +19,7 @@ import DocumentTile from '../../components/Trip/DocumentTile';
 import httpService from '../../utils/httpService';
 import AsyncStorageDAO from '../../utils/AsyncStorageDAO';
 import PremiumController from '../../PremiumController';
+import {KnownTypeNamesRule} from 'graphql';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
@@ -126,10 +127,10 @@ export default function DocumentsScreen() {
         return Toast.show({
           type: 'error',
           text1: i18n.t('Whoops!'),
-          text2: i18n.t('We only support PDF format for now'),
+          text2: i18n.t('We only support PDF format for now.'),
         });
       }
-      const {Location} = await httpService.uploadToS3(null, null, uri);
+      const {Location, Key} = await httpService.uploadToS3(null, null, uri);
 
       await uploadDocument({
         variables: {
@@ -138,6 +139,7 @@ export default function DocumentsScreen() {
             uri: Location,
             tripId,
             title: name,
+            s3Key: Key,
           },
         },
       })
@@ -217,7 +219,7 @@ export default function DocumentsScreen() {
                     backgroundColor: COLORS.shades[0],
                   }}
                   onPress={() =>
-                    Utils.openDocumentFromUrl(item.uri, item.title)
+                    Utils.openDocumentFromUrl(item.uri, item.title, true)
                   }
                   onDelete={onPress}
                   deleteEnabled={isCreator || isDeletedUser}

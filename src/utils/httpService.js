@@ -69,7 +69,6 @@ async function checkVerificationCode(phoneNumber, code) {
   });
 }
 
-// eslint-disable-next-line default-param-last
 async function uploadToS3(image, transformToBase64 = false, document) {
   const key = uuidv4();
 
@@ -88,11 +87,10 @@ async function uploadToS3(image, transformToBase64 = false, document) {
     const base64 = await readFile(document, 'base64');
     arrayBuffer = decode(base64);
 
-    // eslint-disable-next-line no-return-await
     return await bucket
       .upload({
         Bucket: S3_BUCKET,
-        Key: `${key}/helloworld.pdf`,
+        Key: key,
         ContentDisposition: 'attachment',
         Body: arrayBuffer,
         ContentType: type,
@@ -110,7 +108,6 @@ async function uploadToS3(image, transformToBase64 = false, document) {
     arrayBuffer = decode(image);
   }
 
-  // eslint-disable-next-line no-return-await
   return await bucket
     .upload({
       Bucket: S3_BUCKET,

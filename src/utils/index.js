@@ -251,8 +251,10 @@ export default class Utils {
    * Open Document from an URL locally on the phone
    * @param {String} URL - URL
    */
-  static openDocumentFromUrl(url, title) {
-    const extension = url.split(/[#?]/)[0].split('.').pop().trim();
+  static openDocumentFromUrl(url, title, isPDF = false) {
+    const extension = isPDF
+      ? 'pdf'
+      : url.split(/[#?]/)[0].split('.').pop().trim();
 
     const localFile = `${RNFS.DocumentDirectoryPath}/${title}.${extension}`;
 
