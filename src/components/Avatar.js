@@ -1,5 +1,5 @@
 import {StyleSheet, Image, TouchableOpacity} from 'react-native';
-import React, {useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import FastImage from 'react-native-fast-image';
 import {isEmpty} from 'lodash';
 import COLORS from '../constants/Theme';
@@ -8,6 +8,8 @@ import Headline from './typography/Headline';
 
 import ContactDetailModal from './ContactDetailModal';
 import userStore from '../stores/UserStore';
+import Body from './typography/Body';
+import Subtitle from './typography/Subtitle';
 
 export default function Avatar({
   style,
@@ -19,6 +21,7 @@ export default function Avatar({
   disabled,
   isSelf = false,
   avatarUri,
+  string,
 }) {
   // STORES
   const user = userStore(state => state.user);
@@ -28,13 +31,27 @@ export default function Avatar({
 
   const info = avatarUri ? null : isSelf ? user : data;
 
-  const hasAvatar = info?.avatarUri !== '' || avatarUri;
+  const hasAvatar =
+    (info?.avatarUri !== '' && info?.avatarUri !== undefined) || avatarUri;
 
   const height = size || 55;
   const width = size || 55;
   const bg =
     backgroundColor || !hasAvatar ? COLORS.neutral[300] : COLORS.shades[0];
   const bW = borderWidth || 1;
+
+  const avatarString = useMemo(() => {
+    if (string) {
+      return string;
+    }
+
+    if (!info?.firstName) {
+      return '';
+    }
+
+    return `${info?.firstName[0]}${info?.lastName[0]}`;
+  }, [string, info]);
+
   return (
     <>
       <TouchableOpacity
@@ -64,11 +81,7 @@ export default function Avatar({
           />
         )}
         {!hasAvatar && (
-          <Headline
-            type={4}
-            text={`${info?.firstName[0]}${info?.lastName[0]}`}
-            color={COLORS.shades[0]}
-          />
+          <Subtitle type={2} text={avatarString} color={COLORS.shades[0]} />
         )}
       </TouchableOpacity>
       {!isEmpty(info) && (

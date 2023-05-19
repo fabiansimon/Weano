@@ -119,7 +119,7 @@ export default function MainScreen() {
   //   if (recentTrips.length <= 0 && upcomingTrips.length > 0) {
   //     return setIndex(0);
   //   }
-  // }, [recentTrips, upcomingTrips]);
+  // }, []);
 
   const handleLongPress = ({nativeEvent: {name}}, {id}) => {
     if (name === i18n.t('Invite Friends')) {

@@ -11,6 +11,7 @@ import Subtitle from './typography/Subtitle';
 
 export default function RecapCardMini({data, style, onPress, onLongPress}) {
   const {destinations, dateRange, title, activeMembers, type} = data;
+  const MAX_AVATARS = 4;
 
   const getDayDifference = dates => {
     if (!dates) {
@@ -111,15 +112,31 @@ export default function RecapCardMini({data, style, onPress, onLongPress}) {
           </View>
           <View style={{flexDirection: 'row'}}>
             {activeMembers &&
-              activeMembers.map(member => (
-                <Avatar
-                  disabled
-                  key={member.id}
-                  data={member}
-                  size={24}
-                  style={{marginLeft: -8}}
-                />
-              ))}
+              activeMembers.map((member, index) => {
+                if (index > MAX_AVATARS) {
+                  return;
+                }
+                if (index === MAX_AVATARS) {
+                  return (
+                    <Avatar
+                      disabled
+                      size={24}
+                      string={`+${activeMembers.length - MAX_AVATARS}`}
+                      style={{marginLeft: -8}}
+                    />
+                  );
+                }
+
+                return (
+                  <Avatar
+                    disabled
+                    key={member.id}
+                    data={member}
+                    size={24}
+                    style={{marginLeft: -8}}
+                  />
+                );
+              })}
           </View>
         </View>
       </Pressable>

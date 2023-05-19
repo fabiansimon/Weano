@@ -1,5 +1,5 @@
 import React, {useEffect, useRef} from 'react';
-import {LogBox, Platform, StatusBar} from 'react-native';
+import {Linking, LogBox, Platform, StatusBar} from 'react-native';
 import {ApolloClient, InMemoryCache, ApolloProvider} from '@apollo/client';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';

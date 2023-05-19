@@ -183,16 +183,16 @@ const PremiumModal = () => {
     );
   };
 
-  return (
-    <PopUpModal
-      onRequestClose={() => setIsVisible(false)}
-      isVisible={isVisible}
-      title={i18n.t('Sorry!')}
-      subtitle={i18n.t(
-        "You can't add any more at this point. Please either delete other items to add another one.",
-      )}
-    />
-  );
+  // return (
+  //   <PopUpModal
+  //     onRequestClose={() => setIsVisible(false)}
+  //     isVisible={isVisible}
+  //     title={i18n.t('Sorry!')}
+  //     subtitle={i18n.t(
+  //       "You can't add any more at this point. Please either delete other items to add another one.",
+  //     )}
+  //   />
+  // );
 
   return (
     <Modal

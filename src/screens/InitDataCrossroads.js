@@ -1,4 +1,11 @@
-import {Image, Linking, StatusBar, StyleSheet, View} from 'react-native';
+import {
+  ActivityIndicator,
+  Image,
+  Linking,
+  StatusBar,
+  StyleSheet,
+  View,
+} from 'react-native';
 import React, {useEffect, useState, useRef} from 'react';
 import * as Notifications from 'expo-notifications';
 import {useNavigation} from '@react-navigation/native';
@@ -15,6 +22,9 @@ import UPDATE_USER from '../mutations/updateUser';
 import Logo from '../../assets/images/logo_temp.png';
 import * as TaskManager from 'expo-task-manager';
 import Purchases from 'react-native-purchases';
+import Headline from '../components/typography/Headline';
+import Body from '../components/typography/Body';
+import Utils from '../utils';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
@@ -311,6 +321,15 @@ export default function InitDataCrossroads({route}) {
           justifyContent: 'center',
         }}>
         <Image source={Logo} resizeMode="contain" style={{height: 150}} />
+      </View>
+      <View style={{position: 'absolute', bottom: '10%'}}>
+        <ActivityIndicator color={COLORS.shades[0]} />
+        <Body
+          type={2}
+          text={i18n.t('Loading...')}
+          style={{marginTop: 6}}
+          color={Utils.addAlpha(COLORS.neutral[50], 0.8)}
+        />
       </View>
     </View>
   );

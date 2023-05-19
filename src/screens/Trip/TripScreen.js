@@ -939,7 +939,7 @@ export default function TripScreen({route}) {
           source={DefaultImage}
           blurRadius={5}
         />
-        {!inactive && isHost && (
+        {!inactive && isHost && data?.type !== 'recent' && (
           <View style={styles.addImage}>
             <Headline type={3} text={i18n.t('Add Trip Image')} color="white" />
             <Icon name="image" size={32} color="white" />
