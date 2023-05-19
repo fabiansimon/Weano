@@ -5,8 +5,8 @@ export default class PremiumController {
     this.modalRef = ref;
   };
 
-  static showModal = () => {
-    this.modalRef.current?.show();
+  static showModal = isMax => {
+    this.modalRef.current?.show(isMax);
   };
 
   static hideModal = () => {

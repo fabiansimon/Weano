@@ -22,7 +22,6 @@ import UPDATE_USER from '../mutations/updateUser';
 import Logo from '../../assets/images/logo_temp.png';
 import * as TaskManager from 'expo-task-manager';
 import Purchases from 'react-native-purchases';
-import Headline from '../components/typography/Headline';
 import Body from '../components/typography/Body';
 import Utils from '../utils';
 

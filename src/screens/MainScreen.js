@@ -92,7 +92,7 @@ export default function MainScreen() {
     ).totalTrips;
 
     if (trips?.length >= usageLimit) {
-      return PremiumController.showModal();
+      return PremiumController.showModal(user.isProMember);
     }
 
     setCreateVisible(true);
@@ -111,15 +111,6 @@ export default function MainScreen() {
       setTrips(data.getTripsForUser);
     }
   }, [data]);
-
-  // useEffect(() => {
-  //   if (recentTrips.length > 0 && upcomingTrips.length <= 0) {
-  //     return setIndex(1);
-  //   }
-  //   if (recentTrips.length <= 0 && upcomingTrips.length > 0) {
-  //     return setIndex(0);
-  //   }
-  // }, []);
 
   const handleLongPress = ({nativeEvent: {name}}, {id}) => {
     if (name === i18n.t('Invite Friends')) {

@@ -103,7 +103,7 @@ export default function DocumentsScreen() {
     ).documents;
 
     if (documents.filter(doc => doc.creatorId === id)?.length >= usageLimit) {
-      return PremiumController.showModal();
+      return PremiumController.showModal(isProMember);
     }
 
     setIsLoading(true);

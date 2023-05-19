@@ -193,7 +193,7 @@ export default function ChecklistScreen() {
     ).checklist;
     if ([...mutualTasks, ...privateTasks].length >= usageLimit) {
       setTimeout(() => {
-        PremiumController.showModal();
+        PremiumController.showModal(isProMember);
       }, 300);
       return;
     }

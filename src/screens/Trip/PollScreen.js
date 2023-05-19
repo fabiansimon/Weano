@@ -98,7 +98,7 @@ export default function PollScreen() {
         : await asyncStorageDAO.getFreeTierLimits(),
     ).polls;
     if (polls.length >= usageLimit) {
-      return PremiumController.showModal();
+      return PremiumController.showModal(user?.isProMember);
     }
 
     const {title} = data;
@@ -222,6 +222,7 @@ export default function PollScreen() {
       </HybridHeader>
       <FAButton icon="add" iconSize={28} onPress={() => setIsVisible(true)} />
       <AddPollModal
+        isProMember={user?.isProMember}
         polls={polls}
         isVisible={isVisible}
         onRequestClose={() => setIsVisible(false)}

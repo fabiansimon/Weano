@@ -20,6 +20,7 @@ export default function AddPollModal({
   onPress,
   isLoading,
   polls,
+  isProMember,
 }) {
   // STATE & MISC
   const [title, setTitle] = useState('');
@@ -32,12 +33,14 @@ export default function AddPollModal({
 
   const handleAdd = async () => {
     const usageLimit = JSON.parse(
-      await asyncStorageDAO.getFreeTierLimits(),
+      isProMember
+        ? await asyncStorageDAO.getPremiumTierLimits()
+        : await asyncStorageDAO.getFreeTierLimits(),
     ).polls;
 
     if (polls?.length >= usageLimit) {
       onRequestClose();
-      setTimeout(() => PremiumController.showModal(), 500);
+      setTimeout(() => PremiumController.showModal(isProMember), 500);
       return;
     }
 

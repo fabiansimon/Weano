@@ -126,7 +126,7 @@ export default function PacklistScreen() {
     ).packingItems;
     if (packingItems.length + items.length > usageLimit) {
       setTimeout(() => {
-        PremiumController.showModal();
+        PremiumController.showModal(isProMember);
       }, 300);
       return;
     }

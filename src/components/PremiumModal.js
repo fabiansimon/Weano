@@ -33,11 +33,17 @@ import PremiumController from '../PremiumController';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Purchases from 'react-native-purchases';
 import PopUpModal from './PopUpModal';
+import userStore from '../stores/UserStore';
 
 const PremiumModal = () => {
+  // STORES
+  const updateUserData = userStore(state => state.updateUserData);
+
+  // State && Misc
   const [isVisible, setIsVisible] = useState(false);
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isMax, setIsMax] = useState(false);
   const modalRef = useRef();
 
   useLayoutEffect(() => {
@@ -47,11 +53,13 @@ const PremiumModal = () => {
   useImperativeHandle(
     modalRef,
     () => ({
-      show: () => {
+      show: max => {
         setIsVisible(true);
+        setIsMax(max);
       },
       hide: () => {
         setIsVisible(false);
+        setIsMax(false);
       },
     }),
     [],
@@ -82,14 +90,22 @@ const PremiumModal = () => {
   }, []);
 
   const handlePurchase = async () => {
+    setIsLoading(true);
     const product =
       Platform.OS === 'android' ? 'weanopro:weano-monthly' : 'weano_0350_1m';
 
     try {
-      const purchaseMade = await Purchases.purchasePackage(product);
+      const purchaseMade = await Purchases.purchaseProduct(product);
       if (purchaseMade.customerInfo.entitlements.active.pro) {
-        // Unlock that great "pro" content
+        updateUserData({isProMember: true});
+        Toast.show({
+          type: 'success',
+          text1: i18n.t('Welcome!'),
+          text2: i18n.t('You are now a Weano-Pro Member! Enjoy 🍹'),
+        });
       }
+      setIsLoading(true);
+      setIsVisible(false);
     } catch (e) {
       console.log(e);
       if (!e.userCancelled) {
@@ -99,6 +115,7 @@ const PremiumModal = () => {
           text2: i18n.t('Something went wrong'),
         });
       }
+      setIsLoading(true);
     }
   };
 
@@ -183,16 +200,18 @@ const PremiumModal = () => {
     );
   };
 
-  // return (
-  //   <PopUpModal
-  //     onRequestClose={() => setIsVisible(false)}
-  //     isVisible={isVisible}
-  //     title={i18n.t('Sorry!')}
-  //     subtitle={i18n.t(
-  //       "You can't add any more at this point. Please either delete other items to add another one.",
-  //     )}
-  //   />
-  // );
+  if (isMax) {
+    return (
+      <PopUpModal
+        onRequestClose={() => setIsVisible(false)}
+        isVisible={isVisible}
+        title={i18n.t('Sorry!')}
+        subtitle={i18n.t(
+          'You reached the max. quantity at this moment. Please remove items to add new ones. If you think this is an error please contact us.',
+        )}
+      />
+    );
+  }
 
   return (
     <Modal

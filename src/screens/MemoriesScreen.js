@@ -235,7 +235,7 @@ export default function MemoriesScreen({route}) {
         : await asyncStorageDAO.getFreeTierLimits(),
     ).images;
     if (images?.length >= usageLimit) {
-      return PremiumController.showModal();
+      return PremiumController.showModal(isProMember);
     }
 
     if (event === 'take') {
