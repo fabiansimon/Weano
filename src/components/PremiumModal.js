@@ -59,6 +59,7 @@ const PremiumModal = () => {
       },
       hide: () => {
         setIsVisible(false);
+        setIsLoading(false);
         setIsMax(false);
       },
     }),
@@ -77,9 +78,9 @@ const PremiumModal = () => {
           } = availablePackages[0];
           setProducts([
             {
-              title,
+              title: i18n.t('Pro access to Weano'),
+              description: i18n.t('Unlock your full travel potential '),
               priceString,
-              description,
             },
           ]);
         }
@@ -104,7 +105,7 @@ const PremiumModal = () => {
           text2: i18n.t('You are now a Weano-Pro Member! Enjoy 🍹'),
         });
       }
-      setIsLoading(true);
+      setIsLoading(false);
       setIsVisible(false);
     } catch (e) {
       console.log(e);
@@ -115,7 +116,7 @@ const PremiumModal = () => {
           text2: i18n.t('Something went wrong'),
         });
       }
-      setIsLoading(true);
+      setIsLoading(false);
     }
   };
 
