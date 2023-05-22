@@ -208,7 +208,10 @@ export default function DocumentsScreen() {
             )}
             renderItem={({item}) => {
               const isCreator = item.creatorId === id;
-              const isDeletedUser = !activeMembers.includes(item.creatorId);
+              const isDeletedUser =
+                !activeMembers.findIndex(
+                  member => member.id === item.creatorId,
+                ) === -1;
               const onPress =
                 isCreator || isDeletedUser ? () => handleDelete(item) : null;
 

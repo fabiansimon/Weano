@@ -7,7 +7,14 @@ import Body from '../typography/Body';
 import Utils from '../../utils';
 import i18n from '../../utils/i18n';
 
-export default function ExpenseTile({style, data, user, onPress, currency}) {
+export default function ExpenseTile({
+  style,
+  data,
+  user,
+  onPress,
+  currency,
+  isSelf,
+}) {
   const getFullName = () => {
     if (user?.firstName) {
       return `${user?.firstName} ${user?.lastName}`;
@@ -17,11 +24,15 @@ export default function ExpenseTile({style, data, user, onPress, currency}) {
   };
   return (
     <Pressable onPress={onPress} style={[styles.container, style]}>
-      <View style={styles.initalContainer}>
+      <View
+        style={[
+          styles.initalContainer,
+          {backgroundColor: isSelf ? COLORS.primary[500] : COLORS.neutral[100]},
+        ]}>
         <Headline
           type={3}
-          color={COLORS.neutral[300]}
-          text={user?.firstName[0] || 'D'}
+          color={isSelf ? COLORS.shades[0] : COLORS.neutral[300]}
+          text={user?.firstName[0] || '?'}
         />
       </View>
       <View

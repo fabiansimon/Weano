@@ -9,7 +9,7 @@ export default function AvatarChip({style, onPress, name, uri}) {
     <Pressable onPress={onPress} style={[styles.container, style]}>
       <Avatar size={25} avatarUri={uri} style={{borderColor: 'transparent'}} />
       <Body
-        type={1}
+        type={2}
         style={{marginHorizontal: 6, fontWeight: '500'}}
         color={COLORS.shades[0]}
         text={name}
@@ -20,6 +20,7 @@ export default function AvatarChip({style, onPress, name, uri}) {
 
 const styles = StyleSheet.create({
   container: {
+    height: 35,
     flexDirection: 'row',
     alignItems: 'center',
     padding: 5,

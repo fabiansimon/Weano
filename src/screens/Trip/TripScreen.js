@@ -63,6 +63,7 @@ import DestinationScreen from './DestinationsScreen';
 import REMOVE_USER_FROM_TRIP from '../../mutations/removeUserFromTrip';
 import userStore from '../../stores/UserStore';
 import {LinearGradient} from 'expo-linear-gradient';
+import InfoController from '../../controllers/InfoController';
 
 const {StatusBarManager} = NativeModules;
 
@@ -117,11 +118,11 @@ export default function TripScreen({route}) {
   const navigation = useNavigation();
 
   const contentRefs = [
-    documentsRef,
     expensesRef,
-    packlistRef,
     checklistRef,
     pollsRef,
+    documentsRef,
+    packlistRef,
     travelersRef,
   ];
 
@@ -506,11 +507,11 @@ export default function TripScreen({route}) {
     const tasks = [...mutualTasks, ...privateTasks];
 
     if (tasks.length <= 0) {
-      return false;
+      return true;
     }
 
     return tasks.filter(task => task.isDone).length === tasks.length;
-  }, [data]);
+  }, [activeTrip]);
 
   const checkPackingListStatus = useCallback(() => {
     if (!data) {
@@ -520,7 +521,7 @@ export default function TripScreen({route}) {
     const {packingItems} = data;
 
     return packingItems.filter(p => p.isPacked).length === packingItems.length;
-  }, [data]);
+  }, [activeTrip]);
 
   const getMenuActions = () => {
     const edit = {
@@ -610,22 +611,13 @@ export default function TripScreen({route}) {
     },
   ];
 
+  // expensesRef,
+  //   checklistRef,
+  //   pollsRef,
+  //   documentsRef,
+  //   packlistRef,
+  //   travelersRef,
   const contentItems = [
-    {
-      title: i18n.t('Documents'),
-      trailing: (
-        <Headline
-          onPress={() => navigation.push(ROUTES.documentsScreen)}
-          type={4}
-          style={{textDecorationLine: 'underline'}}
-          text={i18n.t('see all')}
-          color={COLORS.neutral[300]}
-        />
-      ),
-      ref: documentsRef,
-      omitPadding: true,
-      content: data?.documents && <DocumentsContainer data={data?.documents} />,
-    },
     {
       title: i18n.t('Expenses'),
       trailing: (
@@ -639,24 +631,6 @@ export default function TripScreen({route}) {
       ),
       ref: expensesRef,
       content: <ExpensesContainer tileBackground={COLORS.shades[0]} />,
-    },
-    {
-      title: i18n.t('Packing list'),
-      trailing: (
-        <Headline
-          onPress={() => navigation.push(ROUTES.packlistScreen)}
-          type={4}
-          style={{textDecorationLine: 'underline'}}
-          text={i18n.t('see all')}
-          color={COLORS.neutral[300]}
-        />
-      ),
-      ref: packlistRef,
-      content: (
-        <PacklistContainer
-          data={data?.packingItems.filter(item => !item.isPacked)}
-        />
-      ),
     },
     {
       title: i18n.t('Checklist'),
@@ -699,6 +673,41 @@ export default function TripScreen({route}) {
       ),
     },
     {
+      title: i18n.t('Documents'),
+      trailing: (
+        <Headline
+          onPress={() => navigation.push(ROUTES.documentsScreen)}
+          type={4}
+          style={{textDecorationLine: 'underline'}}
+          text={i18n.t('see all')}
+          color={COLORS.neutral[300]}
+        />
+      ),
+      ref: documentsRef,
+      omitPadding: true,
+      content: data?.documents && <DocumentsContainer data={data?.documents} />,
+    },
+
+    {
+      title: i18n.t('Packing list'),
+      trailing: (
+        <Headline
+          onPress={() => navigation.push(ROUTES.packlistScreen)}
+          type={4}
+          style={{textDecorationLine: 'underline'}}
+          text={i18n.t('see all')}
+          color={COLORS.neutral[300]}
+        />
+      ),
+      ref: packlistRef,
+      content: (
+        <PacklistContainer
+          data={data?.packingItems.filter(item => !item.isPacked)}
+        />
+      ),
+    },
+
+    {
       title: i18n.t('Travelers'),
       trailing: (
         <Headline
@@ -730,7 +739,16 @@ export default function TripScreen({route}) {
         <View style={{paddingHorizontal: PADDING.l}}>
           <View style={styles.infoHeader}>
             {isHost ? (
-              <View style={styles.hostContainer}>
+              <Pressable
+                onPress={() => {
+                  InfoController.showModal(
+                    i18n.t('You are host'),
+                    i18n.t(
+                      'A host is able to edit details of the trip. You can always make fellow travelers a host too.',
+                    ),
+                  );
+                }}
+                style={styles.hostContainer}>
                 <Icon color={COLORS.shades[0]} name="person" />
                 <Body
                   type={2}
@@ -741,12 +759,21 @@ export default function TripScreen({route}) {
                   color={COLORS.shades[0]}
                   text={i18n.t('You are host')}
                 />
-              </View>
+              </Pressable>
             ) : (
               <View />
             )}
             {data?.type === 'recent' ? (
-              <View style={styles.lockedContainer}>
+              <Pressable
+                onPress={() =>
+                  InfoController.showModal(
+                    i18n.t('Trip locked'),
+                    i18n.t(
+                      "A trip is locked as soon as it is finished. After the trip is locked you won't be able to edit or add any new items.",
+                    ),
+                  )
+                }
+                style={styles.lockedContainer}>
                 <Icon color={COLORS.shades[0]} name="md-lock-closed" />
                 <Body
                   type={2}
@@ -757,7 +784,7 @@ export default function TripScreen({route}) {
                   color={COLORS.shades[0]}
                   text={i18n.t('Trip is locked')}
                 />
-              </View>
+              </Pressable>
             ) : (
               <View />
             )}
@@ -786,7 +813,9 @@ export default function TripScreen({route}) {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{paddingRight: 30}}
+            contentContainerStyle={{
+              paddingRight: 30,
+            }}
             style={{
               flexDirection: 'row',
               marginTop: 8,
@@ -993,6 +1022,7 @@ export default function TripScreen({route}) {
           </AnimatedHeader>
           {getHeaderImage()}
           <Animated.ScrollView
+            contentContainerStyle={{paddingBottom: 40}}
             refreshControl={
               <RefreshControl
                 // enabled={data}

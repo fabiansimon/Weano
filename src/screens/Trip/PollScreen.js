@@ -31,6 +31,7 @@ export default function PollScreen() {
     polls,
     id: tripId,
     activeMembers,
+    type,
   } = activeTripStore(state => state.activeTrip);
   const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
   const user = userStore(state => state.user);
@@ -198,7 +199,10 @@ export default function PollScreen() {
               />
             )}
             renderItem={({item}) => {
-              const isDeletedUser = !activeMembers.includes(item.creatorId);
+              const isDeletedUser =
+                !activeMembers.findIndex(
+                  member => member.id === item.creatorId,
+                ) === -1;
               const onPress =
                 user.id === item?.creatorId || isDeletedUser
                   ? () => handleDelete(item)
@@ -220,7 +224,12 @@ export default function PollScreen() {
           />
         </View>
       </HybridHeader>
-      <FAButton icon="add" iconSize={28} onPress={() => setIsVisible(true)} />
+      <FAButton
+        icon="add"
+        isDisabled={type === 'recent'}
+        iconSize={28}
+        onPress={() => setIsVisible(true)}
+      />
       <AddPollModal
         isProMember={user?.isProMember}
         polls={polls}

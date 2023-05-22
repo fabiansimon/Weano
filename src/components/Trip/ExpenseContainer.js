@@ -1,5 +1,5 @@
 import {ScrollView, View} from 'react-native';
-import React from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import COLORS, {PADDING} from '../../constants/Theme';
 import ExpenseIndividualCard from './ExpenseIndividualCard';
@@ -47,6 +47,19 @@ export default function ExpensesContainer({
     };
   };
 
+  const sortedUsers = useCallback(() => {
+    const sorted = users.map(user => {
+      return {
+        ...user,
+        individualData: extractIndividualData(user),
+      };
+    });
+
+    return sorted.sort(
+      (a, b) => b.individualData.amount - a.individualData.amount,
+    );
+  }, [data]);
+
   return (
     <View style={style}>
       {data && (
@@ -54,7 +67,7 @@ export default function ExpensesContainer({
           horizontal
           showsHorizontalScrollIndicator={false}
           style={{marginHorizontal: -PADDING.l, paddingHorizontal: PADDING.l}}>
-          {users.map((user, index) => {
+          {sortedUsers().map((user, index) => {
             const individualData = extractIndividualData(user);
             return (
               <ExpenseIndividualCard

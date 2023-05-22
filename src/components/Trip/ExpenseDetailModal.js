@@ -8,7 +8,7 @@ import {
   Pressable,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import Headline from '../typography/Headline';
 import Avatar from '../Avatar';
@@ -18,6 +18,8 @@ import Button from '../Button';
 import Utils from '../../utils';
 import userStore from '../../stores/UserStore';
 import userManagement from '../../utils/userManagement';
+import CategoryChip from '../CategoryChip';
+import EXPENSES_CATEGORY from '../../constants/ExpensesCategories';
 
 export default function ExpenseDetailModal({
   isVisible,
@@ -112,6 +114,13 @@ export default function ExpenseDetailModal({
     );
   };
 
+  const categoryData = useMemo(() => {
+    if (!data?.category) {
+      return EXPENSES_CATEGORY.find(cat => cat.id === 'other');
+    }
+    return EXPENSES_CATEGORY.find(cat => cat.id === data.category);
+  }, [data]);
+
   return (
     <Modal
       animationType="fade"
@@ -138,12 +147,26 @@ export default function ExpenseDetailModal({
             color={COLORS.neutral[700]}
             type={1}
           />
-          <Body
-            text={`${i18n.t('Paid by')} ${firstName || i18n.t('deleted user')}`}
-            color={COLORS.neutral[300]}
-            type={2}
-          />
-
+          <View
+            style={{
+              flexDirection: 'row',
+              marginTop: -10,
+              justifyContent: 'space-between',
+              alignItems: 'flex-end',
+            }}>
+            <Body
+              text={`${i18n.t('Paid by')} ${
+                firstName || i18n.t('deleted user')
+              }`}
+              color={COLORS.neutral[300]}
+              type={2}
+            />
+            <CategoryChip
+              style={{height: 30}}
+              string={categoryData.title}
+              color={categoryData.color}
+            />
+          </View>
           <View
             style={[styles.splitContainer, {marginBottom: isCreator ? 20 : 0}]}>
             <Pressable>

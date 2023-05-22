@@ -103,6 +103,13 @@ export default function MapScreen({route}) {
           compassEnabled={false}
           scaleBarEnabled={false}
           rotateEnabled={false}
+          onDidFinishLoadingMap={() => {
+            mapCamera.current.setCamera({
+              zoomLevel: 0,
+              animationDuration: 500,
+              centerCoordinate: [0, 0],
+            });
+          }}
           style={styles.map}
           styleURL="mapbox://styles/fabiansimon/clezrm6w7002g01p9eu1n0aos">
           <MapboxGL.Camera animationMode="moveTo" animated ref={mapCamera} />

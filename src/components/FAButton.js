@@ -16,6 +16,7 @@ import Utils from '../utils';
 import Body from './typography/Body';
 import PopUpModal from './PopUpModal';
 import i18n from '../utils/i18n';
+import InfoController from '../controllers/InfoController';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -170,7 +171,12 @@ export default function FAButton({
           disabled={isLoading}
           onPress={() => {
             if (isDisabled) {
-              return setIsVisible(true);
+              return InfoController.showModal(
+                i18n.t('Sorry!'),
+                i18n.t(
+                  "This trip seems to be finished. You can't edit or add new items after the trip is done.",
+                ),
+              );
             }
 
             options.length <= 0 ? onPress() : setIsExpanded(prev => !prev);
@@ -198,15 +204,6 @@ export default function FAButton({
           )}
         </AnimatedPressable>
       </View>
-      <PopUpModal
-        isVisible={isVisible}
-        autoClose
-        title={i18n.t('Sorry!')}
-        subtitle={i18n.t(
-          "You can't add or edit any items after the trip is finished.",
-        )}
-        onRequestClose={() => setIsVisible(false)}
-      />
     </>
   );
 }

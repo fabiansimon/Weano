@@ -38,6 +38,7 @@ const GET_TRIP_BY_ID = gql`
         amount
         currency
         createdAt
+        category
       }
       polls {
         _id

@@ -146,6 +146,7 @@ export default function ExpenseScreen() {
     const {
       title,
       paidBy: {id: paidBy},
+      category: {id: categoryId},
     } = data;
     amount = amount.replaceAll(',', '.');
     amount = parseFloat(amount);
@@ -158,6 +159,7 @@ export default function ExpenseScreen() {
           tripId,
           paidBy,
           currency: currency.symbol,
+          category: categoryId,
         },
       },
     })
@@ -171,6 +173,7 @@ export default function ExpenseScreen() {
           paidBy,
           title,
           _id: expenseId,
+          category: categoryId,
         };
         updateActiveTrip({expenses: [...expenses, newExpense]});
       })
@@ -256,9 +259,11 @@ export default function ExpenseScreen() {
 
   const getExpenseTile = expense => {
     const userData = users.find(u => u.id === expense.paidBy);
+    const isSelf = id === expense.paidBy;
 
     return (
       <ExpenseTile
+        isSelf={isSelf}
         currency={currency}
         onPress={() =>
           setSelectedExpense({
@@ -379,7 +384,6 @@ export default function ExpenseScreen() {
               />
             </View>
           </View>
-
           <ExpensesContainer
             showIndividual
             style={{marginTop: 30}}

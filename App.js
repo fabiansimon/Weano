@@ -34,6 +34,7 @@ import PremiumModal from './src/components/PremiumModal';
 import Purchases, {LOG_LEVEL} from 'react-native-purchases';
 
 import {APP_TOKEN, IOS_REV_CAT_KEY, ANDROID_REV_CAT_KEY} from '@env';
+import InfoModal from './src/components/InfoModal';
 
 const Stack = createNativeStackNavigator();
 
@@ -48,8 +49,8 @@ function App() {
 
   const client = new ApolloClient({
     // uri: 'https://www.weano.app/graphql',
-    uri: `${META_DATA.baseUrl}/graphql`,
-    // uri: 'http://10.100.31.98:4000/graphql',
+    // uri: `${META_DATA.baseUrl}/graphql`,
+    uri: 'http://10.100.31.136:4000/graphql',
     // uri: 'http://192.168.0.76:4000/graphql',
     cache: new InMemoryCache(),
 
@@ -190,6 +191,7 @@ function App() {
         </ApolloProvider>
       </InternetCheckProvider>
       <PremiumModal />
+      <InfoModal />
       <Toast topOffset={60} position="top" config={toastConfig} />
     </>
   );

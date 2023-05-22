@@ -13,6 +13,9 @@ import PremiumController from '../../PremiumController';
 import Body from '../typography/Body';
 import AvatarChip from '../AvatarChip';
 import MembersModal from '../MembersModal';
+import CategoryChip from '../CategoryChip';
+import EXPENSES_CATEGORY from '../../constants/ExpensesCategories';
+import SelectionModal from '../SelectionModal';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
@@ -34,10 +37,25 @@ export default function AddExpenseModal({
     activeMembers.find(member => member.id === userId),
   );
   const [membersVisible, setMembersVisible] = useState(false);
+  const [categoriesVisible, setCategoriesVisible] = useState(false);
+  const [categoryIndex, setCategoryIndex] = useState(
+    EXPENSES_CATEGORY.length - 1,
+  );
 
   useEffect(() => {
     setPaidBy(activeMembers.find(member => member.id === userId));
+    if (!isVisible) {
+      cleanData();
+    }
   }, [isVisible]);
+
+  const cleanData = () => {
+    setAmount('');
+    setTitle('');
+    setCategoriesVisible(false);
+    setCategoryIndex(0);
+    setPaidBy(activeMembers.find(member => member.id === userId));
+  };
 
   const showWarning = message => {
     Toast.show({
@@ -67,11 +85,13 @@ export default function AddExpenseModal({
       showWarning(i18n.t('Please enter a description'));
       return;
     }
+
     const usageLimit = JSON.parse(
       isProMember
         ? await asyncStorageDAO.getPremiumTierLimits()
         : await asyncStorageDAO.getFreeTierLimits(),
     ).expenses;
+
     if (expenses?.length >= usageLimit) {
       onRequestClose();
       setTimeout(() => PremiumController.showModal(), 500);
@@ -82,10 +102,8 @@ export default function AddExpenseModal({
       amount,
       title,
       paidBy,
+      category: EXPENSES_CATEGORY[categoryIndex],
     });
-    setAmount('');
-    setTitle('');
-    setPaidBy(activeMembers.find(member => member.id === userId));
   };
 
   const getAmountContainer = () => (
@@ -137,18 +155,33 @@ export default function AddExpenseModal({
 
   const getInfoContainer = () => (
     <View style={styles.infoContainer}>
-      <Subtitle
-        type={1}
-        style={{marginLeft: PADDING.xl}}
-        color={COLORS.neutral[300]}
-        text={i18n.t('Paid by')}
-      />
-      <AvatarChip
-        onPress={() => setMembersVisible(true)}
-        style={{marginLeft: PADDING.xl, marginRight: 'auto', marginTop: 8}}
-        name={paidBy?.firstName}
-        uri={paidBy?.avatarUri}
-      />
+      <View style={{flex: 1}}>
+        <Subtitle
+          type={1}
+          style={{marginLeft: PADDING.xl}}
+          color={COLORS.neutral[300]}
+          text={i18n.t('Paid by')}
+        />
+        <AvatarChip
+          onPress={() => setMembersVisible(true)}
+          style={{marginLeft: PADDING.xl, marginRight: 'auto', marginTop: 8}}
+          name={paidBy?.firstName}
+          uri={paidBy?.avatarUri}
+        />
+      </View>
+      <View style={{flex: 1}}>
+        <Subtitle
+          type={1}
+          color={COLORS.neutral[300]}
+          text={i18n.t('Category')}
+        />
+        <CategoryChip
+          onPress={() => setCategoriesVisible(true)}
+          style={{marginRight: 'auto', marginTop: 8}}
+          color={EXPENSES_CATEGORY[categoryIndex].color}
+          string={EXPENSES_CATEGORY[categoryIndex].title}
+        />
+      </View>
     </View>
   );
 
@@ -226,6 +259,15 @@ export default function AddExpenseModal({
         initalMemberId={paidBy.id}
         onPress={user => setPaidBy(user)}
       />
+      <SelectionModal
+        isVisible={categoriesVisible}
+        data={EXPENSES_CATEGORY}
+        isCategories
+        initIndex={categoryIndex}
+        onPress={i => setCategoryIndex(i)}
+        onRequestClose={() => setCategoriesVisible(false)}
+        title={i18n.t('Select category')}
+      />
     </TitleModal>
   );
 }
@@ -254,6 +296,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   infoContainer: {
+    flexDirection: 'row',
     paddingTop: 16,
     paddingBottom: 16,
     borderBottomColor: COLORS.neutral[100],
@@ -263,7 +306,7 @@ const styles = StyleSheet.create({
     color: COLORS.shades[100],
     paddingLeft: PADDING.xl,
     marginTop: 10,
-    fontSize: 20,
+    fontSize: 18,
     fontFamily: 'WorkSans-Regular',
     letterSpacing: -1,
   },
