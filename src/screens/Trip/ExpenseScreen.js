@@ -25,6 +25,8 @@ import DELETE_EXPENSE from '../../mutations/deleteExpense';
 import SEND_REMINDER from '../../mutations/sendReminder';
 import UPDATE_TRIP from '../../mutations/updateTrip';
 import {Pressable} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import ROUTES from '../../constants/Routes';
 
 export default function ExpenseScreen() {
   // MUTATIONS
@@ -55,6 +57,8 @@ export default function ExpenseScreen() {
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [myData, setMyData] = useState([]);
+
+  const navigation = useNavigation();
 
   useEffect(() => {
     extractMyData(expenses);
@@ -303,7 +307,7 @@ export default function ExpenseScreen() {
 
   const getCurrencyChoser = () => (
     <MenuView
-      style={{marginLeft: PADDING.l, marginTop: -10}}
+      style={{marginLeft: PADDING.l, marginTop: 6}}
       onPressAction={({nativeEvent}) => changeCurrency(nativeEvent)}
       actions={[
         {
@@ -372,7 +376,7 @@ export default function ExpenseScreen() {
           <View
             style={{
               flexDirection: 'row',
-              marginTop: 26,
+              marginTop: 16,
               justifyContent: 'space-between',
             }}>
             <View>
@@ -383,6 +387,18 @@ export default function ExpenseScreen() {
                 color={COLORS.neutral[300]}
               />
             </View>
+            {false && (
+              <Pressable
+                onPress={() => navigation.navigate(ROUTES.settleExpensesScreen)}
+                style={styles.settleButton}>
+                <Body
+                  type={2}
+                  color={COLORS.shades[0]}
+                  style={{fontWeight: '500'}}
+                  text={i18n.t('settle expenses')}
+                />
+              </Pressable>
+            )}
           </View>
           <ExpensesContainer
             showIndividual
@@ -481,5 +497,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.neutral[100],
     marginBottom: 120,
+  },
+  settleButton: {
+    marginTop: 4,
+    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.primary[500],
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    height: 35,
   },
 });

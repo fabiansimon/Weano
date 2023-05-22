@@ -53,7 +53,7 @@ export default function AddExpenseModal({
     setAmount('');
     setTitle('');
     setCategoriesVisible(false);
-    setCategoryIndex(0);
+    setCategoryIndex(EXPENSES_CATEGORY.length - 1);
     setPaidBy(activeMembers.find(member => member.id === userId));
   };
 

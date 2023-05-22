@@ -21,6 +21,7 @@ export default function HybridHeader({
   backgroundColor = COLORS.shades[0],
   trailing,
   scrollEnabled = true,
+  centerComponent,
 }) {
   return (
     <View style={{flex: 1}}>
@@ -66,6 +67,7 @@ export default function HybridHeader({
           title={title}
           subtitle={subtitle}
           info={info}
+          centerComponent={centerComponent}
           trailing={trailing}>
           {content || null}
         </BasicHeader>

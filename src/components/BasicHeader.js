@@ -15,6 +15,7 @@ export default function BasicHeader({
   trailing,
   children,
   info,
+  centerComponent,
 }) {
   const [infoVisible, setInfoVisible] = useState(false);
 
@@ -25,6 +26,7 @@ export default function BasicHeader({
       <View style={styles.heading}>
         <View style={[styles.titleContainer, {marginBottom: children && 16}]}>
           <Headline type={3} text={title} />
+          {centerComponent && centerComponent}
           {info && !trailing && (
             <Icon
               onPress={() => setInfoVisible(true)}

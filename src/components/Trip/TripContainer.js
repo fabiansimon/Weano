@@ -47,7 +47,11 @@ export default function TripContainer({
     const map = {title: i18n.t('Visit on Map'), systemIcon: 'map'};
     const camera = {title: i18n.t('Capture a memory'), systemIcon: 'camera'};
 
-    return [map, camera];
+    if (userFreeImages > 0) {
+      return [map, camera];
+    }
+
+    return [map];
   };
 
   const borderColor = getBorderColor();

@@ -32,6 +32,7 @@ import PacklistScreen from './src/screens/Trip/PacklistScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
 import PremiumModal from './src/components/PremiumModal';
 import Purchases, {LOG_LEVEL} from 'react-native-purchases';
+import SettleExpensesScreen from './src/screens/SettleExpensesScreen';
 
 import {APP_TOKEN, IOS_REV_CAT_KEY, ANDROID_REV_CAT_KEY} from '@env';
 import InfoModal from './src/components/InfoModal';
@@ -185,6 +186,10 @@ function App() {
               <Stack.Screen
                 name={ROUTES.registerScreen}
                 component={RegisterScreen}
+              />
+              <Stack.Screen
+                name={ROUTES.settleExpensesScreen}
+                component={SettleExpensesScreen}
               />
             </Stack.Navigator>
           </NavigationContainer>
