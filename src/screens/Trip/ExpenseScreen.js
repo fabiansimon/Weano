@@ -1,5 +1,5 @@
 import {View, StyleSheet, FlatList} from 'react-native';
-import React, {useRef, useState, useEffect} from 'react';
+import React, {useRef, useState, useEffect, useMemo} from 'react';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Entypo';
 import {TouchableOpacity} from '@gorhom/bottom-sheet';
@@ -80,13 +80,21 @@ export default function ExpenseScreen() {
     setMyData(data.filter(expense => expense.paidBy === id));
   };
 
-  const getTotal = () => {
+  const totalAmount = useMemo(() => {
     let amount = 0;
     expenses.forEach(expense => {
       amount += expense.amount;
     });
     return amount.toFixed(2);
-  };
+  }, [expenses]);
+
+  //   () => {
+  //   let amount = 0;
+  //   expenses.forEach(expense => {
+  //     amount += expense.amount;
+  //   });
+  //   return amount.toFixed(2);
+  // };
 
   const handleSendingReminder = async data => {
     const {
@@ -380,16 +388,23 @@ export default function ExpenseScreen() {
               justifyContent: 'space-between',
             }}>
             <View>
-              <Headline type={1} text={`${currency.symbol}${getTotal()}`} />
+              <Headline type={1} text={`${currency.symbol}${totalAmount}`} />
               <Body
                 type={4}
                 text={i18n.t('total expenses')}
                 color={COLORS.neutral[300]}
               />
             </View>
-            {false && (
+            {expenses?.length > 0 && (
               <Pressable
-                onPress={() => navigation.navigate(ROUTES.settleExpensesScreen)}
+                onPress={() =>
+                  navigation.navigate(ROUTES.settleExpensesScreen, {
+                    expenses,
+                    totalAmount,
+                    currency,
+                    users,
+                  })
+                }
                 style={styles.settleButton}>
                 <Body
                   type={2}

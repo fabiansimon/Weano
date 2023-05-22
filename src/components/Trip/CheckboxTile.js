@@ -2,7 +2,6 @@ import {Pressable, StyleSheet, View} from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import EntIcon from 'react-native-vector-icons/Entypo';
-// import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import COLORS from '../../constants/Theme';
 import Body from '../typography/Body';
 import userManagement from '../../utils/userManagement';
