@@ -2,7 +2,6 @@ import {View, StyleSheet, Pressable, Dimensions, Platform} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import Animated, {useAnimatedStyle} from 'react-native-reanimated';
-import PagerView from 'react-native-pager-view';
 import Icon from 'react-native-vector-icons/Ionicons';
 import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import Headline from '../typography/Headline';

@@ -1,5 +1,6 @@
 import activeTripStore from '../stores/ActiveTripStore';
 import userStore from '../stores/UserStore';
+import i18n from './i18n';
 
 /**
  * Convert MonthInt to a Month String
@@ -13,7 +14,10 @@ function convertIdToUser(id, userList) {
   const user = activeMembers.find(member => member.id === id);
 
   if (!user) {
-    return {};
+    return {
+      firstName: i18n.t('deleted user'),
+      lastName: '',
+    };
   }
 
   return user;

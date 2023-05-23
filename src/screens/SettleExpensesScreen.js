@@ -11,6 +11,7 @@ import EXPENSES_CATEGORY from '../constants/ExpensesCategories';
 import Avatar from '../components/Avatar';
 import userManagement from '../utils/userManagement';
 import Utils from '../utils';
+import SplitExpenseContainer from '../components/Trip/SplitExpenseContainer';
 
 export default function SettleExpensesScreen({route}) {
   const {expenses, totalAmount, currency, users: activeMembers} = route.params;
@@ -50,30 +51,8 @@ export default function SettleExpensesScreen({route}) {
     return `${(totalCatAmount / totalAmount) * 100}%`;
   };
 
-  const getPersonTile = (user, isIncluded) => {
-    const {avatarUri, firstName} = user;
-    return (
-      <View style={styles.splitByContainer}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Avatar size={20} avatarUri={avatarUri} />
-          <Body type={1} style={{marginLeft: 6}} text={firstName} />
-        </View>
-        <View
-          style={[
-            styles.checkbox,
-            {
-              borderWidth: isIncluded ? 0 : 1,
-              backgroundColor: isIncluded ? COLORS.success[500] : 'transparent',
-            },
-          ]}>
-          <EntIcon name="check" color={COLORS.shades[0]} size={16} />
-        </View>
-      </View>
-    );
-  };
-
   const getDetailContainer = exp => {
-    const {amount, category, createdAt, paidBy, title, splitBy} = exp;
+    const {amount, category, createdAt, paidBy, title} = exp;
     const {color} = EXPENSES_CATEGORY.find(cat => cat.id === category);
 
     return (
@@ -98,79 +77,32 @@ export default function SettleExpensesScreen({route}) {
             color={COLORS.neutral[300]}
             style={{marginTop: 2}}
           />
-          <TouchableHighlight
-            onPress={() => console.log('2s')}
-            underlayColor={COLORS.neutral[50]}
-            style={styles.sharedByContainer}>
-            <>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  marginBottom: 10,
-                }}>
-                <Body
-                  type={2}
-                  text={'Shared equally between'}
-                  color={COLORS.neutral[300]}
-                  style={{marginTop: 2}}
-                />
-                {/* <Body
-                        type={2}
-                        text={'status'}
-                        color={COLORS.neutral[300]}
-                        style={{marginTop: 2}}
-                      /> */}
-              </View>
-              {activeMembers?.map(member =>
-                getPersonTile(member, exp.splitBy.includes(member.id)),
-              )}
-
-              <View style={styles.bottomSummaryContainer}>
-                <Body
-                  type={2}
-                  text={'Amount per person'}
-                  color={COLORS.neutral[300]}
-                  style={{marginTop: 2}}
-                />
-                <Body
-                  type={2}
-                  text={`${currency.symbol}${amount / splitBy.length}`}
-                  color={COLORS.shades[100]}
-                  style={{marginTop: 2, fontWeight: '500'}}
-                />
-              </View>
-            </>
-          </TouchableHighlight>
+          <SplitExpenseContainer
+            expense={exp}
+            activeMembers={activeMembers}
+            currency={currency}
+          />
         </View>
       </View>
-    );
-  };
-
-  const getSummaryContainer = () => {
-    return (
-      <ScrollView style={styles.summaryContainer}>
-        {detailedExpenses.map(exp => {
-          return getDetailContainer(exp);
-        })}
-      </ScrollView>
     );
   };
 
   return (
     <View style={styles.container}>
       <HybridHeader title={i18n.t('Settle Expenses')} scrollY={scrollY}>
-        <View style={{marginHorizontal: PADDING.l}}>
-          <View style={{marginTop: 10}}>
-            <Headline type={1} text={`${currency.symbol}${totalAmount}`} />
-            <Body
-              type={4}
-              style={{marginTop: -2}}
-              text={i18n.t('total expenses')}
-              color={COLORS.neutral[300]}
-            />
-            {getLinearBar()}
-            {getSummaryContainer()}
+        <View style={{marginTop: 10, marginHorizontal: PADDING.l}}>
+          <Headline type={1} text={`${currency.symbol}${totalAmount}`} />
+          <Body
+            type={4}
+            style={{marginTop: -2}}
+            text={i18n.t('total expenses')}
+            color={COLORS.neutral[300]}
+          />
+          {getLinearBar()}
+          <View style={styles.summaryContainer}>
+            {detailedExpenses.map(exp => {
+              return getDetailContainer(exp);
+            })}
           </View>
         </View>
       </HybridHeader>
@@ -226,32 +158,5 @@ const styles = StyleSheet.create({
     marginRight: 10,
     marginLeft: 4,
     marginBottom: 10,
-  },
-  checkbox: {
-    borderColor: COLORS.neutral[300],
-    borderRadius: 8,
-    borderWidth: 1,
-    height: 20,
-    width: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 4,
-  },
-  bottomSummaryContainer: {
-    marginHorizontal: -PADDING.s,
-    paddingHorizontal: 10,
-    height: 37.5,
-    alignItems: 'center',
-    borderTopColor: COLORS.neutral[100],
-    borderTopWidth: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 10,
-  },
-  splitByContainer: {
-    minHeight: 30,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
   },
 });
