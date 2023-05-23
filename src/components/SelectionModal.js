@@ -6,6 +6,7 @@ import i18n from '../utils/i18n';
 import Body from './typography/Body';
 import COLORS, {PADDING, RADIUS} from '../constants/Theme';
 import CategoryChip from './CategoryChip';
+import Utils from '../utils';
 
 export default function SelectionModal({
   data,
@@ -71,7 +72,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: COLORS.neutral[100],
+    borderColor: Utils.addAlpha(COLORS.neutral[300], 0.35),
   },
   tileContainer: {
     flexDirection: 'row',

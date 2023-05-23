@@ -23,7 +23,7 @@ export default function CategoryChip({
       ]}>
       <Body
         type={2}
-        style={{fontWeight: '600', marginLeft: 6, marginRight: 4}}
+        style={{fontWeight: '600', marginLeft: 6, marginRight: 2}}
         text={'#'}
         color={color}
       />
