@@ -23,7 +23,12 @@ export default function IndividualExpenseScreen({route}) {
   });
 
   const getExpenseTile = expense => (
-    <ExpenseTile currency={currency} data={expense} user={data.user} />
+    <ExpenseTile
+      currency={currency}
+      onDelete={null}
+      data={expense}
+      user={data.user}
+    />
   );
 
   return (

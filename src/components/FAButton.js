@@ -14,7 +14,6 @@ import COLORS, {PADDING, RADIUS} from '../constants/Theme';
 import Headline from './typography/Headline';
 import Utils from '../utils';
 import Body from './typography/Body';
-import PopUpModal from './PopUpModal';
 import i18n from '../utils/i18n';
 import InfoController from '../controllers/InfoController';
 
@@ -32,10 +31,10 @@ export default function FAButton({
   options = [],
   isDisabled = false,
   description,
+  iconStyle,
 }) {
   // STATE && MISC
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
 
   const animatedOpacity = useRef(new Animated.Value(0)).current;
   const animatedOffset = useRef(new Animated.Value(0)).current;
@@ -199,7 +198,12 @@ export default function FAButton({
           ) : (
             <>
               <Headline type={4} color={COLORS.shades[0]} text={string} />
-              <Icon name={icon} color={COLORS.shades[0]} size={iconSize} />
+              <Icon
+                name={icon}
+                color={COLORS.shades[0]}
+                style={iconStyle}
+                size={iconSize}
+              />
             </>
           )}
         </AnimatedPressable>

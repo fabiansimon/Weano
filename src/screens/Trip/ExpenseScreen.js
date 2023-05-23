@@ -27,6 +27,9 @@ import UPDATE_TRIP from '../../mutations/updateTrip';
 import {Pressable} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import ROUTES from '../../constants/Routes';
+import Utils from '../../utils';
+import userManagement from '../../utils/userManagement';
+import InfoController from '../../controllers/InfoController';
 
 export default function ExpenseScreen() {
   // MUTATIONS
@@ -50,6 +53,7 @@ export default function ExpenseScreen() {
   // STATE & MISC
   const scrollY = useRef(new Animated.Value(0)).current;
   const [showTotal, setShowTotal] = useState(true);
+  const [updateExpense, setUpdateExpense] = useState(null);
   const [selectedExpense, setSelectedExpense] = useState({
     isVisible: false,
     data: null,
@@ -57,6 +61,8 @@ export default function ExpenseScreen() {
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [myData, setMyData] = useState([]);
+
+  const isHost = userManagement.isHost();
 
   const navigation = useNavigation();
 
@@ -88,13 +94,18 @@ export default function ExpenseScreen() {
     return amount.toFixed(2);
   }, [expenses]);
 
-  //   () => {
-  //   let amount = 0;
-  //   expenses.forEach(expense => {
-  //     amount += expense.amount;
-  //   });
-  //   return amount.toFixed(2);
-  // };
+  const handleEditExpense = data => {
+    setUpdateExpense(data);
+    setSelectedExpense(prev => {
+      return {
+        ...prev,
+        isVisible: false,
+      };
+    });
+    setTimeout(() => {
+      setShowModal(true);
+    }, 500);
+  };
 
   const handleSendingReminder = async data => {
     const {
@@ -159,6 +170,7 @@ export default function ExpenseScreen() {
       title,
       paidBy: {id: paidBy},
       category: {id: categoryId},
+      splitBy,
     } = data;
     amount = amount.replaceAll(',', '.');
     amount = parseFloat(amount);
@@ -172,6 +184,7 @@ export default function ExpenseScreen() {
           paidBy,
           currency: currency.symbol,
           category: categoryId,
+          splitBy,
         },
       },
     })
@@ -186,6 +199,7 @@ export default function ExpenseScreen() {
           title,
           _id: expenseId,
           category: categoryId,
+          splitBy,
         };
         updateActiveTrip({expenses: [...expenses, newExpense]});
       })
@@ -199,6 +213,19 @@ export default function ExpenseScreen() {
       });
     setIsLoading(false);
     setShowModal(false);
+  };
+
+  const confirmDeletion = async expense => {
+    Utils.showConfirmationAlert(
+      i18n.t('Delete Expense'),
+      i18n.t(
+        `Are you sure you want to delete '${expense.title}' as an expense?`,
+      ),
+      i18n.t('Delete'),
+      async () => {
+        handleDeletion(expense);
+      },
+    );
   };
 
   const handleDeletion = async expense => {
@@ -283,7 +310,8 @@ export default function ExpenseScreen() {
             data: expense,
           })
         }
-        style={{marginHorizontal: 15}}
+        onDelete={isSelf || !userData ? () => confirmDeletion(expense) : null}
+        style={{paddingHorizontal: 15}}
         data={expense}
         user={userData}
       />
@@ -391,21 +419,26 @@ export default function ExpenseScreen() {
               <Headline type={1} text={`${currency.symbol}${totalAmount}`} />
               <Body
                 type={4}
+                style={{marginTop: -2}}
                 text={i18n.t('total expenses')}
                 color={COLORS.neutral[300]}
               />
             </View>
             {expenses?.length > 0 && (
               <Pressable
-                onPress={() =>
-                  navigation.navigate(ROUTES.settleExpensesScreen, {
-                    expenses,
-                    totalAmount,
-                    currency,
-                    users,
-                  })
-                }
-                style={styles.settleButton}>
+                onPress={() => {
+                  if (isHost) {
+                    return navigation.navigate(ROUTES.settleExpensesScreen, {
+                      totalAmount,
+                    });
+                  }
+
+                  return InfoController.showModal(
+                    i18n.t('Sorry'),
+                    i18n.t('Only a host can settle the expenses of the trip.'),
+                  );
+                }}
+                style={[styles.settleButton, {opacity: isHost ? 1 : 0.5}]}>
                 <Body
                   type={2}
                   color={COLORS.shades[0]}
@@ -455,14 +488,18 @@ export default function ExpenseScreen() {
       <FAButton
         icon="add"
         iconSize={28}
-        isDisabled={type === 'recent'}
+        // isDisabled={type === 'recent'}
         onPress={() => setShowModal(true)}
       />
       <AddExpenseModal
         currency={currency}
         isVisible={showModal}
+        updateExpense={updateExpense}
         isProMember={isProMember}
-        onRequestClose={() => setShowModal(false)}
+        onRequestClose={() => {
+          setShowModal(false);
+          setUpdateExpense(null);
+        }}
         onPress={data => handleAddExpense(data)}
         isLoading={isLoading || loading}
         expenses={expenses}
@@ -471,7 +508,8 @@ export default function ExpenseScreen() {
       />
       <ExpenseDetailModal
         currency={currency}
-        onReminder={data => handleSendingReminder(data)}
+        onEdit={data => handleEditExpense(data)}
+        // onEdit={data => handleSendingReminder(data)}
         isVisible={selectedExpense.isVisible}
         onRequestClose={() =>
           setSelectedExpense(prev => ({

@@ -20,7 +20,6 @@ import Body from '../../components/typography/Body';
 import activeTripStore from '../../stores/ActiveTripStore';
 import UPDATE_TRIP from '../../mutations/updateTrip';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import userStore from '../../stores/UserStore';
 
 MapboxGL.setAccessToken(MAPBOX_TOKEN);
 const MAX_LENGTH = 15;

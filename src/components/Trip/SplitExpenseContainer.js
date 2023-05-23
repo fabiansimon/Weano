@@ -6,7 +6,7 @@ import {
   Animated,
   LayoutAnimation,
 } from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useState} from 'react';
 import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import EntIcon from 'react-native-vector-icons/Entypo';
 import Body from '../typography/Body';
@@ -68,12 +68,8 @@ export default function SplitExpenseContainer({
             });
             setIsExpanded(prev => !prev);
           }}
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginBottom: 10,
-          }}>
-          <View style={{flexDirection: 'row', marginTop: 2}}>
+          style={styles.header}>
+          <View style={{flexDirection: 'row', marginTop: 4}}>
             <Body
               type={2}
               text={'Shared equally between'}
@@ -81,8 +77,16 @@ export default function SplitExpenseContainer({
             />
             <Body
               type={2}
-              text={`${expense?.splitBy?.length} ${i18n.t('travelers')}`}
-              color={COLORS.shades[100]}
+              text={`${expense?.splitBy?.length} ${
+                expense?.splitBy?.length === 1
+                  ? i18n.t('traveler')
+                  : i18n.t('travelers')
+              }`}
+              color={
+                expense?.splitBy?.length <= 0
+                  ? COLORS.error[900]
+                  : COLORS.shades[100]
+              }
               style={{fontWeight: '500', marginLeft: 2}}
             />
           </View>
@@ -108,7 +112,9 @@ export default function SplitExpenseContainer({
             />
             <Body
               type={2}
-              text={`${currency.symbol}${(amount / splitBy.length).toFixed(2)}`}
+              text={`${currency.symbol}${
+                splitBy.length <= 0 ? 0 : (amount / splitBy.length).toFixed(2)
+              }`}
               color={COLORS.shades[100]}
               style={{marginTop: 2, fontWeight: '500'}}
             />
@@ -155,5 +161,14 @@ const styles = StyleSheet.create({
     marginTop: 10,
     paddingTop: 4,
     overflow: 'hidden',
+  },
+  header: {
+    marginTop: -4,
+    paddingTop: 4,
+    marginHorizontal: -10,
+    paddingHorizontal: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingBottom: 10,
   },
 });

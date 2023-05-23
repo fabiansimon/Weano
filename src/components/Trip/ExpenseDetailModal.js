@@ -27,7 +27,7 @@ export default function ExpenseDetailModal({
   data,
   users,
   onDelete,
-  onReminder,
+  onEdit,
   currency,
 }) {
   // STORES
@@ -35,37 +35,21 @@ export default function ExpenseDetailModal({
 
   // STATE & MISC
   const [showModal, setShowModal] = useState(isVisible);
-  const [members, setMembers] = useState([]);
-  const [splitAmount, setSplitAmonut] = useState(null);
   const animatedScale = useRef(new Animated.Value(0)).current;
 
   const duration = 350;
 
   const isCreator = userId === data?.paidBy;
-  const splitees = members.filter(member => member.isIncluded);
   const {avatarUri, firstName} = userManagement.convertIdToUser(data?.paidBy);
+
+  const splitAmount =
+    data?.splitBy?.length > 0
+      ? (data?.amount / data.splitBy.length).toFixed(2)
+      : 0;
 
   useEffect(() => {
     toggleModal();
   }, [isVisible]);
-
-  useEffect(() => {
-    setMembers(
-      users.map(u => ({
-        ...u,
-        isIncluded: false,
-      })),
-    );
-  }, [users]);
-
-  useEffect(() => {
-    const payingMembers = members.filter(member => member.isIncluded).length;
-    if (!payingMembers) {
-      setSplitAmonut(null);
-      return;
-    }
-    setSplitAmonut((data.amount / payingMembers).toFixed(2));
-  }, [members]);
 
   const toggleModal = () => {
     if (isVisible) {
@@ -78,12 +62,6 @@ export default function ExpenseDetailModal({
     } else {
       setTimeout(() => {
         setShowModal(false);
-        setMembers(prev =>
-          prev.map(member => ({
-            ...member,
-            isIncluded: false,
-          })),
-        );
       }, duration - 100);
       Animated.spring(animatedScale, {
         toValue: 0,
@@ -91,16 +69,6 @@ export default function ExpenseDetailModal({
         useNativeDriver: true,
       }).start();
     }
-  };
-
-  const addToSplit = splitee => {
-    const {id} = splitee;
-    setMembers(prev =>
-      prev.map(p => ({
-        ...p,
-        isIncluded: p.id === id ? !p.isIncluded : p.isIncluded,
-      })),
-    );
   };
 
   const handleDelete = async () => {
@@ -173,90 +141,82 @@ export default function ExpenseDetailModal({
               <View
                 style={{
                   flexDirection: 'row',
-                  justifyContent: 'space-between',
                   marginHorizontal: PADDING.s,
                   marginVertical: 10,
+                  justifyContent: 'space-between',
                 }}>
                 <Body
                   type={2}
-                  text={i18n.t('Split by')}
+                  text={i18n.t('Split between')}
                   color={COLORS.neutral[500]}
                 />
-                {splitAmount ? (
-                  <View
-                    style={{
-                      borderRadius: RADIUS.xl,
-                      backgroundColor: COLORS.primary[700],
-                      paddingVertical: 4,
-                      paddingHorizontal: 10,
-                    }}>
-                    <Body
-                      type={2}
-                      text={`${data?.currency}${splitAmount} ${i18n.t(
-                        'per person',
-                      )}`}
-                      color={COLORS.shades[0]}
-                    />
-                  </View>
-                ) : (
-                  <View style={{height: 27}} />
-                )}
+                <Body
+                  type={2}
+                  style={{marginLeft: 4, fontWeight: '500'}}
+                  text={`${data?.splitBy?.length} ${i18n.t('Travelers')}`}
+                  color={COLORS.neutral[900]}
+                />
               </View>
               <ScrollView
                 horizontal
                 style={{paddingLeft: PADDING.s, paddingBottom: 10}}>
-                {members.map(splitee => (
-                  <TouchableOpacity
-                    onPress={() => addToSplit(splitee)}
-                    activeOpacity={0.9}
-                    style={{
-                      alignItems: 'center',
-                      width: 48,
-                      marginRight: 4,
-                    }}>
-                    <Avatar size={35} disabled data={splitee} />
-                    {splitee.isIncluded && (
-                      <View style={styles.avatarOverlay}>
-                        <Icon
-                          name="checkmark-circle-outline"
-                          size={22}
-                          color={COLORS.shades[0]}
-                        />
-                      </View>
-                    )}
-                    <Body
-                      type={2}
-                      text={splitee?.firstName}
-                      numberOfLines={1}
-                      ellipsizeMode="tail"
+                {users.map(user => {
+                  const isIncluded = data?.splitBy?.includes(user.id);
+
+                  return (
+                    <Pressable
                       style={{
-                        marginTop: 4,
-                      }}
-                      color={
-                        splitee.isIncluded
-                          ? COLORS.shades[100]
-                          : COLORS.neutral[300]
-                      }
-                    />
-                  </TouchableOpacity>
-                ))}
+                        opacity: isIncluded ? 1 : 0.2,
+                        alignItems: 'center',
+                        width: 48,
+                        marginRight: 4,
+                      }}>
+                      <Avatar size={35} disabled data={user} />
+                      <Body
+                        type={2}
+                        text={user?.firstName}
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                        style={{
+                          marginTop: 4,
+                          textDecorationLine: !isIncluded
+                            ? 'line-through'
+                            : 'none',
+                        }}
+                        color={COLORS.neutral[500]}
+                      />
+                    </Pressable>
+                  );
+                })}
               </ScrollView>
+              <View
+                style={{
+                  marginTop: 6,
+                  borderTopColor: COLORS.neutral[100],
+                  borderTopWidth: 1,
+                  height: 35,
+                }}>
+                <View
+                  style={{
+                    flex: 1,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <Body
+                    type={2}
+                    text={`${data?.currency}${splitAmount} ${i18n.t(
+                      'per person',
+                    )}`}
+                    style={{fontWeight: '500'}}
+                    color={COLORS.shades[100]}
+                  />
+                </View>
+              </View>
             </Pressable>
           </View>
           {isCreator && (
             <View style={styles.buttonContainer}>
-              <Button
-                onPress={() =>
-                  onReminder({
-                    splitees,
-                    currency: data?.currency,
-                    amount: splitAmount,
-                    title: data?.title,
-                  })
-                }
-                isDisabled={splitees.length <= 0}
-                text={i18n.t('Send reminder')}
-              />
+              <Button onPress={() => onEdit(data)} text={i18n.t('Edit')} />
               <Button
                 style={{
                   marginLeft: 10,
