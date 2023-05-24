@@ -13,6 +13,7 @@ import SplitExpenseContainer from '../components/Trip/SplitExpenseContainer';
 import activeTripStore from '../stores/ActiveTripStore';
 import AddExpenseModal from '../components/Trip/AddExpenseModal';
 import FAButton from '../components/FAButton';
+import SettleModal from '../components/Trip/SettleModal';
 
 const {width} = Dimensions.get('window');
 
@@ -27,62 +28,9 @@ export default function SettleExpensesScreen({route}) {
 
   // STATE & MISC
   const [editExpense, setEditExpense] = useState(null);
-  const [testSettle, setTestSettle] = useState();
-  const [scrollIndex, setScrollIndex] = useState(0);
-  const pageRef = useRef();
+  const [settleVisible, setSettleVisible] = useState(false);
 
   const scrollY = useRef(new Animated.Value(0)).current;
-
-  const calculateTotalCosts = () => {
-    let memberCosts = [];
-
-    let i = 0;
-    while (activeMembers[i + 1]) {
-      const {id, firstName} = activeMembers[i];
-
-      let spent = 0;
-      let owed = 0;
-
-      expenses.forEach(expense => {
-        const {amount, paidBy, splitBy} = expense;
-
-        // If user paid for expense
-        if (id === paidBy) {
-          spent += amount;
-        }
-
-        // If user owes for expense
-        if (splitBy.includes(id)) {
-          owed += amount / splitBy?.length;
-        }
-      });
-
-      memberCosts.push({
-        name: firstName,
-        id,
-        totalSpent: spent,
-        totalOwed: owed,
-        isOwed: spent > owed,
-      });
-
-      let debtMembers = [...memberCosts.filter(m => !m.isOwed)];
-      let richMembers = [...memberCosts.filter(m => m.isOwed)];
-
-      setTestSettle([...debtMembers, ...richMembers]);
-
-      console.log(debtMembers);
-      console.log(richMembers);
-
-      i++;
-    }
-
-    console.log(memberCosts);
-  };
-
-  const scrollPage = i => {
-    setScrollIndex(i);
-    pageRef?.current?.scrollTo({x: i === 0 ? 0 : 1000});
-  };
 
   const handleSettle = () => {
     if (expenses.find(exp => exp.splitBy.length <= 0)) {
@@ -94,8 +42,7 @@ export default function SettleExpensesScreen({route}) {
       );
     }
 
-    scrollPage(1);
-    calculateTotalCosts();
+    setSettleVisible(true);
   };
 
   const getLinearBar = useCallback(() => {
@@ -168,51 +115,22 @@ export default function SettleExpensesScreen({route}) {
 
   return (
     <View style={styles.container}>
-      <HybridHeader
-        onPressBack={scrollIndex === 1 ? () => scrollPage(0) : null}
-        title={i18n.t('Settle Expenses')}
-        scrollY={scrollY}>
-        <ScrollView
-          ref={node => {
-            pageRef.current = node;
-          }}
-          scrollEnabled={false}
-          showsVerticalScrollIndicator={false}
-          horizontal
-          contentContainerStyle={{
-            width: width * 2,
-          }}>
-          <View style={styles.innerContainer}>
-            <Headline type={1} text={`${currency.symbol}${totalAmount}`} />
-            <Body
-              type={4}
-              style={{marginTop: -2}}
-              text={i18n.t('total expenses')}
-              color={COLORS.neutral[300]}
-            />
-            {getLinearBar()}
-            <View style={styles.summaryContainer}>
-              {expenses.map(exp => {
-                return getDetailContainer(exp);
-              })}
-            </View>
+      <HybridHeader title={i18n.t('Settle Expenses')} scrollY={scrollY}>
+        <View style={styles.innerContainer}>
+          <Headline type={1} text={`${currency.symbol}${totalAmount}`} />
+          <Body
+            type={4}
+            style={{marginTop: -2}}
+            text={i18n.t('total expenses')}
+            color={COLORS.neutral[300]}
+          />
+          {getLinearBar()}
+          <View style={styles.summaryContainer}>
+            {expenses.map(exp => {
+              return getDetailContainer(exp);
+            })}
           </View>
-          <View style={styles.innerContainer}>
-            <Body
-              type={4}
-              style={{marginTop: -2}}
-              text={i18n.t('Who owes who')}
-              color={COLORS.neutral[300]}
-            />
-            <Body
-              type={4}
-              style={{marginTop: -2}}
-              text={JSON.stringify(testSettle)}
-              color={COLORS.neutral[300]}
-            />
-            <View />
-          </View>
-        </ScrollView>
+        </View>
       </HybridHeader>
       <FAButton
         icon={'arrow-forward'}
@@ -228,6 +146,14 @@ export default function SettleExpensesScreen({route}) {
         onRequestClose={() => setEditExpense(null)}
         expenses={expenses}
         activeMembers={activeMembers}
+      />
+
+      <SettleModal
+        isVisible={settleVisible}
+        onRequestClose={() => setSettleVisible(false)}
+        activeMembers={activeMembers}
+        data={expenses}
+        currency={currency.symbol}
       />
     </View>
   );
