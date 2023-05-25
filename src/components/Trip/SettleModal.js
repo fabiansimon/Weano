@@ -7,6 +7,7 @@ import {
   Animated,
   ScrollView,
   Pressable,
+  Share,
 } from 'react-native';
 import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import Headline from '../typography/Headline';
@@ -15,42 +16,21 @@ import Body from '../typography/Body';
 import Divider from '../Divider';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Button from '../Button';
+import userStore from '../../stores/UserStore';
 
 function SettleModal({
   isVisible,
   onRequestClose,
   data,
   activeMembers,
+  tripTitle,
   currency = '$',
 }) {
+  // STORES
+  const {id} = userStore(state => state.user);
+
   // STATE && MISC
-  const [transactions, setTransactions] = useState([
-    {
-      amount: 199.22,
-      from: 'Fabian',
-      to: 'Julia',
-    },
-    {
-      amount: 199.22,
-      from: 'Fabian',
-      to: 'Julia',
-    },
-    {
-      amount: 199.22,
-      from: 'Fabian',
-      to: 'Julia',
-    },
-    {
-      amount: 199.22,
-      from: 'Fabian',
-      to: 'Julia',
-    },
-    {
-      amount: 199.22,
-      from: 'Fabian',
-      to: 'Julia',
-    },
-  ]);
+  const [transactions, setTransactions] = useState([]);
   const [showModal, setShowModal] = useState(isVisible);
   const animatedBottom = useRef(new Animated.Value(900)).current;
   const duration = 300;
@@ -89,22 +69,65 @@ function SettleModal({
       i++;
     }
 
-    let debtMembers = memberCosts
-      .filter(m => m.diff < 0)
-      .sort((a, b) => a.diff - b.diff);
-    let richMembers = memberCosts
-      .filter(m => m.diff >= 0)
-      .sort((a, b) => a.diff - b.diff);
+    memberCosts.sort((a, b) => b.diff - a.diff);
 
-    for (const member of richMembers) {
+    let t = [];
+    for (let j = 0; j < memberCosts.length; j++) {
+      const currMember = memberCosts[j];
+
+      while (currMember.diff !== 0) {
+        const settleMember = memberCosts.find(m => m.diff < 0);
+
+        if (!settleMember) {
+          break;
+        }
+
+        let diff;
+        let amount;
+
+        if (Math.abs(currMember.diff) < Math.abs(settleMember.diff)) {
+          diff =
+            Math.abs(currMember.diff) - Math.abs(settleMember.diff).toFixed(10);
+          amount = Math.abs(currMember.diff).toFixed(2);
+          currMember.diff = 0;
+          settleMember.diff = diff;
+        }
+
+        if (Math.abs(currMember.diff) > Math.abs(settleMember.diff)) {
+          amount = Math.abs(settleMember.diff).toFixed(2);
+          currMember.diff = (
+            Math.abs(currMember.diff) - Math.abs(settleMember.diff)
+          ).toFixed(10);
+          settleMember.diff = 0;
+        }
+
+        if (Math.abs(currMember.diff) === Math.abs(settleMember.diff)) {
+          amount = Math.abs(currMember.diff).toFixed(2);
+          currMember.diff = 0;
+          settleMember.diff = 0;
+        }
+
+        t.push({
+          from: {
+            id: settleMember.id,
+            name: settleMember.name,
+          },
+          to: {
+            id: currMember.id,
+            name: currMember.name,
+          },
+          amount,
+        });
+      }
     }
 
-    console.log(debtMembers);
-    console.log(richMembers);
+    setTransactions(t.filter(t => t.amount !== '0.00'));
   };
 
   useEffect(() => {
-    calculateTotalCosts();
+    if (isVisible) {
+      calculateTotalCosts();
+    }
   }, [isVisible]);
 
   useEffect(() => {
@@ -129,9 +152,36 @@ function SettleModal({
     }
   };
 
+  const handleShare = () => {
+    let message = `The fastest way to settle all expenses from the trip "${tripTitle}" is following: \n\n`;
+    const now = new Date();
+
+    message += `(Created: ${now.toDateString()})\n\n`;
+
+    for (const transaction of transactions) {
+      message += `${transaction.from.name} --> ${transaction.to.name}: ${currency}${transaction.amount}\n`;
+    }
+
+    Share.share({
+      message,
+    });
+  };
+
   const getTransactionTile = (transaction, index) => {
-    const {amount, from, to} = transaction;
-    const i = 10;
+    const {
+      amount,
+      from: {name: fromName, id: fromId},
+      to: {name: toName, id: toId},
+    } = transaction;
+
+    const isReceiver = toId === id;
+    const isSender = fromId === id;
+
+    const amountColor = isReceiver
+      ? COLORS.success[700]
+      : isSender
+      ? COLORS.error[900]
+      : COLORS.neutral[700];
     return (
       <Pressable
         style={[
@@ -141,27 +191,53 @@ function SettleModal({
         <View>
           <View style={{flexDirection: 'row'}}>
             <Body type={1} text={i18n.t('From')} color={COLORS.neutral[300]} />
-            <Body
-              type={1}
-              text={from}
-              color={COLORS.shades[100]}
-              style={{marginLeft: 4}}
-            />
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginLeft: 6,
+              }}>
+              <Body
+                type={1}
+                text={isSender ? i18n.t('You') : fromName}
+                color={COLORS.shades[100]}
+              />
+              {isSender && (
+                <Icon name="person" size={16} style={{marginLeft: 3}} />
+              )}
+            </View>
           </View>
           <View style={{flexDirection: 'row'}}>
             <Body type={1} text={i18n.t('To')} color={COLORS.neutral[300]} />
-            <Body
-              type={1}
-              text={to}
-              color={COLORS.shades[100]}
-              style={{marginLeft: 4}}
-            />
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginLeft: 6,
+              }}>
+              <Body
+                type={1}
+                text={isReceiver ? i18n.t('You') : toName}
+                color={COLORS.shades[100]}
+              />
+              {isReceiver && (
+                <Icon name="person" size={16} style={{marginLeft: 3}} />
+              )}
+            </View>
           </View>
         </View>
-        <View style={styles.amountContainer}>
+        <View
+          style={[
+            styles.amountContainer,
+            {
+              backgroundColor: amountColor,
+            },
+          ]}>
           <Body
             type={1}
-            text={`${currency}${amount}`}
+            text={`${
+              isReceiver ? '+' : isSender ? '-' : ''
+            }${currency}${amount}`}
             color={COLORS.shades[0]}
             style={{fontWeight: '500'}}
           />
@@ -230,11 +306,10 @@ function SettleModal({
                 marginTop: 12,
                 marginBottom: -4,
               }}>
-              <Button text={i18n.t('Share')} style={{marginRight: 5}} />
               <Button
-                isSecondary
-                text={i18n.t('Remind')}
-                style={{marginLeft: 5}}
+                onPress={handleShare}
+                text={i18n.t('Share')}
+                style={{marginRight: 5}}
               />
             </View>
           </View>
@@ -285,7 +360,6 @@ const styles = StyleSheet.create({
   },
   amountContainer: {
     borderRadius: RADIUS.xl,
-    backgroundColor: COLORS.primary[700],
     paddingHorizontal: 8,
     paddingVertical: 4,
   },

@@ -4,11 +4,9 @@ import FastImage from 'react-native-fast-image';
 import {isEmpty} from 'lodash';
 import COLORS from '../constants/Theme';
 import DefaultAvatar from '../../assets/images/default_avatar.png';
-import Headline from './typography/Headline';
 
 import ContactDetailModal from './ContactDetailModal';
 import userStore from '../stores/UserStore';
-import Body from './typography/Body';
 import Subtitle from './typography/Subtitle';
 
 export default function Avatar({

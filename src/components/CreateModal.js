@@ -421,19 +421,6 @@ export default function CreateModal({isVisible, onRequestClose}) {
       presentationStyle="pageSheet">
       <KeyboardView behavior="padding" paddingBottom={40}>
         <View style={styles.container}>
-          {Platform.OS === 'android' && (
-            <BackButton
-              onPress={() => {
-                onRequestClose();
-                cleanData();
-              }}
-              isClear
-              style={{
-                marginLeft: PADDING.m,
-                marginBottom: PADDING.m,
-              }}
-            />
-          )}
           <Headline
             type={2}
             text={i18n.t('Start Adventure')}

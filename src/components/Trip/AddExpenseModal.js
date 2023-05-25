@@ -2,6 +2,7 @@ import {Platform, Pressable, ScrollView, StyleSheet, View} from 'react-native';
 import React, {useState, useEffect, useCallback} from 'react';
 import {TextInput} from 'react-native-gesture-handler';
 import EntIcon from 'react-native-vector-icons/Entypo';
+import IonIcon from 'react-native-vector-icons/Ionicons';
 import Toast from 'react-native-toast-message';
 import TitleModal from '../TitleModal';
 import KeyboardView from '../KeyboardView';
@@ -22,6 +23,7 @@ import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import {useMutation} from '@apollo/client';
 import UPDATE_EXPENSE from '../../mutations/updateExpense';
 import activeTripStore from '../../stores/ActiveTripStore';
+import DELETE_EXPENSE from '../../mutations/deleteExpense';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
@@ -31,6 +33,7 @@ export default function AddExpenseModal({
   onPress,
   isLoading,
   expenses,
+  tripId,
   userId,
   activeMembers,
   isProMember,
@@ -39,6 +42,7 @@ export default function AddExpenseModal({
 }) {
   // MUTATIONS
   const [updateExisitingExpense, {loading}] = useMutation(UPDATE_EXPENSE);
+  const [deleteExpense, {loading: deleteLoading}] = useMutation(DELETE_EXPENSE);
 
   // STORES
   const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
@@ -114,6 +118,38 @@ export default function AddExpenseModal({
     });
   };
 
+  const handleDelete = async () => {
+    Utils.showConfirmationAlert(
+      i18n.t('Delete Expense'),
+      i18n.t(`Are you sure you want to delete '${title}' as an expense?`),
+      i18n.t('Delete'),
+      async () => {
+        await deleteExpense({
+          variables: {
+            data: {
+              id: updateExpense._id,
+              tripId,
+            },
+          },
+        })
+          .then(() => {
+            updateActiveTrip({
+              expenses: expenses.filter(p => p._id !== updateExpense._id),
+            });
+            onRequestClose();
+          })
+          .catch(e => {
+            Toast.show({
+              type: 'error',
+              text1: i18n.t('Whoops!'),
+              text2: e.message,
+            });
+            console.log(`ERROR: ${e.message}`);
+          });
+      },
+    );
+  };
+
   const handlePress = async () => {
     const regVal = /^[0-9]*(,[0-9]{0,2})?$/;
     const amountString = amount.toString();
@@ -161,6 +197,7 @@ export default function AddExpenseModal({
               if (expense._id === updateExpense._id) {
                 return {
                   ...updatedExpense,
+                  _id: updateExpense._id,
                   createdAt: Date.now(),
                 };
               }
@@ -482,7 +519,7 @@ export default function AddExpenseModal({
       title={i18n.t('Expense')}
       actionLabel={isUpdate ? i18n.t('Update') : i18n.t('Create')}
       onPress={handlePress}
-      isLoading={isLoading || loading}
+      isLoading={isLoading || loading || deleteLoading}
       isDisabled={amount.length <= 0 || title.length <= 0}>
       <KeyboardView paddingBottom={50}>
         <View style={styles.container}>
@@ -495,6 +532,21 @@ export default function AddExpenseModal({
           </View>
         </View>
       </KeyboardView>
+      {isUpdate && (
+        <Pressable onPress={handleDelete} style={styles.deleteContainer}>
+          <IonIcon
+            name="ios-trash-outline"
+            color={COLORS.error[900]}
+            size={18}
+          />
+          <Body
+            style={{marginLeft: 4}}
+            type={2}
+            color={COLORS.error[900]}
+            text={i18n.t('Delete Expense')}
+          />
+        </Pressable>
+      )}
       <Toast config={toastConfig} />
       <MembersModal
         isVisible={membersVisible}
@@ -579,5 +631,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: RADIUS.xl,
+  },
+  deleteContainer: {
+    borderRadius: RADIUS.xl,
+    padding: 10,
+    // backgroundColor: COLORS.neutral[50],
+    flexDirection: 'row',
+    borderWidth: 1,
+    borderColor: COLORS.error[100],
+    position: 'absolute',
+    bottom: '5%',
+    alignItems: 'center',
+    alignSelf: 'center',
+    justifyContent: 'center',
   },
 });

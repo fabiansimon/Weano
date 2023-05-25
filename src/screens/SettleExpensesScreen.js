@@ -1,7 +1,14 @@
-import React, {useRef, useState, useCallback} from 'react';
-import Animated, {exp} from 'react-native-reanimated';
+import React, {useRef, useState, useCallback, useMemo} from 'react';
+import Animated from 'react-native-reanimated';
 import HybridHeader from '../components/HybridHeader';
-import {Alert, Dimensions, ScrollView, StyleSheet, View} from 'react-native';
+import {
+  Alert,
+  Dimensions,
+  Pressable,
+  StatusBar,
+  StyleSheet,
+  View,
+} from 'react-native';
 import i18n from '../utils/i18n';
 import COLORS, {PADDING, RADIUS} from '../constants/Theme';
 import Body from '../components/typography/Body';
@@ -17,20 +24,29 @@ import SettleModal from '../components/Trip/SettleModal';
 
 const {width} = Dimensions.get('window');
 
-export default function SettleExpensesScreen({route}) {
-  // PARAMS
-  const {totalAmount} = route.params;
-
+export default function SettleExpensesScreen() {
   // STORES
-  const {expenses, activeMembers, currency} = activeTripStore(
-    state => state.activeTrip,
-  );
+  const {
+    expenses,
+    activeMembers,
+    currency,
+    title,
+    id: tripId,
+  } = activeTripStore(state => state.activeTrip);
 
   // STATE & MISC
   const [editExpense, setEditExpense] = useState(null);
   const [settleVisible, setSettleVisible] = useState(false);
 
   const scrollY = useRef(new Animated.Value(0)).current;
+
+  const totalAmount = useMemo(() => {
+    let amount = 0;
+    expenses.forEach(expense => {
+      amount += expense.amount;
+    });
+    return amount.toFixed(2);
+  }, [expenses]);
 
   const handleSettle = () => {
     if (expenses.find(exp => exp.splitBy.length <= 0)) {
@@ -72,7 +88,7 @@ export default function SettleExpensesScreen({route}) {
   const getDetailContainer = exp => {
     const {amount, category, createdAt, paidBy, title} = exp;
     const {color} = EXPENSES_CATEGORY.find(cat => cat.id === category);
-    const paidByUser = userManagement.convertIdToUser(paidBy);
+    const paidByUser = activeMembers.find(m => m.id === exp.paidBy);
 
     return (
       <View style={styles.expenseSummary}>
@@ -115,6 +131,7 @@ export default function SettleExpensesScreen({route}) {
 
   return (
     <View style={styles.container}>
+      <StatusBar barStyle="dark-content" />
       <HybridHeader title={i18n.t('Settle Expenses')} scrollY={scrollY}>
         <View style={styles.innerContainer}>
           <Headline type={1} text={`${currency.symbol}${totalAmount}`} />
@@ -126,7 +143,7 @@ export default function SettleExpensesScreen({route}) {
           />
           {getLinearBar()}
           <View style={styles.summaryContainer}>
-            {expenses.map(exp => {
+            {expenses?.map(exp => {
               return getDetailContainer(exp);
             })}
           </View>
@@ -144,8 +161,9 @@ export default function SettleExpensesScreen({route}) {
         isVisible={editExpense !== null}
         updateExpense={editExpense}
         onRequestClose={() => setEditExpense(null)}
-        expenses={expenses}
+        expenses={expenses || []}
         activeMembers={activeMembers}
+        tripId={tripId}
       />
 
       <SettleModal
@@ -154,6 +172,7 @@ export default function SettleExpensesScreen({route}) {
         activeMembers={activeMembers}
         data={expenses}
         currency={currency.symbol}
+        tripTitle={title}
       />
     </View>
   );

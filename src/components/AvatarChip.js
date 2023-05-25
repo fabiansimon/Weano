@@ -7,7 +7,11 @@ import Body from './typography/Body';
 export default function AvatarChip({style, onPress, name, uri}) {
   return (
     <Pressable onPress={onPress} style={[styles.container, style]}>
-      <Avatar size={25} avatarUri={uri} style={{borderColor: 'transparent'}} />
+      <Avatar
+        size={25}
+        avatarUri={uri}
+        style={{borderColor: COLORS.primary[700]}}
+      />
       <Body
         type={2}
         style={{marginHorizontal: 6, fontWeight: '500'}}

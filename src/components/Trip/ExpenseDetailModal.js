@@ -154,7 +154,7 @@ export default function ExpenseDetailModal({
                   type={2}
                   style={{marginLeft: 4, fontWeight: '500'}}
                   text={`${data?.splitBy?.length} ${i18n.t('Travelers')}`}
-                  color={COLORS.neutral[900]}
+                  color={COLORS.shades[100]}
                 />
               </View>
               <ScrollView
@@ -165,6 +165,7 @@ export default function ExpenseDetailModal({
 
                   return (
                     <Pressable
+                      key={user.id}
                       style={{
                         opacity: isIncluded ? 1 : 0.2,
                         alignItems: 'center',
@@ -204,10 +205,10 @@ export default function ExpenseDetailModal({
                   }}>
                   <Body
                     type={2}
+                    style={{fontWeight: '500'}}
                     text={`${data?.currency}${splitAmount} ${i18n.t(
                       'per person',
                     )}`}
-                    style={{fontWeight: '500'}}
                     color={COLORS.shades[100]}
                   />
                 </View>

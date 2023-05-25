@@ -1,4 +1,4 @@
-import {View, StyleSheet, FlatList} from 'react-native';
+import {View, StyleSheet, FlatList, StatusBar} from 'react-native';
 import React, {useRef, useState, useEffect, useMemo} from 'react';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Entypo';
@@ -403,6 +403,7 @@ export default function ExpenseScreen() {
 
   return (
     <View style={styles.container}>
+      <StatusBar barStyle="dark-content" />
       <HybridHeader
         title={i18n.t('Expenses')}
         scrollY={scrollY}
@@ -427,18 +428,32 @@ export default function ExpenseScreen() {
             {expenses?.length > 0 && (
               <Pressable
                 onPress={() => {
-                  if (isHost) {
-                    return navigation.navigate(ROUTES.settleExpensesScreen, {
-                      totalAmount,
-                    });
+                  if (users.length <= 1) {
+                    return InfoController.showModal(
+                      i18n.t('Sorry'),
+                      i18n.t(
+                        "There are no expenses to settle if it's only you.",
+                      ),
+                    );
                   }
 
-                  return InfoController.showModal(
-                    i18n.t('Sorry'),
-                    i18n.t('Only a host can settle the expenses of the trip.'),
-                  );
+                  if (!isHost) {
+                    return InfoController.showModal(
+                      i18n.t('Sorry'),
+                      i18n.t(
+                        'Only a host can settle the expenses of the trip.',
+                      ),
+                    );
+                  }
+
+                  return navigation.navigate(ROUTES.settleExpensesScreen, {
+                    totalAmount,
+                  });
                 }}
-                style={[styles.settleButton, {opacity: isHost ? 1 : 0.5}]}>
+                style={[
+                  styles.settleButton,
+                  {opacity: isHost && users.length > 1 ? 1 : 0.5},
+                ]}>
                 <Body
                   type={2}
                   color={COLORS.shades[0]}
@@ -488,10 +503,11 @@ export default function ExpenseScreen() {
       <FAButton
         icon="add"
         iconSize={28}
-        // isDisabled={type === 'recent'}
+        isDisabled={type === 'recent'}
         onPress={() => setShowModal(true)}
       />
       <AddExpenseModal
+        tripId={tripId}
         currency={currency}
         isVisible={showModal}
         updateExpense={updateExpense}
