@@ -39,7 +39,7 @@ export default function StorySection({
         <View
           style={{
             flexDirection: 'row',
-            width: '55%',
+            width: '100%',
             marginLeft: 28,
             marginTop: 4,
           }}>
@@ -69,15 +69,7 @@ export default function StorySection({
     }
 
     setSortedData(
-      data
-        .slice()
-        .filter(({type}) => type !== 'upcoming' && type !== 'soon')
-        .sort((a, b) => {
-          if (a.type === 'active' && b.type !== 'active') {
-            return -1;
-          }
-          return 0;
-        }),
+      data.slice().filter(({type}) => type === 'recent' || type === 'recap'),
     );
   }, [data]);
 
@@ -87,7 +79,7 @@ export default function StorySection({
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={contentContainerStyle}>
-        <Pressable
+        {/* <Pressable
           onPress={() => navigation.push(ROUTES.mapScreen)}
           style={{marginRight: 14}}>
           <View style={styles.mapButton}>
@@ -106,7 +98,7 @@ export default function StorySection({
             color={COLORS.neutral[300]}
             text={`${data.length} ${i18n.t('Trips')}`}
           />
-        </Pressable>
+        </Pressable> */}
         {sortedData.length > 0
           ? sortedData.map(trip => {
               const {type} = trip;

@@ -1,45 +1,64 @@
 import {
   Dimensions,
+  NativeModules,
   Platform,
   Pressable,
-  RefreshControl,
+  ScrollView,
   Share,
   StatusBar,
   StyleSheet,
   View,
 } from 'react-native';
-import React, {useRef, useState, useEffect} from 'react';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import React, {useRef, useState, useEffect, useCallback, useMemo} from 'react';
+import MapboxGL from '@rnmapbox/maps';
 import {useNavigation} from '@react-navigation/native';
-import Animated from 'react-native-reanimated';
+import BottomSheet from '@gorhom/bottom-sheet';
 import Icon from 'react-native-vector-icons/AntDesign';
 import IonIcon from 'react-native-vector-icons/Ionicons';
+import FontIcon from 'react-native-vector-icons/FontAwesome5';
+import EntIcon from 'react-native-vector-icons/Entypo';
 import {useLazyQuery} from '@apollo/client';
-import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
 import COLORS, {PADDING, RADIUS} from '../constants/Theme';
-import Headline from '../components/typography/Headline';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
 import i18n from '../utils/i18n';
-import CreateModal from '../components/CreateModal';
 import ROUTES from '../constants/Routes';
-import AnimatedHeader from '../components/AnimatedHeader';
 import SearchModal from '../components/Search/SearchModal';
 import userStore from '../stores/UserStore';
-import Body from '../components/typography/Body';
 import tripsStore from '../stores/TripsStore';
 import GET_TRIPS_FOR_USER from '../queries/getTripsForUser';
-import RecapCardMini from '../components/RecapCardMini';
-import ActionTile from '../components/Trip/ActionTile';
-import FAButton from '../components/FAButton';
-import StorySection from '../components/StorySection';
-import Divider from '../components/Divider';
+import {MAPBOX_TOKEN} from '@env';
 import META_DATA from '../constants/MetaData';
 import AsyncStorageDAO from '../utils/AsyncStorageDAO';
 import PremiumController from '../PremiumController';
-import ProUserBubble from '../components/ProUserBubble';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {
+  GestureHandlerRootView,
+  RefreshControl,
+} from 'react-native-gesture-handler';
+import {LinearGradient} from 'expo-linear-gradient';
+import TripContainer from '../components/Trip/TripContainer';
+import CreateModal from '../components/CreateModal';
+import Utils from '../utils';
+import Subtitle from '../components/typography/Subtitle';
+import Body from '../components/typography/Body';
+import StorySection from '../components/StorySection';
+import FAButton from '../components/FAButton';
 import ScannerModal from '../components/ScannerModal';
+import RecapCardMini from '../components/RecapCardMini';
+import ActionTile from '../components/Trip/ActionTile';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import Headline from '../components/typography/Headline';
+import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 const asyncStorageDAO = new AsyncStorageDAO();
+
+const {width, height} = Dimensions.get('window');
+
+const {StatusBarManager} = NativeModules;
+
+MapboxGL.setAccessToken(MAPBOX_TOKEN);
 
 export default function MainScreen() {
   // QUERIES
@@ -53,26 +72,47 @@ export default function MainScreen() {
   const setTrips = tripsStore(state => state.setTrips);
 
   // STATE & MISC
-  const [createVisible, setCreateVisible] = useState(false);
   const [searchVisible, setSearchVisible] = useState(false);
+  const [createVisible, setCreateVisible] = useState(false);
   const [scanVisible, setScanVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [index, setIndex] = useState(0);
-  const [routes] = useState([
-    {key: 'upcoming', title: i18n.t('Upcoming')},
-    {key: 'recent', title: i18n.t('Recent')},
+  const [expandIndex, setExpandIndex] = useState(0);
+  const [headerHeight, setHeaderHeight] = useState(0);
+  const [chipFilter, setChipFilter] = useState([
+    {
+      title: i18n.t('upcoming'),
+      color: COLORS.success[700],
+      isSelected: true,
+    },
+    {
+      title: i18n.t('recent'),
+      color: COLORS.primary[700],
+      isSelected: true,
+    },
+    {
+      title: i18n.t('active'),
+      color: COLORS.error[900],
+      isSelected: true,
+    },
   ]);
+
+  const snapPoints = useMemo(() => ['28%', '92%'], []);
+  const sheetPosition = useSharedValue(0);
+
   const scrollY = useRef(new Animated.Value(0)).current;
+
+  const mapCamera = useRef();
+  const sheetRef = useRef();
 
   const navigation = useNavigation();
 
-  // ----------- //
   const onRefresh = () => {
     setRefreshing(true);
 
     getTripsForUser()
       .then(() => setRefreshing(false))
-      .catch(() => setRefreshing(false));
+      .catch(() => setRefreshing(false))
+      .finally(setRefreshing(false));
   };
 
   const upcomingTrips = trips.filter(
@@ -80,9 +120,28 @@ export default function MainScreen() {
   );
   const soonTrip = trips.filter(trip => trip.type === 'soon')[0];
   const recentTrips = trips.filter(trip => trip.type === 'recent');
-  const activeTrip = trips.filter(trip => trip.type === 'active')[0];
+  const activeTrips = trips.filter(trip => trip.type === 'active');
 
-  const highlightTrip = activeTrip || soonTrip || null;
+  const highlightTrip = activeTrips[0] || soonTrip || null;
+
+  const headerAnimatedStyle = useAnimatedStyle(() => {
+    if (sheetPosition.value < headerHeight) {
+      return {
+        transform: [{translateY: 0}],
+      };
+    }
+
+    const translateY = -Math.abs(sheetPosition.value - headerHeight);
+    return {
+      transform: [{translateY}],
+    };
+  });
+
+  const headerShadowAnimated = scrollY.interpolate({
+    inputRange: [0, 20],
+    outputRange: [0, 0.1],
+    extrapolate: 'clamp',
+  });
 
   const createTrip = async () => {
     const usageLimit = JSON.parse(
@@ -98,19 +157,15 @@ export default function MainScreen() {
     setCreateVisible(true);
   };
 
-  const getTabBarHeight = () => {
-    const containerHeight = 190;
-    if (upcomingTrips.length > recentTrips.length) {
-      return upcomingTrips.length * containerHeight;
-    }
-    return recentTrips.length * containerHeight;
-  };
-
   useEffect(() => {
     if (data) {
       setTrips(data.getTripsForUser);
     }
   }, [data]);
+
+  const handleSheetChanges = useCallback(i => {
+    setExpandIndex(i);
+  }, []);
 
   const handleLongPress = ({nativeEvent: {name}}, {id}) => {
     if (name === i18n.t('Invite Friends')) {
@@ -125,201 +180,213 @@ export default function MainScreen() {
       });
     }
     if (name === i18n.t('Visit on Map')) {
-      return navigation.push(ROUTES.mapScreen, {initTrip: id});
+      return handleSearch(id);
     }
     if (name === i18n.t('Capture a memory')) {
       return navigation.push(ROUTES.cameraScreen, {tripId: id});
     }
   };
 
-  const getHeaderSection = () => (
-    <SafeAreaView
-      style={[
-        styles.header,
-        {
-          paddingBottom: highlightTrip ? 40 : 16,
-          borderBottomWidth: highlightTrip ? 1 : 0,
-        },
-      ]}
-      edges={['top']}>
-      <View style={{flex: 1}}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Headline type={3} text={`${i18n.t('Hey')} ${user?.firstName} 👋🏻`} />
-          {user?.isProMember && <ProUserBubble style={{marginLeft: 4}} />}
-        </View>
-        <Body
-          type={1}
-          style={{marginTop: -2}}
-          text={i18n.t('ready for a new Adventure?')}
-          color={COLORS.neutral[300]}
+  const handleFilterChoice = (index, isSelected) => {
+    RNReactNativeHapticFeedback.trigger('impactLight');
+
+    if (
+      chipFilter.filter(c => c.isSelected).length === 1 &&
+      chipFilter[index].isSelected
+    ) {
+      return setChipFilter(prev =>
+        prev.map(c => {
+          return {
+            ...c,
+            isSelected: true,
+          };
+        }),
+      );
+    }
+
+    if (!chipFilter.find(c => !c.isSelected)) {
+      return setChipFilter(prev =>
+        prev.map((c, i) => {
+          if (i === index) {
+            return {
+              ...c,
+              isSelected: true,
+            };
+          }
+
+          return {
+            ...c,
+            isSelected: false,
+          };
+        }),
+      );
+    }
+
+    setChipFilter(prev =>
+      prev.map((c, i) => {
+        if (i === index) {
+          return {
+            ...c,
+            isSelected: !isSelected,
+          };
+        }
+
+        return c;
+      }),
+    );
+  };
+
+  const handleSearch = id => {
+    sheetRef.current.snapToIndex(0);
+
+    if (!id) {
+      return;
+    }
+
+    const searchTrip = trips.filter(trip => trip.id === id)[0];
+    const {destinations} = searchTrip;
+
+    mapCamera.current.setCamera({
+      centerCoordinate: destinations[0].latlon,
+      zoomLevel: 3,
+      animationDuration: 500,
+    });
+  };
+
+  const toggleExpansion = () => {
+    sheetRef.current.snapToIndex(expandIndex ? 0 : 1);
+  };
+
+  const getFilteredTrips = useCallback(() => {
+    if (!chipFilter.find(filter => !filter.isSelected)) {
+      return trips.sort(
+        (a, b) => a?.dateRange?.startDate - b?.dateRange?.startDate,
+      );
+    }
+
+    let selectionTrips = [upcomingTrips, recentTrips, activeTrips];
+
+    let filteredTrips = [];
+    for (var i = 0; i < chipFilter.length; i++) {
+      if (chipFilter[i].isSelected && selectionTrips[i]) {
+        filteredTrips.push(...selectionTrips[i]);
+      }
+    }
+
+    filteredTrips.sort(
+      (a, b) => a?.dateRange?.startDate - b?.dateRange?.startDate,
+    );
+
+    return filteredTrips;
+  }, [chipFilter, trips]);
+
+  const renderTripPins = trip => {
+    const {destinations} = trip;
+
+    if (destinations[0]?.latlon?.length < 2) {
+      return;
+    }
+
+    return (
+      <MapboxGL.MarkerView
+        allowOverlap
+        key={trip.id}
+        surfaceView
+        requestDisallowInterceptTouchEvent
+        coordinate={destinations[0].latlon}>
+        <TripContainer
+          onPressOut={() =>
+            navigation.push(ROUTES.tripScreen, {tripId: trip.id})
+          }
+          isDense
+          size={40}
+          trip={trip}
         />
-      </View>
-      <Pressable
-        onPress={() => navigation.push(ROUTES.profileScreen)}
-        isSecondary
-        style={styles.searchButton}>
-        <IonIcon name="ios-person" color={COLORS.neutral[900]} size={18} />
-      </Pressable>
-      <Pressable
-        onPress={() => setSearchVisible(true)}
-        isSecondary
-        style={[styles.searchButton, {marginLeft: 6}]}>
-        <Icon name="search1" color={COLORS.neutral[900]} size={20} />
-      </Pressable>
-    </SafeAreaView>
-  );
-
-  const renderTabBar = props => (
-    <>
-      <Divider style={{top: 57.5, marginHorizontal: PADDING.l}} />
-      <TabBar
-        {...props}
-        indicatorStyle={{
-          backgroundColor: COLORS.primary[500],
-          width: 70,
-          marginLeft: '12%',
-          height: 3,
-          borderRadius: 2,
-        }}
-        style={{backgroundColor: 'transparent'}}
-        activeColor={COLORS.primary[700]}
-        inactiveColor={COLORS.neutral[300]}
-        renderLabel={({color, route, focused}) => (
-          <Body
-            style={{fontWeight: focused ? '500' : '400'}}
-            color={color}
-            type={1}
-            text={route.title}
-          />
-        )}
-      />
-    </>
-  );
-
-  const getUpcomingTab = () => {
-    if (upcomingTrips.length <= 0) {
-      return (
-        <View style={[styles.tabStyle, {marginTop: 20, marginLeft: 10}]}>
-          <Body
-            type={2}
-            color={COLORS.neutral[700]}
-            text={i18n.t('No upcoming trips 🥱')}
-            style={{
-              marginBottom: 4,
-              fontWeight: '500',
-            }}
-          />
-          <Body
-            type={2}
-            color={COLORS.neutral[300]}
-            text={i18n.t(
-              'I’m sure it can’t hurt to add a new trip. You know, just to have something to look forward to 🤷‍♂️',
-            )}
-          />
-        </View>
-      );
-    }
-
-    return (
-      <Pressable style={styles.tabStyle}>
-        {upcomingTrips.map(trip => (
-          <RecapCardMini
-            key={trip.id}
-            onPress={() =>
-              navigation.push(ROUTES.tripScreen, {tripId: trip.id})
-            }
-            onLongPress={e => handleLongPress(e, trip)}
-            style={{marginTop: 10}}
-            data={trip}
-          />
-        ))}
-      </Pressable>
+      </MapboxGL.MarkerView>
     );
   };
 
-  const getRecentTab = () => {
-    if (recentTrips.length <= 0) {
-      return (
-        <View style={[styles.tabStyle, {marginTop: 20, marginLeft: 10}]}>
-          <Body
-            type={2}
-            text={i18n.t('No recent trips 👎🏻')}
-            style={{
-              marginBottom: 4,
-              fontWeight: '500',
-            }}
-          />
-          <Body
-            type={2}
-            color={COLORS.neutral[300]}
-            text={i18n.t(
-              'I’m sure it can’t hurt to add a new trip. You know, just to have something to look forward to 🤷‍♂️',
-            )}
-          />
-        </View>
-      );
-    }
-
+  const getFilterRow = useCallback(() => {
     return (
-      <Pressable style={styles.tabStyle}>
-        {recentTrips.map(trip => (
-          <RecapCardMini
-            key={trip.id}
-            onLongPress={e => handleLongPress(e, trip)}
-            onPress={() =>
-              navigation.push(ROUTES.tripScreen, {tripId: trip.id})
-            }
-            style={{marginTop: 10}}
-            data={trip}
+      <>
+        <View style={{flexDirection: 'row', flex: 1}}>
+          {chipFilter.map((chip, index) => {
+            const {color, title, isSelected} = chip;
+            let tripLength =
+              (index === 0
+                ? upcomingTrips?.length
+                : index === 1
+                ? recentTrips?.length
+                : activeTrips?.length) || 0;
+
+            return (
+              <Pressable
+                onPress={() => handleFilterChoice(index, isSelected)}
+                style={[
+                  styles.chip,
+                  {backgroundColor: color, opacity: isSelected ? 1 : 0.3},
+                ]}>
+                <Subtitle
+                  type={1}
+                  color={COLORS.shades[0]}
+                  text={`${tripLength} ${title}`}
+                />
+              </Pressable>
+            );
+          })}
+        </View>
+        <Pressable
+          style={styles.searchChip}
+          onPress={() => {
+            RNReactNativeHapticFeedback.trigger('impactLight');
+            setSearchVisible(true);
+          }}>
+          <Body color={COLORS.shades[100]} type={2} text={i18n.t('Search')} />
+          <Icon
+            color={COLORS.shades[100]}
+            name="search1"
+            style={{marginLeft: 4}}
+            size={14}
           />
-        ))}
-      </Pressable>
+        </Pressable>
+      </>
+    );
+  }, [chipFilter, trips]);
+
+  const getAnimatedHeader = () => {
+    return (
+      <Animated.View
+        onLayout={e => setHeaderHeight(e.nativeEvent.layout.height)}
+        style={[
+          styles.headerContainer,
+          headerAnimatedStyle,
+          {
+            shadowOpacity: headerShadowAnimated,
+          },
+        ]}>
+        <SafeAreaView edges={['top']}>
+          <View>
+            <Headline
+              type={4}
+              style={{textAlign: 'center'}}
+              text={`${i18n.t('Hey')} ${user?.firstName}!`}
+            />
+            <Body
+              type={2}
+              style={{textAlign: 'center'}}
+              text={i18n.t('ready for a new Adventure?')}
+              color={COLORS.neutral[300]}
+            />
+          </View>
+        </SafeAreaView>
+      </Animated.View>
     );
   };
 
-  const renderScene = SceneMap({
-    upcoming: getUpcomingTab,
-    recent: getRecentTab,
-  });
-
-  return (
-    <GestureHandlerRootView style={{flex: 1}}>
-      <StatusBar barStyle="dark-content" />
-      <View
-        style={{
-          backgroundColor: COLORS.neutral[50],
-          flex: 1,
-        }}>
-        <AnimatedHeader scrollY={scrollY} maxHeight={110} minHeight={10}>
-          <SafeAreaView
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              flex: 1,
-              paddingTop: 10,
-              paddingHorizontal: PADDING.l,
-              marginBottom: -18,
-              height: 140,
-            }}>
-            <View>
-              <Headline
-                type={3}
-                text={`${i18n.t('Hey')} ${user?.firstName}!`}
-              />
-              <Body
-                type={1}
-                text={i18n.t('Are you looking for something? 👀')}
-                color={COLORS.neutral[300]}
-              />
-            </View>
-            <Pressable
-              onPress={() => setSearchVisible(true)}
-              isSecondary
-              style={styles.searchButton}>
-              <Icon name="search1" color={COLORS.neutral[900]} size={20} />
-            </Pressable>
-          </SafeAreaView>
-        </AnimatedHeader>
+  const getSheetContent = useCallback(() => {
+    const filteredTrips = getFilteredTrips();
+    return (
+      <Pressable onPress={toggleExpansion} style={styles.sheetContainer}>
         <Animated.ScrollView
           refreshControl={
             <RefreshControl
@@ -328,54 +395,175 @@ export default function MainScreen() {
               onRefresh={onRefresh}
             />
           }
-          showsVerticalScrollIndicator={false}
           scrollEventThrottle={16}
+          scrollEnabled={expandIndex === 1}
           onScroll={Animated.event(
             [{nativeEvent: {contentOffset: {y: scrollY}}}],
-            {useNativeDriver: true},
-          )}>
-          <View style={styles.container}>
-            {getHeaderSection()}
-            <ActionTile trip={highlightTrip} style={{top: -25}} />
+            {
+              useNativeDriver: true,
+            },
+          )}
+          showsVerticalScrollIndicator={false}>
+          <View
+            style={[styles.handler, {opacity: expandIndex === 0 ? 1 : 0}]}
+          />
+
+          <Subtitle
+            type={1}
+            style={{marginLeft: 5}}
+            text={i18n.t('Quick Recap')}
+          />
+          <Pressable>
             <StorySection
-              onLongPress={(e, id) => handleLongPress(e, {id})}
-              contentContainerStyle={{marginHorizontal: PADDING.l}}
-              style={{
-                marginHorizontal: -PADDING.l,
-                marginTop: !highlightTrip ? 18 : 0,
-                marginBottom: -8,
+              contentContainerStyle={{
+                paddingLeft: 10,
+                marginBottom: 32,
+                height: 115,
               }}
+              onLongPress={(e, id) => handleLongPress(e, {id})}
+              style={{marginTop: 14}}
               data={trips}
             />
-            <Pressable
-              style={{
-                marginHorizontal: -PADDING.l,
-                height: getTabBarHeight(),
-                minHeight: 200,
-              }}>
-              <TabView
-                navigationState={{index, routes}}
-                renderScene={renderScene}
-                renderTabBar={renderTabBar}
-                onIndexChange={setIndex}
-              />
-            </Pressable>
+          </Pressable>
+          <Subtitle
+            type={1}
+            style={{marginLeft: 5}}
+            text={i18n.t('All trips')}
+          />
+          <View style={{flexDirection: 'row', marginTop: 10}}>
+            {getFilterRow()}
           </View>
+          {filteredTrips?.length <= 0 && (
+            <View style={[styles.tabStyle, {marginTop: 20}]}>
+              <Body
+                type={2}
+                color={COLORS.neutral[700]}
+                text={i18n.t('No trips found 🥱')}
+                style={{
+                  marginBottom: 4,
+                  fontWeight: '500',
+                }}
+              />
+              <Body
+                type={2}
+                color={COLORS.neutral[300]}
+                text={i18n.t(
+                  'I’m sure it can’t hurt to add a new trip. You know, just to have something to look forward to 🤷‍♂️',
+                )}
+              />
+            </View>
+          )}
+          {filteredTrips?.map(trip => (
+            <RecapCardMini
+              key={trip.id}
+              onPress={() =>
+                navigation.push(ROUTES.tripScreen, {tripId: trip.id})
+              }
+              onLongPress={e => handleLongPress(e, trip)}
+              style={{marginTop: 10}}
+              data={trip}
+            />
+          ))}
         </Animated.ScrollView>
+      </Pressable>
+    );
+  }, [trips, chipFilter, expandIndex]);
+
+  return (
+    <GestureHandlerRootView style={{flex: 1}}>
+      <StatusBar barStyle="dark-content" />
+      <View style={styles.container}>
+        <MapboxGL.MapView
+          compassEnabled={false}
+          scaleBarEnabled={false}
+          rotateEnabled={false}
+          onDidFinishLoadingMap={() => {
+            mapCamera.current.setCamera({
+              zoomLevel: 2,
+              animationDuration: 500,
+              centerCoordinate: [16, 48],
+            });
+          }}
+          style={styles.map}
+          styleURL="mapbox://styles/fabiansimon/clezrm6w7002g01p9eu1n0aos">
+          <MapboxGL.Camera animationMode="moveTo" animated ref={mapCamera} />
+          {getFilteredTrips()?.map(trip => renderTripPins(trip))}
+        </MapboxGL.MapView>
+
+        <View style={styles.actionTile}>
+          <ActionTile trip={highlightTrip} isMinimized />
+        </View>
+
+        <View style={{bottom: '20%', position: 'absolute', width: '100%'}}>
+          <LinearGradient
+            style={styles.gradient}
+            colors={['transparent', COLORS.neutral[900]]}
+          />
+          <View style={styles.filterRow}>{getFilterRow()}</View>
+        </View>
+
+        <BottomSheet
+          enableContentPanningGesture={expandIndex === 0}
+          handleIndicatorStyle={{opacity: 0}}
+          backgroundStyle={{
+            backgroundColor: 'transparent',
+            borderRadius: 20,
+          }}
+          ref={sheetRef}
+          onChange={i => handleSheetChanges(i)}
+          index={1}
+          snapPoints={snapPoints}
+          animatedPosition={sheetPosition}
+          onClose={() => {}}>
+          {getSheetContent()}
+        </BottomSheet>
+
+        {getAnimatedHeader()}
+
+        <View style={styles.header}>
+          <Pressable style={styles.searchButton} onPress={toggleExpansion}>
+            {expandIndex === 0 ? (
+              <EntIcon
+                color={COLORS.shades[100]}
+                name={expandIndex === 0 ? 'chevron-up' : 'chevron-down'}
+                size={20}
+              />
+            ) : (
+              <FontIcon name="globe-americas" size={20} />
+            )}
+          </Pressable>
+          <Pressable
+            onPress={() =>
+              highlightTrip &&
+              expandIndex !== 1 &&
+              navigation.push(ROUTES.tripScreen, {tripId: highlightTrip.id})
+            }
+            style={{flex: 1}}
+          />
+
+          <Pressable
+            style={styles.searchButton}
+            onPress={() => navigation.navigate(ROUTES.profileScreen)}>
+            <IonIcon color={COLORS.shades[100]} name="ios-person" size={18} />
+          </Pressable>
+        </View>
+
+        <SearchModal
+          isVisible={searchVisible}
+          onRequestClose={() => setSearchVisible(false)}
+          onPress={id => handleSearch(id)}
+        />
         <CreateModal
           isVisible={createVisible}
           onRequestClose={() => setCreateVisible(false)}
         />
-        <SearchModal
-          isVisible={searchVisible}
-          onRequestClose={() => setSearchVisible(false)}
-          onPress={id => navigation.push(ROUTES.tripScreen, {tripId: id})}
-        />
+
         <ScannerModal
           trips={trips}
           isVisible={scanVisible}
           onRequestClose={() => setScanVisible(false)}
         />
+
         <FAButton
           description={
             trips.length <= 0
@@ -403,40 +591,100 @@ export default function MainScreen() {
 }
 
 const styles = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
+    position: 'absolute',
+    top: StatusBarManager.HEIGHT,
+    paddingHorizontal: PADDING.m,
+  },
   container: {
-    paddingHorizontal: PADDING.l,
+    width: '100%',
+    height: '100%',
+  },
+  map: {
+    backgroundColor: COLORS.shades[0],
     flex: 1,
-    minHeight: Dimensions.get('window').height,
   },
   searchButton: {
     borderWidth: 1,
     height: 45,
     width: 45,
     borderColor: COLORS.neutral[100],
-    borderRadius: RADIUS.l,
+    borderRadius: RADIUS.xl,
     backgroundColor: COLORS.shades[0],
     justifyContent: 'center',
     alignItems: 'center',
   },
-  tabBar: {
-    flexDirection: 'row',
-  },
-  tabStyle: {
+  sheetContainer: {
     paddingHorizontal: PADDING.m,
+    backgroundColor: COLORS.neutral[50],
+    flex: 1,
+    borderTopRightRadius: RADIUS.m,
+    borderTopLeftRadius: RADIUS.m,
   },
-  tabItem: {
-    width: Dimensions.get('window').width / 2,
-    height: 30,
-    alignItems: 'center',
+  handler: {
+    marginBottom: 4,
+    alignSelf: 'center',
+    width: 70,
+    height: 7,
+    borderRadius: 100,
+    backgroundColor: COLORS.neutral[100],
+    marginTop: 8,
   },
-  header: {
+  filterRow: {
+    zIndex: 99,
+    position: 'absolute',
+    paddingHorizontal: PADDING.m,
+    top: -85,
     flexDirection: 'row',
+    width: '100%',
+  },
+  gradient: {
+    opacity: 0.3,
+    width: '100%',
+    height: 120,
+    position: 'absolute',
+    bottom: 0,
+  },
+  chip: {
+    marginRight: 5,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    minHeight: 35,
     alignItems: 'center',
-    paddingTop: Platform.OS === 'android' ? 14 : 0,
-    borderBottomColor: COLORS.neutral[100],
-    borderBottomWidth: 1,
-    marginHorizontal: -PADDING.l,
-    paddingHorizontal: PADDING.l,
-    backgroundColor: COLORS.shades[0],
+    justifyContent: 'center',
+    borderRadius: RADIUS.xl,
+  },
+  searchChip: {
+    minHeight: 35,
+    backgroundColor: COLORS.neutral[100],
+    borderRadius: RADIUS.xl,
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    alignItems: 'center',
+  },
+  animatedHeader: {
+    minHeight: Platform.OS === 'android' ? 45 : 70,
+    backgroundColor: COLORS.neutral[50],
+    bottom: -20,
+    zIndex: 0,
+  },
+  headerContainer: {
+    backgroundColor: COLORS.neutral[50],
+    paddingBottom: 10,
+    position: 'absolute',
+    width: '100%',
+    shadowColor: COLORS.neutral[900],
+    shadowRadius: 20,
+    shadowOffset: {},
+  },
+  actionTile: {
+    alignSelf: 'center',
+    position: 'absolute',
+    width: '73%',
+    top: StatusBarManager.HEIGHT,
+    paddingHorizontal: PADDING.m,
   },
 });

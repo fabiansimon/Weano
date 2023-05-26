@@ -36,7 +36,6 @@ import CHECK_FREE_IMAGES from '../../queries/checkFreeImages';
 import AccentBubble from '../../components/Trip/AccentBubble';
 import PremiumController from '../../PremiumController';
 import userStore from '../../stores/UserStore';
-import {LinearGradient} from 'expo-linear-gradient';
 import GradientOverlay from '../../components/GradientOverlay';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 

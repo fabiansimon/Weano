@@ -10,7 +10,7 @@ import {
   NativeModules,
   StatusBar,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import i18n from '../../utils/i18n';
@@ -58,6 +58,11 @@ export default function SearchModal({isVisible, onRequestClose, onPress}) {
       type: 'upcoming',
     },
   ];
+
+  useEffect(() => {
+    setTerm('');
+    setSearchResult([]);
+  }, [isVisible]);
 
   const handleSearchTerm = val => {
     setTerm(val);
@@ -120,7 +125,7 @@ export default function SearchModal({isVisible, onRequestClose, onPress}) {
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
-              <Icon color={COLORS.shades[100]} name="close" size={22} />
+              <Icon color={COLORS.shades[100]} name="close" size={20} />
             </Pressable>
             <Headline type={4} text={i18n.t('Search')} />
             <View style={{width: 50}} />

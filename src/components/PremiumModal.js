@@ -201,18 +201,18 @@ const PremiumModal = () => {
     );
   };
 
-  if (isMax) {
-    return (
-      <PopUpModal
-        onRequestClose={() => setIsVisible(false)}
-        isVisible={isVisible}
-        title={i18n.t('Sorry!')}
-        subtitle={i18n.t(
-          'You reached the max. quantity at this moment. Please remove items to add new ones. If you think this is an error please contact us.',
-        )}
-      />
-    );
-  }
+  // if (isMax) {
+  return (
+    <PopUpModal
+      onRequestClose={() => setIsVisible(false)}
+      isVisible={isVisible}
+      title={i18n.t('Sorry!')}
+      subtitle={i18n.t(
+        'You reached the max. quantity at this moment. Please remove items to add new ones. If you think this is an error please contact us.',
+      )}
+    />
+  );
+  // }
 
   return (
     <Modal

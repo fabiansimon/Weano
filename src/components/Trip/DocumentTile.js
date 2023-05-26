@@ -1,7 +1,6 @@
 import {StyleSheet, TouchableHighlight, View} from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
-// import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Utils from '../../utils';
 import Body from '../typography/Body';
 import COLORS from '../../constants/Theme';

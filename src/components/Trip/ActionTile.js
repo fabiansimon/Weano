@@ -20,10 +20,12 @@ import Utils from '../../utils';
 import CheckboxTile from './CheckboxTile';
 import Avatar from '../Avatar';
 
-export default function ActionTile({style, trip}) {
+export default function ActionTile({style, trip, isMinimized}) {
+  const minimizedHeight = 45;
+
   // STATE & MISC
   const [isExpanded, setIsExpanded] = useState(false);
-  const animatedHeight = useRef(new Animated.Value(50)).current;
+  const animatedHeight = useRef(new Animated.Value(minimizedHeight)).current;
   const animatedBorderRadius = useRef(new Animated.Value(RADIUS.xl)).current;
 
   const duration = 300;
@@ -60,7 +62,7 @@ export default function ActionTile({style, trip}) {
       }).start();
     } else {
       Animated.spring(animatedHeight, {
-        toValue: 50,
+        toValue: minimizedHeight,
         bounciness: 0.2,
         duration,
         useNativeDriver: false,
@@ -235,9 +237,22 @@ export default function ActionTile({style, trip}) {
   };
 
   const getMinimizedTitle = () => (
-    <View style={{marginLeft: 2, flexDirection: 'row'}}>
-      <Body style={{fontWeight: '500'}} type={1} text={tripTitle} />
-      {tripTitle?.length < 16 && (
+    <View
+      style={{
+        marginLeft: 2,
+        flexDirection: 'row',
+        flex: 1,
+        width: '200%',
+      }}>
+      <Body
+        style={{
+          fontWeight: '500',
+          width: '200%',
+        }}
+        type={1}
+        text={tripTitle}
+      />
+      {!isMinimized && tripTitle?.length < 16 && (
         <Body
           style={{fontWeight: '400'}}
           type={1}
@@ -271,14 +286,18 @@ export default function ActionTile({style, trip}) {
             alignItems: 'center',
           }}>
           <View style={{flexDirection: 'row', flex: 1, marginRight: 28}}>
-            <Pressable hitSlop={40} onPress={() => setIsExpanded(!isExpanded)}>
-              <EntIcon
-                name={isExpanded ? 'chevron-up' : 'chevron-down'}
-                size={20}
-                color={COLORS.neutral[300]}
-                style={{marginRight: 4}}
-              />
-            </Pressable>
+            {!isMinimized && (
+              <Pressable
+                hitSlop={40}
+                onPress={() => setIsExpanded(!isExpanded)}>
+                <EntIcon
+                  name={isExpanded ? 'chevron-up' : 'chevron-down'}
+                  size={20}
+                  color={COLORS.neutral[300]}
+                  style={{marginRight: 4}}
+                />
+              </Pressable>
+            )}
             {isExpanded ? (
               <Body
                 type={1}
@@ -331,7 +350,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderRadius: RADIUS.xl,
     paddingVertical: 5,
-    marginBottom: -2,
+    marginBottom: -5,
+    marginTop: -3,
     paddingRight: 6,
     paddingLeft: 10,
   },
