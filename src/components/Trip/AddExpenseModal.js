@@ -63,7 +63,7 @@ export default function AddExpenseModal({
   const allSpliteesSelected = splitBy?.length === activeMembers?.length;
   const splitPercentage = !splitBy?.length
     ? 0
-    : (100 / splitBy?.length).toFixed(2);
+    : (100 / splitBy?.length).toFixed(0);
 
   const splitAmount =
     !splitBy?.length || !amount
@@ -365,7 +365,7 @@ export default function AddExpenseModal({
               text={
                 allSpliteesSelected
                   ? i18n.t('deselected all')
-                  : i18n.t('selected all')
+                  : i18n.t('select all')
               }
             />
             {!allSpliteesSelected && (
