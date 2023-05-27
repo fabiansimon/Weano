@@ -40,7 +40,7 @@ export default function InitDataCrossroads({route}) {
   const {inviteId} = route.params;
 
   // QUERIES
-  const [getInitData, {data}] = useLazyQuery(GET_INIT_USER_DATA, {
+  const [getInitData, {data, error}] = useLazyQuery(GET_INIT_USER_DATA, {
     fetchPolicy: 'network-only',
   });
 
@@ -81,11 +81,7 @@ export default function InitDataCrossroads({route}) {
     }
 
     if (finalStatus !== 'granted') {
-      return Toast.show({
-        type: 'error',
-        text1: i18n.t('Oh no!'),
-        text2: i18n.t('We need permission to remind you!'),
-      });
+      return;
     }
 
     const token = (
@@ -222,10 +218,6 @@ export default function InitDataCrossroads({route}) {
       populateState();
     }
   }, [data]);
-
-  // useEffect(() => {
-  //   checkInitStatus();
-  // }, [authToken]);
 
   useEffect(() => {
     checkInitStatus();

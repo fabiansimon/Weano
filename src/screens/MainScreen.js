@@ -3,7 +3,6 @@ import {
   NativeModules,
   Platform,
   Pressable,
-  ScrollView,
   Share,
   StatusBar,
   StyleSheet,
@@ -40,7 +39,6 @@ import {
 import {LinearGradient} from 'expo-linear-gradient';
 import TripContainer from '../components/Trip/TripContainer';
 import CreateModal from '../components/CreateModal';
-import Utils from '../utils';
 import Subtitle from '../components/typography/Subtitle';
 import Body from '../components/typography/Body';
 import StorySection from '../components/StorySection';
@@ -83,20 +81,26 @@ export default function MainScreen() {
       title: i18n.t('upcoming'),
       color: COLORS.success[700],
       isSelected: true,
+      trips: upcomingTrips,
     },
     {
       title: i18n.t('recent'),
       color: COLORS.primary[700],
       isSelected: true,
+      trips: recentTrips,
     },
     {
       title: i18n.t('active'),
       color: COLORS.error[900],
       isSelected: true,
+      trips: activeTrips,
     },
   ]);
 
-  const snapPoints = useMemo(() => ['28%', '92%'], []);
+  const snapPoints = useMemo(
+    () => ['28%', Platform.OS === 'android' ? '94%' : '92%'],
+    [],
+  );
   const sheetPosition = useSharedValue(0);
 
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -122,10 +126,12 @@ export default function MainScreen() {
   const recentTrips = trips.filter(trip => trip.type === 'recent');
   const activeTrips = trips.filter(trip => trip.type === 'active');
 
+  const combinedTrips = [upcomingTrips, recentTrips, activeTrips];
+
   const highlightTrip = activeTrips[0] || soonTrip || null;
 
   const headerAnimatedStyle = useAnimatedStyle(() => {
-    if (sheetPosition.value < headerHeight) {
+    if (sheetPosition.value <= headerHeight) {
       return {
         transform: [{translateY: 0}],
       };
@@ -248,8 +254,8 @@ export default function MainScreen() {
 
     mapCamera.current.setCamera({
       centerCoordinate: destinations[0].latlon,
-      zoomLevel: 3,
-      animationDuration: 500,
+      zoomLevel: 4,
+      animationDuration: 300,
     });
   };
 
@@ -264,12 +270,10 @@ export default function MainScreen() {
       );
     }
 
-    let selectionTrips = [upcomingTrips, recentTrips, activeTrips];
-
     let filteredTrips = [];
     for (var i = 0; i < chipFilter.length; i++) {
-      if (chipFilter[i].isSelected && selectionTrips[i]) {
-        filteredTrips.push(...selectionTrips[i]);
+      if (chipFilter[i].isSelected && combinedTrips[i]) {
+        filteredTrips.push(...combinedTrips[i]);
       }
     }
 
@@ -277,6 +281,9 @@ export default function MainScreen() {
       (a, b) => a?.dateRange?.startDate - b?.dateRange?.startDate,
     );
 
+    if (filteredTrips.length > 0 && expandIndex === 0) {
+      handleSearch(filteredTrips[0].id);
+    }
     return filteredTrips;
   }, [chipFilter, trips]);
 
@@ -306,52 +313,61 @@ export default function MainScreen() {
     );
   };
 
-  const getFilterRow = useCallback(() => {
-    return (
-      <>
-        <View style={{flexDirection: 'row', flex: 1}}>
-          {chipFilter.map((chip, index) => {
-            const {color, title, isSelected} = chip;
-            let tripLength =
-              (index === 0
-                ? upcomingTrips?.length
-                : index === 1
-                ? recentTrips?.length
-                : activeTrips?.length) || 0;
+  const getFilterRow = useCallback(
+    showSearch => {
+      return (
+        <>
+          <View style={{flexDirection: 'row', flex: 1}}>
+            {chipFilter.map((chip, index) => {
+              const {color, title, isSelected} = chip;
+              let tripLength =
+                (index === 0
+                  ? upcomingTrips?.length
+                  : index === 1
+                  ? recentTrips?.length
+                  : activeTrips?.length) || 0;
 
-            return (
-              <Pressable
-                onPress={() => handleFilterChoice(index, isSelected)}
-                style={[
-                  styles.chip,
-                  {backgroundColor: color, opacity: isSelected ? 1 : 0.3},
-                ]}>
-                <Subtitle
-                  type={1}
-                  color={COLORS.shades[0]}
-                  text={`${tripLength} ${title}`}
-                />
-              </Pressable>
-            );
-          })}
-        </View>
-        <Pressable
-          style={styles.searchChip}
-          onPress={() => {
-            RNReactNativeHapticFeedback.trigger('impactLight');
-            setSearchVisible(true);
-          }}>
-          <Body color={COLORS.shades[100]} type={2} text={i18n.t('Search')} />
-          <Icon
-            color={COLORS.shades[100]}
-            name="search1"
-            style={{marginLeft: 4}}
-            size={14}
-          />
-        </Pressable>
-      </>
-    );
-  }, [chipFilter, trips]);
+              return (
+                <Pressable
+                  onPress={() => handleFilterChoice(index, isSelected)}
+                  style={[
+                    styles.chip,
+                    {backgroundColor: color, opacity: isSelected ? 1 : 0.3},
+                  ]}>
+                  <Subtitle
+                    type={1}
+                    color={COLORS.shades[0]}
+                    text={`${tripLength} ${title}`}
+                  />
+                </Pressable>
+              );
+            })}
+          </View>
+          {(highlightTrip || showSearch) && (
+            <Pressable
+              style={styles.searchChip}
+              onPress={() => {
+                RNReactNativeHapticFeedback.trigger('impactLight');
+                setSearchVisible(true);
+              }}>
+              <Body
+                color={COLORS.shades[100]}
+                type={2}
+                text={i18n.t('Search')}
+              />
+              <Icon
+                color={COLORS.shades[100]}
+                name="search1"
+                style={{marginLeft: 4}}
+                size={14}
+              />
+            </Pressable>
+          )}
+        </>
+      );
+    },
+    [chipFilter, trips],
+  );
 
   const getAnimatedHeader = () => {
     return (
@@ -386,7 +402,9 @@ export default function MainScreen() {
   const getSheetContent = useCallback(() => {
     const filteredTrips = getFilteredTrips();
     return (
-      <Pressable onPress={toggleExpansion} style={styles.sheetContainer}>
+      <Pressable
+        onPress={expandIndex === 0 ? toggleExpansion : null}
+        style={styles.sheetContainer}>
         <Animated.ScrollView
           refreshControl={
             <RefreshControl
@@ -413,6 +431,7 @@ export default function MainScreen() {
             style={{marginLeft: 5}}
             text={i18n.t('Quick Recap')}
           />
+
           <Pressable>
             <StorySection
               contentContainerStyle={{
@@ -431,7 +450,7 @@ export default function MainScreen() {
             text={i18n.t('All trips')}
           />
           <View style={{flexDirection: 'row', marginTop: 10}}>
-            {getFilterRow()}
+            {getFilterRow(true)}
           </View>
           {filteredTrips?.length <= 0 && (
             <View style={[styles.tabStyle, {marginTop: 20}]}>
@@ -494,6 +513,23 @@ export default function MainScreen() {
           <ActionTile trip={highlightTrip} isMinimized />
         </View>
 
+        {!highlightTrip && (
+          <View style={[styles.actionTile, styles.titleTile]}>
+            <Icon
+              color={COLORS.neutral[300]}
+              name="search1"
+              style={{marginRight: 4}}
+              size={16}
+            />
+            <Subtitle
+              type={1}
+              style={{flex: 1}}
+              color={COLORS.neutral[300]}
+              text={i18n.t('Search')}
+            />
+          </View>
+        )}
+
         <View style={{bottom: '20%', position: 'absolute', width: '100%'}}>
           <LinearGradient
             style={styles.gradient}
@@ -517,7 +553,6 @@ export default function MainScreen() {
           onClose={() => {}}>
           {getSheetContent()}
         </BottomSheet>
-
         {getAnimatedHeader()}
 
         <View style={styles.header}>
@@ -529,21 +564,31 @@ export default function MainScreen() {
                 size={20}
               />
             ) : (
-              <FontIcon name="globe-americas" size={20} />
+              <FontIcon
+                name="globe-americas"
+                color={COLORS.shades[100]}
+                size={20}
+              />
             )}
           </Pressable>
           <Pressable
-            onPress={() =>
-              highlightTrip &&
-              expandIndex !== 1 &&
-              navigation.push(ROUTES.tripScreen, {tripId: highlightTrip.id})
-            }
+            onPress={() => {
+              if (highlightTrip && expandIndex !== 1) {
+                return navigation.push(ROUTES.tripScreen, {
+                  tripId: highlightTrip.id,
+                });
+              }
+
+              if (!highlightTrip && expandIndex !== 1) {
+                setSearchVisible(true);
+              }
+            }}
             style={{flex: 1}}
           />
 
           <Pressable
             style={styles.searchButton}
-            onPress={() => navigation.navigate(ROUTES.profileScreen)}>
+            onPress={() => navigation.push(ROUTES.profileScreen)}>
             <IonIcon color={COLORS.shades[100]} name="ios-person" size={18} />
           </Pressable>
         </View>
@@ -676,6 +721,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     position: 'absolute',
     width: '100%',
+    paddingTop: Platform.OS === 'android' ? 30 : 0,
     shadowColor: COLORS.neutral[900],
     shadowRadius: 20,
     shadowOffset: {},
@@ -686,5 +732,15 @@ const styles = StyleSheet.create({
     width: '73%',
     top: StatusBarManager.HEIGHT,
     paddingHorizontal: PADDING.m,
+  },
+  titleTile: {
+    backgroundColor: COLORS.shades[0],
+    borderRadius: RADIUS.xl,
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 45,
+    width: '65%',
+    borderWidth: 1,
+    borderColor: COLORS.neutral[100],
   },
 });
