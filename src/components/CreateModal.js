@@ -1,6 +1,14 @@
-import {View, StyleSheet, Modal, Keyboard, Platform} from 'react-native';
-import React, {useRef, useState, useEffect} from 'react';
-import Icon from 'react-native-vector-icons/Entypo';
+import {
+  View,
+  StyleSheet,
+  Modal,
+  Keyboard,
+  Platform,
+  ScrollView,
+  Pressable,
+} from 'react-native';
+import React, {useRef, useState, useEffect, useCallback} from 'react';
+import Icon from 'react-native-vector-icons/Ionicons';
 import PagerView from 'react-native-pager-view';
 import {useMutation} from '@apollo/client';
 import Toast from 'react-native-toast-message';
@@ -23,10 +31,12 @@ import InputModal from './InputModal';
 import httpService from '../utils/httpService';
 import userStore from '../stores/UserStore';
 import toastConfig from '../constants/ToastConfig';
+import TitleModal from './TitleModal';
+import Subtitle from './typography/Subtitle';
 
 export default function CreateModal({isVisible, onRequestClose}) {
   // MUTATIONS
-  const [addTrip, {loading, error}] = useMutation(ADD_TRIP);
+  const [addTrip, {loading}] = useMutation(ADD_TRIP);
 
   // STORES
   const addTripState = tripsStore(state => state.addTrip);
@@ -47,28 +57,39 @@ export default function CreateModal({isVisible, onRequestClose}) {
     latlon: [],
   });
   const [tripName, setTripName] = useState('');
+
   // MODALS
   const [inputVisible, setInputVisible] = useState(false);
   const [calendarVisible, setCalendarVisible] = useState(false);
   const [popUpVisible, setPopUpVisible] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
-  const pageRef = useRef(null);
   const [invitees, setInvitees] = useState([]);
 
-  useEffect(() => {
-    if (error) {
-      Toast.show({
-        type: 'error',
-        text1: i18n.t('Whoops!'),
-        text2: error.message,
-      });
-    }
-  }, [error]);
+  const [createData, setCreateData] = useState([
+    {
+      title: i18n.t('Title'),
+      isDone: false,
+      content: () => getTitleContent(),
+    },
+    {
+      title: i18n.t('Dates'),
+      isDone: false,
+      content: () => getDateContent(),
+    },
+    {
+      title: i18n.t('Location'),
+      isDone: false,
+      content: () => getLocationContent(),
+    },
+  ]);
+  const pageRef = useRef(null);
 
   const getDateValue = () => {
+    console.log(dates);
     if (!dates.start || !dates.end) {
       return;
     }
+    console.log('123123hello');
 
     const start =
       dates.start && Utils.getDateFromTimestamp(dates.start, 'Do MMM YYYY');
@@ -100,6 +121,19 @@ export default function CreateModal({isVisible, onRequestClose}) {
   };
 
   const navigatePage = index => {
+    const status = checkInputs(pageIndex);
+    setCreateData(prev =>
+      prev.map((p, i) => {
+        if (pageIndex === i) {
+          return {
+            ...p,
+            isDone: status,
+          };
+        }
+        return p;
+      }),
+    );
+
     Keyboard.dismiss();
 
     setTimeout(() => {
@@ -108,7 +142,37 @@ export default function CreateModal({isVisible, onRequestClose}) {
     }, 100);
   };
 
+  const checkInputs = index => {
+    switch (index) {
+      case 0:
+        return tripName?.trim().length > 0;
+      case 1:
+        return dates?.start && dates?.end;
+      case 2:
+        return location?.placeName?.trim() > 0 || location?.latlon?.length > 1;
+      default:
+        return true;
+    }
+  };
+
   const cleanData = () => {
+    setCreateData([
+      {
+        title: i18n.t('Title'),
+        isDone: false,
+        content: () => getTitleContent(),
+      },
+      {
+        title: i18n.t('Dates'),
+        isDone: false,
+        content: () => getDateContent(),
+      },
+      {
+        title: i18n.t('Location'),
+        isDone: false,
+        content: () => getLocationContent(),
+      },
+    ]);
     setTripName('');
     setLocation({
       string: '',
@@ -123,43 +187,8 @@ export default function CreateModal({isVisible, onRequestClose}) {
     setPageIndex(0);
   };
 
-  const checkInputs = () => {
-    if (tripName.trim().length <= 0) {
-      Toast.show({
-        type: 'error',
-        text1: i18n.t('Whoops!'),
-        text2: i18n.t('Make sure to enter a trip name first'),
-      });
-      return navigatePage(0);
-    }
-    if (!dates.start && !dates.end) {
-      Toast.show({
-        type: 'error',
-        text1: i18n.t('Whoops!'),
-        text2: i18n.t(
-          'Make sure to enter some dates. You can always come back later',
-        ),
-      });
-      return navigatePage(2);
-    }
-    if (location.placeName.trim() <= 0 || location.latlon.length <= 1) {
-      Toast.show({
-        type: 'error',
-        text1: i18n.t('Whoops!'),
-        text2: i18n.t(
-          'Make sure to enter a location. You can always come back later',
-        ),
-      });
-      return navigatePage(3);
-    }
-
-    return true;
-  };
-
   const handleData = async () => {
-    if (!checkInputs()) {
-      return;
-    }
+    return;
 
     const {placeName, latlon} = location;
     const param = invitees.toString().replace(',', '&');
@@ -225,44 +254,36 @@ export default function CreateModal({isVisible, onRequestClose}) {
   };
 
   const getDateContent = () => (
-    <View>
-      <TextField
-        onPress={() => setCalendarVisible(true)}
-        onPrefixPress={() => setCalendarVisible(true)}
-        focusable={false}
-        disabled
-        style={{marginTop: 10, marginBottom: 10}}
-        value={getDateValue()}
-        icon="calendar"
-        placeholder={i18n.t('Select a date')}
-      />
-      <CalendarModal
-        minDate={true}
-        onApplyClick={datesData => {
-          setCalendarVisible(false);
-          const {timestamp: endDate} = datesData.end;
-          const {timestamp: startDate} = datesData.start;
-          setDates({
-            start: startDate / 1000,
-            end: endDate / 1000,
-          });
-        }}
-        onRequestClose={() => setCalendarVisible(false)}
-        isVisible={calendarVisible}
-      />
-      <PopUpModal
-        isVisible={popUpVisible}
-        title={i18n.t('No rush!')}
-        subtitle={i18n.t(
-          "You don't need to add the Date yet. You can always come back and change the date whenever you need to. 👍🏽",
-        )}
-        onRequestClose={() => setPopUpVisible(false)}
-      />
-    </View>
+    <>
+      <View style={{marginHorizontal: PADDING.l}}>
+        <Subtitle type={1} text={i18n.t('Choose a date')} />
+        <Body
+          type={2}
+          color={COLORS.neutral[500]}
+          text={i18n.t('You can always change the date later')}
+        />
+        <TextField
+          onPress={() => setCalendarVisible(true)}
+          onPrefixPress={() => setCalendarVisible(true)}
+          focusable={false}
+          disabled
+          style={{marginTop: 10, marginBottom: 10}}
+          value={getDateValue()}
+          icon="calendar"
+          placeholder={i18n.t('Select a date')}
+        />
+      </View>
+    </>
   );
 
   const getLocationContent = () => (
-    <View>
+    <View style={{marginHorizontal: PADDING.l}}>
+      <Subtitle type={1} text={i18n.t('Choose a location')} />
+      <Body
+        type={2}
+        color={COLORS.neutral[500]}
+        text={i18n.t('You can always change or add locations later')}
+      />
       <TextField
         style={{marginTop: 10, marginBottom: 10}}
         value={location.placeName || null}
@@ -287,7 +308,6 @@ export default function CreateModal({isVisible, onRequestClose}) {
           })
         }
       />
-
       <PopUpModal
         isVisible={popUpVisible}
         title={i18n.t('No rush!')}
@@ -299,144 +319,126 @@ export default function CreateModal({isVisible, onRequestClose}) {
     </View>
   );
 
-  const getInviteContent = () => (
-    <View style={styles.wrapContainer}>
-      {!invitees || invitees?.length < 1 ? (
-        <Body
-          type={2}
-          style={{flex: 1, maxWidth: '90%'}}
-          color={COLORS.neutral[300]}
-          text={i18n.t(
-            'Send them an invitation via email now, or add them later within the app. The choice is yours 🫡',
-          )}
-        />
-      ) : (
-        invitees.map((email, index) => (
-          <ContactChip
-            key={email}
-            style={{marginBottom: 10, marginRight: 10}}
-            string={email}
-            onDelete={() =>
-              setInvitees(prev => prev.filter((_, i) => index !== i))
-            }
-          />
-        ))
-      )}
-    </View>
-  );
-
   const getTitleContent = () => (
-    <TextField
-      style={{marginTop: 10, marginBottom: 10}}
-      value={tripName || null}
-      maxLength={25}
-      onChangeText={val => setTripName(val)}
-      placeholder={i18n.t('Epic Summer Trip 2021 ✈️')}
-      onDelete={() => setTripName('')}
-    />
-  );
-
-  const createData = [
-    {
-      title: i18n.t('Let’s start this right 🌍'),
-      subtitle: i18n.t('What do you want to name it'),
-      content: getTitleContent(),
-      hint: i18n.t("don't worry, it can be edited later"),
-    },
-    {
-      title: i18n.t('Right tribe - right vibe 🎉'),
-      subtitle: i18n.t('Let’s invite some people'),
-      trailing: (
-        <Body
-          type={1}
-          text={i18n.t('Add more')}
-          color={COLORS.primary[700]}
-          style={{textDecorationLine: 'underline', fontWeight: '500'}}
-          onPress={() => setInputVisible(true)}
-        />
-      ),
-      content: getInviteContent(),
-    },
-    {
-      title: i18n.t('Already know the date? 🎉'),
-      subtitle: i18n.t('You can always come back later'),
-      trailing: (
-        <Icon
-          name="info-with-circle"
-          size={20}
-          color={COLORS.neutral[500]}
-          onPress={() => setPopUpVisible(true)}
-          suppressHighlighting
-        />
-      ),
-      content: getDateContent(),
-      hint: i18n.t("don't worry, it can be edited later"),
-    },
-    {
-      title: i18n.t('Already know the destination? 🎉'),
-      subtitle: i18n.t('You can always change it later'),
-      trailing: (
-        <Icon
-          name="info-with-circle"
-          size={20}
-          color={COLORS.neutral[500]}
-          onPress={() => setPopUpVisible(true)}
-          suppressHighlighting
-        />
-      ),
-      content: getLocationContent(),
-      hint: i18n.t("don't worry, it can be edited later"),
-    },
-  ];
-
-  const getCreateView = item => (
-    <View style={{paddingHorizontal: 20}}>
-      <Body
-        type={1}
-        text={item.title}
-        color={COLORS.neutral[300]}
-        style={{marginTop: 2}}
+    <View style={{marginHorizontal: PADDING.l}}>
+      <Subtitle type={1} text={i18n.t('Name the trip')} />
+      <TextField
+        style={{marginTop: 10, marginBottom: 20}}
+        value={tripName || null}
+        maxLength={25}
+        onChangeText={val => setTripName(val)}
+        placeholder={i18n.t('Epic Summer Trip 2021 ✈️')}
+        onDelete={() => setTripName('')}
       />
-      <View
+
+      <Subtitle
+        type={1}
+        color={COLORS.neutral[300]}
+        text={i18n.t('Description (optional)')}
+      />
+      <TextField
+        mulitline
         style={{
-          flexDirection: 'row',
-          justifyContent: item.trailing ? 'space-between' : 'flex-start',
-          marginTop: 45,
-        }}>
-        <Body type={1} text={item.subtitle} color={COLORS.shades[100]} />
-        {item.trailing}
-      </View>
-      {item.content}
+          marginTop: 10,
+          marginBottom: 10,
+          paddingBottom: 50,
+          paddingTop: 25,
+        }}
+        value={tripName || null}
+        maxLength={100}
+        onChangeText={val => setTripName(val)}
+        placeholder={i18n.t('Set description')}
+        onDelete={() => setTripName('')}
+      />
     </View>
   );
+
+  const getStatusContainer = () => {
+    return (
+      <View style={{marginBottom: 20, marginTop: -10}}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={{marginHorizontal: -PADDING.l}}
+          contentContainerStyle={{
+            paddingHorizontal: PADDING.l,
+          }}>
+          {createData.map((c, index) => {
+            const {isDone, title} = c;
+            const backgroundColor = isDone
+              ? Utils.addAlpha(COLORS.success[700], 0.15)
+              : COLORS.neutral[100];
+            const fontColor = isDone
+              ? COLORS.success[900]
+              : COLORS.neutral[500];
+            const iconColor = isDone
+              ? COLORS.success[900]
+              : COLORS.neutral[300];
+
+            return (
+              <Pressable style={{height: 30, flexDirection: 'row'}}>
+                <View
+                  style={[
+                    styles.statusChip,
+                    {
+                      backgroundColor,
+                      borderColor:
+                        pageIndex === index
+                          ? Utils.addAlpha(fontColor, 0.3)
+                          : 'transparent',
+                    },
+                  ]}>
+                  <Icon
+                    name={isDone ? 'checkmark-circle' : 'close-circle'}
+                    size={18}
+                    color={iconColor}
+                  />
+                  <Subtitle
+                    style={{marginLeft: 4}}
+                    type={1}
+                    text={title}
+                    color={fontColor}
+                  />
+                </View>
+                {index !== createData.length - 1 && (
+                  <View style={styles.dash} />
+                )}
+              </Pressable>
+            );
+          })}
+        </ScrollView>
+      </View>
+    );
+  };
 
   return (
-    <Modal
-      animationType="slide"
-      visible={isVisible}
+    <TitleModal
+      isVisible={isVisible}
+      title={i18n.t('Create new trip')}
       onRequestClose={() => {
         onRequestClose();
         cleanData();
-      }}
-      presentationStyle="pageSheet">
+      }}>
       <KeyboardView behavior="padding" paddingBottom={40}>
         <View style={styles.container}>
-          <Headline
-            type={2}
-            text={i18n.t('Start Adventure')}
-            style={{paddingHorizontal: 20}}
-            color={COLORS.shades[100]}
-          />
-          <PagerView style={{flex: 1}} ref={pageRef} scrollEnabled={false}>
-            {createData.map(item => getCreateView(item))}
+          {getStatusContainer()}
+          <PagerView
+            style={{
+              flex: 1,
+              marginHorizontal: -PADDING.l,
+            }}
+            ref={pageRef}
+            scrollEnabled={false}>
+            {createData.map(item => item.content())}
           </PagerView>
           <PageIndicator
             data={createData}
             pageIndex={pageIndex}
-            style={{alignSelf: 'center', marginBottom: 20}}
+            style={{alignSelf: 'center', marginBottom: 14}}
           />
           <View style={styles.buttonContainer}>
             <BackButton
+              closeIcon={true}
               style={{height: 50, width: 50, borderRadius: RADIUS.xl}}
               onPress={() => handleChange(true)}
             />
@@ -448,6 +450,24 @@ export default function CreateModal({isVisible, onRequestClose}) {
           </View>
         </View>
       </KeyboardView>
+
+      <CalendarModal
+        minDate={true}
+        onApplyClick={datesData => {
+          setCalendarVisible(false);
+          const {timestamp: endDate} = datesData.end;
+          const {timestamp: startDate} = datesData.start;
+          console.log(endDate);
+          console.log(startDate);
+          setDates({
+            start: startDate / 1000,
+            end: endDate / 1000,
+          });
+        }}
+        onRequestClose={() => setCalendarVisible(false)}
+        isVisible={calendarVisible}
+      />
+
       <InputModal
         isVisible={inputVisible}
         keyboardType="email-address"
@@ -461,24 +481,38 @@ export default function CreateModal({isVisible, onRequestClose}) {
         autoClose
       />
       <Toast config={toastConfig} />
-    </Modal>
+    </TitleModal>
   );
 }
 
 const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
-    marginHorizontal: PADDING.l,
   },
   container: {
-    justifyContent: 'space-between',
     flex: 1,
     backgroundColor: COLORS.neutral[50],
+    paddingHorizontal: 20,
     paddingVertical: 25,
   },
   wrapContainer: {
     marginTop: 10,
     flexDirection: 'row',
     flexWrap: 'wrap',
+  },
+  statusChip: {
+    borderWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: RADIUS.xl,
+    height: 30,
+    paddingHorizontal: 10,
+  },
+  dash: {
+    height: 1,
+    width: 20,
+    marginHorizontal: 4,
+    backgroundColor: COLORS.neutral[300],
+    alignSelf: 'center',
   },
 });
