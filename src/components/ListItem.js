@@ -28,7 +28,7 @@ export default function ListItem({
           marginBottom: 20,
           paddingHorizontal: omitPadding ? 20 : 0,
         }}>
-        <Headline type={3} text={title} />
+        <Headline style={{fontWeight: '500'}} type={4} text={title} />
         {trailing}
       </View>
       {children}

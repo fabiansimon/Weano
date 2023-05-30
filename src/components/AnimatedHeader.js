@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import Animated from 'react-native-reanimated';
 import {Platform, StyleSheet} from 'react-native';
 import COLORS from '../constants/Theme';

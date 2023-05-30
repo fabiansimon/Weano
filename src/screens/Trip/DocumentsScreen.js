@@ -44,8 +44,6 @@ export default function DocumentsScreen() {
 
   const {height} = Dimensions.get('window');
 
-  console.log(type);
-
   useEffect(() => {
     if (error || deleteError) {
       setTimeout(() => {
@@ -61,7 +59,7 @@ export default function DocumentsScreen() {
   const handleDelete = ({_id}) => {
     Utils.showConfirmationAlert(
       i18n.t('Delete Document'),
-      i18n.t('Are you sure you want to delete your document?'),
+      i18n.t('Are you sure you want to delete this document?'),
       i18n.t('Yes'),
       async () => {
         await deleteDocument({
@@ -208,10 +206,10 @@ export default function DocumentsScreen() {
             )}
             renderItem={({item}) => {
               const isCreator = item.creatorId === id;
-              const isDeletedUser =
-                !activeMembers.findIndex(
-                  member => member.id === item.creatorId,
-                ) === -1;
+              const isDeletedUser = !activeMembers.find(
+                member => member.id === item.creatorId,
+              );
+
               const onPress =
                 isCreator || isDeletedUser ? () => handleDelete(item) : null;
 

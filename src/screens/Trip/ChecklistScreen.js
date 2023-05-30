@@ -49,6 +49,7 @@ export default function ChecklistScreen() {
     id: tripId,
     dateRange,
     type,
+    activeMembers,
   } = activeTripStore(state => state.activeTrip);
   const {id: userId, isProMember} = userStore(state => state.user);
   const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
@@ -139,7 +140,7 @@ export default function ChecklistScreen() {
   const handleDeletion = task => {
     Utils.showConfirmationAlert(
       i18n.t('Delete Task'),
-      i18n.t('Are you sure you want to delete your task?'),
+      `${i18n.t('Are you sure you want to delete the task')}: ${task?.title}?`,
       i18n.t('Yes'),
       async () => {
         const {_id, isPrivate} = task;
@@ -294,7 +295,7 @@ export default function ChecklistScreen() {
     });
   };
 
-  const getActions = (isPrivate, isCreator) => {
+  const getActions = (isPrivate, canDelete) => {
     const deleteAction = {
       id: 'delete',
       attributes: {
@@ -315,7 +316,7 @@ export default function ChecklistScreen() {
       return [deleteAction];
     }
 
-    if (isCreator) {
+    if (canDelete) {
       return [reminder, deleteAction];
     }
 
@@ -391,6 +392,8 @@ export default function ChecklistScreen() {
     </View>
   );
 
+  console.log(activeMembers.map(m => console.log(m.id)));
+
   return (
     <View style={styles.container}>
       <HybridHeader
@@ -428,6 +431,7 @@ export default function ChecklistScreen() {
                 const {creatorId, assignee} = item;
                 const isCreator = creatorId === userId;
                 const isAssignee = assignee === userId;
+                const canDelete = !activeMembers.find(m => m._id === assignee);
 
                 return (
                   <CheckboxTile
@@ -437,7 +441,7 @@ export default function ChecklistScreen() {
                         onPressAction={({nativeEvent}) =>
                           handleMenuOption(item, nativeEvent)
                         }
-                        actions={getActions(false, isCreator)}>
+                        actions={getActions(false, canDelete)}>
                         <FeatherIcon
                           name="more-vertical"
                           size={20}

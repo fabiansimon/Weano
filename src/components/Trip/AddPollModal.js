@@ -14,6 +14,8 @@ import PremiumController from '../../PremiumController';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
+const MAX_POLL_LENGTH = 10;
+
 export default function AddPollModal({
   isVisible,
   onRequestClose,
@@ -79,7 +81,7 @@ export default function AddPollModal({
     const borderBottomRightRadius = 10;
 
     const showAddTile =
-      options[options.length - 1] !== '' && options.length < 5;
+      options[options.length - 1] !== '' && options.length < MAX_POLL_LENGTH;
 
     return (
       <View style={{marginBottom: 30}}>
@@ -98,7 +100,7 @@ export default function AddPollModal({
           <Body
             type={2}
             color={COLORS.neutral[300]}
-            text={i18n.t('(max. 5 options)')}
+            text={`(${i18n.t('max.')} ${MAX_POLL_LENGTH} ${i18n.t('options')})`}
           />
         </View>
         {options.map((option, index) => {
@@ -113,9 +115,13 @@ export default function AddPollModal({
                   borderTopRightRadius: !index ? 10 : 0,
                   borderTopLeftRadius: !index ? 10 : 0,
                   borderBottomLeftRadius:
-                    (isEmpty && !showAddTile) || index === 4 ? 10 : 0,
+                    (isEmpty && !showAddTile) || index === MAX_POLL_LENGTH - 1
+                      ? 10
+                      : 0,
                   borderBottomRightRadius:
-                    (isEmpty && !showAddTile) || index === 4 ? 10 : 0,
+                    (isEmpty && !showAddTile) || index === MAX_POLL_LENGTH - 1
+                      ? 10
+                      : 0,
                 },
               ]}>
               <TextInput
@@ -174,7 +180,9 @@ export default function AddPollModal({
       isLoading={isLoading}
       isDisabled={title.trim().length <= 0 || options.length <= 0}>
       <KeyboardView paddingBottom={-40}>
-        <ScrollView style={{marginBottom: 100}}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          style={{marginBottom: 100}}>
           <View style={styles.container}>
             <View
               style={{flexDirection: 'row', marginVertical: 20, width: '110%'}}>
@@ -204,6 +212,7 @@ const styles = StyleSheet.create({
     color: COLORS.shades[100],
     fontSize: 28,
     fontWeight: '600',
+    flex: 1,
     fontFamily: 'WorkSans-Regular',
     letterSpacing: -1,
     height: 60,
