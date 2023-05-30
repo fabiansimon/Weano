@@ -36,6 +36,7 @@ import SettleExpensesScreen from './src/screens/SettleExpensesScreen';
 
 import {APP_TOKEN, IOS_REV_CAT_KEY, ANDROID_REV_CAT_KEY} from '@env';
 import InfoModal from './src/components/InfoModal';
+import ChatScreen from './src/screens/Trip/ChatScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -191,6 +192,7 @@ function App() {
                 name={ROUTES.settleExpensesScreen}
                 component={SettleExpensesScreen}
               />
+              <Stack.Screen name={ROUTES.chatScreen} component={ChatScreen} />
             </Stack.Navigator>
           </NavigationContainer>
         </ApolloProvider>

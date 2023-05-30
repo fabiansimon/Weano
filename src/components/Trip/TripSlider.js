@@ -15,19 +15,11 @@ export default function TripSlider({index, style, onPress}) {
   const duration = 200;
 
   useEffect(() => {
-    if (index) {
-      Animated.spring(translateX, {
-        toValue: WIDTH / 2 - 8,
-        duration,
-        useNativeDriver: true,
-      }).start();
-    } else {
-      Animated.spring(translateX, {
-        toValue: 0,
-        duration,
-        useNativeDriver: true,
-      }).start();
-    }
+    Animated.spring(translateX, {
+      toValue: (WIDTH / 2) * index - 8 * index,
+      duration,
+      useNativeDriver: true,
+    }).start();
   }, [index]);
 
   return (

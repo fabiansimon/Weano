@@ -54,7 +54,7 @@ export default function Avatar({
     <>
       <TouchableOpacity
         disabled={disabled}
-        activeOpacity={0.8}
+        activeOpacity={1}
         style={[
           styles.container,
           style,
@@ -65,7 +65,9 @@ export default function Avatar({
             borderWidth: bW,
           },
         ]}
-        onPress={() => (onPress ? onPress() : setShowDetails(true))}>
+        onPress={() =>
+          onPress ? onPress() : !isSelf ? setShowDetails(true) : null
+        }>
         {hasAvatar && (
           <Image
             source={DefaultAvatar}

@@ -1059,6 +1059,7 @@ export default function TripScreen({route}) {
           <BackButton
             onPress={() => navigation.navigate(ROUTES.mainScreen)}
             style={{
+              borderRadius: RADIUS.xl,
               position: 'absolute',
               top:
                 StatusBarManager.HEIGHT - (Platform.OS === 'android' ? 25 : 5),
@@ -1146,7 +1147,8 @@ export default function TripScreen({route}) {
       </PagerView>
       <TripSlider
         index={viewIndex}
-        onPress={() => setViewIndex(prev => (prev === 1 ? 0 : 1))}
+        onPress={() => navigation.navigate(ROUTES.chatScreen)}
+        // onPress={() => setViewIndex(prev => (prev === 1 ? 0 : 1))}
       />
     </>
   );
@@ -1246,7 +1248,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: COLORS.shades[0],
     borderColor: COLORS.neutral[100],
-    borderRadius: RADIUS.l,
+    borderRadius: RADIUS.xl,
   },
   infoHeader: {
     width,

@@ -19,6 +19,7 @@ const ROUTES = {
   documentsScreen: 'documentsScreen',
   packlistScreen: 'packlistScreen',
   settleExpensesScreen: 'settleExpensesScreen',
+  chatScreen: 'chatScreen',
 };
 
 export default ROUTES;
