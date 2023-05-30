@@ -4,63 +4,157 @@ import {
   View,
   Dimensions,
   TextInput,
-  TouchableOpacity,
   StatusBar,
   ScrollView,
   Pressable,
 } from 'react-native';
-import React, {useState, useRef} from 'react';
-import Icon from 'react-native-vector-icons/EvilIcons';
+import React, {useState, useRef, useEffect} from 'react';
 import IonIcon from 'react-native-vector-icons/Ionicons';
-import Animated, {useSharedValue} from 'react-native-reanimated';
+import EvilIcon from 'react-native-vector-icons/EvilIcons';
 import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import BackButton from '../../components/BackButton';
-import Headline from '../../components/typography/Headline';
 import Body from '../../components/typography/Body';
 import i18n from '../../utils/i18n';
 import KeyboardView from '../../components/KeyboardView';
-import Subtitle from '../../components/typography/Subtitle';
 import activeTripStore from '../../stores/ActiveTripStore';
 import DaysStatusContainer from '../../components/DaysStatusContainer';
-import Avatar from '../../components/Avatar';
 import userStore from '../../stores/UserStore';
 import ChatBubble from '../../components/Trip/ChatBubble';
+import firestore from '@react-native-firebase/firestore';
+import {MenuView} from '@react-native-menu/menu';
+import SelectionModal from '../../components/SelectionModal';
+import ATTACHMENT_TYPE from '../../constants/Attachments';
+import Headline from '../../components/typography/Headline';
 
-export default function ChatScreen() {
+const MAX_INIT_MESSAGES = 20;
+
+export default function ChatScreen({route}) {
+  // PARAMS
+  const {roomId} = route.params;
+
   // STORES
-  const {activeMembers, title, dateRange, type} = activeTripStore(
-    state => state.activeTrip,
-  );
+  const {
+    activeMembers,
+    title,
+    dateRange,
+    type,
+    mutualTasks,
+    polls,
+    expenses,
+    documents,
+  } = activeTripStore(state => state.activeTrip);
   const {id: userId} = userStore(state => state.user);
 
   // STATE && MISC
-  const [chatData, setChatData] = useState([
-    {
-      senderId: activeMembers[0].id,
-      timestamp: 213123213,
-      text: 'Hello kösfjöaklsd',
-      extraData: null,
-    },
-    {
-      senderId: userId,
-      timestamp: 213123213,
-      text: 'Hello kösfjöaklsd',
-      extraData: null,
-    },
-    {
-      senderId: '1321312321',
-      timestamp: 213123213,
-      text: 'Hello kösfjöaklsd',
-      extraData: null,
-    },
-  ]);
+  const [chatData, setChatData] = useState([]);
   const [message, setMessage] = useState('');
+  const [attVisible, setAttVisible] = useState(null);
+  const [attachment, setAttachment] = useState(null);
   const chatRef = useRef();
+
+  const menuActions = [
+    {
+      id: ATTACHMENT_TYPE.expense,
+      title: i18n.t('Expense'),
+    },
+    {
+      id: ATTACHMENT_TYPE.task,
+      title: i18n.t('Task'),
+    },
+    {
+      id: ATTACHMENT_TYPE.poll,
+      title: i18n.t('Poll'),
+    },
+    {
+      id: ATTACHMENT_TYPE.document,
+      title: i18n.t('Document'),
+    },
+  ];
+
+  const handleMenuOption = input => {
+    const {event} = input;
+
+    setAttVisible(event);
+  };
+
+  const onSnapshotResult = snapshot => {
+    const {_data} = snapshot;
+    if (_data) {
+      setChatData(_data.messages);
+    }
+  };
+
+  const fetchInitChatData = async () => {
+    setChatData([]);
+    try {
+      const res = await firestore()
+        .collection('tripChats')
+        .doc('m7YBncJHZLEl5544E6gD')
+        .get();
+
+      setChatData(res._data.messages);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const subscribeToCollection = async () => {
+    try {
+      firestore()
+        .collection('tripChats')
+        .doc('m7YBncJHZLEl5544E6gD')
+        .onSnapshot(onSnapshotResult, e => console.log(e.message));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const sendMessage = async () => {
+    if (message.trim().length <= 0) {
+      return;
+    }
+
+    try {
+      const newMessage = {
+        createdAt: new Date(),
+        senderId: userId,
+        additionalData: {
+          type: attachment.type,
+          id: attachment.id,
+        },
+        message: message,
+      };
+
+      setChatData(prev => [...prev, newMessage]);
+      cleanData();
+      scrollDown();
+      const ref = firestore()
+        .collection('tripChats')
+        .doc('m7YBncJHZLEl5544E6gD');
+
+      return ref.update({
+        messages: firestore.FieldValue.arrayUnion(newMessage),
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const cleanData = () => {
+    setAttVisible(null);
+    setAttachment(null);
+    setMessage('');
+  };
+
+  useEffect(() => {
+    fetchInitChatData();
+    subscribeToCollection();
+  }, []);
 
   const scrollDown = () => {
     setTimeout(() => {
       chatRef.current?.scrollTo({
-        y: 1000,
+        y: 10000,
         animated: true,
       });
     }, 100);
@@ -82,51 +176,84 @@ export default function ChatScreen() {
   );
 
   const getFooter = () => (
-    <SafeAreaView style={styles.footerContainer}>
-      <Animated.View
-        style={[
-          styles.attachmentContainer,
-          {
-            borderTopColor: COLORS.neutral[100],
-            borderTopWidth: 1,
-          },
-        ]}
-      />
-      <View style={styles.inputRow}>
-        <View style={styles.textField}>
-          <TextInput
-            style={styles.textInput}
-            selectionColor={COLORS.primary[700]}
-            value={message || null}
-            multiline
-            onChangeText={val => setMessage(val)}
-            placeholder={i18n.t('Type a message...')}
-            placeholderTextColor={COLORS.neutral[500]}
-            onFocus={scrollDown}
-          />
+    <>
+      <SafeAreaView style={styles.footerContainer}>
+        {attachment && (
+          <View style={styles.attachmentContainer}>
+            <View>
+              <Headline
+                type={4}
+                style={{fontWeight: '500'}}
+                text={attachment.title}
+              />
+              <Body
+                type={2}
+                style={{marginTop: 2}}
+                color={COLORS.neutral[500]}
+                text={attachment.subtitle}
+              />
+            </View>
+            <Pressable
+              onPress={() => setAttachment(null)}
+              style={{marginRight: -6}}>
+              <IonIcon
+                name="close-outline"
+                color={COLORS.shades[100]}
+                size={26}
+              />
+            </Pressable>
+          </View>
+        )}
+        <View style={styles.inputRow}>
+          <View style={styles.textField}>
+            <MenuView
+              title={i18n.t('Add Attachment')}
+              onPressAction={({nativeEvent}) => handleMenuOption(nativeEvent)}
+              actions={menuActions}>
+              <EvilIcon
+                style={{marginLeft: -8, marginRight: 4, top: 2}}
+                name="paperclip"
+                color={COLORS.neutral[500]}
+                size={26}
+              />
+            </MenuView>
+            <TextInput
+              style={styles.textInput}
+              selectionColor={COLORS.primary[700]}
+              value={message || null}
+              multiline
+              onChangeText={val => setMessage(val)}
+              placeholder={i18n.t('Type a message...')}
+              placeholderTextColor={COLORS.neutral[500]}
+              onFocus={scrollDown}
+            />
+          </View>
+          <Pressable
+            onPress={sendMessage}
+            style={[
+              styles.roundButton,
+              {
+                backgroundColor:
+                  message.length > 0 ? COLORS.primary[700] : COLORS.neutral[50],
+              },
+            ]}>
+            <IonIcon
+              name="ios-paper-plane"
+              size={18}
+              style={{marginLeft: -2, marginTop: 2}}
+              color={
+                message.length > 0 ? COLORS.shades[0] : COLORS.neutral[300]
+              }
+            />
+          </Pressable>
         </View>
-        <Pressable
-          style={[
-            styles.roundButton,
-            {
-              backgroundColor:
-                message.length > 0 ? COLORS.primary[700] : COLORS.neutral[50],
-            },
-          ]}>
-          <IonIcon
-            name="ios-paper-plane"
-            size={18}
-            style={{marginLeft: -2, marginTop: 2}}
-            color={message.length > 0 ? COLORS.shades[0] : COLORS.neutral[300]}
-          />
-        </Pressable>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
+    </>
   );
 
   return (
     <>
-      <KeyboardView behavior="padding" paddingBottom={0} ignoreTouch>
+      <KeyboardView behavior="padding" paddingBottom={1} ignoreTouch>
         <StatusBar barStyle="dark-content" />
         <View style={styles.container}>
           {getHeader()}
@@ -139,12 +266,12 @@ export default function ChatScreen() {
                 paddingHorizontal: PADDING.s,
               }}
               showsVerticalScrollIndicator={false}>
-              {chatData.map(c => (
+              {chatData?.map(content => (
                 <ChatBubble
                   activeMembers={activeMembers}
                   style={{marginBottom: 10}}
-                  content={c}
-                  isSelf={userId === c.senderId}
+                  content={content}
+                  isSelf={userId === content.senderId}
                 />
               ))}
             </ScrollView>
@@ -152,14 +279,27 @@ export default function ChatScreen() {
           {getFooter()}
         </View>
       </KeyboardView>
+
+      <SelectionModal
+        isVisible={attVisible !== null}
+        onRequestClose={() => {
+          setAttVisible(null);
+        }}
+        onPress={({type, id, title, subtitle}) => {
+          setAttachment({
+            type,
+            id,
+            subtitle,
+            title,
+          });
+        }}
+        attachment={attVisible}
+      />
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  attachmentContainer: {
-    marginHorizontal: -PADDING.m,
-  },
   container: {
     flex: 1,
     backgroundColor: COLORS.shades[0],
@@ -168,7 +308,6 @@ const styles = StyleSheet.create({
     shadowColor: COLORS.neutral[500],
     shadowRadius: 10,
     shadowOpacity: 0.07,
-    backgroundColor: COLORS.shades[0],
     paddingHorizontal: PADDING.m,
   },
   inputRow: {
@@ -190,8 +329,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     fontFamily: 'WorkSans-Regular',
-    fontWeight: '400',
-    letterSpacing: -0.4,
+    letterSpacing: -0.5,
     color: COLORS.shades[100],
   },
   textField: {
@@ -200,10 +338,8 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 0.5,
-    borderColor: COLORS.neutral[100],
     borderRadius: RADIUS.l,
-    backgroundColor: COLORS.neutral[50],
+    backgroundColor: COLORS.neutral[100],
     flex: 1,
     marginRight: 6,
     paddingHorizontal: 15,
@@ -232,5 +368,13 @@ const styles = StyleSheet.create({
     marginRight: 6,
     justifyContent: 'center',
     width: 35,
+  },
+  attachmentContainer: {
+    marginHorizontal: PADDING.l,
+    marginVertical: 10,
+    borderTopRightRadius: RADIUS.s,
+    borderTopLeftRadius: RADIUS.s,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 });

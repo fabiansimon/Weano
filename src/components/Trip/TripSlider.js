@@ -2,21 +2,25 @@ import {Animated, Pressable, StyleSheet, View} from 'react-native';
 import React, {useEffect, useRef} from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import FontIcon from 'react-native-vector-icons/FontAwesome';
-import COLORS, {RADIUS} from '../../constants/Theme';
+import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import Body from '../typography/Body';
 import i18n from '../../utils/i18n';
+import {useNavigation} from '@react-navigation/native';
+import ROUTES from '../../constants/Routes';
 
-const WIDTH = 180;
+const WIDTH = 270;
 
 export default function TripSlider({index, style, onPress}) {
   // STATE && MISC
   const translateX = useRef(new Animated.Value(900)).current;
 
+  const navigation = useNavigation();
+
   const duration = 200;
 
   useEffect(() => {
     Animated.spring(translateX, {
-      toValue: (WIDTH / 2) * index - 8 * index,
+      toValue: (WIDTH / 3) * index - 4 * index,
       duration,
       useNativeDriver: true,
     }).start();
@@ -29,11 +33,11 @@ export default function TripSlider({index, style, onPress}) {
         <Icon
           size={14}
           name="airplane"
-          color={!index ? COLORS.shades[0] : COLORS.neutral[300]}
+          color={!index ? COLORS.shades[0] : COLORS.neutral[500]}
         />
         <Body
           type={1}
-          color={!index ? COLORS.shades[0] : COLORS.neutral[300]}
+          color={!index ? COLORS.shades[0] : COLORS.neutral[500]}
           style={{fontWeight: '500', marginLeft: 5}}
           text={i18n.t('Trip')}
         />
@@ -42,15 +46,34 @@ export default function TripSlider({index, style, onPress}) {
         <FontIcon
           name="globe"
           size={16}
-          color={index ? COLORS.shades[0] : COLORS.neutral[300]}
+          color={index ? COLORS.shades[0] : COLORS.neutral[500]}
         />
         <Body
           type={1}
-          color={index ? COLORS.shades[0] : COLORS.neutral[300]}
+          color={index ? COLORS.shades[0] : COLORS.neutral[500]}
           style={{fontWeight: '500', marginLeft: 5}}
           text={i18n.t('Map')}
         />
       </View>
+      <Pressable
+        onPress={() =>
+          navigation.navigate(ROUTES.chatScreen, {
+            roomId: 'm7YBncJHZLEl5544E6gD',
+          })
+        }
+        style={[styles.textContainer, {marginLeft: -10}]}>
+        <Icon
+          name="ios-chatbubbles-outline"
+          size={20}
+          color={COLORS.neutral[500]}
+        />
+        <Body
+          type={1}
+          color={COLORS.neutral[500]}
+          style={{fontWeight: '500', marginLeft: 5}}
+          text={i18n.t('Chat')}
+        />
+      </Pressable>
     </Pressable>
   );
 }
@@ -81,7 +104,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   slider: {
-    width: WIDTH / 2,
+    width: WIDTH / 3,
     height: '92%',
     margin: 2,
     backgroundColor: COLORS.primary[700],

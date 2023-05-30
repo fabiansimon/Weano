@@ -9,7 +9,7 @@ import Utils from '../../utils';
 const AVATAR_SIZE = 30;
 
 export default function ChatBubble({style, content, isSelf, activeMembers}) {
-  const {senderId, timestamp, text, extraData} = content;
+  const {senderId, timestamp, message, additionalData} = content;
 
   const senderData = activeMembers.find(m => m.id === senderId);
   const dateData = Utils.getDateFromTimestamp(timestamp, 'hh:mm');
@@ -32,7 +32,7 @@ export default function ChatBubble({style, content, isSelf, activeMembers}) {
         <Body
           color={isSelf ? COLORS.shades[0] : COLORS.shades[100]}
           type={1}
-          text={text}
+          text={message}
         />
       </View>
       {isSelf && <Avatar style={{marginLeft: 4}} size={AVATAR_SIZE} isSelf />}
@@ -42,6 +42,7 @@ export default function ChatBubble({style, content, isSelf, activeMembers}) {
 
 const styles = StyleSheet.create({
   bubbleContainer: {
+    maxWidth: '70%',
     paddingHorizontal: 8,
     paddingVertical: 6,
     borderRadius: RADIUS.s,

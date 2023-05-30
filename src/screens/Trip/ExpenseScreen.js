@@ -179,7 +179,7 @@ export default function ExpenseScreen() {
       variables: {
         expense: {
           amount,
-          title,
+          title: title.trim(),
           tripId,
           paidBy,
           currency: currency.symbol,

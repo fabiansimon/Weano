@@ -64,6 +64,7 @@ import REMOVE_USER_FROM_TRIP from '../../mutations/removeUserFromTrip';
 import userStore from '../../stores/UserStore';
 import {LinearGradient} from 'expo-linear-gradient';
 import InfoController from '../../controllers/InfoController';
+import FAButton from '../../components/FAButton';
 
 const {StatusBarManager} = NativeModules;
 
@@ -611,12 +612,6 @@ export default function TripScreen({route}) {
     },
   ];
 
-  // expensesRef,
-  //   checklistRef,
-  //   pollsRef,
-  //   documentsRef,
-  //   packlistRef,
-  //   travelersRef,
   const contentItems = [
     {
       title: i18n.t('Expenses'),
@@ -1147,8 +1142,7 @@ export default function TripScreen({route}) {
       </PagerView>
       <TripSlider
         index={viewIndex}
-        onPress={() => navigation.navigate(ROUTES.chatScreen)}
-        // onPress={() => setViewIndex(prev => (prev === 1 ? 0 : 1))}
+        onPress={() => setViewIndex(prev => (prev === 1 ? 0 : 1))}
       />
     </>
   );
