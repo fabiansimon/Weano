@@ -25,6 +25,7 @@ import {MenuView} from '@react-native-menu/menu';
 import SelectionModal from '../../components/SelectionModal';
 import ATTACHMENT_TYPE from '../../constants/Attachments';
 import Headline from '../../components/typography/Headline';
+import AttachmentContainer from '../../components/Trip/AttachmentContainer';
 
 const MAX_INIT_MESSAGES = 20;
 
@@ -178,55 +179,43 @@ export default function ChatScreen({route}) {
   const getFooter = () => (
     <>
       <SafeAreaView style={styles.footerContainer}>
-        {attachment && (
-          <View style={styles.attachmentContainer}>
-            <View>
-              <Headline
-                type={4}
-                style={{fontWeight: '500'}}
-                text={attachment.title}
-              />
-              <Body
-                type={2}
-                style={{marginTop: 2}}
-                color={COLORS.neutral[500]}
-                text={attachment.subtitle}
-              />
-            </View>
-            <Pressable
-              onPress={() => setAttachment(null)}
-              style={{marginRight: -6}}>
-              <IonIcon
-                name="close-outline"
-                color={COLORS.shades[100]}
-                size={26}
-              />
-            </Pressable>
-          </View>
-        )}
         <View style={styles.inputRow}>
           <View style={styles.textField}>
-            <MenuView
-              title={i18n.t('Add Attachment')}
-              onPressAction={({nativeEvent}) => handleMenuOption(nativeEvent)}
-              actions={menuActions}>
-              <EvilIcon
-                style={{marginLeft: -8, marginRight: 4, top: 2}}
-                name="paperclip"
-                color={COLORS.neutral[500]}
-                size={26}
+            <View style={{flexDirection: 'row'}}>
+              {!attachment && (
+                <MenuView
+                  style={{top: 10, marginLeft: 2}}
+                  title={i18n.t('Add Attachment')}
+                  onPressAction={({nativeEvent}) =>
+                    handleMenuOption(nativeEvent)
+                  }
+                  actions={menuActions}>
+                  <EvilIcon
+                    name="paperclip"
+                    color={COLORS.neutral[500]}
+                    size={26}
+                  />
+                </MenuView>
+              )}
+              <TextInput
+                maxLength={300}
+                scr
+                style={[styles.textInput, {marginLeft: attachment ? 4 : 0}]}
+                selectionColor={COLORS.primary[700]}
+                value={message || null}
+                multiline
+                onChangeText={val => setMessage(val)}
+                placeholder={i18n.t('Type a message...')}
+                placeholderTextColor={COLORS.neutral[500]}
+                onFocus={scrollDown}
               />
-            </MenuView>
-            <TextInput
-              style={styles.textInput}
-              selectionColor={COLORS.primary[700]}
-              value={message || null}
-              multiline
-              onChangeText={val => setMessage(val)}
-              placeholder={i18n.t('Type a message...')}
-              placeholderTextColor={COLORS.neutral[500]}
-              onFocus={scrollDown}
-            />
+            </View>
+            {attachment && (
+              <AttachmentContainer
+                attachment={attachment}
+                onClose={() => setAttachment(null)}
+              />
+            )}
           </View>
           <Pressable
             onPress={sendMessage}
@@ -328,21 +317,20 @@ const styles = StyleSheet.create({
   textInput: {
     flex: 1,
     fontSize: 14,
+    marginTop: 6,
+    maxHeight: 120,
+    marginBottom: 12,
     fontFamily: 'WorkSans-Regular',
     letterSpacing: -0.5,
     color: COLORS.shades[100],
   },
   textField: {
-    maxHeight: 100,
-    paddingTop: 6,
-    paddingBottom: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: RADIUS.l,
+    minHeight: 40,
+    marginRight: 6,
+    borderRadius: RADIUS.m,
     backgroundColor: COLORS.neutral[100],
     flex: 1,
-    marginRight: 6,
-    paddingHorizontal: 15,
+    paddingHorizontal: 6,
   },
   header: {
     backgroundColor: COLORS.shades[0],
@@ -368,13 +356,5 @@ const styles = StyleSheet.create({
     marginRight: 6,
     justifyContent: 'center',
     width: 35,
-  },
-  attachmentContainer: {
-    marginHorizontal: PADDING.l,
-    marginVertical: 10,
-    borderTopRightRadius: RADIUS.s,
-    borderTopLeftRadius: RADIUS.s,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
   },
 });

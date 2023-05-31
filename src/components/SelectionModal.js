@@ -80,6 +80,7 @@ export default function SelectionModal({
             return {
               id: t._id,
               title: t.title,
+              isDone: t.isDone,
               subtitle: `${i18n.t('Assigned to')} ${
                 activeMembers.find(m => m.id === t.assignee)?.firstName
               }`,
@@ -100,6 +101,7 @@ export default function SelectionModal({
             id: item.id,
             title: item.title,
             subtitle: item.subtitle,
+            isDone: item.isDone || null,
             type: attachment,
           });
           onRequestClose();

@@ -1,14 +1,21 @@
-import {StyleSheet, Text, View} from 'react-native';
-import React, {useMemo} from 'react';
+import {StyleSheet, View} from 'react-native';
+import React, {useCallback} from 'react';
 import Avatar from '../Avatar';
 import Body from '../typography/Body';
 import COLORS, {RADIUS} from '../../constants/Theme';
-import Label from '../typography/Label';
 import Utils from '../../utils';
+import AttachmentContainer from './AttachmentContainer';
+import ATTACHMENT_TYPE from '../../constants/Attachments';
+import activeTripStore from '../../stores/ActiveTripStore';
+import i18n from '../../utils/i18n';
 
 const AVATAR_SIZE = 30;
 
 export default function ChatBubble({style, content, isSelf, activeMembers}) {
+  // STORES
+  const {mutualTasks, expenses, polls, documents} = activeTripStore(
+    state => state.activeTrip,
+  );
   const {senderId, timestamp, message, additionalData} = content;
 
   const senderData = activeMembers.find(m => m.id === senderId);
@@ -16,6 +23,88 @@ export default function ChatBubble({style, content, isSelf, activeMembers}) {
 
   const marginLeft = isSelf ? 'auto' : 0;
   const marginRight = !isSelf ? 'auto' : 0;
+
+  const getAttachmentData = useCallback(() => {
+    if (!additionalData.type) {
+      return null;
+    }
+
+    const {type, id} = additionalData;
+
+    console.log(type.toLowerCase());
+
+    switch (`${type.toLowerCase()}`) {
+      case ATTACHMENT_TYPE.expense:
+        const expenseIndex = expenses.findIndex(e => e._id === id);
+        if (expenseIndex === -1) {
+          return;
+        }
+
+        const e = expenses[expenseIndex];
+
+        return {
+          type: ATTACHMENT_TYPE.expense,
+          id: e._id,
+          title: `${e.currency} ${e.amount}`,
+          subtitle: `${i18n.t('Paid by')} ${
+            activeMembers.find(m => m.id === e.paidBy)?.firstName
+          } ${i18n.t('for')} ${e.title}`,
+        };
+
+      case ATTACHMENT_TYPE.poll:
+        const pollIndex = polls.findIndex(p => p._id === id);
+        if (pollIndex === -1) {
+          return;
+        }
+
+        const p = polls[pollIndex];
+
+        return {
+          type: ATTACHMENT_TYPE.poll,
+          id: p._id,
+          title: p.title,
+          subtitle: `${i18n.t('Created by')} ${
+            activeMembers.find(m => m.id === p.creatorId)?.firstName
+          }`,
+        };
+
+      case ATTACHMENT_TYPE.document:
+        const documentIndex = documents.findIndex(d => d._id === id);
+        if (documentIndex === -1) {
+          return;
+        }
+        const d = documents[documentIndex];
+
+        return {
+          type: ATTACHMENT_TYPE.document,
+          id: d._id,
+          title: d.title,
+          subtitle: `${i18n.t('Uploaded by')} ${
+            activeMembers.find(m => m.id === d.creatorId)?.firstName
+          }`,
+        };
+
+      case ATTACHMENT_TYPE.task:
+        const taskIndex = mutualTasks.findIndex(t => t._id === id);
+        if (taskIndex === -1) {
+          return;
+        }
+
+        const t = mutualTasks[taskIndex];
+
+        return {
+          type: ATTACHMENT_TYPE.task,
+          id: t._id,
+          title: t.title,
+          isDone: t.isDone,
+          subtitle: `${i18n.t('Assigned to')} ${
+            activeMembers.find(m => m.id === t.assignee)?.firstName
+          }`,
+        };
+    }
+  }, [additionalData]);
+
+  const attachmentData = getAttachmentData();
 
   return (
     <View style={[styles.container, style, {marginRight, marginLeft}]}>
@@ -31,9 +120,16 @@ export default function ChatBubble({style, content, isSelf, activeMembers}) {
         ]}>
         <Body
           color={isSelf ? COLORS.shades[0] : COLORS.shades[100]}
-          type={1}
+          type={2}
+          style={{marginLeft: isSelf ? 'auto' : 0}}
           text={message}
         />
+        {attachmentData && (
+          <AttachmentContainer
+            style={{marginTop: 8}}
+            attachment={attachmentData}
+          />
+        )}
       </View>
       {isSelf && <Avatar style={{marginLeft: 4}} size={AVATAR_SIZE} isSelf />}
     </View>
