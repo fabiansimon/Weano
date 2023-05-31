@@ -32,6 +32,7 @@ import UPDATE_TASK from '../../mutations/updateTask';
 import SEND_REMINDER from '../../mutations/sendReminder';
 import AsyncStorageDAO from '../../utils/AsyncStorageDAO';
 import PremiumController from '../../PremiumController';
+import Subtitle from '../../components/typography/Subtitle';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
@@ -408,7 +409,11 @@ export default function ChecklistScreen() {
             style={{
               marginHorizontal: PADDING.l,
             }}>
-            <Headline type={4} text={i18n.t('Mutual list')} />
+            <Body
+              type={1}
+              style={{fontWeight: '500'}}
+              text={i18n.t('Mutual list')}
+            />
             <Divider top={12} />
             <FlatList
               scrollEnabled={false}
@@ -463,7 +468,11 @@ export default function ChecklistScreen() {
             />
           </View>
           <View style={{marginTop: 20, marginHorizontal: PADDING.l}}>
-            <Headline type={4} text={i18n.t('Private list')} />
+            <Body
+              type={1}
+              style={{fontWeight: '500'}}
+              text={i18n.t('Private list')}
+            />
             <Divider top={12} />
             <FlatList
               contentContainerStyle={{marginBottom: 100}}

@@ -7,6 +7,8 @@ import {
   StatusBar,
   ScrollView,
   Pressable,
+  // FlatList,
+  Alert,
 } from 'react-native';
 import React, {useState, useRef, useEffect} from 'react';
 import IonIcon from 'react-native-vector-icons/Ionicons';
@@ -24,26 +26,22 @@ import firestore from '@react-native-firebase/firestore';
 import {MenuView} from '@react-native-menu/menu';
 import SelectionModal from '../../components/SelectionModal';
 import ATTACHMENT_TYPE from '../../constants/Attachments';
-import Headline from '../../components/typography/Headline';
 import AttachmentContainer from '../../components/Trip/AttachmentContainer';
+import {useNavigation} from '@react-navigation/native';
+import UPDATE_TRIP from '../../mutations/updateTrip';
+import {useMutation} from '@apollo/client';
+import LoadingModal from '../../components/LoadingModal';
 
 const MAX_INIT_MESSAGES = 20;
 
-export default function ChatScreen({route}) {
-  // PARAMS
-  const {roomId} = route.params;
+export default function ChatScreen() {
+  // MUTATIONS
+  const [updateTrip, {loading}] = useMutation(UPDATE_TRIP);
 
   // STORES
-  const {
-    activeMembers,
-    title,
-    dateRange,
-    type,
-    mutualTasks,
-    polls,
-    expenses,
-    documents,
-  } = activeTripStore(state => state.activeTrip);
+  const {activeMembers, title, dateRange, type, chatRoomId, id} =
+    activeTripStore(state => state.activeTrip);
+  const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
   const {id: userId} = userStore(state => state.user);
 
   // STATE && MISC
@@ -51,6 +49,9 @@ export default function ChatScreen({route}) {
   const [message, setMessage] = useState('');
   const [attVisible, setAttVisible] = useState(null);
   const [attachment, setAttachment] = useState(null);
+
+  const navigation = useNavigation();
+
   const chatRef = useRef();
 
   const menuActions = [
@@ -72,6 +73,66 @@ export default function ChatScreen({route}) {
     },
   ];
 
+  useEffect(() => {
+    if (chatRoomId) {
+      fetchInitChatData();
+      subscribeToCollection();
+    }
+
+    if (!chatRoomId) {
+      handleCreateRoom();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (chatRoomId) {
+      fetchInitChatData();
+      subscribeToCollection();
+    }
+  }, [chatRoomId]);
+
+  const handleCreateRoom = () => {
+    Alert.alert(
+      i18n.t('Premium Feature'),
+      i18n.t(
+        'The chat feature is only for premium users. Would you like to upgrade your account?',
+      ),
+      [
+        {
+          text: i18n.t('Cancel'),
+          style: 'cancel',
+          onPress: () => navigation.goBack(),
+        },
+        {
+          text: i18n.t('Upgrade'),
+          onPress: () => handleUpgrade(),
+          style: 'default',
+        },
+      ],
+    );
+  };
+
+  const handleUpgrade = () => {
+    firestore()
+      .collection('tripChats')
+      .add({
+        createdAt: firestore.FieldValue.serverTimestamp(),
+        messages: [],
+      })
+      .then(async res => {
+        const roomId = res._documentPath._parts[1];
+        updateActiveTrip({chatRoomId: roomId});
+        await updateTrip({
+          variables: {
+            trip: {
+              chatRoomId: roomId,
+              tripId: id,
+            },
+          },
+        });
+      });
+  };
+
   const handleMenuOption = input => {
     const {event} = input;
 
@@ -82,6 +143,7 @@ export default function ChatScreen({route}) {
     const {_data} = snapshot;
     if (_data) {
       setChatData(_data.messages);
+      scrollDown();
     }
   };
 
@@ -90,7 +152,7 @@ export default function ChatScreen({route}) {
     try {
       const res = await firestore()
         .collection('tripChats')
-        .doc('m7YBncJHZLEl5544E6gD')
+        .doc(chatRoomId)
         .get();
 
       setChatData(res._data.messages);
@@ -103,7 +165,7 @@ export default function ChatScreen({route}) {
     try {
       firestore()
         .collection('tripChats')
-        .doc('m7YBncJHZLEl5544E6gD')
+        .doc(chatRoomId)
         .onSnapshot(onSnapshotResult, e => console.log(e.message));
     } catch (error) {
       console.log(error);
@@ -111,7 +173,7 @@ export default function ChatScreen({route}) {
   };
 
   const sendMessage = async () => {
-    if (message.trim().length <= 0) {
+    if (message.trim().length <= 0 && !attachment) {
       return;
     }
 
@@ -119,19 +181,19 @@ export default function ChatScreen({route}) {
       const newMessage = {
         createdAt: new Date(),
         senderId: userId,
-        additionalData: {
-          type: attachment.type,
-          id: attachment.id,
-        },
-        message: message,
+        additionalData: attachment
+          ? {
+              type: attachment.type,
+              id: attachment.id,
+            }
+          : {},
+        message: message || '',
       };
 
       setChatData(prev => [...prev, newMessage]);
       cleanData();
       scrollDown();
-      const ref = firestore()
-        .collection('tripChats')
-        .doc('m7YBncJHZLEl5544E6gD');
+      const ref = firestore().collection('tripChats').doc(chatRoomId);
 
       return ref.update({
         messages: firestore.FieldValue.arrayUnion(newMessage),
@@ -147,12 +209,11 @@ export default function ChatScreen({route}) {
     setMessage('');
   };
 
-  useEffect(() => {
-    fetchInitChatData();
-    subscribeToCollection();
-  }, []);
-
   const scrollDown = () => {
+    // chatRef.current?.scrollToIndex({
+    //   index: chatData.length - 1,
+    //   animated: true,
+    // });
     setTimeout(() => {
       chatRef.current?.scrollTo({
         y: 10000,
@@ -223,7 +284,9 @@ export default function ChatScreen({route}) {
               styles.roundButton,
               {
                 backgroundColor:
-                  message.length > 0 ? COLORS.primary[700] : COLORS.neutral[50],
+                  message.length > 0 || attachment
+                    ? COLORS.primary[700]
+                    : COLORS.neutral[50],
               },
             ]}>
             <IonIcon
@@ -231,7 +294,9 @@ export default function ChatScreen({route}) {
               size={18}
               style={{marginLeft: -2, marginTop: 2}}
               color={
-                message.length > 0 ? COLORS.shades[0] : COLORS.neutral[300]
+                message.length > 0 || attachment
+                  ? COLORS.shades[0]
+                  : COLORS.neutral[300]
               }
             />
           </Pressable>
@@ -264,10 +329,30 @@ export default function ChatScreen({route}) {
                 />
               ))}
             </ScrollView>
+            {/* <FlatList
+              ref={chatRef}
+              style={{
+                paddingTop: 10,
+                marginBottom: 10,
+                flexGrow: 1,
+                paddingHorizontal: PADDING.s,
+              }}
+              data={chatData}
+              renderItem={({item, index}) => (
+                <ChatBubble
+                  activeMembers={activeMembers}
+                  style={{marginBottom: 10}}
+                  content={item}
+                  isSelf={userId === item.senderId}
+                />
+              )}
+            /> */}
           </View>
           {getFooter()}
         </View>
       </KeyboardView>
+
+      <LoadingModal isLoading={loading} showVisual={true} />
 
       <SelectionModal
         isVisible={attVisible !== null}

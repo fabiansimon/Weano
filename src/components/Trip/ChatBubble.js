@@ -8,6 +8,8 @@ import AttachmentContainer from './AttachmentContainer';
 import ATTACHMENT_TYPE from '../../constants/Attachments';
 import activeTripStore from '../../stores/ActiveTripStore';
 import i18n from '../../utils/i18n';
+import {useNavigation} from '@react-navigation/native';
+import ROUTES from '../../constants/Routes';
 
 const AVATAR_SIZE = 30;
 
@@ -16,10 +18,14 @@ export default function ChatBubble({style, content, isSelf, activeMembers}) {
   const {mutualTasks, expenses, polls, documents} = activeTripStore(
     state => state.activeTrip,
   );
+
+  // STATE && MISC
+  const navigation = useNavigation();
+
   const {senderId, timestamp, message, additionalData} = content;
 
   const senderData = activeMembers.find(m => m.id === senderId);
-  const dateData = Utils.getDateFromTimestamp(timestamp, 'hh:mm');
+  // const dateData = Utils.getDateFromTimestamp(timestamp, 'hh:mm');
 
   const marginLeft = isSelf ? 'auto' : 0;
   const marginRight = !isSelf ? 'auto' : 0;
@@ -30,8 +36,6 @@ export default function ChatBubble({style, content, isSelf, activeMembers}) {
     }
 
     const {type, id} = additionalData;
-
-    console.log(type.toLowerCase());
 
     switch (`${type.toLowerCase()}`) {
       case ATTACHMENT_TYPE.expense:
@@ -49,6 +53,7 @@ export default function ChatBubble({style, content, isSelf, activeMembers}) {
           subtitle: `${i18n.t('Paid by')} ${
             activeMembers.find(m => m.id === e.paidBy)?.firstName
           } ${i18n.t('for')} ${e.title}`,
+          onPress: () => navigation.navigate(ROUTES.expenseScreen),
         };
 
       case ATTACHMENT_TYPE.poll:
@@ -66,6 +71,7 @@ export default function ChatBubble({style, content, isSelf, activeMembers}) {
           subtitle: `${i18n.t('Created by')} ${
             activeMembers.find(m => m.id === p.creatorId)?.firstName
           }`,
+          onPress: () => navigation.navigate(ROUTES.pollScreen),
         };
 
       case ATTACHMENT_TYPE.document:
@@ -82,6 +88,7 @@ export default function ChatBubble({style, content, isSelf, activeMembers}) {
           subtitle: `${i18n.t('Uploaded by')} ${
             activeMembers.find(m => m.id === d.creatorId)?.firstName
           }`,
+          onPress: () => navigation.navigate(ROUTES.documentsScreen),
         };
 
       case ATTACHMENT_TYPE.task:
@@ -100,6 +107,7 @@ export default function ChatBubble({style, content, isSelf, activeMembers}) {
           subtitle: `${i18n.t('Assigned to')} ${
             activeMembers.find(m => m.id === t.assignee)?.firstName
           }`,
+          onPress: () => navigation.navigate(ROUTES.checklistScreen),
         };
     }
   }, [additionalData]);
@@ -118,14 +126,17 @@ export default function ChatBubble({style, content, isSelf, activeMembers}) {
             backgroundColor: isSelf ? COLORS.primary[700] : COLORS.neutral[100],
           },
         ]}>
-        <Body
-          color={isSelf ? COLORS.shades[0] : COLORS.shades[100]}
-          type={2}
-          style={{marginLeft: isSelf ? 'auto' : 0}}
-          text={message}
-        />
+        {message && (
+          <Body
+            color={isSelf ? COLORS.shades[0] : COLORS.shades[100]}
+            type={2}
+            style={{marginLeft: isSelf ? 'auto' : 0}}
+            text={message}
+          />
+        )}
         {attachmentData && (
           <AttachmentContainer
+            onPress={attachmentData.onPress}
             style={{marginTop: 8}}
             attachment={attachmentData}
           />

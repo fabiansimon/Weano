@@ -10,23 +10,35 @@ import i18n from '../../utils/i18n';
 import ATTACHMENT_TYPE from '../../constants/Attachments';
 import Body from '../typography/Body';
 
-export default function AttachmentContainer({style, attachment, onClose}) {
+export default function AttachmentContainer({
+  style,
+  attachment,
+  onClose,
+  onPress,
+}) {
   return (
-    <View style={[styles.attachmentContainer, style]}>
+    <Pressable onPress={onPress} style={[styles.attachmentContainer, style]}>
       <View
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'flex-start',
+          marginBottom: onClose ? 0 : 2,
         }}>
         <Subtitle
           type={2}
           color={COLORS.neutral[500]}
           text={`${i18n.t('Attached')} ${attachment.type}`}
         />
-        <Pressable onPress={onClose} style={{marginTop: 0}}>
-          <IonIcon name="close-outline" color={COLORS.neutral[500]} size={18} />
-        </Pressable>
+        {onClose && (
+          <Pressable onPress={onClose} style={{marginTop: 0}}>
+            <IonIcon
+              name="close-outline"
+              color={COLORS.neutral[500]}
+              size={18}
+            />
+          </Pressable>
+        )}
       </View>
       <Divider style={{marginHorizontal: -10, marginTop: 4, marginBottom: 6}} />
       <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
@@ -63,7 +75,7 @@ export default function AttachmentContainer({style, attachment, onClose}) {
           </View>
         )}
       </View>
-    </View>
+    </Pressable>
   );
 }
 

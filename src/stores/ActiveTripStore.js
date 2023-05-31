@@ -22,6 +22,7 @@ const activeTripStore = create(set => ({
         type: data.type || null,
         documents: data.documents || null,
         packingItems: data.packingItems || null,
+        chatRoomId: data.chatRoomId || null,
         currency: !data?.currency?.string
           ? {
               symbol: '$',
@@ -53,6 +54,7 @@ const activeTripStore = create(set => ({
         type: data.type || state.activeTrip.type,
         documents: data.documents || state.activeTrip.documents,
         packingItems: data.packingItems || state.activeTrip.packingItems,
+        chatRoomId: data.chatRoomId || state.activeTrip.chatRoomId,
         currency: data.currency || state.activeTrip.currency,
       },
     })),

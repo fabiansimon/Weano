@@ -10,6 +10,7 @@ const GET_TRIP_BY_ID = gql`
       userFreeImages
       id
       hostIds
+      chatRoomId
       thumbnailUri
       title
       description

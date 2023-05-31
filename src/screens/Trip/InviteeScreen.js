@@ -130,8 +130,6 @@ export default function InviteeScreen() {
       i18n.t('Are you sure you want to make the user a host?'),
       i18n.t('Yes'),
       async () => {
-        console.log(tripId);
-        console.log(hostId);
         await updateTrip({
           variables: {
             trip: {

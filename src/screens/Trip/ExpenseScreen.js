@@ -493,7 +493,7 @@ export default function ExpenseScreen() {
                 <Divider
                   style={{marginLeft: 60}}
                   color={COLORS.neutral[50]}
-                  vertical={14}
+                  vertical={10}
                 />
               )}
             />

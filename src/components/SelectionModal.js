@@ -108,16 +108,15 @@ export default function SelectionModal({
         }}
         style={[styles.tileContainer, {marginBottom: 12}]}>
         <View style={{flex: 1}}>
-          <Headline
-            type={3}
-            style={{maxWidth: '90%'}}
+          <Body
+            type={1}
+            style={{maxWidth: '90%', fontWeight: '500'}}
             numberOfLines={1}
             ellipsizeMode="tail"
             text={item.title}
           />
           <Body
             type={2}
-            style={{fontWeight: '500'}}
             color={COLORS.neutral[300]}
             text={item.subtitle.trim()}
           />

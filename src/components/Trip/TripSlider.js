@@ -56,11 +56,7 @@ export default function TripSlider({index, style, onPress}) {
         />
       </View>
       <Pressable
-        onPress={() =>
-          navigation.navigate(ROUTES.chatScreen, {
-            roomId: 'm7YBncJHZLEl5544E6gD',
-          })
-        }
+        onPress={() => navigation.navigate(ROUTES.chatScreen)}
         style={[styles.textContainer, {marginLeft: -10}]}>
         <Icon
           name="ios-chatbubbles-outline"
