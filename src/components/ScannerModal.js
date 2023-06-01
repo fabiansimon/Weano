@@ -23,7 +23,7 @@ export default function ScannerModal({isVisible, onRequestClose, trips}) {
 
   const handleScan = ({data}) => {
     setIsScanned(true);
-    if (!data.includes(META_DATA.baseUrl)) {
+    if (!data.includes(META_DATA.websiteUrl)) {
       return Alert.alert(
         i18n.t('Not a valid trip'),
         i18n.t('Try a different QR Code'),
