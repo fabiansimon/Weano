@@ -25,7 +25,7 @@ export default function BasicHeader({
       <SafeAreaView />
       <View style={styles.heading}>
         <View style={[styles.titleContainer, {marginBottom: children && 16}]}>
-          <Headline type={3} text={title} />
+          <Headline type={4} style={{fontWeight: '500'}} text={title} />
           {centerComponent && centerComponent}
           {info && !trailing && (
             <Icon

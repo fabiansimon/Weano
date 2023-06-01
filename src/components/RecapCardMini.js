@@ -5,12 +5,11 @@ import COLORS, {PADDING, RADIUS} from '../constants/Theme';
 import Body from './typography/Body';
 import Utils from '../utils';
 import i18n from '../utils/i18n';
-import Avatar from './Avatar';
 import DaysStatusContainer from './DaysStatusContainer';
+import AvatarList from './AvatarList';
 
 export default function RecapCardMini({data, style, onPress, onLongPress}) {
   const {destinations, dateRange, title, activeMembers, type} = data;
-  const MAX_AVATARS = 4;
 
   const isRecent = type === 'recent';
 
@@ -65,34 +64,7 @@ export default function RecapCardMini({data, style, onPress, onLongPress}) {
         </View>
         <View style={{justifyContent: 'space-between', alignItems: 'flex-end'}}>
           <DaysStatusContainer data={data} />
-          <View style={{flexDirection: 'row'}}>
-            {activeMembers &&
-              activeMembers.map((member, index) => {
-                if (index > MAX_AVATARS) {
-                  return;
-                }
-                if (index === MAX_AVATARS) {
-                  return (
-                    <Avatar
-                      disabled
-                      size={24}
-                      string={`+${activeMembers.length - MAX_AVATARS}`}
-                      style={{marginLeft: -8}}
-                    />
-                  );
-                }
-
-                return (
-                  <Avatar
-                    disabled
-                    key={member.id}
-                    data={member}
-                    size={24}
-                    style={{marginLeft: -8}}
-                  />
-                );
-              })}
-          </View>
+          <AvatarList members={activeMembers} />
         </View>
       </Pressable>
     </ContextMenu>

@@ -31,6 +31,8 @@ import {useNavigation} from '@react-navigation/native';
 import UPDATE_TRIP from '../../mutations/updateTrip';
 import {useMutation} from '@apollo/client';
 import LoadingModal from '../../components/LoadingModal';
+import AvatarList from '../../components/AvatarList';
+import ROUTES from '../../constants/Routes';
 
 const MAX_INIT_MESSAGES = 20;
 
@@ -42,7 +44,7 @@ export default function ChatScreen() {
   const {activeMembers, title, dateRange, type, chatRoomId, id} =
     activeTripStore(state => state.activeTrip);
   const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
-  const {id: userId} = userStore(state => state.user);
+  const {id: userId, isProMember} = userStore(state => state.user);
 
   // STATE && MISC
   const [chatData, setChatData] = useState([]);
@@ -74,22 +76,34 @@ export default function ChatScreen() {
   ];
 
   useEffect(() => {
+    let stream;
     if (chatRoomId) {
       fetchInitChatData();
-      subscribeToCollection();
+      stream = firestore()
+        .collection('tripChats')
+        .doc(chatRoomId)
+        .collection('messages')
+        .orderBy('createdAt', 'asc')
+        .limitToLast(1)
+        .onSnapshot({
+          error: e => console.error(e),
+          next: querySnapshot => onSnapshotResult(querySnapshot),
+        });
     }
 
     if (!chatRoomId) {
-      handleCreateRoom();
+      !isProMember ? handleCreateRoom() : handleUpgrade();
     }
+
+    return () => stream();
   }, []);
 
-  useEffect(() => {
-    if (chatRoomId) {
-      fetchInitChatData();
-      subscribeToCollection();
-    }
-  }, [chatRoomId]);
+  // useEffect(() => {
+  //   if (chatRoomId) {
+  //     fetchInitChatData();
+  //     subscribeToCollection();
+  //   }
+  // }, [chatRoomId]);
 
   const handleCreateRoom = () => {
     Alert.alert(
@@ -112,15 +126,37 @@ export default function ChatScreen() {
     );
   };
 
+  const deleteRoom = (id, updateDB = false) => {
+    firestore()
+      .collection('tripChats')
+      .doc(id || chatRoomId)
+      .delete()
+      .then(async () => {
+        updateActiveTrip({chatRoomId: undefined});
+        if (!updateDB) {
+          return;
+        }
+
+        await updateTrip({
+          variables: {
+            trip: {
+              chatRoomId: id || chatRoomId,
+              tripId: id,
+            },
+          },
+        });
+      });
+  };
+
   const handleUpgrade = () => {
+    let roomId;
     firestore()
       .collection('tripChats')
       .add({
         createdAt: firestore.FieldValue.serverTimestamp(),
-        messages: [],
       })
       .then(async res => {
-        const roomId = res._documentPath._parts[1];
+        roomId = res._documentPath._parts[1];
         updateActiveTrip({chatRoomId: roomId});
         await updateTrip({
           variables: {
@@ -130,7 +166,27 @@ export default function ChatScreen() {
             },
           },
         });
+      })
+      .catch(e => {
+        console.log(e);
+        deleteRoom(roomId);
+        showError();
       });
+  };
+
+  const showError = () => {
+    Alert.alert(
+      i18n.t('Sorry!'),
+      i18n.t(
+        'Something went wrong when creating the chatroom. Please try again later',
+      ),
+      [
+        {
+          text: i18n.t('Ok'),
+          onPress: () => navigation.goBack(),
+        },
+      ],
+    );
   };
 
   const handleMenuOption = input => {
@@ -140,9 +196,8 @@ export default function ChatScreen() {
   };
 
   const onSnapshotResult = snapshot => {
-    const {_data} = snapshot;
-    if (_data) {
-      setChatData(_data.messages);
+    if (snapshot) {
+      setChatData(prev => [...prev, snapshot._docs[0]._data]);
       scrollDown();
     }
   };
@@ -150,24 +205,17 @@ export default function ChatScreen() {
   const fetchInitChatData = async () => {
     setChatData([]);
     try {
-      const res = await firestore()
+      const {_docs} = await firestore()
         .collection('tripChats')
         .doc(chatRoomId)
+        .collection('messages')
+        .orderBy('createdAt', 'asc')
+        .limitToLast(MAX_INIT_MESSAGES)
         .get();
 
-      setChatData(res._data.messages);
+      setChatData(_docs.map(({_data}) => _data));
     } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const subscribeToCollection = async () => {
-    try {
-      firestore()
-        .collection('tripChats')
-        .doc(chatRoomId)
-        .onSnapshot(onSnapshotResult, e => console.log(e.message));
-    } catch (error) {
+      showError();
       console.log(error);
     }
   };
@@ -193,11 +241,12 @@ export default function ChatScreen() {
       setChatData(prev => [...prev, newMessage]);
       cleanData();
       scrollDown();
-      const ref = firestore().collection('tripChats').doc(chatRoomId);
 
-      return ref.update({
-        messages: firestore.FieldValue.arrayUnion(newMessage),
-      });
+      firestore()
+        .collection('tripChats')
+        .doc(chatRoomId)
+        .collection('messages')
+        .add(newMessage);
     } catch (error) {
       console.log(error);
     }
@@ -225,13 +274,15 @@ export default function ChatScreen() {
   const getHeader = () => (
     <SafeAreaView>
       <View style={styles.header}>
-        <BackButton style={{bottom: -8}} isClear />
+        <BackButton isClear />
         <View style={styles.title}>
           <Body type={1} style={{fontWeight: '500'}} text={title} />
         </View>
-        <DaysStatusContainer
-          style={{marginBottom: 2}}
-          data={{dateRange, type}}
+        <AvatarList
+          onPress={() => navigation.navigate(ROUTES.inviteeScreen)}
+          style={{marginBottom: 4}}
+          maxLength={3}
+          members={activeMembers}
         />
       </View>
     </SafeAreaView>
@@ -273,6 +324,7 @@ export default function ChatScreen() {
             </View>
             {attachment && (
               <AttachmentContainer
+                style={{marginBottom: 6}}
                 attachment={attachment}
                 onClose={() => setAttachment(null)}
               />
@@ -329,6 +381,10 @@ export default function ChatScreen() {
                 />
               ))}
             </ScrollView>
+            <DaysStatusContainer
+              style={styles.daysContainer}
+              data={{dateRange, type}}
+            />
             {/* <FlatList
               ref={chatRef}
               style={{
@@ -418,6 +474,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
   },
   header: {
+    marginTop: 6,
     backgroundColor: COLORS.shades[0],
     borderBottomWidth: 0.5,
     borderBottomColor: COLORS.neutral[100],
@@ -441,5 +498,16 @@ const styles = StyleSheet.create({
     marginRight: 6,
     justifyContent: 'center',
     width: 35,
+  },
+  daysContainer: {
+    top: 6,
+    shadowColor: COLORS.shades[100],
+    shadowRadius: 10,
+    shadowOpacity: 0.05,
+    position: 'absolute',
+    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.shades[0],
+    padding: 2,
+    alignSelf: 'center',
   },
 });

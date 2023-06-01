@@ -5,7 +5,10 @@ import TabIndicator from '../TabIndicator';
 export default function TabBar({style, items, onPress, currentTab}) {
   return (
     <View style={style}>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+      <ScrollView
+        horizontal
+        contentContainerStyle={{paddingRight: 10}}
+        showsHorizontalScrollIndicator={false}>
         {items.map((item, index) => (
           <TabIndicator
             style={{marginLeft: index === 0 ? 10 : 14}}

@@ -1,20 +1,12 @@
 import React, {useRef, useState, useCallback, useMemo} from 'react';
 import Animated from 'react-native-reanimated';
 import HybridHeader from '../components/HybridHeader';
-import {
-  Alert,
-  Dimensions,
-  Pressable,
-  StatusBar,
-  StyleSheet,
-  View,
-} from 'react-native';
+import {Alert, Dimensions, StatusBar, StyleSheet, View} from 'react-native';
 import i18n from '../utils/i18n';
 import COLORS, {PADDING, RADIUS} from '../constants/Theme';
 import Body from '../components/typography/Body';
 import Headline from '../components/typography/Headline';
 import EXPENSES_CATEGORY from '../constants/ExpensesCategories';
-import userManagement from '../utils/userManagement';
 import Utils from '../utils';
 import SplitExpenseContainer from '../components/Trip/SplitExpenseContainer';
 import activeTripStore from '../stores/ActiveTripStore';

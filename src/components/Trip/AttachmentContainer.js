@@ -9,13 +9,29 @@ import Subtitle from '../typography/Subtitle';
 import i18n from '../../utils/i18n';
 import ATTACHMENT_TYPE from '../../constants/Attachments';
 import Body from '../typography/Body';
+import Utils from '../../utils';
 
 export default function AttachmentContainer({
   style,
   attachment,
   onClose,
   onPress,
+  isSelf,
 }) {
+  if (!attachment) {
+    return (
+      <Subtitle
+        type={2}
+        color={Utils.addAlpha(
+          isSelf ? COLORS.neutral[50] : COLORS.shades[100],
+          0.5,
+        )}
+        style={{fontStyle: 'italic', marginTop: 4}}
+        text={i18n.t('Attachment item was deleted')}
+      />
+    );
+  }
+
   return (
     <Pressable onPress={onPress} style={[styles.attachmentContainer, style]}>
       <View
@@ -28,7 +44,7 @@ export default function AttachmentContainer({
         <Subtitle
           type={2}
           color={COLORS.neutral[500]}
-          text={`${i18n.t('Attached')} ${attachment.type}`}
+          text={`${i18n.t('Attached')} ${attachment?.type}`}
         />
         {onClose && (
           <Pressable onPress={onClose} style={{marginTop: 0}}>
@@ -83,7 +99,6 @@ const styles = StyleSheet.create({
   attachmentContainer: {
     minWidth: '90%',
     marginTop: -4,
-    marginBottom: 6,
     borderWidth: 1,
     borderColor: COLORS.neutral[100],
     backgroundColor: COLORS.shades[0],

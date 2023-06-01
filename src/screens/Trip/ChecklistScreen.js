@@ -393,8 +393,6 @@ export default function ChecklistScreen() {
     </View>
   );
 
-  console.log(activeMembers.map(m => console.log(m.id)));
-
   return (
     <View style={styles.container}>
       <HybridHeader

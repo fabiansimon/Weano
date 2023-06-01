@@ -170,7 +170,7 @@ export default function InviteeScreen() {
           {
             backgroundColor: COLORS.error[900],
             string: i18n.t('Remove'),
-            onPress: () => handleDelete(userId),
+            onPress: () => handleDelete(id),
             isDisabled:
               !hostIds.includes(userId) ||
               userId === id ||

@@ -1,9 +1,8 @@
 import {StyleSheet, View} from 'react-native';
-import React, {useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
 import Avatar from '../Avatar';
 import Body from '../typography/Body';
 import COLORS, {RADIUS} from '../../constants/Theme';
-import Utils from '../../utils';
 import AttachmentContainer from './AttachmentContainer';
 import ATTACHMENT_TYPE from '../../constants/Attachments';
 import activeTripStore from '../../stores/ActiveTripStore';
@@ -22,16 +21,15 @@ export default function ChatBubble({style, content, isSelf, activeMembers}) {
   // STATE && MISC
   const navigation = useNavigation();
 
-  const {senderId, timestamp, message, additionalData} = content;
+  const {senderId, message, additionalData} = content;
 
   const senderData = activeMembers.find(m => m.id === senderId);
-  // const dateData = Utils.getDateFromTimestamp(timestamp, 'hh:mm');
 
   const marginLeft = isSelf ? 'auto' : 0;
   const marginRight = !isSelf ? 'auto' : 0;
 
   const getAttachmentData = useCallback(() => {
-    if (!additionalData.type) {
+    if (!additionalData?.type) {
       return null;
     }
 
@@ -41,7 +39,7 @@ export default function ChatBubble({style, content, isSelf, activeMembers}) {
       case ATTACHMENT_TYPE.expense:
         const expenseIndex = expenses.findIndex(e => e._id === id);
         if (expenseIndex === -1) {
-          return;
+          return null;
         }
 
         const e = expenses[expenseIndex];
@@ -53,13 +51,14 @@ export default function ChatBubble({style, content, isSelf, activeMembers}) {
           subtitle: `${i18n.t('Paid by')} ${
             activeMembers.find(m => m.id === e.paidBy)?.firstName
           } ${i18n.t('for')} ${e.title}`,
-          onPress: () => navigation.navigate(ROUTES.expenseScreen),
+          onPress: () =>
+            navigation.navigate(ROUTES.expenseScreen, {initExpense: e._id}),
         };
 
       case ATTACHMENT_TYPE.poll:
         const pollIndex = polls.findIndex(p => p._id === id);
         if (pollIndex === -1) {
-          return;
+          return null;
         }
 
         const p = polls[pollIndex];
@@ -77,7 +76,7 @@ export default function ChatBubble({style, content, isSelf, activeMembers}) {
       case ATTACHMENT_TYPE.document:
         const documentIndex = documents.findIndex(d => d._id === id);
         if (documentIndex === -1) {
-          return;
+          return null;
         }
         const d = documents[documentIndex];
 
@@ -94,7 +93,7 @@ export default function ChatBubble({style, content, isSelf, activeMembers}) {
       case ATTACHMENT_TYPE.task:
         const taskIndex = mutualTasks.findIndex(t => t._id === id);
         if (taskIndex === -1) {
-          return;
+          return null;
         }
 
         const t = mutualTasks[taskIndex];
@@ -115,35 +114,60 @@ export default function ChatBubble({style, content, isSelf, activeMembers}) {
   const attachmentData = getAttachmentData();
 
   return (
-    <View style={[styles.container, style, {marginRight, marginLeft}]}>
-      {!isSelf && (
-        <Avatar style={{marginRight: 4}} size={AVATAR_SIZE} data={senderData} />
-      )}
-      <View
-        style={[
-          styles.bubbleContainer,
-          {
-            backgroundColor: isSelf ? COLORS.primary[700] : COLORS.neutral[100],
-          },
-        ]}>
-        {message && (
-          <Body
-            color={isSelf ? COLORS.shades[0] : COLORS.shades[100]}
+    <>
+      <View style={[styles.container, style, {marginRight, marginLeft}]}>
+        {!isSelf && (
+          <Avatar
+            style={{marginRight: 4}}
+            size={AVATAR_SIZE}
+            data={senderData}
+          />
+        )}
+
+        <View
+          style={[
+            styles.bubbleContainer,
+            {
+              backgroundColor: isSelf
+                ? COLORS.primary[700]
+                : COLORS.neutral[100],
+            },
+          ]}>
+          {message && (
+            <Body
+              color={isSelf ? COLORS.shades[0] : COLORS.shades[100]}
+              type={2}
+              style={{marginLeft: isSelf ? 'auto' : 0}}
+              text={message}
+            />
+          )}
+          {additionalData?.type && (
+            <AttachmentContainer
+              isSelf={isSelf}
+              onPress={attachmentData?.onPress}
+              style={{
+                marginTop: !message ? -3 : 8,
+                marginVertical: -3,
+                marginHorizontal: -5,
+                borderRadius: 8,
+              }}
+              attachment={attachmentData}
+            />
+          )}
+          {/* <Subtitle
             type={2}
+            color={
+              isSelf
+                ? Utils.addAlpha(COLORS.neutral[50], 0.7)
+                : COLORS.neutral[300]
+            }
             style={{marginLeft: isSelf ? 'auto' : 0}}
-            text={message}
-          />
-        )}
-        {attachmentData && (
-          <AttachmentContainer
-            onPress={attachmentData.onPress}
-            style={{marginTop: 8}}
-            attachment={attachmentData}
-          />
-        )}
+            text={dateData}
+          /> */}
+        </View>
+        {isSelf && <Avatar style={{marginLeft: 4}} size={AVATAR_SIZE} isSelf />}
       </View>
-      {isSelf && <Avatar style={{marginLeft: 4}} size={AVATAR_SIZE} isSelf />}
-    </View>
+    </>
   );
 }
 

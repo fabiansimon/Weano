@@ -5,6 +5,7 @@ import COLORS from '../constants/Theme';
 
 export default function GradientOverlay({
   style,
+  opacity = 0.8,
   height = 200,
   edges = ['top', 'bottom'],
 }) {
@@ -13,7 +14,7 @@ export default function GradientOverlay({
       {edges.includes('top') && (
         <View style={[styles.topContainer, {height}, style]}>
           <LinearGradient
-            style={[styles.gradient, {height}]}
+            style={[styles.gradient, {height, opacity}]}
             colors={[COLORS.neutral[900], 'transparent']}
           />
         </View>
@@ -21,7 +22,7 @@ export default function GradientOverlay({
       {edges.includes('bottom') && (
         <View style={[styles.bottomContainer, {height}, style]}>
           <LinearGradient
-            style={[styles.gradient, {height}]}
+            style={[styles.gradient, {height, opacity}]}
             colors={['transparent', COLORS.neutral[900]]}
           />
         </View>
@@ -42,7 +43,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   gradient: {
-    opacity: 0.8,
     width: '100%',
   },
 });

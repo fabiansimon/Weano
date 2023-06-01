@@ -57,14 +57,14 @@ export default function TripHeader({
           getLoadingView()
         ) : (
           <View>
-            <Headline
-              type={4}
+            <Body
+              type={1}
               text={title}
               style={{fontWeight: '600', textAlign: 'center'}}
             />
             {isActive ? (
-              <Label
-                type={1}
+              <Body
+                type={2}
                 style={{fontSize: 16, alignSelf: 'center', marginTop: 2}}
                 text={i18n.t('• Live Trip')}
                 color={COLORS.error[900]}
@@ -82,8 +82,8 @@ export default function TripHeader({
                   color={COLORS.neutral[300]}
                 />
                 <Body
+                  type={2}
                   style={{marginLeft: 2}}
-                  type={1}
                   text={subtitle || ''}
                   color={COLORS.neutral[300]}
                 />

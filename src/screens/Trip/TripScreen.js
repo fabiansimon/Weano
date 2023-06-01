@@ -65,6 +65,7 @@ import userStore from '../../stores/UserStore';
 import {LinearGradient} from 'expo-linear-gradient';
 import InfoController from '../../controllers/InfoController';
 import FAButton from '../../components/FAButton';
+import GradientOverlay from '../../components/GradientOverlay';
 
 const {StatusBarManager} = NativeModules;
 
@@ -612,6 +613,22 @@ export default function TripScreen({route}) {
     },
   ];
 
+  const showChat = useCallback(() => {
+    if (!data) {
+      return false;
+    }
+    const {activeMembers, type, chatRoomId} = data;
+    if (activeMembers.length <= 1) {
+      return false;
+    }
+
+    if (type === 'recent') {
+      return chatRoomId ? true : false;
+    }
+
+    return true;
+  }, [data]);
+
   const contentItems = [
     {
       title: i18n.t('Expenses'),
@@ -1141,6 +1158,7 @@ export default function TripScreen({route}) {
         )}
       </PagerView>
       <TripSlider
+        showChat={showChat()}
         index={viewIndex}
         onPress={() => setViewIndex(prev => (prev === 1 ? 0 : 1))}
       />

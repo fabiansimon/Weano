@@ -31,7 +31,10 @@ import Utils from '../../utils';
 import userManagement from '../../utils/userManagement';
 import InfoController from '../../controllers/InfoController';
 
-export default function ExpenseScreen() {
+export default function ExpenseScreen({route}) {
+  // PARAMS
+  const {initExpense} = route.params;
+
   // MUTATIONS
   const [addExpense, {loading, error}] = useMutation(ADD_EXPENSE);
   const [sendReminder] = useMutation(SEND_REMINDER);
@@ -69,6 +72,23 @@ export default function ExpenseScreen() {
   useEffect(() => {
     extractMyData(expenses);
   }, [expenses]);
+
+  useEffect(() => {
+    if (!initExpense) {
+      return;
+    }
+
+    const e = expenses.find(e => e._id === initExpense);
+
+    if (e) {
+      setTimeout(() => {
+        setSelectedExpense({
+          isVisible: true,
+          data: e,
+        });
+      }, 500);
+    }
+  }, [initExpense]);
 
   useEffect(() => {
     if (error) {

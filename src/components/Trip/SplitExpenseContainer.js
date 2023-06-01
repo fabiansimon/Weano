@@ -50,6 +50,7 @@ export default function SplitExpenseContainer({
       </View>
     );
   };
+
   return (
     <AnimatedTouchableHighlight
       onPress={() => {
