@@ -13,10 +13,6 @@ const GET_INIT_USER_DATA = gql`
         images
         trips
         pushToken
-        expenses {
-          expense
-          trip
-        }
         friends
         countriesVisited
         isProMember

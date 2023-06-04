@@ -206,7 +206,8 @@ export default function InitDataCrossroads({route}) {
     if (userData) {
       updateUserData({
         ...userData,
-        isProMember,
+        // isProMember: isProMember || userData?.isProMember,
+        isProMember: isProMember || userData?.isProMember,
       });
     }
 

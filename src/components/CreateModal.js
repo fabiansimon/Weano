@@ -65,24 +65,22 @@ export default function CreateModal({isVisible, onRequestClose}) {
   const [pageIndex, setPageIndex] = useState(0);
   const [invitees, setInvitees] = useState([]);
 
-  const [createData, setCreateData] = useState([
+  const pageRef = useRef(null);
+
+  const createData = [
     {
       title: i18n.t('Title'),
-      isDone: false,
-      content: () => getTitleContent(),
+      content: getTitleContent(),
     },
     {
       title: i18n.t('Dates'),
-      isDone: false,
-      content: () => getDateContent(),
+      content: getDateContent(),
     },
     {
       title: i18n.t('Location'),
-      isDone: false,
-      content: () => getLocationContent(),
+      content: getLocationContent(),
     },
-  ]);
-  const pageRef = useRef(null);
+  ];
 
   const getDateValue = () => {
     console.log(dates);
@@ -121,19 +119,6 @@ export default function CreateModal({isVisible, onRequestClose}) {
   };
 
   const navigatePage = index => {
-    const status = checkInputs(pageIndex);
-    setCreateData(prev =>
-      prev.map((p, i) => {
-        if (pageIndex === i) {
-          return {
-            ...p,
-            isDone: status,
-          };
-        }
-        return p;
-      }),
-    );
-
     Keyboard.dismiss();
 
     setTimeout(() => {
@@ -142,7 +127,7 @@ export default function CreateModal({isVisible, onRequestClose}) {
     }, 100);
   };
 
-  const checkInputs = index => {
+  const checkButtonDisbled = index => {
     switch (index) {
       case 0:
         return tripName?.trim().length > 0;
@@ -443,6 +428,7 @@ export default function CreateModal({isVisible, onRequestClose}) {
               onPress={() => handleChange(true)}
             />
             <Button
+              isDisabled={checkButtonDisbled()}
               isLoading={loading}
               text={i18n.t('Continue')}
               onPress={() => handleChange()}

@@ -49,6 +49,7 @@ import ActionTile from '../components/Trip/ActionTile';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Headline from '../components/typography/Headline';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import ProUserBubble from '../components/ProUserBubble';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
@@ -382,11 +383,14 @@ export default function MainScreen() {
         ]}>
         <SafeAreaView edges={['top']}>
           <View>
-            <Headline
-              type={4}
-              style={{textAlign: 'center'}}
-              text={`${i18n.t('Hey')} ${user?.firstName}!`}
-            />
+            <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+              <Headline
+                type={4}
+                style={{textAlign: 'center'}}
+                text={`${i18n.t('Hey')} ${user?.firstName}!`}
+              />
+              {user?.isProMember && <ProUserBubble style={{marginLeft: 4}} />}
+            </View>
             <Body
               type={2}
               style={{textAlign: 'center'}}

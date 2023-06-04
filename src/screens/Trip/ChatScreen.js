@@ -196,7 +196,18 @@ export default function ChatScreen() {
   };
 
   const onSnapshotResult = snapshot => {
-    if (snapshot) {
+    const {
+      senderId,
+      createdAt: {seconds},
+    } = snapshot._docs[0]._data;
+
+    const lastMessage = chatData[chatData.length - 1];
+
+    if (
+      snapshot &&
+      senderId !== lastMessage.senderId &&
+      seconds !== lastMessage.createdAt.seconds
+    ) {
       setChatData(prev => [...prev, snapshot._docs[0]._data]);
       scrollDown();
     }
