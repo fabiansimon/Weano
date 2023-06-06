@@ -35,6 +35,7 @@ import TitleModal from './TitleModal';
 import Subtitle from './typography/Subtitle';
 
 export default function CreateModal({isVisible, onRequestClose}) {
+  return;
   // MUTATIONS
   const [addTrip, {loading}] = useMutation(ADD_TRIP);
 

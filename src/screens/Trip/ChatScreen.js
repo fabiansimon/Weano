@@ -9,6 +9,7 @@ import {
   Pressable,
   // FlatList,
   Alert,
+  FlatList,
 } from 'react-native';
 import React, {useState, useRef, useEffect} from 'react';
 import IonIcon from 'react-native-vector-icons/Ionicons';
@@ -33,8 +34,10 @@ import {useMutation} from '@apollo/client';
 import LoadingModal from '../../components/LoadingModal';
 import AvatarList from '../../components/AvatarList';
 import ROUTES from '../../constants/Routes';
+import {RefreshControl} from 'react-native-gesture-handler';
+import chatFeatures from '../../utils/chatFeatures';
 
-const MAX_INIT_MESSAGES = 20;
+const MAX_INIT_MESSAGES = 10;
 
 export default function ChatScreen() {
   // MUTATIONS
@@ -51,6 +54,7 @@ export default function ChatScreen() {
   const [message, setMessage] = useState('');
   const [attVisible, setAttVisible] = useState(null);
   const [attachment, setAttachment] = useState(null);
+  const [fetching, setFetching] = useState(false);
 
   const navigation = useNavigation();
 
@@ -126,26 +130,28 @@ export default function ChatScreen() {
     );
   };
 
-  const deleteRoom = (id, updateDB = false) => {
-    firestore()
-      .collection('tripChats')
-      .doc(id || chatRoomId)
-      .delete()
-      .then(async () => {
-        updateActiveTrip({chatRoomId: undefined});
-        if (!updateDB) {
-          return;
-        }
+  const handleFetchMore = () => {};
 
-        await updateTrip({
-          variables: {
-            trip: {
-              chatRoomId: id || chatRoomId,
-              tripId: id,
-            },
+  const deleteRoom = async (id, updateDB = false) => {
+    try {
+      await chatFeatures(id);
+      updateActiveTrip({chatRoomId: undefined});
+
+      if (!updateDB) {
+        return;
+      }
+
+      await updateTrip({
+        variables: {
+          trip: {
+            chatRoomId: id || chatRoomId,
+            tripId: id,
           },
-        });
+        },
       });
+    } catch (error) {
+      showError();
+    }
   };
 
   const handleUpgrade = () => {
@@ -177,9 +183,7 @@ export default function ChatScreen() {
   const showError = () => {
     Alert.alert(
       i18n.t('Sorry!'),
-      i18n.t(
-        'Something went wrong when creating the chatroom. Please try again later',
-      ),
+      i18n.t('Something went wrong. Please try again later'),
       [
         {
           text: i18n.t('Ok'),
@@ -205,8 +209,8 @@ export default function ChatScreen() {
 
     if (
       snapshot &&
-      senderId !== lastMessage.senderId &&
-      seconds !== lastMessage.createdAt.seconds
+      senderId !== lastMessage?.senderId &&
+      seconds !== lastMessage?.createdAt?.seconds
     ) {
       setChatData(prev => [...prev, snapshot._docs[0]._data]);
       scrollDown();
@@ -215,19 +219,13 @@ export default function ChatScreen() {
 
   const fetchInitChatData = async () => {
     setChatData([]);
-    try {
-      const {_docs} = await firestore()
-        .collection('tripChats')
-        .doc(chatRoomId)
-        .collection('messages')
-        .orderBy('createdAt', 'asc')
-        .limitToLast(MAX_INIT_MESSAGES)
-        .get();
 
-      setChatData(_docs.map(({_data}) => _data));
+    try {
+      setChatData(
+        await chatFeatures.fetchChatData(chatRoomId, MAX_INIT_MESSAGES, 0),
+      );
     } catch (error) {
       showError();
-      console.log(error);
     }
   };
 
@@ -253,13 +251,9 @@ export default function ChatScreen() {
       cleanData();
       scrollDown();
 
-      firestore()
-        .collection('tripChats')
-        .doc(chatRoomId)
-        .collection('messages')
-        .add(newMessage);
+      await chatFeatures.sendMessage(chatRoomId, newMessage);
     } catch (error) {
-      console.log(error);
+      showError();
     }
   };
 
@@ -270,16 +264,18 @@ export default function ChatScreen() {
   };
 
   const scrollDown = () => {
-    // chatRef.current?.scrollToIndex({
-    //   index: chatData.length - 1,
-    //   animated: true,
-    // });
-    setTimeout(() => {
-      chatRef.current?.scrollTo({
-        y: 10000,
-        animated: true,
-      });
-    }, 100);
+    // setTimeout(() => {
+    //   chatRef.current?.scrollToIndex({
+    //     index: chatData.length - 1,
+    //     animated: true,
+    //   });
+    // }, 100);
+    // setTimeout(() => {
+    //   chatRef.current?.scrollTo({
+    //     y: 10000,
+    //     animated: true,
+    //   });
+    // }, 100);
   };
 
   const getHeader = () => (
@@ -375,7 +371,32 @@ export default function ChatScreen() {
         <View style={styles.container}>
           {getHeader()}
           <View style={styles.chatContainer}>
-            <ScrollView
+            <FlatList
+              refreshControl={
+                <RefreshControl
+                  progressViewOffset={30}
+                  refreshing={fetching}
+                  onRefresh={handleFetchMore}
+                />
+              }
+              ref={chatRef}
+              style={{
+                paddingTop: 10,
+                marginBottom: 10,
+                flexGrow: 1,
+                paddingHorizontal: PADDING.s,
+              }}
+              data={chatData}
+              renderItem={({item}) => (
+                <ChatBubble
+                  activeMembers={activeMembers}
+                  style={{marginBottom: 10}}
+                  content={item}
+                  isSelf={userId === item?.senderId}
+                />
+              )}
+            />
+            {/* <ScrollView
               ref={chatRef}
               contentContainerStyle={{
                 flexGrow: 1,
@@ -388,32 +409,14 @@ export default function ChatScreen() {
                   activeMembers={activeMembers}
                   style={{marginBottom: 10}}
                   content={content}
-                  isSelf={userId === content.senderId}
+                  isSelf={userId === content?.senderId}
                 />
               ))}
-            </ScrollView>
+            </ScrollView> */}
             <DaysStatusContainer
               style={styles.daysContainer}
               data={{dateRange, type}}
             />
-            {/* <FlatList
-              ref={chatRef}
-              style={{
-                paddingTop: 10,
-                marginBottom: 10,
-                flexGrow: 1,
-                paddingHorizontal: PADDING.s,
-              }}
-              data={chatData}
-              renderItem={({item, index}) => (
-                <ChatBubble
-                  activeMembers={activeMembers}
-                  style={{marginBottom: 10}}
-                  content={item}
-                  isSelf={userId === item.senderId}
-                />
-              )}
-            /> */}
           </View>
           {getFooter()}
         </View>

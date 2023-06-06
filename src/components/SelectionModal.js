@@ -153,6 +153,23 @@ export default function SelectionModal({
     </Pressable>
   );
 
+  const getEmptyComponent = () => {
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignSelf: 'center',
+          marginTop: '75%',
+        }}>
+        <Body
+          type={2}
+          color={COLORS.neutral[500]}
+          text={i18n.t('No items added yet')}
+        />
+      </View>
+    );
+  };
+
   return (
     <TitleModal
       isVisible={isVisible}
@@ -160,6 +177,7 @@ export default function SelectionModal({
       title={attachment ? attData.title : title}>
       <FlatList
         data={attachment ? attData?.data : data}
+        ListEmptyComponent={() => getEmptyComponent()}
         style={{marginHorizontal: PADDING.m, paddingTop: 8}}
         renderItem={({item, index}) =>
           attachment ? getAttachmentTile(item, index) : getTile(item, index)
