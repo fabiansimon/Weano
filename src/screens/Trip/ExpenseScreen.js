@@ -500,12 +500,7 @@ export default function ExpenseScreen() {
           </View>
         </View>
       </HybridHeader>
-      <FAButton
-        icon="add"
-        iconSize={28}
-        isDisabled={type === 'recent'}
-        onPress={() => setShowModal(true)}
-      />
+      <FAButton icon="add" iconSize={28} onPress={() => setShowModal(true)} />
       <AddExpenseModal
         tripId={tripId}
         currency={currency}
