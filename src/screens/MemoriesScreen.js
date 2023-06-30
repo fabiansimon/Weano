@@ -215,7 +215,7 @@ export default function MemoriesScreen({route}) {
           .fetch('GET', uri)
           .then(res => {
             const isLast = i === images.length - 1;
-            Utils.downloadImage(res.data, !!isLast);
+            Utils.downloadImage(res.data, !!isLast, true, getTripData().title);
             setDownloadIndex(isLast ? null : i);
           })
           .catch(e => {

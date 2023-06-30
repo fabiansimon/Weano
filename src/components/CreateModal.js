@@ -1,24 +1,14 @@
-import {
-  View,
-  StyleSheet,
-  Modal,
-  Keyboard,
-  Platform,
-  ScrollView,
-  Pressable,
-} from 'react-native';
-import React, {useRef, useState, useEffect, useCallback} from 'react';
+import {View, StyleSheet, Keyboard, ScrollView, Pressable} from 'react-native';
+import React, {useRef, useState} from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import PagerView from 'react-native-pager-view';
 import {useMutation} from '@apollo/client';
 import Toast from 'react-native-toast-message';
 import i18n from '../utils/i18n';
-import Headline from './typography/Headline';
 import COLORS, {PADDING, RADIUS} from '../constants/Theme';
 import TextField from './TextField';
 import Button from './Button';
 import KeyboardView from './KeyboardView';
-import ContactChip from './ContactChip';
 import PopUpModal from './PopUpModal';
 import Utils from '../utils';
 import PageIndicator from './PageIndicator';
@@ -57,31 +47,43 @@ export default function CreateModal({isVisible, onRequestClose}) {
     latlon: [],
   });
   const [tripName, setTripName] = useState('');
+  const [tripDescription, setTripDescription] = useState('');
 
-  // MODALS
   const [inputVisible, setInputVisible] = useState(false);
   const [calendarVisible, setCalendarVisible] = useState(false);
   const [popUpVisible, setPopUpVisible] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
-  const [invitees, setInvitees] = useState([]);
 
-  const [createData, setCreateData] = useState([
+  // const [createData, setCreateData] = useState([
+  //   {
+  //     title: i18n.t('Title'),
+  //     isDone: false,
+  //   },
+  //   {
+  //     title: i18n.t('Dates'),
+  //     isDone: false,
+  //   },
+  //   {
+  //     title: i18n.t('Location'),
+  //     isDone: false,
+  //   },
+  // ]);
+
+  const createData = [
     {
       title: i18n.t('Title'),
-      isDone: false,
-      content: () => getTitleContent(),
+      isDone: pageIndex > 0,
     },
     {
       title: i18n.t('Dates'),
-      isDone: false,
-      content: () => getDateContent(),
+      isDone: pageIndex > 1,
     },
     {
       title: i18n.t('Location'),
-      isDone: false,
-      content: () => getLocationContent(),
+      isDone: pageIndex > 2,
     },
-  ]);
+  ];
+
   const pageRef = useRef(null);
 
   const getDateValue = () => {
@@ -121,19 +123,6 @@ export default function CreateModal({isVisible, onRequestClose}) {
   };
 
   const navigatePage = index => {
-    const status = checkInputs(pageIndex);
-    setCreateData(prev =>
-      prev.map((p, i) => {
-        if (pageIndex === i) {
-          return {
-            ...p,
-            isDone: status,
-          };
-        }
-        return p;
-      }),
-    );
-
     Keyboard.dismiss();
 
     setTimeout(() => {
@@ -142,8 +131,8 @@ export default function CreateModal({isVisible, onRequestClose}) {
     }, 100);
   };
 
-  const checkInputs = index => {
-    switch (index) {
+  const checkInputs = () => {
+    switch (pageIndex) {
       case 0:
         return tripName?.trim().length > 0;
       case 1:
@@ -156,24 +145,8 @@ export default function CreateModal({isVisible, onRequestClose}) {
   };
 
   const cleanData = () => {
-    setCreateData([
-      {
-        title: i18n.t('Title'),
-        isDone: false,
-        content: () => getTitleContent(),
-      },
-      {
-        title: i18n.t('Dates'),
-        isDone: false,
-        content: () => getDateContent(),
-      },
-      {
-        title: i18n.t('Location'),
-        isDone: false,
-        content: () => getLocationContent(),
-      },
-    ]);
     setTripName('');
+    setTripDescription('');
     setLocation({
       string: '',
       latlon: [],
@@ -182,16 +155,12 @@ export default function CreateModal({isVisible, onRequestClose}) {
       start: null,
       end: null,
     });
-    setInvitees([]);
     onRequestClose();
     setPageIndex(0);
   };
 
   const handleData = async () => {
-    return;
-
     const {placeName, latlon} = location;
-    const param = invitees.toString().replace(',', '&');
 
     await addTrip({
       variables: {
@@ -205,6 +174,7 @@ export default function CreateModal({isVisible, onRequestClose}) {
             latlon,
           },
           title: tripName,
+          description: tripDescription,
         },
       },
     })
@@ -222,12 +192,11 @@ export default function CreateModal({isVisible, onRequestClose}) {
           startDate: dates.start,
           endDate: dates.end,
         });
-        httpService.sendInvitations(param, id);
         addTripState({
           id,
           thumbnailUri: null,
           title: tripName,
-          description: null,
+          description: tripDescription,
           destinations: [
             {
               placeName,
@@ -344,11 +313,11 @@ export default function CreateModal({isVisible, onRequestClose}) {
           paddingBottom: 50,
           paddingTop: 25,
         }}
-        value={tripName || null}
+        value={tripDescription || null}
         maxLength={100}
-        onChangeText={val => setTripName(val)}
+        onChangeText={val => setTripDescription(val)}
         placeholder={i18n.t('Set description')}
-        onDelete={() => setTripName('')}
+        onDelete={() => setTripDescription('')}
       />
     </View>
   );
@@ -428,8 +397,10 @@ export default function CreateModal({isVisible, onRequestClose}) {
               marginHorizontal: -PADDING.l,
             }}
             ref={pageRef}
-            scrollEnabled={false}>
-            {createData.map(item => item.content())}
+            scrollEnabled={true}>
+            {getTitleContent()}
+            {getDateContent()}
+            {getLocationContent()}
           </PagerView>
           <PageIndicator
             data={createData}
@@ -444,6 +415,7 @@ export default function CreateModal({isVisible, onRequestClose}) {
             />
             <Button
               isLoading={loading}
+              isDisabled={!checkInputs()}
               text={i18n.t('Continue')}
               onPress={() => handleChange()}
             />
@@ -468,18 +440,6 @@ export default function CreateModal({isVisible, onRequestClose}) {
         isVisible={calendarVisible}
       />
 
-      <InputModal
-        isVisible={inputVisible}
-        keyboardType="email-address"
-        autoCorrect={false}
-        autoCapitalize={false}
-        emailInput
-        multipleInputs
-        placeholder={i18n.t('john.doe@email.com')}
-        onRequestClose={() => setInputVisible(false)}
-        onPress={input => setInvitees(prev => prev.concat(input))}
-        autoClose
-      />
       <Toast config={toastConfig} />
     </TitleModal>
   );

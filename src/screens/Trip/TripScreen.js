@@ -64,6 +64,7 @@ import REMOVE_USER_FROM_TRIP from '../../mutations/removeUserFromTrip';
 import userStore from '../../stores/UserStore';
 import {LinearGradient} from 'expo-linear-gradient';
 import InfoController from '../../controllers/InfoController';
+import Subtitle from '../../components/typography/Subtitle';
 
 const {StatusBarManager} = NativeModules;
 
@@ -803,11 +804,20 @@ export default function TripScreen({route}) {
               style={styles.addIcon}
               onPressAction={({nativeEvent}) => handleMenuOption(nativeEvent)}
               actions={getMenuActions()}>
-              <FeatherIcon
-                name="more-vertical"
-                size={20}
-                color={COLORS.neutral[700]}
-              />
+              <View
+                style={{
+                  borderRadius: RADIUS.xl,
+                  borderWidth: 1,
+                  borderColor: COLORS.neutral[100],
+                  backgroundColor: COLORS.neutral[50],
+                  padding: 5,
+                }}>
+                <FeatherIcon
+                  name="more-vertical"
+                  size={20}
+                  color={COLORS.neutral[700]}
+                />
+              </View>
             </MenuView>
           </View>
           <ScrollView

@@ -179,7 +179,7 @@ export default class Utils {
    * Convert MonthInt to a Month String
    * @param {image} image - image to download
    */
-  static async downloadImage(image, showToast = true) {
+  static async downloadImage(image, showToast = true, album = 'Weano') {
     if (Platform.OS === 'android') {
       const permission =
         Platform.Version >= 33
@@ -196,7 +196,7 @@ export default class Utils {
       }
     }
 
-    CameraRoll.save(image, {type: 'photo', album: 'Weano'});
+    CameraRoll.save(image, {type: 'photo', album: album});
     if (showToast) {
       setTimeout(() => {
         Toast.show({

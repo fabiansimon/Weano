@@ -24,6 +24,7 @@ import ContactDetailModal from '../../components/ContactDetailModal';
 import SwipeView from '../../components/SwipeView';
 import userStore from '../../stores/UserStore';
 import UPDATE_TRIP from '../../mutations/updateTrip';
+import ShareModal from '../../components/Trip/ShareModal';
 
 export default function InviteeScreen() {
   // MUTATIONS
@@ -43,6 +44,7 @@ export default function InviteeScreen() {
   // STATE & MISC
   const scrollY = useRef(new Animated.Value(0)).current;
   const [inputVisible, setInputVisible] = useState(false);
+  const [shareVisible, setShareVisible] = useState(false);
   const [showUser, setShowUser] = useState(null);
 
   const isHost = userManagement.isHost();
@@ -253,12 +255,36 @@ export default function InviteeScreen() {
           renderItem={(item, index) => getTile(item, index)}
         />
       </HybridHeader>
-      <FAButton
+      {/* <FAButton
         isDisabled={type === 'recent'}
         icon="add"
         iconSize={28}
         onPress={() => setInputVisible(true)}
+      /> */}
+
+      <FAButton
+        description={
+          activeMembers.length <= 1
+            ? i18n.t('Make sure to \ninvite your friends!')
+            : null
+        }
+        options={[
+          {
+            title: i18n.t('Share code'),
+            icon: 'qr-code-outline',
+            iconSize: 18,
+            onPress: () => setShareVisible(true),
+          },
+          {
+            title: i18n.t('Via email'),
+            icon: 'mail-open-outline',
+            onPress: () => setInputVisible(true),
+          },
+        ]}
+        icon="add"
+        iconSize={28}
       />
+
       <InputModal
         topContent={getShareLinkButton()}
         isVisible={inputVisible}
@@ -272,6 +298,13 @@ export default function InviteeScreen() {
         onPress={input => handleInvitations(input)}
         autoClose
       />
+
+      <ShareModal
+        isVisible={shareVisible}
+        onRequestClose={() => setShareVisible(false)}
+        value={`${META_DATA.websiteUrl}/redirect/invitation/${tripId}`}
+      />
+
       <ContactDetailModal
         isVisible={showUser}
         onRequestClose={() => setShowUser(null)}

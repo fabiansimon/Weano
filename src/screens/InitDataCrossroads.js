@@ -10,7 +10,6 @@ import React, {useEffect, useState, useRef} from 'react';
 import * as Notifications from 'expo-notifications';
 import {useNavigation} from '@react-navigation/native';
 import {useLazyQuery, useMutation} from '@apollo/client';
-import Toast from 'react-native-toast-message';
 import i18n from '../utils/i18n';
 import ROUTES from '../constants/Routes';
 import GET_INIT_USER_DATA from '../queries/getInitUserData';
@@ -51,6 +50,7 @@ export default function InitDataCrossroads({route}) {
   const {authToken, pushToken} = userStore(state => state.user);
   const setTrips = tripsStore(state => state.setTrips);
   const updateUserData = userStore(state => state.updateUserData);
+  const clearUserData = userStore(state => state.clearUserData);
 
   // STATE & MISC
   const [init, setInit] = useState(false);
@@ -70,6 +70,18 @@ export default function InitDataCrossroads({route}) {
   });
 
   Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
+
+  const clearToken = () => {
+    asyncStorageDAO.logout();
+    clearUserData();
+    setTimeout(() => {
+      checkInitStatus();
+    }, 100);
+  };
+
+  useEffect(() => {
+    // clearToken();
+  }, [error]);
 
   const registerPushNotificationToken = async () => {
     const {status: currentStatus} = await Notifications.getPermissionsAsync();
@@ -108,7 +120,8 @@ export default function InitDataCrossroads({route}) {
         },
       });
     } catch (e) {
-      console.log(e);
+      console.error(e);
+      clearToken();
     }
   };
 
@@ -165,7 +178,10 @@ export default function InitDataCrossroads({route}) {
     if (authToken) {
       await registerPushNotificationToken();
       updateUserData({authToken: token});
-      await getInitData();
+      getInitData().catch(e => {
+        console.error(e);
+        clearToken();
+      });
       return;
     }
 
@@ -174,7 +190,10 @@ export default function InitDataCrossroads({route}) {
       await registerPushNotificationToken();
       updateUserData({authToken: token});
       setTimeout(() => {
-        getInitData();
+        getInitData().catch(e => {
+          console.error(e);
+          clearToken();
+        });
       }, 500);
     }
 

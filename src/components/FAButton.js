@@ -90,7 +90,7 @@ export default function FAButton({
   });
 
   const getOptionButton = (option, index) => {
-    const {title, icon: iconName, onPress: onTap} = option;
+    const {title, icon: iconName, onPress: onTap, iconSize} = option;
 
     return (
       <AnimatedPressable
@@ -118,7 +118,7 @@ export default function FAButton({
         <View style={styles.miniFab}>
           <Icon
             name={iconName}
-            size={22}
+            size={iconSize || 22}
             style={{marginLeft: 1}}
             color={COLORS.shades[0]}
           />
