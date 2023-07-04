@@ -176,7 +176,7 @@ export default function InviteeScreen() {
           {
             backgroundColor: COLORS.error[900],
             string: i18n.t('Remove'),
-            onPress: () => handleDelete(userId),
+            onPress: () => handleDelete(id),
             isDisabled:
               !hostIds.includes(userId) ||
               userId === id ||
@@ -257,12 +257,6 @@ export default function InviteeScreen() {
           renderItem={(item, index) => getTile(item, index)}
         />
       </HybridHeader>
-      {/* <FAButton
-        isDisabled={type === 'recent'}
-        icon="add"
-        iconSize={28}
-        onPress={() => setInputVisible(true)}
-      /> */}
 
       <FAButton
         description={

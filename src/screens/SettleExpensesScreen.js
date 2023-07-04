@@ -106,7 +106,7 @@ export default function SettleExpensesScreen() {
           </View>
           <Body
             type={2}
-            text={`${paidByUser.firstName}, ${Utils.getDateFromTimestamp(
+            text={`${paidByUser?.firstName}, ${Utils.getDateFromTimestamp(
               createdAt / 1000,
               'DD/MM/YY',
             )}`}
