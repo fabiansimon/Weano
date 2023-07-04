@@ -51,12 +51,14 @@ export default function InviteeScreen() {
 
   const handleShare = () => {
     Share.share({
-      message: `Hey! You've been invited to join a trip! Click the link below to join! ${META_DATA.baseUrl}/redirect/invitation/${tripId}`,
+      message: `Hey! You've been invited to join a trip! Click the link below to join! ${META_DATA.websiteUrl}/redirect/invitation/${tripId}`,
     });
   };
 
   const copyLink = () => {
-    Clipboard.setString(`${META_DATA.baseUrl}/redirect/invitation/${tripId}`);
+    Clipboard.setString(
+      `${META_DATA.websiteUrl}/redirect/invitation/${tripId}`,
+    );
     Toast.show({
       type: 'success',
       text1: i18n.t('Copied!'),
