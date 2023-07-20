@@ -69,7 +69,12 @@ export default function StorySection({
     }
 
     setSortedData(
-      data.slice().filter(({type}) => type === 'recent' || type === 'recap'),
+      data
+        .slice()
+        .filter(
+          ({type}) =>
+            type === 'recent' || type === 'recap' || type === 'active',
+        ),
     );
   }, [data]);
 

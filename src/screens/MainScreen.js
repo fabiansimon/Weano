@@ -429,7 +429,7 @@ export default function MainScreen() {
           <Subtitle
             type={1}
             style={{marginLeft: 5}}
-            text={i18n.t('Quick Recap')}
+            text={i18n.t('Memories')}
           />
 
           <Pressable>

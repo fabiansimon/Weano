@@ -531,21 +531,21 @@ export default function TripScreen({route}) {
       subactions: [
         {
           id: 'editTitle',
-          title: i18n.t('Edit title'),
+          title: i18n.t('Title'),
           attributes: {
             disabled: !isHost,
           },
         },
         {
           id: 'editDescription',
-          title: i18n.t('Edit description'),
+          title: i18n.t('Description'),
           attributes: {
             disabled: !isHost,
           },
         },
         {
           id: 'editThumbnail',
-          title: i18n.t('Edit thumbnail'),
+          title: i18n.t('Thumbnail'),
           attributes: {
             disabled: !isHost,
           },
