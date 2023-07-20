@@ -10,6 +10,7 @@ import DELETE_IMAGE from '../../mutations/deleteImage';
 import Avatar from '../Avatar';
 import ActionSheet from 'react-native-actionsheet';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import COLORS from '../../constants/Theme';
 
 export default function ImageContainer({
   style,
@@ -112,9 +113,9 @@ export default function ImageContainer({
         activeOpacity={0.5}
         style={[styles.container, style]}>
         {cacheImage ? (
-          <FastImage source={{uri}} resizeMode="cover" style={styles.image} />
+          <FastImage source={{uri}} resizeMode="contain" style={styles.image} />
         ) : (
-          <Image source={{uri}} resizeMode="cover" style={styles.image} />
+          <Image source={{uri}} resizeMode="contain" style={styles.image} />
         )}
         <Avatar
           size={26}
@@ -140,10 +141,13 @@ export default function ImageContainer({
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: Utils.addAlpha(COLORS.shades[100], 0.8),
     width: Dimensions.get('window').width * 0.318,
     aspectRatio: 9 / 16,
     borderRadius: 6,
     overflow: 'hidden',
+    borderWidth: 0.5,
+    borderColor: COLORS.neutral[700],
   },
   image: {
     flex: 1,

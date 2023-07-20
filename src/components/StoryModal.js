@@ -193,6 +193,7 @@ export default function StoryModal({
       <View style={{width, height, backgroundColor: COLORS.shades[100]}}>
         <FastImage
           source={{uri}}
+          resizeMode="contain"
           style={{
             borderRadius: RADIUS.m,
             flex: 1,
