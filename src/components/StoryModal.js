@@ -33,6 +33,7 @@ import Body from './typography/Body';
 import Avatar from './Avatar';
 import toastConfig from '../constants/ToastConfig';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import Subtitle from './typography/Subtitle';
 
 export default function StoryModal({
   data,
@@ -173,13 +174,6 @@ export default function StoryModal({
             />
           ) : (
             <>
-              <Body
-                type={1}
-                text={i18n.t('Save')}
-                color={COLORS.neutral[700]}
-                style={{marginRight: 6}}
-              />
-
               <OctiIcon name="download" size={16} color={COLORS.neutral[700]} />
             </>
           )}
@@ -193,7 +187,7 @@ export default function StoryModal({
       return;
     }
 
-    const {uri, title, description, author, createdAt} = item;
+    const {uri, title, description, author, createdAt, timestamp} = item;
 
     return (
       <View style={{width, height, backgroundColor: COLORS.shades[100]}}>
@@ -206,19 +200,20 @@ export default function StoryModal({
         />
         <View style={styles.infoContainer}>
           <View style={{flex: 1}}>
-            <Body
+            {title && (
+              <Body
+                type={1}
+                color={COLORS.shades[0]}
+                style={{fontStyle: !title ? 'italic' : 'normal'}}
+                text={title}
+              />
+            )}
+            <Subtitle
               type={1}
-              color={COLORS.shades[0]}
-              style={{fontStyle: !title ? 'italic' : 'normal'}}
-              text={title || i18n.t('No title')}
-            />
-            <Body
-              type={2}
               numberOfLines={2}
               ellipsizeMode="tail"
-              color={Utils.addAlpha('#ffffff', 0.5)}
-              style={{fontStyle: !description ? 'italic' : 'normal'}}
-              text={description || i18n.t('No description')}
+              color={COLORS.shades[0]}
+              text={description || i18n.t('No caption 😶')}
             />
           </View>
           <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -234,7 +229,7 @@ export default function StoryModal({
                 style={{textAlign: 'right'}}
                 color={Utils.addAlpha('#ffffff', 0.5)}
                 text={`${Utils.getDateFromTimestamp(
-                  createdAt / 1000,
+                  timestamp || createdAt / 1000,
                   'MMM Do YYYY',
                 )}`}
               />
@@ -339,7 +334,7 @@ const styles = StyleSheet.create({
   infoContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-end',
+    // alignItems: 'flex-end',
     paddingHorizontal: PADDING.l,
     paddingBottom: 50,
     width: Dimensions.get('window').width,

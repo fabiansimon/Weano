@@ -79,9 +79,9 @@ export default function InitDataCrossroads({route}) {
     }, 100);
   };
 
-  useEffect(() => {
-    // clearToken();
-  }, [error]);
+  // useEffect(() => {
+  //   clearToken();
+  // }, [error]);
 
   const registerPushNotificationToken = async () => {
     const {status: currentStatus} = await Notifications.getPermissionsAsync();
@@ -176,7 +176,7 @@ export default function InitDataCrossroads({route}) {
 
   const checkInitStatus = async () => {
     if (authToken) {
-      await registerPushNotificationToken();
+      registerPushNotificationToken();
       updateUserData({authToken: token});
       getInitData().catch(e => {
         console.error(e);
@@ -187,7 +187,7 @@ export default function InitDataCrossroads({route}) {
 
     const token = await asyncStorageDAO.getAccessToken();
     if (token) {
-      await registerPushNotificationToken();
+      registerPushNotificationToken();
       updateUserData({authToken: token});
       setTimeout(() => {
         getInitData().catch(e => {

@@ -5,12 +5,12 @@ import {
   StyleSheet,
   TextInput,
   View,
-  TouchableOpacity,
   Share,
   Image,
   Dimensions,
   NativeModules,
   Platform,
+  Pressable,
 } from 'react-native';
 import React, {useState, useEffect, useRef} from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -34,6 +34,8 @@ import LoadingModal from './LoadingModal';
 import activeTripStore from '../stores/ActiveTripStore';
 import tripsStore from '../stores/TripsStore';
 import GradientOverlay from './GradientOverlay';
+import Subtitle from './typography/Subtitle';
+import CalendarModal from './CalendarModal';
 // import activeTripStore from '../stores/ActiveTripStore';
 
 const AnimatedImage = Animated.createAnimatedComponent(Image);
@@ -60,10 +62,13 @@ export default function ImageModal({
 
   // STATE & MISC
   const navigation = useNavigation();
-  const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isShared, setIsShared] = useState(false);
+  const [timestamp, setTimestamp] = useState(
+    parseInt((new Date() / 1000).toFixed(0), 10),
+  );
+  const [calendarVisible, setCalendarVisible] = useState(false);
   const [animationDone, setAnimationDone] = useState(false);
 
   const {width, height} = Dimensions.get('window');
@@ -128,13 +133,6 @@ export default function ImageModal({
     }
   }, [error]);
 
-  const handleShare = async () => {
-    Share.share({
-      message:
-        'React Native | A framework for building native apps using React',
-    });
-  };
-
   const handlePublish = async () => {
     setIsLoading(true);
 
@@ -150,10 +148,10 @@ export default function ImageModal({
         variables: {
           image: {
             uri: Location,
-            title: title || '',
             description: description || '',
             tripId,
             s3Key: Key,
+            timestamp,
           },
         },
       }).then(res => {
@@ -178,6 +176,7 @@ export default function ImageModal({
             return trip;
           }),
         );
+
         if (id === tripId) {
           const newImage = {
             author,
@@ -186,7 +185,9 @@ export default function ImageModal({
             description: _description,
             title: _title,
             uri,
+            timestamp,
           };
+
           if (images?.length > 0) {
             updateActiveTrip({
               images: [...images, newImage],
@@ -224,28 +225,25 @@ export default function ImageModal({
   const getPublishFooter = () => (
     <View style={styles.footer}>
       <View style={{flexDirection: 'row'}}>
-        <TouchableOpacity
-          onPress={() => Utils.downloadImage(image)}
+        <Pressable
+          // onPress={() => Utils.downloadImage(image)}
+          onPress={() => setCalendarVisible(true)}
           activeOpacity={0.8}
-          style={styles.roundButton}>
-          <Icon
-            name="ios-download"
-            size={20}
-            color={Utils.addAlpha(COLORS.neutral[50], 0.9)}
-            style={{marginRight: -2}}
-          />
-        </TouchableOpacity>
-        {/* <TouchableOpacity
-          onPress={handleShare}
-          activeOpacity={0.8}
-          style={[styles.roundButton, {marginLeft: 10}]}>
-          <Icon
-            name="arrow-redo"
-            size={20}
-            color={Utils.addAlpha(COLORS.neutral[50], 0.9)}
-            style={{marginRight: -2}}
-          />
-        </TouchableOpacity> */}
+          style={styles.timestampButton}>
+          <View>
+            <Subtitle
+              type={2}
+              text={i18n.t('Taken on the')}
+              color={COLORS.shades[0]}
+            />
+            <Subtitle
+              style={{marginTop: 2}}
+              type={1}
+              text={`${Utils.getDateFromTimestamp(timestamp, 'MMM Do YYYY')}`}
+              color={COLORS.shades[0]}
+            />
+          </View>
+        </Pressable>
       </View>
       <Button
         text={i18n.t('Publish')}
@@ -264,20 +262,17 @@ export default function ImageModal({
   const getDetailsHeader = () => (
     <View style={styles.header}>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
-        <Avatar disabled isSelf size={45} />
+        <Avatar disabled isSelf size={40} />
         <View style={{marginLeft: 10}}>
-          <Headline
-            type={4}
-            text={`${i18n.t('By')} ${user?.firstName} ${user?.lastName}`}
+          <Body
+            type={1}
+            text={i18n.t('Captured by')}
             color={COLORS.shades[0]}
             style={styles.shadow}
           />
           <Body
             type={2}
-            text={`${Utils.getDateFromTimestamp(
-              Date.now() / 1000,
-              'MMM Do YYYY',
-            )}`}
+            text={`${user?.firstName} ${user?.lastName}`}
             color={Utils.addAlpha(COLORS.neutral[50], 0.8)}
             style={styles.shadow}
           />
@@ -294,92 +289,101 @@ export default function ImageModal({
   );
 
   return (
-    <Modal
-      animationType="none"
-      visible={isVisible}
-      useNativeDriver
-      collapsable
-      transparent
-      onRequestClose={onRequestClose}>
-      <View style={[styles.container, style]}>
-        {animationDone && (
-          <ImageSharedView
-            style={styles.doneContainer}
-            image={image}
-            onDone={handleDone}
-          />
-        )}
-        <>
-          <View
-            style={{
-              backgroundColor: '#1E1E1E',
-              position: 'absolute',
-              height: '100%',
-              width: '100%',
-              alignContent: 'center',
-              justifyContent: 'center',
-            }}>
-            <AnimatedImage
-              source={{
-                uri: isPreselected
-                  ? image?.path || image.sourceURL
-                  : image?.uri,
-              }}
-              resizeMode={isPreselected && 'contain'}
-              style={[
-                {
-                  alignSelf: 'center',
-                  borderRadius: imageBorderRadius,
-                  height: imageHeight,
-                  bottom: imageBottomMargin,
-                  width: imageWidth,
-                },
-                {transform: [{rotate: rotation}]},
-              ]}
+    <>
+      <Modal
+        animationType="none"
+        visible={isVisible}
+        useNativeDriver
+        collapsable
+        transparent
+        onRequestClose={onRequestClose}>
+        <View style={[styles.container, style]}>
+          {animationDone && (
+            <ImageSharedView
+              style={styles.doneContainer}
+              image={image}
+              onDone={handleDone}
             />
-          </View>
-          {!isShared && (
-            <>
-              <GradientOverlay />
-              <KeyboardView
-                behavior="padding"
-                paddingBottom={-50}
-                style={styles.textinputs}>
-                <View style={{flex: 1}} />
-                <View style={{marginLeft: PADDING.m, bottom: '15%'}}>
-                  <TextInput
-                    maxLength={20}
-                    placeholder={i18n.t('Add a title')}
-                    placeholderTextColor={Utils.addAlpha(
-                      COLORS.neutral[100],
-                      0.6,
-                    )}
-                    style={[styles.titleStyle, styles.shadow]}
-                    onChangeText={val => setTitle(val)}
-                  />
-                  <TextInput
-                    maxLength={50}
-                    numberOfLines={3}
-                    ellipsizeMode="tail"
-                    placeholder={i18n.t('Or even an description')}
-                    placeholderTextColor={Utils.addAlpha(
-                      COLORS.neutral[100],
-                      0.6,
-                    )}
-                    style={[styles.descriptionStyle, styles.shadow]}
-                    onChangeText={val => setDescription(val)}
-                  />
-                </View>
-              </KeyboardView>
-              {getDetailsHeader()}
-              {getPublishFooter()}
-            </>
           )}
-        </>
-      </View>
-      <Toast config={toastConfig} />
-      <LoadingModal isLoading={isLoading} />
-    </Modal>
+          <>
+            <View
+              style={{
+                backgroundColor: '#1E1E1E',
+                position: 'absolute',
+                height: '100%',
+                width: '100%',
+                alignContent: 'center',
+                justifyContent: 'center',
+              }}>
+              <AnimatedImage
+                source={{
+                  uri: isPreselected
+                    ? image?.path || image.sourceURL
+                    : image?.uri,
+                }}
+                resizeMode={isPreselected && 'contain'}
+                style={[
+                  {
+                    alignSelf: 'center',
+                    borderRadius: imageBorderRadius,
+                    height: imageHeight,
+                    bottom: imageBottomMargin,
+                    width: imageWidth,
+                  },
+                  {transform: [{rotate: rotation}]},
+                ]}
+              />
+            </View>
+            {!isShared && (
+              <>
+                <GradientOverlay />
+                <KeyboardView
+                  behavior="padding"
+                  paddingBottom={-50}
+                  style={styles.textinputs}>
+                  <View style={{flex: 1}} />
+                  <View
+                    style={{
+                      marginLeft: PADDING.m,
+                      bottom: '15%',
+                    }}>
+                    <View>
+                      <TextInput
+                        maxLength={50}
+                        numberOfLines={3}
+                        ellipsizeMode="tail"
+                        placeholder={i18n.t('Add a caption')}
+                        placeholderTextColor={Utils.addAlpha(
+                          COLORS.neutral[100],
+                          0.6,
+                        )}
+                        style={[styles.descriptionStyle, styles.shadow]}
+                        onChangeText={val => setDescription(val)}
+                      />
+                    </View>
+                  </View>
+                </KeyboardView>
+                {getDetailsHeader()}
+                {getPublishFooter()}
+              </>
+            )}
+          </>
+        </View>
+        <Toast config={toastConfig} />
+        <LoadingModal isLoading={isLoading} />
+        <CalendarModal
+          minDate={false}
+          isVisible={calendarVisible}
+          isSingleDate
+          onRequestClose={() => setCalendarVisible(false)}
+          initialStartDate={timestamp}
+          onApplyClick={({timestamp: updatedTimestamp}) => {
+            setTimestamp(updatedTimestamp / 1000);
+            setCalendarVisible(false);
+          }}
+        />
+      </Modal>
+    </>
   );
 }
 
@@ -396,13 +400,14 @@ const styles = StyleSheet.create({
     marginBottom: -25,
   },
   descriptionStyle: {
-    marginTop: 6,
+    marginTop: 16,
     fontFamily: 'WorkSans-Regular',
     color: COLORS.shades[0],
     fontSize: 16,
     marginRight: PADDING.l,
     letterSpacing: -0.6,
-    height: 50,
+    height: Platform.OS === 'android' ? 50 : null,
+    maxWidth: '80%',
   },
   header: {
     paddingHorizontal: PADDING.m,
@@ -448,5 +453,9 @@ const styles = StyleSheet.create({
     height: '100%',
     position: 'absolute',
     zIndex: 1,
+  },
+  timestampButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });

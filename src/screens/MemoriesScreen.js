@@ -135,7 +135,7 @@ export default function MemoriesScreen({route}) {
 
     for (let i = 0; i < arr.length; i += 1) {
       const datestamp = Utils.getDateFromTimestamp(
-        arr[i].createdAt / 1000,
+        arr[i].timestamp || arr[i].createdAt / 1000,
         'DDMMYY',
       );
       const setSection = getMonthString(datestamp);
@@ -565,6 +565,7 @@ export default function MemoriesScreen({route}) {
             <FlatList
               removeClippedSubviews
               showsVertiacalScrollIndicator={false}
+              // eslint-disable-next-line react/no-unstable-nested-components
               ListEmptyComponent={() => (
                 <View
                   style={{

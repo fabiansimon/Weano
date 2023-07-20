@@ -185,7 +185,7 @@ const CalendarModal = ({
         onRequestClose();
         setDateRange({});
       }}
-      title={i18n.t('Choose dates')}
+      title={isSingleDate ? i18n.t('Choose date') : i18n.t('Choose dates')}
       actionLabel={i18n.t('Apply')}
       isDisabled={
         !(

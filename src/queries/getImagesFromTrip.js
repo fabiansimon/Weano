@@ -10,6 +10,7 @@ const GET_IMAGES_FROM_TRIP = gql`
         uri
         title
         description
+        timestamp
         author {
           _id
           firstName
