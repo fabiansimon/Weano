@@ -425,43 +425,47 @@ export default function ExpenseScreen() {
                 color={COLORS.neutral[300]}
               />
             </View>
-            {expenses?.length > 0 && (
-              <Pressable
-                onPress={() => {
-                  if (users.length <= 1) {
-                    return InfoController.showModal(
-                      i18n.t('Sorry'),
-                      i18n.t(
-                        "There are no expenses to settle if it's only you.",
-                      ),
-                    );
-                  }
+            <Pressable
+              onPress={() => {
+                if (expenses.length <= 0) {
+                  return InfoController.showModal(
+                    i18n.t('Sorry'),
+                    i18n.t('There are no expenses to settle at the moment.'),
+                  );
+                }
 
-                  if (!isHost) {
-                    return InfoController.showModal(
-                      i18n.t('Sorry'),
-                      i18n.t(
-                        'Only a host can settle the expenses of the trip.',
-                      ),
-                    );
-                  }
+                if (users.length <= 1) {
+                  return InfoController.showModal(
+                    i18n.t('Sorry'),
+                    i18n.t("There are no expenses to settle if it's only you."),
+                  );
+                }
 
-                  return navigation.navigate(ROUTES.settleExpensesScreen, {
-                    totalAmount,
-                  });
-                }}
-                style={[
-                  styles.settleButton,
-                  {opacity: isHost && users.length > 1 ? 1 : 0.5},
-                ]}>
-                <Body
-                  type={2}
-                  color={COLORS.shades[0]}
-                  style={{fontWeight: '500'}}
-                  text={i18n.t('settle expenses')}
-                />
-              </Pressable>
-            )}
+                if (!isHost) {
+                  return InfoController.showModal(
+                    i18n.t('Sorry'),
+                    i18n.t('Only a host can settle the expenses of the trip.'),
+                  );
+                }
+
+                return navigation.navigate(ROUTES.settleExpensesScreen, {
+                  totalAmount,
+                });
+              }}
+              style={[
+                styles.settleButton,
+                {
+                  opacity:
+                    isHost && users.length && expenses.length > 1 ? 1 : 0.5,
+                },
+              ]}>
+              <Body
+                type={2}
+                color={COLORS.shades[0]}
+                style={{fontWeight: '500'}}
+                text={i18n.t('settle expenses')}
+              />
+            </Pressable>
           </View>
           <ExpensesContainer
             showIndividual

@@ -168,7 +168,7 @@ export default function StoryModal({
           style={[styles.roundButton, {marginLeft: 10}]}>
           {isLoading ? (
             <ActivityIndicator
-              size={14}
+              size={6}
               style={{padding: 4}}
               color={COLORS.shades[100]}
             />
@@ -200,6 +200,14 @@ export default function StoryModal({
           }}
         />
         <View style={styles.infoContainer}>
+          {/* <View style={styles.editButton}>
+            <Body
+              type={1}
+              color={COLORS.shades[0]}
+              text={'Edit'}
+              style={{alignSelf: 'center'}}
+            />
+          </View> */}
           <View style={{flex: 1}}>
             {title && (
               <Body
@@ -335,12 +343,26 @@ const styles = StyleSheet.create({
   infoContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    // alignItems: 'flex-end',
     paddingHorizontal: PADDING.l,
     paddingBottom: 50,
-    width: Dimensions.get('window').width,
+    width: '100%',
     backgroundColor: COLORS.shades[100],
+    borderTopColor: COLORS.neutral[900],
+    borderTopWidth: 2,
     paddingTop: 14,
     bottom: Platform.OS === 'android' ? -30 : 0,
+  },
+  editButton: {
+    position: 'absolute',
+    top: -40,
+    width: '110%',
+    alignSelf: 'center',
+    borderRadius: RADIUS.xl,
+    padding: 10,
+    flexDirection: 'row',
+    borderWidth: 1,
+    borderColor: COLORS.error[100],
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
