@@ -91,17 +91,13 @@ function SettleModal({
           amount = Math.abs(currMember.diff).toFixed(2);
           currMember.diff = 0;
           settleMember.diff = diff;
-        }
-
-        if (Math.abs(currMember.diff) > Math.abs(settleMember.diff)) {
+        } else if (Math.abs(currMember.diff) > Math.abs(settleMember.diff)) {
           amount = Math.abs(settleMember.diff).toFixed(2);
           currMember.diff = (
             Math.abs(currMember.diff) - Math.abs(settleMember.diff)
           ).toFixed(10);
           settleMember.diff = 0;
-        }
-
-        if (Math.abs(currMember.diff) === Math.abs(settleMember.diff)) {
+        } else if (Math.abs(currMember.diff) === Math.abs(settleMember.diff)) {
           amount = Math.abs(currMember.diff).toFixed(2);
           currMember.diff = 0;
           settleMember.diff = 0;
