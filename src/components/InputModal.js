@@ -36,6 +36,7 @@ export default function InputModal({
   multipleInputs,
   emailInput,
   packingInput,
+  trailingContent,
   autoClose,
   multiline,
   maxLength,
@@ -365,6 +366,7 @@ export default function InputModal({
                 placeholderTextColor={COLORS.neutral[300]}
                 placeholder={placeholder}
               />
+              {trailingContent && trailingContent}
               {((multipleInputs && multiValues.length > 0) ||
                 (!multipleInputs && input.length >= 1)) && (
                 <TouchableOpacity

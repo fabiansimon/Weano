@@ -465,7 +465,7 @@ export default function MemoriesScreen({route}) {
     );
   };
 
-  const getFAB = () => {
+  const getFAB = useCallback(() => {
     const isDisabled = userFreeImages <= 0;
     return (
       <MenuView
@@ -521,7 +521,7 @@ export default function MemoriesScreen({route}) {
         )}
       </MenuView>
     );
-  };
+  }, [userFreeImages]);
 
   return (
     <>

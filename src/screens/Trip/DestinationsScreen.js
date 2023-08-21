@@ -1,5 +1,5 @@
 import React, {useMemo, useRef, useState, useEffect, useCallback} from 'react';
-import {Dimensions, Platform, StyleSheet, View} from 'react-native';
+import {Dimensions, Platform, Pressable, StyleSheet, View} from 'react-native';
 import MapboxGL from '@rnmapbox/maps';
 import Toast from 'react-native-toast-message';
 import bbox from '@turf/bbox';
@@ -20,6 +20,7 @@ import Body from '../../components/typography/Body';
 import activeTripStore from '../../stores/ActiveTripStore';
 import UPDATE_TRIP from '../../mutations/updateTrip';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import CalendarModal from '../../components/CalendarModal';
 
 MapboxGL.setAccessToken(MAPBOX_TOKEN);
 const MAX_LENGTH = 15;
@@ -34,7 +35,18 @@ export default function DestinationScreen({navigatePage, isHost}) {
   const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
 
   // STATE && MISC
-  const [inputVisible, setInputVisible] = useState(false);
+  const [inputData, setInputData] = useState({
+    calendarVisible: false,
+    inputVisible: false,
+    dateRange: {
+      startDate: 0,
+      endDate: 0,
+    },
+    destination: {
+      latlon: [],
+      placeName: '',
+    },
+  });
   const [isReplace, setIsReplaced] = useState(false);
   const [expandedIndex, setExpandedIndex] = useState(0);
   const [scrollIndex, setScrollIndex] = useState(false);
@@ -285,26 +297,107 @@ export default function DestinationScreen({navigatePage, isHost}) {
             dateRange={dateRange}
             onReplace={() => {
               setIsReplaced(true);
-              setInputVisible(true);
+              setInputData(prev => {
+                return {
+                  ...prev,
+                  inputVisible: true,
+                };
+              });
             }}
             amountPeople={activeMembers?.length}
             isRecent={type === 'recent'}
             handleExpending={handleSheetTap}
             position={sheetPosition}
-            onAdd={() => setInputVisible(true)}
+            onAdd={() => {
+              setInputData(prev => {
+                return {
+                  ...prev,
+                  inputVisible: true,
+                };
+              });
+            }}
             onDelete={index => handleDeletion(index)}
             onDragEnded={data => updateData(data)}
             destinations={destinationData}
           />
         </BottomSheet>
         <InputModal
-          isVisible={inputVisible}
+          isVisible={inputData.inputVisible}
           geoMatching
+          trailingContent={
+            <Pressable
+              onPress={() => {
+                setInputData(prev => {
+                  return {
+                    ...prev,
+                    inputVisible: false,
+                  };
+                });
+                setTimeout(() => {
+                  setInputData(prev => {
+                    return {
+                      ...prev,
+                      calendarVisible: true,
+                    };
+                  });
+                }, 500);
+              }}
+              style={styles.dateContainer}>
+              <Body
+                type={2}
+                text={
+                  !inputData?.dateRange.startDate
+                    ? i18n.t('From - To')
+                    : `${Utils.getDateFromTimestamp(
+                        inputData.dateRange.startDate,
+                        'MMM Do',
+                      )}`
+                }
+              />
+            </Pressable>
+          }
           placeholder={i18n.t('Enter new destination')}
-          onRequestClose={() => setInputVisible(false)}
+          onRequestClose={() => {
+            setInputData(prev => {
+              return {
+                ...prev,
+                inputVisible: false,
+              };
+            });
+          }}
           onPress={input => handleAddDestination(input)}
         />
       </View>
+      <CalendarModal
+        minDate={false}
+        isVisible={inputData.calendarVisible}
+        onRequestClose={() =>
+          setInputData(prev => {
+            return {
+              ...prev,
+              calendarVisible: false,
+              inputVisible: true,
+            };
+          })
+        }
+        onApplyClick={datesData => {
+          const {
+            end: {timestamp: endTimestamp},
+            start: {timestamp: startTimestamp},
+          } = datesData;
+          setInputData(prev => {
+            return {
+              ...prev,
+              inputVisible: true,
+              calendarVisible: false,
+              dateRange: {
+                startDate: startTimestamp / 1000,
+                endTimestamp: endTimestamp / 1000,
+              },
+            };
+          });
+        }}
+      />
     </GestureHandlerRootView>
   );
 }
@@ -396,5 +489,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: RADIUS.xl,
+  },
+  dateContainer: {
+    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.neutral[100],
+    marginRight: 6,
+    paddingVertical: 8,
+    top: 10,
+    height: 35,
+    paddingHorizontal: 10,
   },
 });

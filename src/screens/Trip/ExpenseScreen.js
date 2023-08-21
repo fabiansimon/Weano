@@ -2,7 +2,6 @@ import {View, StyleSheet, FlatList, StatusBar} from 'react-native';
 import React, {useRef, useState, useEffect, useMemo} from 'react';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Entypo';
-import {TouchableOpacity} from '@gorhom/bottom-sheet';
 import {useMutation} from '@apollo/client';
 import Toast from 'react-native-toast-message';
 import {MenuView} from '@react-native-menu/menu';
@@ -296,28 +295,6 @@ export default function ExpenseScreen() {
     </View>
   );
 
-  const getExpenseTile = expense => {
-    const userData = users.find(u => u.id === expense.paidBy);
-    const isSelf = id === expense.paidBy;
-
-    return (
-      <ExpenseTile
-        isSelf={isSelf}
-        currency={currency}
-        onPress={() =>
-          setSelectedExpense({
-            isVisible: true,
-            data: expense,
-          })
-        }
-        onDelete={isSelf || !userData ? () => confirmDeletion(expense) : null}
-        style={{paddingHorizontal: 15}}
-        data={expense}
-        user={userData}
-      />
-    );
-  };
-
   const changeCurrency = async ({event}) => {
     if (!event) {
       return;
@@ -491,8 +468,29 @@ export default function ExpenseScreen() {
               style={{paddingTop: 20}}
               contentContainerStyle={{paddingBottom: 20}}
               data={showTotal ? expenses : myData}
-              renderItem={({item}) => getExpenseTile(item)}
-              // eslint-disable-next-line react/no-unstable-nested-components
+              renderItem={({item}) => {
+                const userData = users.find(u => u.id === item.paidBy);
+                const isSelf = id === item.paidBy;
+
+                return (
+                  <ExpenseTile
+                    isSelf={isSelf}
+                    currency={currency}
+                    onPress={() =>
+                      setSelectedExpense({
+                        isVisible: true,
+                        data: item,
+                      })
+                    }
+                    onDelete={
+                      isSelf || !userData ? () => confirmDeletion(item) : null
+                    }
+                    style={{paddingHorizontal: 15}}
+                    data={item}
+                    user={userData}
+                  />
+                );
+              }}
               ItemSeparatorComponent={() => (
                 <Divider
                   style={{marginLeft: 60}}

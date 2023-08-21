@@ -1,8 +1,8 @@
 import {View, Pressable, StyleSheet, Animated} from 'react-native';
 import React, {useRef, useEffect} from 'react';
 import {ScaleDecorator} from 'react-native-draggable-flatlist';
-// import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
-import COLORS, {RADIUS} from '../../constants/Theme';
+import Icon from 'react-native-vector-icons/Entypo';
+import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Subtitle from '../typography/Subtitle';
 import SwipeView from '../SwipeView';
@@ -65,25 +65,38 @@ export default function TripStopTile({
             <View style={styles.line} />
             <Subtitle type={1} color={COLORS.shades[0]} text={index + 1} />
           </View>
-          <View>
-            <Body
-              style={{flex: 1, marginRight: 40}}
-              numberOfLines={2}
-              ellipsizeMode="tail"
-              type={1}
-              text={item.placeName}
-            />
-            {!disabled && (
-              <Body
-                type={2}
+          <View style={{flex: 1}}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <View>
+                <Body
+                  style={{flex: 1, marginRight: 40}}
+                  numberOfLines={2}
+                  ellipsizeMode="tail"
+                  type={1}
+                  text={item.placeName}
+                />
+                {!disabled && (
+                  <Body
+                    type={2}
+                    color={COLORS.neutral[300]}
+                    text={i18n.t('24.05 - 08.07')}
+                  />
+                )}
+              </View>
+              <Icon
+                name={isExpanded ? 'chevron-up' : 'chevron-down'}
                 color={COLORS.neutral[300]}
-                text={
-                  isExpanded
-                    ? i18n.t('Tap to minimize')
-                    : i18n.t('Tap to expend')
-                }
+                style={{
+                  marginRight: PADDING.m,
+                }}
+                size={20}
               />
-            )}
+            </View>
+
             <Animated.View style={{height: animatedHeight, top: 4}}>
               <View style={{flexDirection: 'row', marginTop: 10}}>
                 <ActivityChip

@@ -30,7 +30,6 @@ export default function DestinationsSheet({
   setScrollIndex,
   sheetIndex,
   amountPeople,
-  isRecent,
 }) {
   // STATE & MISC
   const [expandedIndex, setExpandedIndex] = useState(-1);
@@ -114,13 +113,8 @@ export default function DestinationsSheet({
         isLast={isLast}
         item={item}
         drag={drag}
-        disabled={isRecent}
         isExpanded={index === expandedIndex}
         onPress={() => {
-          if (isRecent) {
-            return;
-          }
-
           if (sheetIndex === 0) {
             handleExpending();
           }
@@ -210,7 +204,7 @@ export default function DestinationsSheet({
               keyExtractor={item => item.key}
               renderItem={item => getDestinationTile(item)}
             />
-            {!isRecent && destinations?.length < MAX_LENGTH && getAddTile()}
+            {destinations?.length < MAX_LENGTH && getAddTile()}
           </View>
           <AffiliateInfoView
             amountPeople={amountPeople}
