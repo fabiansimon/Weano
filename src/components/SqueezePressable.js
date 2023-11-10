@@ -1,9 +1,7 @@
-import {
-  Animated, Pressable,
-} from 'react-native';
-import React, { useState, useEffect, useRef } from 'react';
+import {Animated, Pressable} from 'react-native';
+import React, {useState, useEffect, useRef} from 'react';
 
-export default function SqueezePressable({ style, onPress, children }) {
+export default function SqueezePressable({style, onPress, children}) {
   const [isPressed, setIsPressed] = useState(false);
   const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
   const scale = useRef(new Animated.Value(1)).current;
@@ -32,8 +30,7 @@ export default function SqueezePressable({ style, onPress, children }) {
       onPressIn={() => setIsPressed(true)}
       onPressOut={() => setIsPressed(false)}
       onTouchCancel={() => setIsPressed(false)}
-      style={[style, { transform: [{ scale }] }]}
-    >
+      style={[style, {transform: [{scale}]}]}>
       {children}
     </AnimatedPressable>
   );

@@ -1,9 +1,16 @@
 import {
-  Modal, StyleSheet, View, TouchableOpacity, Animated, TextInput, ScrollView,
+  Modal,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Animated,
+  TextInput,
+  ScrollView,
+  Pressable,
 } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
-import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
+import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import KeyboardView from '../KeyboardView';
 import Divider from '../Divider';
 import i18n from '../../utils/i18n';
@@ -13,16 +20,18 @@ import Subtitle from '../typography/Subtitle';
 import Utils from '../../utils';
 import activeTripStore from '../../stores/ActiveTripStore';
 
-export default function AddTaskModal({
-  isVisible, onRequestClose, onPress,
-}) {
-  const { activeMembers: users } = activeTripStore((state) => state.activeTrip);
+export default function AddTaskModal({isVisible, onRequestClose, onPress}) {
+  // STORES
+  const {activeMembers: users} = activeTripStore(state => state.activeTrip);
+
+  // STATE & MISC
   const [isPrivate, setIsPrivate] = useState(true);
   const [task, setTask] = useState('');
   const [showModal, setShowModal] = useState(isVisible);
   const [assigneIndex, setAssigneIndex] = useState(0);
   const animatedBottom = useRef(new Animated.Value(900)).current;
   const translateY = useRef(new Animated.Value(0)).current;
+
   const duration = 300;
 
   useEffect(() => {
@@ -41,7 +50,6 @@ export default function AddTaskModal({
         toValue: 0,
         duration,
         useNativeDriver: false,
-
       }).start();
     } else {
       Animated.spring(translateY, {
@@ -72,7 +80,6 @@ export default function AddTaskModal({
 
   const handlePress = () => {
     if (task.trim().length <= 0) {
-      console.log('No text');
       return;
     }
 
@@ -87,21 +94,20 @@ export default function AddTaskModal({
 
   const getMiddleRow = () => (
     <View style={styles.buttonRow}>
-      <View style={{ flexDirection: 'row' }}>
+      <View style={{flexDirection: 'row'}}>
         <TouchableOpacity
           onPress={() => {
             setIsPrivate(true);
           }}
           activeOpacity={0.8}
-          style={isPrivate ? styles.activeButton : styles.inactiveButton}
-        >
+          style={isPrivate ? styles.activeButton : styles.inactiveButton}>
           <Icon
             name="md-person-circle-outline"
             size={22}
             color={isPrivate ? COLORS.shades[0] : COLORS.shades[100]}
           />
           <Body
-            style={{ marginLeft: 6 }}
+            style={{marginLeft: 6}}
             text={i18n.t('Private')}
             color={isPrivate ? COLORS.shades[0] : COLORS.shades[100]}
             type={1}
@@ -112,15 +118,17 @@ export default function AddTaskModal({
             setIsPrivate(false);
           }}
           activeOpacity={0.8}
-          style={[!isPrivate ? styles.activeButton : styles.inactiveButton, { marginLeft: 6 }]}
-        >
+          style={[
+            !isPrivate ? styles.activeButton : styles.inactiveButton,
+            {marginLeft: 6},
+          ]}>
           <Icon
             name="ios-people-outline"
             size={22}
             color={!isPrivate ? COLORS.shades[0] : COLORS.shades[100]}
           />
           <Body
-            style={{ marginLeft: 6 }}
+            style={{marginLeft: 6}}
             color={!isPrivate ? COLORS.shades[0] : COLORS.shades[100]}
             text={i18n.t('Mutual')}
             type={1}
@@ -138,41 +146,36 @@ export default function AddTaskModal({
   );
 
   const getAssigneeRow = () => (
-    <Animated.View style={[styles.assigneeRow, { transform: [{ translateY }] }]}>
+    <Animated.View style={[styles.assigneeRow, {transform: [{translateY}]}]}>
       <Subtitle
         text={i18n.t('Assignee')}
         color={COLORS.neutral[300]}
-        style={{ marginLeft: PADDING.xl, marginBottom: 12 }}
+        style={{marginLeft: PADDING.xl, marginBottom: 12}}
       />
-      <ScrollView horizontal style={{ paddingLeft: PADDING.m }}>
+      <ScrollView horizontal style={{paddingLeft: PADDING.m}}>
         {users.map((invitee, index) => {
           const isActive = assigneIndex === index;
           return (
             <TouchableOpacity
               onPress={() => setAssigneIndex(index)}
               activeOpacity={0.9}
-              style={{ alignItems: 'center', width: 70 }}
-            >
+              style={{alignItems: 'center', width: 70}}>
               <View>
-                <Avatar
-                  size={50}
-                  disabled
-                  data={invitee}
-                />
+                <Avatar size={50} disabled data={invitee} />
                 {isActive && (
-                <View style={styles.avatarOverlay}>
-                  <Icon
-                    name="checkmark-circle-outline"
-                    size={26}
-                    color={COLORS.shades[0]}
-                  />
-                </View>
+                  <View style={styles.avatarOverlay}>
+                    <Icon
+                      name="checkmark-circle-outline"
+                      size={26}
+                      color={COLORS.shades[0]}
+                    />
+                  </View>
                 )}
               </View>
               <Body
                 type={2}
                 text={invitee.firstName}
-                style={{ fontWeight: isActive ? '500' : '400', marginTop: 4 }}
+                style={{fontWeight: isActive ? '500' : '400', marginTop: 4}}
                 color={isActive ? COLORS.shades[100] : COLORS.neutral[300]}
               />
             </TouchableOpacity>
@@ -190,27 +193,29 @@ export default function AddTaskModal({
       collapsable
       transparent
       statusBarTranslucent
-      onRequestClose={onRequestClose}
-    >
+      onRequestClose={onRequestClose}>
       <TouchableOpacity
         activeOpacity={1}
         onPress={onRequestClose}
-        style={{ backgroundColor: 'rgba(0,0,0,0.6)', flex: 1 }}
-      >
-        <KeyboardView paddingBottom={0} ignoreTouch>
-          <Animated.View style={[styles.modalContainer, { transform: [{ translateY: animatedBottom }] }]}>
-            <View style={styles.innerContainer}>
+        style={{backgroundColor: 'rgba(0,0,0,0.6)', flex: 1}}>
+        <KeyboardView behavior="padding" paddingBottom={0} ignoreTouch>
+          <Animated.View
+            style={[
+              styles.modalContainer,
+              {transform: [{translateY: animatedBottom}]},
+            ]}>
+            <Pressable style={styles.innerContainer}>
               <TextInput
                 autoFocus
-                onChangeText={(val) => setTask(val)}
+                onChangeText={val => setTask(val)}
                 style={styles.textInput}
                 placeholderTextColor={COLORS.neutral[100]}
                 placeholder={i18n.t('Add a task')}
               />
-              <Divider style={{ marginTop: PADDING.m }} />
+              <Divider style={{marginTop: PADDING.m}} />
               {getMiddleRow()}
               {!isPrivate && getAssigneeRow()}
-            </View>
+            </Pressable>
           </Animated.View>
         </KeyboardView>
       </TouchableOpacity>
@@ -263,7 +268,7 @@ const styles = StyleSheet.create({
     letterSpacing: -1,
     fontFamily: 'WorkSans-Regular',
     color: COLORS.shades[100],
-    fontSize: 20,
+    fontSize: 18,
   },
   innerContainer: {
     borderTopRightRadius: RADIUS.s,

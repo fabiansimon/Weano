@@ -1,170 +1,170 @@
-import React, {
-  useMemo, useRef, useState,
-} from 'react';
-import {
-  Pressable, StyleSheet, View,
-} from 'react-native';
-import MapboxGL from '@react-native-mapbox-gl/maps';
+import React, {useMemo, useRef, useState, useEffect, useCallback} from 'react';
+import {NativeModules, Pressable, StyleSheet, View} from 'react-native';
+import Icon from 'react-native-vector-icons/AntDesign';
+import MapboxGL from '@rnmapbox/maps';
 import BottomSheet from '@gorhom/bottom-sheet';
-// eslint-disable-next-line import/no-unresolved
-import { MAPBOX_TOKEN } from '@env';
-import { useNavigation } from '@react-navigation/native';
-import FastImage from 'react-native-fast-image';
+import {MAPBOX_TOKEN} from '@env';
+import {useNavigation} from '@react-navigation/native';
 import BackButton from '../components/BackButton';
 import CountriesVisited from '../components/Map/CountriesVisited';
 import tripsStore from '../stores/TripsStore';
-import COLORS, { PADDING, RADIUS } from '../constants/Theme';
-import DefaultImage from '../../assets/images/default_trip.png';
-import Body from '../components/typography/Body';
-import i18n from '../utils/i18n';
+import COLORS, {PADDING, RADIUS} from '../constants/Theme';
 import Utils from '../utils';
 import ROUTES from '../constants/Routes';
 import SearchModal from '../components/Search/SearchModal';
+import TripContainer from '../components/Trip/TripContainer';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+
+const {StatusBarManager} = NativeModules;
 
 MapboxGL.setAccessToken(MAPBOX_TOKEN);
 
-export default function MapScreen() {
-  const navigation = useNavigation();
+export default function MapScreen({route}) {
+  // PARAMS
+  const {initTrip} = route.params;
 
-  const snapPoints = useMemo(() => ['17%', '88%'], []);
-  const sheetRef = useRef(null);
-  const trips = tripsStore((state) => state.trips);
+  // STORES
+  const trips = tripsStore(state => state.trips);
+
+  // STATE & MISC
   const [showSearch, setShowSearch] = useState(false);
-  const [showUpcoming, setShowUpcoming] = useState(false);
+  const [expandIndex, setExpandIndex] = useState(0);
+  const snapPoints = useMemo(() => ['22%', '98%'], []);
+
+  const sheetRef = useRef(null);
 
   const mapCamera = useRef();
 
-  const ICON_WIDTH = 40;
-  const ICON_HEIGHT = 50;
+  const navigation = useNavigation();
 
-  const now = Date.now() / 1000;
+  useEffect(() => {
+    if (initTrip) {
+      setTimeout(() => {
+        handleSearch(initTrip);
+      }, 500);
+    }
+  }, [initTrip]);
 
-  const handleSearch = (id) => {
+  const toggleExpansion = () => {
+    sheetRef.current.snapToIndex(expandIndex ? 0 : 1);
+  };
+
+  const handleSheetChanges = useCallback(i => {
+    setExpandIndex(i);
+  }, []);
+
+  const handleSearch = id => {
     sheetRef.current.snapToIndex(0);
 
     if (!id) {
       return;
     }
 
-    const searchTrip = trips.filter((trip) => trip.id === id)[0];
-    const { location, dateRange } = searchTrip;
-
-    setShowUpcoming(dateRange.endDate > now);
+    const searchTrip = trips.filter(trip => trip.id === id)[0];
+    const {destinations} = searchTrip;
 
     mapCamera.current.setCamera({
-      centerCoordinate: location.latlon,
+      centerCoordinate: destinations[0].latlon,
       zoomLevel: 3,
       animationDuration: 500,
     });
   };
 
-  const upcomingTrips = trips.filter((trip) => trip.dateRange.endDate > now);
-  const recentTrips = trips.filter((trip) => trip.dateRange.endDate < now);
+  const renderTripPins = trip => {
+    const {destinations} = trip;
 
-  const renderTripPins = (trip) => {
-    const { location, thumbnailUri: uri } = trip;
-    const source = uri ? { uri } : DefaultImage;
+    if (destinations[0]?.latlon?.length < 2) {
+      return;
+    }
 
     return (
       <MapboxGL.MarkerView
-        coordinate={location.latlon}
-      >
-        <Pressable
-          onPress={() => navigation.navigate(ROUTES.tripScreen, { tripId: trip.id })}
-          style={styles.imageContainer}
-        >
-          <FastImage
-            source={source}
-            style={{
-              height: ICON_HEIGHT, width: ICON_WIDTH, borderRadius: RADIUS.s, zIndex: 100,
-            }}
-          />
-          <View style={styles.pinShape} />
-        </Pressable>
+        allowOverlap
+        key={trip.id}
+        surfaceView
+        requestDisallowInterceptTouchEvent
+        coordinate={destinations[0].latlon}>
+        <TripContainer
+          onPressOut={() =>
+            navigation.push(ROUTES.tripScreen, {tripId: trip.id})
+          }
+          isDense
+          size={40}
+          trip={trip}
+        />
       </MapboxGL.MarkerView>
     );
   };
 
-  const TabSelector = () => (
-    <Pressable
-      onPress={() => setShowUpcoming(!showUpcoming)}
-      style={styles.tabSelector}
-    >
-      <View style={[styles.tab, showUpcoming ? styles.activeTab : {}]}>
-        <Body
-          color={!showUpcoming ? COLORS.primary[700] : COLORS.shades[0]}
-          type={2}
-          text={`${i18n.t('Upcoming')} (${upcomingTrips?.length || '0'})`}
-        />
-      </View>
-      <View style={[styles.tab, !showUpcoming ? styles.activeTab : {}]}>
-        <Body
-          color={showUpcoming ? COLORS.primary[700] : COLORS.shades[0]}
-          type={2}
-          text={`${i18n.t('Finished')} (${recentTrips?.length || '0'})`}
-        />
-      </View>
-    </Pressable>
-  );
-
   return (
-    <View style={styles.container}>
-      <MapboxGL.MapView
-        rotateEnabled={false}
-        style={styles.map}
-      >
-        <MapboxGL.Camera
-          animationMode="moveTo"
-          animated
-          ref={mapCamera}
+    <GestureHandlerRootView style={{flex: 1}}>
+      <View style={styles.container}>
+        <MapboxGL.MapView
+          compassEnabled={false}
+          scaleBarEnabled={false}
+          rotateEnabled={false}
+          onDidFinishLoadingMap={() => {
+            mapCamera.current.setCamera({
+              zoomLevel: 0,
+              animationDuration: 500,
+              centerCoordinate: [0, 0],
+            });
+          }}
+          style={styles.map}
+          styleURL="mapbox://styles/fabiansimon/clezrm6w7002g01p9eu1n0aos">
+          <MapboxGL.Camera animationMode="moveTo" animated ref={mapCamera} />
+          {trips && trips.map(trip => renderTripPins(trip))}
+        </MapboxGL.MapView>
+        <View style={styles.header}>
+          <BackButton style={styles.backButton} />
+          <Pressable
+            style={styles.searchButton}
+            onPress={() => setShowSearch(true)}>
+            <Icon color={COLORS.shades[100]} name="search1" size={20} />
+          </Pressable>
+        </View>
+        <BottomSheet
+          handleIndicatorStyle={{opacity: 0}}
+          backgroundStyle={{
+            backgroundColor: 'transparent',
+            borderRadius: 20,
+          }}
+          ref={sheetRef}
+          onChange={i => handleSheetChanges(i)}
+          index={0}
+          snapPoints={snapPoints}
+          onClose={() => {}}>
+          <CountriesVisited
+            onTap={toggleExpansion}
+            data={trips}
+            onPress={id => handleSearch(id)}
+          />
+        </BottomSheet>
+        <SearchModal
+          isVisible={showSearch}
+          onRequestClose={() => setShowSearch(false)}
+          onPress={id => handleSearch(id)}
         />
-        {(showUpcoming && upcomingTrips) && upcomingTrips.map((trip) => renderTripPins(trip))}
-        {(!showUpcoming && recentTrips) && recentTrips.map((trip) => renderTripPins(trip))}
-      </MapboxGL.MapView>
-      <BackButton style={styles.backButton} />
-      <TabSelector />
-      <BottomSheet
-        handleIndicatorStyle={{ opacity: 0 }}
-        backgroundStyle={{
-          backgroundColor: 'transparent',
-          borderRadius: 20,
-        }}
-        ref={sheetRef}
-        index={0}
-        snapPoints={snapPoints}
-        onClose={() => {
-
-        }}
-      >
-        <CountriesVisited
-          showUpcoming={showUpcoming}
-          upcomingTrips={upcomingTrips}
-          recentTrips={recentTrips}
-          onSearchPress={() => setShowSearch(true)}
-          onPress={(id) => handleSearch(id)}
-        />
-      </BottomSheet>
-      <SearchModal
-        isVisible={showSearch}
-        onRequestClose={() => setShowSearch(false)}
-        onPress={(id) => handleSearch(id)}
-      />
-    </View>
+      </View>
+    </GestureHandlerRootView>
   );
 }
 
 const styles = StyleSheet.create({
-  backButton: {
+  header: {
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
     position: 'absolute',
-    top: 60,
-    left: PADDING.l,
+    top: StatusBarManager.HEIGHT,
+    paddingHorizontal: PADDING.m,
   },
   container: {
     width: '100%',
     height: '100%',
   },
   map: {
-    backgroundColor: COLORS.neutral[900],
+    backgroundColor: COLORS.shades[0],
     flex: 1,
   },
   pinShape: {
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: -5,
     alignSelf: 'center',
-    transform: [{ rotate: '45deg' }],
+    transform: [{rotate: '45deg'}],
   },
   imageContainer: {
     padding: 4,
@@ -211,5 +211,15 @@ const styles = StyleSheet.create({
     margin: -1,
     borderRadius: RADIUS.xl,
     backgroundColor: COLORS.primary[700],
+  },
+  searchButton: {
+    borderWidth: 1,
+    height: 45,
+    width: 45,
+    borderColor: COLORS.neutral[100],
+    borderRadius: RADIUS.l,
+    backgroundColor: COLORS.shades[0],
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

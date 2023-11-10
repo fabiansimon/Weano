@@ -1,10 +1,8 @@
-import { Text } from 'react-native';
+import {Text} from 'react-native';
 import React from 'react';
 import COLORS from '../../constants/Theme';
 
-export default function Subtitle({
-  type, style, text, color,
-}) {
+export default function Subtitle({type, style, text, color}) {
   const fontSize = type === 2 ? 12 : 14;
   const lineHeight = type === 2 ? 16 : 19;
   const fontWeight = type === 1 ? '500' : '400';
@@ -13,15 +11,17 @@ export default function Subtitle({
 
   return (
     <Text
-      style={[{
-        fontSize,
-        fontWeight,
-        fontFamily,
-        lineHeight,
-        color: textColor,
-        letterSpacing: -1,
-      }, style]}
-    >
+      style={[
+        {
+          fontSize,
+          fontWeight,
+          fontFamily,
+          lineHeight,
+          color: textColor,
+          letterSpacing: -1,
+        },
+        style,
+      ]}>
       {text}
     </Text>
   );

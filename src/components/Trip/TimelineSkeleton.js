@@ -1,23 +1,21 @@
 import React from 'react';
-import { Dimensions, View } from 'react-native';
+import {Dimensions, View} from 'react-native';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
+import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 
 export default function TimelineSkeleton() {
-  const { width } = Dimensions.get('window');
+  const {width} = Dimensions.get('window');
 
   return (
     <View>
       <SkeletonPlaceholder.Item
         marginTop={8}
         marginHorizontal={PADDING.m}
-        flex={1}
-      >
+        flex={1}>
         <SkeletonPlaceholder
           speed={1400}
           backgroundColor={COLORS.neutral[100]}
-          highlightColor={COLORS.neutral[50]}
-        >
+          highlightColor={COLORS.neutral[50]}>
           <SkeletonPlaceholder.Item
             width={140}
             height={30}

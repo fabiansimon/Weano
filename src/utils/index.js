@@ -1,8 +1,11 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import 'react-native-get-random-values';
 import moment from 'moment';
-import { Alert, Linking } from 'react-native';
-import { CameraRoll } from '@react-native-camera-roll/camera-roll';
+import RNFS, {stat} from 'react-native-fs';
+import FileViewer from 'react-native-file-viewer';
+
+import {Alert, Linking, PermissionsAndroid, Platform} from 'react-native';
+
+import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 import Toast from 'react-native-toast-message';
 import Contacts from 'react-native-contacts';
 
@@ -12,46 +15,46 @@ import META_DATA from '../constants/MetaData';
 
 export default class Utils {
   /**
-     * Format UNIX Timestamp to MMM Do (YY) date
-     * @param {Number} timestamp - UNIX Timestamp
-     * @param {String} format - e.g. 'MMM Do'
-     * @return {String} Nicely formatted Date
-     */
+   * Format UNIX Timestamp to MMM Do (YY) date
+   * @param {Number} timestamp - UNIX Timestamp
+   * @param {String} format - e.g. 'MMM Do'
+   * @return {String} Nicely formatted Date
+   */
   static getDateFromTimestamp(timestamp, format) {
     const date = new Date(timestamp * 1000);
     return moment(date).format(format);
   }
 
   /**
-     * Format UNIX Timestamp to MMM Do (YY) date
-     * @param {Number} timestamp - UNIX Timestamp
-     * @return {String} Nicely formatted HH:SS
-     */
+   * Format UNIX Timestamp to MMM Do (YY) date
+   * @param {Number} timestamp - UNIX Timestamp
+   * @return {String} Nicely formatted HH:SS
+   */
   static getTimeFromTimeStamp(timestamp) {
     const date = new Date(timestamp * 1000);
     return `${moment(date).hours()}:${moment(date).minutes()}`;
   }
 
   /**
-     * Convert Date to UNIX timestamp
-     * @param {String} date - Date
-     * @return {Integer} Timestamp
-     */
+   * Convert Date to UNIX timestamp
+   * @param {String} date - Date
+   * @return {Integer} Timestamp
+   */
   static convertDateToTimestamp(date) {
     const formatedDate = moment(date).format();
     return moment(formatedDate).format('X');
   }
 
   /**
-     * Convert Date to UNIX timestamp
-     * @param {String} date - Date
-     * @return {Integer} Timestamp
-     */
+   * Convert Date to UNIX timestamp
+   * @param {String} date - Date
+   * @return {Integer} Timestamp
+   */
   static getDateRange(dateRange) {
     if (!dateRange) {
       return 'N/A';
     }
-    const { startDate, endDate } = dateRange;
+    const {startDate, endDate} = dateRange;
 
     const start = moment(new Date(startDate * 1000)).format('DD.MM.YY');
     const end = moment(new Date(endDate * 1000)).format('DD.MM.YY');
@@ -60,46 +63,50 @@ export default class Utils {
   }
 
   /**
-     * Convert Date to UNIX timestamp
-     * @param {Integer} date - Date
-     * @return {boolean} isFuture
-     */
+   * Convert Date to UNIX timestamp
+   * @param {Integer} date - Date
+   * @return {boolean} isFuture
+   */
   static checkIsFuture(startDate) {
     const today = Date.now();
-    if (today > startDate * 1000) return false;
+    if (today > startDate * 1000) {
+      return false;
+    }
     return true;
   }
 
   /**
-     * Show confirmation Alert
-     * @param {String} title - Title
-     * @param {String} subtitle - Subtitle
-     * @param {String} action - action
-     * @return {boolean} isFuture
-     */
-  static showConfirmationAlert(title, subtitle, actionMessage, action, isDestructive = true) {
-    Alert.alert(
-      title,
-      subtitle,
-      [
-        {
-          text: i18n.t('Cancel'),
-          style: 'cancel',
-        },
-        {
-          text: actionMessage,
-          onPress: () => action(),
-          style: isDestructive ? 'destructive' : 'default',
-        },
-      ],
-    );
+   * Show confirmation Alert
+   * @param {String} title - Title
+   * @param {String} subtitle - Subtitle
+   * @param {String} action - action
+   * @return {boolean} isFuture
+   */
+  static showConfirmationAlert(
+    title,
+    subtitle,
+    actionMessage,
+    action,
+    isDestructive = true,
+  ) {
+    Alert.alert(title, subtitle, [
+      {
+        text: i18n.t('Cancel'),
+        style: 'cancel',
+      },
+      {
+        text: actionMessage,
+        onPress: () => action(),
+        style: isDestructive ? 'destructive' : 'default',
+      },
+    ]);
   }
 
   /**
-     * Convert DayInt to a Day String
-     * @param {Integer} day - day in Int (0-6)
-     * @return {String} Day in String; e.q. 'Monday'
-     */
+   * Convert DayInt to a Day String
+   * @param {Integer} day - day in Int (0-6)
+   * @return {String} Day in String; e.q. 'Monday'
+   */
   static getDayFromInt(day) {
     switch (day) {
       case 0:
@@ -122,10 +129,10 @@ export default class Utils {
   }
 
   /**
-     * Convert MonthInt to a Month String
-     * @param {Integer} month - month in Int (0-12)
-     * @return {String} Month in String; e.q. 'January'
-     */
+   * Convert MonthInt to a Month String
+   * @param {Integer} month - month in Int (0-12)
+   * @return {String} Month in String; e.q. 'January'
+   */
   static getMonthFromInt(month) {
     switch (month) {
       case 0:
@@ -158,22 +165,38 @@ export default class Utils {
   }
 
   /**
-     * Add Alpha to Color
-     * @param {String} hex - Hex code
-     * @param {Double} opacity - opacity from 0-1
-     * @return {String} Color with opacity
-     */
+   * Add Alpha to Color
+   * @param {String} hex - Hex code
+   * @param {Double} opacity - opacity from 0-1
+   * @return {String} Color with opacity
+   */
   static addAlpha(color, opacity) {
     const op = Math.round(Math.min(Math.max(opacity || 1, 0), 1) * 255);
     return color + op.toString(16).toUpperCase();
   }
 
   /**
-     * Convert MonthInt to a Month String
-     * @param {image} image - image to download
-     */
-  static downloadImage(image, showToast = true) {
-    CameraRoll.save(image, { type: 'photo', album: 'Weano' });
+   * Convert MonthInt to a Month String
+   * @param {image} image - image to download
+   */
+  static async downloadImage(image, showToast = true, album = 'Weano') {
+    if (Platform.OS === 'android') {
+      const permission =
+        Platform.Version >= 33
+          ? PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES
+          : PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE;
+
+      const hasPermission = await PermissionsAndroid.check(permission);
+      if (!hasPermission) {
+        const status = await PermissionsAndroid.request(permission);
+
+        if (status !== 'granted') {
+          return;
+        }
+      }
+    }
+
+    CameraRoll.save(image, {type: 'photo', album: album});
     if (showToast) {
       setTimeout(() => {
         Toast.show({
@@ -186,34 +209,36 @@ export default class Utils {
   }
 
   /**
-     * Open Mail app with predefined email
-     * @param {String} email - email
-     */
+   * Open Mail app with predefined email
+   * @param {String} email - email
+   */
   static openEmailApp() {
     const emailAddress = `mailto:${META_DATA.email}?cc=&subject=`;
     Linking.canOpenURL(emailAddress)
-      .then((supported) => {
+      .then(supported => {
         if (!supported) {
           Alert.alert(i18n.t('Not available'));
         } else {
           return Linking.openURL(emailAddress);
         }
       })
-      .catch((err) => console.log(err));
+      .catch(err => console.log(err));
   }
 
   /**
-     * Open phone number
-     * @param {String} phoneNr - phoneNumber
-     */
+   * Open phone number
+   * @param {String} phoneNr - phoneNumber
+   */
   static openPhoneNumber(phoneNr, firstName, lastName) {
     const contact = {
       familyName: lastName,
       givenName: firstName,
-      phoneNumbers: [{
-        label: 'mobile',
-        number: phoneNr,
-      }],
+      phoneNumbers: [
+        {
+          label: 'mobile',
+          number: phoneNr,
+        },
+      ],
     };
     try {
       Contacts.openContactForm(contact);
@@ -223,35 +248,81 @@ export default class Utils {
   }
 
   /**
-     * Return type of trip | 'active', 'upcoming', 'successful'
-     * @param {Object} dateRange - dateRange
-     */
-  static convertDateToType(dateRange) {
-    const now = Date.now() / 1000;
-    // let recapTimestamp = new Date();
-    // recapTimestamp.setFullYear(recapTimestamp.getFullYear() - 1);
-    // recapTimestamp = Date.parse(recapTimestamp) / 1000;
+   * Open Document from an URL locally on the phone
+   * @param {String} URL - URL
+   */
+  static openDocumentFromUrl(url, title, isPDF = false) {
+    const extension = isPDF
+      ? 'pdf'
+      : url.split(/[#?]/)[0].split('.').pop().trim();
 
-    if (dateRange.startDate < now && dateRange.endDate < now) {
-      return 'recent';
+    const localFile = `${RNFS.DocumentDirectoryPath}/${title}.${extension}`;
+
+    const options = {
+      fromUrl: url,
+      toFile: localFile,
+    };
+    RNFS.downloadFile(options)
+      .promise.then(() => FileViewer.open(localFile))
+      .catch(error => {
+        console.log(error);
+        console.error(error);
+        Toast.show({
+          type: 'error',
+          text1: i18n.t('Whoops!'),
+          text2: i18n.t('Sorry something went wrong...'),
+        });
+      });
+  }
+
+  /**
+   * Get days difference to trip
+   * @param {Number} startDate - e.g. startDate of Trip
+   * @param {Number} endDate - e.g. (optional) endDate of Trip
+   * @param {Boolean} toAbs - if result should be shown as a positive integer
+   */
+  static getDaysDifference(startDate, endDate, toAbs = false) {
+    if (!startDate) {
+      return;
     }
 
-    if (dateRange.startDate < now && dateRange.endDate > now) {
-      return 'active';
+    const toDate = moment(new Date(startDate * 1000));
+    const fromDate = endDate
+      ? moment(new Date(endDate * 1000)).startOf('day')
+      : moment().startOf('day');
+
+    const difference = Math.floor(
+      moment.duration(toDate.diff(fromDate)).asDays(),
+    );
+    if (toAbs) {
+      return Math.abs(difference);
     }
 
-    if (((dateRange.startDate - now) / 86400) < 7) {
-      return 'soon';
+    return difference;
+  }
+  /**
+   * Get Trip type
+   * @param {Number} dateRange - e.g. dateRange of Trip
+   * @return {String} Type of trip in string
+   */
+  static getTripTypeFromDate(dateRange) {
+    const {startDate, endDate} = dateRange;
+    let now = new Date();
+    now.setHours(23, 59, 59, 59);
+    const nowTimeStamp = now.getTime() / 1000;
+
+    let type = '';
+
+    if (startDate < nowTimeStamp && endDate < nowTimeStamp) {
+      type = 'recent';
+    } else if (startDate < nowTimeStamp && endDate > nowTimeStamp) {
+      type = 'active';
+    } else if ((startDate - nowTimeStamp) / 86400 < 7) {
+      type = 'soon';
+    } else if (startDate > nowTimeStamp && endDate > nowTimeStamp) {
+      type = 'upcoming';
     }
 
-    if (dateRange.startDate > now && dateRange.endDate > now) {
-      return 'upcoming';
-    }
-
-    // const upcomingTrips = trips.filter((trip) => trip.dateRange.startDate > now && trip.dateRange.endDate > now);
-    // const recentTrips = trips.filter((trip) => trip.dateRange.startDate < now && trip.dateRange.endDate < now);
-    // const activeTrip = trips.filter((trip) => trip.dateRange.startDate < now && trip.dateRange.endDate > now)[0];
-    // const recapTrip = trips.filter((trip) => trip.dateRange.startDate < recapTimestamp && trip.dateRange.endDate < now)[0];
-    // const upcomingTrip = upcomingTrips.length > 0 && upcomingTrips.filter((trip) => ((trip.dateRange.startDate - now) / 86400) < 7)[0];
+    return type;
   }
 }

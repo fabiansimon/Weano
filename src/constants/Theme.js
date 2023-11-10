@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-undef, import/prefer-default-export
 // export default COLORS = {
 //   shades: {
 //     0: '#212121',
@@ -28,7 +27,7 @@
 //   },
 //   success: {
 //     100: '#E3FFF2',
-//     300: '#ABF5D1',
+//     300: '#AF5D1',
 //     500: '#5BE3A1',
 //     700: '#49D893',
 //     900: '#229960',
@@ -48,6 +47,7 @@
 //     900: '#FF3433',
 //   },
 // };
+// eslint-disable-next-line no-undef
 export default COLORS = {
   shades: {
     0: '#FFF',

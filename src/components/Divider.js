@@ -1,4 +1,4 @@
-import { View, StyleSheet } from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import React from 'react';
 import COLORS from '../constants/Theme';
 
@@ -16,9 +16,17 @@ export default function Divider({
   const borderTopColor = color || COLORS.neutral[100];
 
   return (
-    <View style={[styles.divider, {
-      marginTop, marginBottom, marginHorizontal, borderTopColor,
-    }, style]}
+    <View
+      style={[
+        styles.divider,
+        {
+          marginTop,
+          marginBottom,
+          marginHorizontal,
+          borderTopColor,
+        },
+        style,
+      ]}
     />
   );
 }

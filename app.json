@@ -1,9 +1,15 @@
 {
   "name": "travelio_project",
   "displayName": "travelio_project",
+  "android": {
+    "googleServicesFile": "./google-services.json"
+  },
   "extra": {
     "eas": {
       "projectId": "de5514f3-d75a-40d5-80f9-c8ff0fba37f5"
     }
+  },
+  "expo": {
+    "plugins": ["expo-apple-authentication"]
   }
 }

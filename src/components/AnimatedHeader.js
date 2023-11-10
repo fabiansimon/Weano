@@ -1,14 +1,22 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import Animated from 'react-native-reanimated';
-import { StyleSheet } from 'react-native';
+import {Platform, StyleSheet} from 'react-native';
 import COLORS from '../constants/Theme';
 
 function AnimatedHeader({
-  scrollY, style, children, maxHeight, minHeight, marginTop = 0, threshold = 2, scrollDistance,
+  scrollY,
+  style,
+  children,
+  maxHeight,
+  minHeight,
+  marginTop = 0,
+  threshold = 2,
+  scrollDistance,
 }) {
   const HEADER_MAX_HEIGHT = maxHeight || 250;
   const HEADER_MIN_HEIGHT = minHeight || 60; // min header height
-  const HEADER_SCROLL_DISTANCE = scrollDistance || (HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT);
+  const HEADER_SCROLL_DISTANCE =
+    scrollDistance || HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
   // Animated Header Data
   const translateY = scrollY.interpolate({
@@ -25,13 +33,12 @@ function AnimatedHeader({
   return (
     <Animated.View
       style={[
-        [styles.stickyHeader, style, { marginTop }],
+        [styles.stickyHeader, style, {marginTop}],
         {
-          opacity,
-          transform: [{ translateY }],
+          opacity: opacity,
+          transform: [{translateY}],
         },
-      ]}
-    >
+      ]}>
       {children}
     </Animated.View>
   );
@@ -43,6 +50,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     width: '100%',
+    height: Platform.OS === 'android' ? 70 : undefined,
     backgroundColor: COLORS.shades[0],
     shadowColor: COLORS.shades[100],
     shadowOffset: {
@@ -50,6 +58,7 @@ const styles = StyleSheet.create({
     },
     shadowRadius: 10,
     shadowOpacity: 0.08,
+    elevation: 10,
   },
 });
 

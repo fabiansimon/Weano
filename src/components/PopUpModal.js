@@ -1,40 +1,25 @@
-import {
-  Modal, StyleSheet, TouchableOpacity,
-} from 'react-native';
-import React, { useState, useRef, useEffect } from 'react';
-import Animated from 'react-native-reanimated';
+import {Modal, Platform, StyleSheet, TouchableOpacity} from 'react-native';
+import React, {useEffect} from 'react';
 import COLORS from '../constants/Theme';
-import Headline from './typography/Headline';
 import Body from './typography/Body';
 
 export default function PopUpModal({
-  style, isVisible, onRequestClose, title, subtitle, children,
+  style,
+  isVisible,
+  onRequestClose,
+  title,
+  subtitle,
+  children,
+  autoClose = false,
 }) {
-  const [showModal, setShowModal] = useState(isVisible);
-  const animatedBottom = useRef(new Animated.Value(900)).current;
-  const duration = 300;
-
   useEffect(() => {
-    toggleModal();
-  }, [isVisible]);
-
-  const toggleModal = () => {
-    if (isVisible) {
-      setShowModal(true);
-      Animated.spring(animatedBottom, {
-        toValue: 100,
-        duration,
-        useNativeDriver: true,
-      }).start();
-    } else {
-      setTimeout(() => setShowModal(false), duration);
-      Animated.spring(animatedBottom, {
-        toValue: 900,
-        duration,
-        useNativeDriver: true,
-      }).start();
+    if (isVisible && autoClose) {
+      setTimeout(() => {
+        onRequestClose();
+      }, 4000);
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isVisible]);
 
   return (
     <Modal
@@ -43,19 +28,24 @@ export default function PopUpModal({
       useNativeDriver
       collapsable
       transparent
-      onRequestClose={onRequestClose}
-    >
+      onRequestClose={onRequestClose}>
       <TouchableOpacity
         style={styles.container}
         activeOpacity={1}
-        onPress={onRequestClose}
-      >
-        <TouchableOpacity
-          activeOpacity={1}
-          style={[styles.content, style]}
-        >
-          <Headline type={2} text={title} />
-          <Body text={subtitle} color={COLORS.neutral[900]} />
+        onPress={onRequestClose}>
+        <TouchableOpacity activeOpacity={1} style={[styles.content, style]}>
+          <Body
+            type={1}
+            style={{fontWeight: Platform.OS === 'android' ? '700' : '600'}}
+            text={title}
+            color={COLORS.shades[100]}
+          />
+          <Body
+            type={2}
+            style={{marginTop: 4}}
+            text={subtitle}
+            color={COLORS.neutral[900]}
+          />
           {children}
         </TouchableOpacity>
       </TouchableOpacity>
@@ -71,8 +61,8 @@ const styles = StyleSheet.create({
   },
   content: {
     width: '90%',
-    paddingHorizontal: 25,
-    paddingVertical: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 15,
     borderRadius: 14,
     alignSelf: 'center',
     backgroundColor: COLORS.shades[0],
