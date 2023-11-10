@@ -1,6 +1,6 @@
-import { View, StyleSheet, FlatList } from 'react-native';
-import React, { useRef } from 'react';
-import { ScrollView } from 'react-native-gesture-handler';
+import {View, StyleSheet, FlatList} from 'react-native';
+import React, {useRef} from 'react';
+import {ScrollView} from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import COLORS from '../../constants/Theme';
 import i18n from '../../utils/i18n';
@@ -9,9 +9,9 @@ import FilterOption from '../../components/FilterOption';
 import HybridHeader from '../../components/HybridHeader';
 import INFORMATION from '../../constants/Information';
 
-export default function AccomodationsScreen({ route }) {
+export default function AccomodationsScreen({route}) {
   const scrollY = useRef(new Animated.Value(0)).current;
-  const { data } = route.params;
+  const {data} = route.params;
 
   const options = [
     {
@@ -55,9 +55,7 @@ export default function AccomodationsScreen({ route }) {
     },
   ];
 
-  const getCard = ({ item }) => (
-    <AccomodationCard data={item} />
-  );
+  const getCard = ({item}) => <AccomodationCard data={item} />;
 
   return (
     <View style={styles.container}>
@@ -65,25 +63,21 @@ export default function AccomodationsScreen({ route }) {
         title={i18n.t('Find Accomodation')}
         scrollY={scrollY}
         info={INFORMATION.dateScreen}
-        content={(
+        content={
           <ScrollView horizontal style={styles.filterCarousel}>
-            {options.map((option) => (
-              <FilterOption
-                data={option}
-                style={{ marginRight: 8 }}
-              />
+            {options.map(option => (
+              <FilterOption data={option} style={{marginRight: 8}} />
             ))}
           </ScrollView>
-      )}
-      >
+        }>
         <FlatList
           showsVerticalScrollIndicator={false}
-          style={{ paddingTop: 20, paddingBottom: 50, marginHorizontal: 15 }}
-          contentContainerStyle={{ paddingBottom: 60 }}
+          style={{paddingTop: 20, paddingBottom: 50, marginHorizontal: 15}}
+          contentContainerStyle={{paddingBottom: 60}}
           data={data}
-          renderItem={(item) => getCard(item)}
-        // eslint-disable-next-line react/no-unstable-nested-components
-          ItemSeparatorComponent={() => <View style={{ height: 24 }} />}
+          renderItem={item => getCard(item)}
+          // eslint-disable-next-line react/no-unstable-nested-components
+          ItemSeparatorComponent={() => <View style={{height: 24}} />}
         />
       </HybridHeader>
     </View>

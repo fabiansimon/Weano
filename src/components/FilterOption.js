@@ -1,38 +1,32 @@
-import {
-  StyleSheet,
-} from 'react-native';
-import React, { useState } from 'react';
+import {StyleSheet} from 'react-native';
+import React, {useState} from 'react';
 import Icon from 'react-native-vector-icons/Entypo';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 import COLORS from '../constants/Theme';
 import Headline from './typography/Headline';
 import FilterModal from './FilterModal';
 
-export default function FilterOption({ style, data }) {
+export default function FilterOption({style, data}) {
+  // STATE & MISC
   const [isVisible, setIsVisible] = useState(false);
 
   return (
     <>
       <TouchableOpacity
         style={[styles.container, style]}
-        onPress={() => setIsVisible(!isVisible)}
-      >
+        onPress={() => setIsVisible(!isVisible)}>
         <Headline
           type={4}
           text={data.title}
-          style={{ marginRight: 4 }}
+          style={{marginRight: 4}}
           color={COLORS.neutral[500]}
         />
-        <Icon
-          name="chevron-down"
-          size={20}
-          color={COLORS.neutral[500]}
-        />
+        <Icon name="chevron-down" size={20} color={COLORS.neutral[500]} />
       </TouchableOpacity>
       <FilterModal
         isVisible={isVisible}
         onRequestClose={() => setIsVisible(false)}
-        onPress={(f) => console.log(f)}
+        onPress={f => console.log(f)}
         data={data}
       />
     </>

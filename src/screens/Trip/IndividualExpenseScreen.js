@@ -1,9 +1,7 @@
-import {
-  View, StyleSheet, FlatList,
-} from 'react-native';
-import React, { useRef, useState } from 'react';
+import {View, StyleSheet, FlatList} from 'react-native';
+import React, {useRef, useState} from 'react';
 import Animated from 'react-native-reanimated';
-import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
+import COLORS, {PADDING} from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import HybridHeader from '../../components/HybridHeader';
 import INFORMATION from '../../constants/Information';
@@ -11,14 +9,23 @@ import Headline from '../../components/typography/Headline';
 import ExpenseTile from '../../components/Trip/ExpenseTile';
 import Divider from '../../components/Divider';
 import ExpenseDetailModal from '../../components/Trip/ExpenseDetailModal';
+import Body from '../../components/typography/Body';
 
-export default function IndividualExpenseScreen({ route }) {
+export default function IndividualExpenseScreen({route}) {
+  // PARAMS
+  const {data, users, currency} = route.params;
+
+  // STATE & MISC
   const scrollY = useRef(new Animated.Value(0)).current;
-  const [selectedExpense, setSelectedExpense] = useState({ isVisible: false, data: null });
-  const { data, users } = route.params;
+  const [selectedExpense, setSelectedExpense] = useState({
+    isVisible: false,
+    data: null,
+  });
 
-  const getExpenseTile = (expense) => (
+  const getExpenseTile = expense => (
     <ExpenseTile
+      currency={currency}
+      onDelete={null}
       data={expense}
       user={data.user}
     />
@@ -29,30 +36,30 @@ export default function IndividualExpenseScreen({ route }) {
       <HybridHeader
         title={`${data.user.firstName}'s ${i18n.t('Expenses')}`}
         scrollY={scrollY}
-        info={INFORMATION.dateScreen}
-      >
-        <View style={{ marginHorizontal: PADDING.l }}>
+        info={INFORMATION.dateScreen}>
+        <View style={{marginHorizontal: PADDING.l}}>
           <Headline
-            style={{ marginTop: 26 }}
+            style={{marginTop: 26}}
             type={1}
-            text={`$${data.amount}`}
+            text={`${currency?.symbol}${data.amount.toFixed(2)}`}
           />
-          <Headline
-            style={{ maringBottom: 26 }}
-            type={4}
+          <Body
+            style={{marginBottom: 16}}
+            type={1}
             text={i18n.t('total expenses')}
-            color={COLORS.neutral[500]}
+            color={COLORS.neutral[300]}
           />
 
           <FlatList
-            style={{ paddingTop: 50 }}
-            contentContainerStyle={{ paddingBottom: 20 }}
+            inverted
+            style={{paddingTop: 50}}
+            contentContainerStyle={{paddingBottom: 20}}
             data={data.expenses || null}
-            renderItem={({ item }) => getExpenseTile(item)}
-                // eslint-disable-next-line react/no-unstable-nested-components
+            renderItem={({item}) => getExpenseTile(item)}
+            // eslint-disable-next-line react/no-unstable-nested-components
             ItemSeparatorComponent={() => (
               <Divider
-                style={{ marginLeft: 60 }}
+                style={{marginLeft: 60}}
                 color={COLORS.neutral[50]}
                 vertical={14}
               />
@@ -61,11 +68,14 @@ export default function IndividualExpenseScreen({ route }) {
         </View>
       </HybridHeader>
       <ExpenseDetailModal
+        currency={currency}
         isVisible={selectedExpense.isVisible}
-        onRequestClose={() => setSelectedExpense((prev) => ({
-          ...prev,
-          isVisible: false,
-        }))}
+        onRequestClose={() =>
+          setSelectedExpense(prev => ({
+            ...prev,
+            isVisible: false,
+          }))
+        }
         users={users}
         data={selectedExpense.data}
       />
@@ -74,29 +84,8 @@ export default function IndividualExpenseScreen({ route }) {
 }
 
 const styles = StyleSheet.create({
-  activeTab: {
-    marginTop: 8,
-    height: 4,
-    borderRadius: RADIUS.xl,
-    backgroundColor: COLORS.primary[500],
-    zIndex: 2,
-  },
-  inactiveTab: {
-    marginTop: 9,
-    height: 1,
-    borderRadius: RADIUS.xl,
-    backgroundColor: COLORS.neutral[50],
-    zIndex: 2,
-  },
   container: {
     flex: 1,
     backgroundColor: COLORS.shades[0],
-  },
-  summaryContainer: {
-    marginTop: 25,
-    borderRadius: RADIUS.l,
-    borderWidth: 1,
-    borderColor: COLORS.neutral[50],
-    marginBottom: 70,
   },
 });

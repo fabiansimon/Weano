@@ -1,6 +1,6 @@
 import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
-import { getLocales } from 'react-native-localize';
+import {initReactI18next} from 'react-i18next';
+import {getLocales} from 'react-native-localize';
 import translationEN from '../../assets/locales/en/translation.json';
 import translationDE from '../../assets/locales/de/translation.json';
 

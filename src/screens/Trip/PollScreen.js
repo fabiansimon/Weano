@@ -1,9 +1,9 @@
-import { View, StyleSheet, FlatList } from 'react-native';
-import React, { useState, useRef, useEffect } from 'react';
+import {View, StyleSheet, FlatList, Dimensions} from 'react-native';
+import React, {useState, useRef, useEffect} from 'react';
 import Animated from 'react-native-reanimated';
-import { useMutation } from '@apollo/client';
+import {useMutation} from '@apollo/client';
 import Toast from 'react-native-toast-message';
-import COLORS, { PADDING } from '../../constants/Theme';
+import COLORS, {PADDING} from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import PollView from '../../components/Polls/PollView';
 import HybridHeader from '../../components/HybridHeader';
@@ -14,20 +14,34 @@ import FAButton from '../../components/FAButton';
 import AddPollModal from '../../components/Trip/AddPollModal';
 import ADD_POLL from '../../mutations/addPoll';
 import userStore from '../../stores/UserStore';
-import Headline from '../../components/typography/Headline';
 import DELETE_POLL from '../../mutations/deletePoll';
+import Body from '../../components/typography/Body';
+import AsyncStorageDAO from '../../utils/AsyncStorageDAO';
+import PremiumController from '../../PremiumController';
+
+const asyncStorageDAO = new AsyncStorageDAO();
 
 export default function PollScreen() {
+  // MUTATIONS
+  const [addPoll, {loading, error}] = useMutation(ADD_POLL);
+  const [deletePoll, {error: deleteError}] = useMutation(DELETE_POLL);
+
+  // STORES
+  const {
+    polls,
+    id: tripId,
+    activeMembers,
+    type,
+  } = activeTripStore(state => state.activeTrip);
+  const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
+  const user = userStore(state => state.user);
+
+  // STATE & MISC
   const scrollY = useRef(new Animated.Value(0)).current;
-  const { polls, id: tripId } = activeTripStore((state) => state.activeTrip);
-  const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
-  const { id: userId } = userStore((state) => state.user);
-  const user = userStore((state) => state.user);
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [addPoll, { loading, error }] = useMutation(ADD_POLL);
-  const [deletePoll, { error: deleteError }] = useMutation(DELETE_POLL);
+  const {height} = Dimensions.get('window');
 
   useEffect(() => {
     if (error || deleteError) {
@@ -41,13 +55,13 @@ export default function PollScreen() {
     }
   }, [error, deleteError]);
 
-  const handleDelete = (poll) => {
+  const handleDelete = poll => {
     Utils.showConfirmationAlert(
       i18n.t('Delete Poll'),
       i18n.t('Are you sure you want to delete your poll?'),
       i18n.t('Yes'),
       async () => {
-        const { _id } = poll;
+        const {_id} = poll;
 
         await deletePoll({
           variables: {
@@ -56,16 +70,17 @@ export default function PollScreen() {
               tripId,
             },
           },
-        }).then(() => {
-          Toast.show({
-            type: 'success',
-            text1: i18n.t('Whooray!'),
-            text2: i18n.t('Poll was succeessfully deleted!'),
-          });
-
-          updateActiveTrip({ polls: polls.filter((p) => p._id !== _id) });
         })
-          .catch((e) => {
+          .then(() => {
+            Toast.show({
+              type: 'success',
+              text1: i18n.t('Whooray!'),
+              text2: i18n.t('Poll was succeessfully deleted!'),
+            });
+
+            updateActiveTrip({polls: polls.filter(p => p._id !== _id)});
+          })
+          .catch(e => {
             Toast.show({
               type: 'error',
               text1: i18n.t('Whoops!'),
@@ -77,14 +92,25 @@ export default function PollScreen() {
     );
   };
 
-  const handleAddPoll = async (data) => {
-    const { title } = data;
-    const { options: optionsData } = data;
+  const handleAddPoll = async data => {
+    const usageLimit = JSON.parse(
+      user?.isProMember
+        ? await asyncStorageDAO.getPremiumTierLimits()
+        : await asyncStorageDAO.getFreeTierLimits(),
+    ).polls;
+    if (polls.length >= usageLimit) {
+      return PremiumController.showModal(user?.isProMember);
+    }
 
-    const options = optionsData.map(((item) => ({
-      option: item,
-      votes: [],
-    }))).filter(((item) => item.option !== ''));
+    const {title} = data;
+    const {options: optionsData} = data;
+
+    const options = optionsData
+      .map(item => ({
+        option: item,
+        votes: [],
+      }))
+      .filter(item => item.option !== '');
 
     if (options.length <= 1 || title.length <= 0) {
       return;
@@ -100,19 +126,20 @@ export default function PollScreen() {
           options,
         },
       },
-    }).then((res) => {
-      const { id, options: newOptions } = res.data.createPoll;
-
-      const newPoll = {
-        createdAt: Date.now(),
-        creatorId: userId,
-        title,
-        options: newOptions,
-        _id: id,
-      };
-      updateActiveTrip({ polls: [...polls, newPoll] });
     })
-      .catch((e) => {
+      .then(res => {
+        const {id, options: newOptions} = res.data.createPoll;
+
+        const newPoll = {
+          createdAt: Date.now(),
+          creatorId: user.id,
+          title,
+          options: newOptions,
+          _id: id,
+        };
+        updateActiveTrip({polls: [...polls, newPoll]});
+      })
+      .catch(e => {
         Toast.show({
           type: 'error',
           text1: i18n.t('Whoops!'),
@@ -123,41 +150,74 @@ export default function PollScreen() {
     setIsLoading(false);
     setIsVisible(false);
   };
+
   return (
     <View style={styles.container}>
       <HybridHeader
         title={i18n.t('Polls')}
         scrollY={scrollY}
-        info={INFORMATION.dateScreen}
-      >
+        info={INFORMATION.pollScreen}>
         <View style={styles.innerContainer}>
           <FlatList
-            ListEmptyComponent={(
-              <Headline
-                type={4}
+            ListEmptyComponent={
+              <View
                 style={{
-                  textAlign: 'center', alignSelf: 'center', marginTop: 18,
-                }}
-                text={i18n.t('No polls yet. \nBe the first one to add one 😎')}
-                color={COLORS.neutral[300]}
-              />
-          )}
+                  flex: 1,
+                  height: height * 0.65,
+                  justifyContent: 'center',
+                }}>
+                <Body
+                  type={1}
+                  style={{alignSelf: 'center'}}
+                  color={COLORS.shades[100]}
+                  text={i18n.t('There are no polls yet 😕')}
+                />
+                <Body
+                  type={2}
+                  style={{
+                    alignSelf: 'center',
+                    textAlign: 'center',
+                    width: '85%',
+                    marginTop: 4,
+                  }}
+                  color={COLORS.neutral[300]}
+                  text={i18n.t(
+                    'Use polls to figure out what the majority wants. Once created all the polls will be shown here.',
+                  )}
+                />
+              </View>
+            }
             data={polls}
             ItemSeparatorComponent={() => (
-              <View style={{
-                marginTop: 10, marginBottom: 24, borderTopColor: COLORS.neutral[100], borderTopWidth: 1,
-              }}
+              <View
+                style={{
+                  marginTop: 10,
+                  marginBottom: 24,
+                  borderTopColor: COLORS.neutral[100],
+                  borderTopWidth: 1,
+                }}
               />
             )}
-            renderItem={({ item }) => {
-              const onPress = user.id === item.creatorId ? () => handleDelete(item) : null;
+            renderItem={({item}) => {
+              const isDeletedUser =
+                !activeMembers.findIndex(
+                  member => member.id === item.creatorId,
+                ) === -1;
+              const onPress =
+                user.id === item?.creatorId || isDeletedUser
+                  ? () => handleDelete(item)
+                  : null;
+
               return (
                 <PollView
-                  style={{ marginHorizontal: 5 }}
+                  style={{marginHorizontal: 5}}
                   onPress={onPress}
                   data={item}
                   title={item.title}
-                  subtitle={Utils.getDateFromTimestamp(item.createdAt / 1000, 'HH:mm • Do MMMM ')}
+                  subtitle={Utils.getDateFromTimestamp(
+                    item.createdAt / 1000,
+                    'HH:mm • Do MMMM ',
+                  )}
                 />
               );
             }}
@@ -166,16 +226,18 @@ export default function PollScreen() {
       </HybridHeader>
       <FAButton
         icon="add"
+        isDisabled={type === 'recent'}
         iconSize={28}
         onPress={() => setIsVisible(true)}
       />
       <AddPollModal
+        isProMember={user?.isProMember}
+        polls={polls}
         isVisible={isVisible}
         onRequestClose={() => setIsVisible(false)}
-        onPress={(data) => handleAddPoll(data)}
+        onPress={data => handleAddPoll(data)}
         isLoading={isLoading || loading}
       />
-
     </View>
   );
 }

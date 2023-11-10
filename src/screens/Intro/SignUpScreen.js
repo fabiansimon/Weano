@@ -1,570 +1,378 @@
 import {
-  Animated, View, StyleSheet, Image, Pressable, ScrollView,
+  View,
+  StyleSheet,
+  Image,
+  Pressable,
+  StatusBar,
+  Platform,
+  Dimensions,
 } from 'react-native';
-import React, { useState, useEffect, useRef } from 'react';
-import COLORS, { PADDING, RADIUS } from '../../constants/Theme';
+import React, {useState} from 'react';
+import COLORS, {PADDING} from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import Headline from '../../components/typography/Headline';
 import Body from '../../components/typography/Body';
-import TextField from '../../components/TextField';
+import Toast from 'react-native-toast-message';
 import AuthModal from '../../components/AuthModal';
-import GoogleIcon from '../../../assets/icons/google_icon.svg';
+import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import Button from '../../components/Button';
-import REGEX from '../../constants/Regex';
+import GoogleIcon from '../../../assets/icons/google_icon.svg';
+import AppleIcon from '../../../assets/icons/apple_icon.svg';
 import Logo from '../../../assets/images/logo_temp.png';
-import ImageCollage from '../../../assets/images/intro_collage.png';
+import BackgroundImage from '../../../assets/images/signup_background.png';
 import Utils from '../../utils';
-import WebViewModal from '../../components/WebViewModal';
-import META_DATA from '../../constants/MetaData';
-import SensorView from '../../components/SensorView';
-import BackButton from '../../components/BackButton';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {useNavigation} from '@react-navigation/native';
+import ROUTES from '../../constants/Routes';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {useMutation} from '@apollo/client';
+import LOGIN_USER from '../../mutations/loginUser';
+import userStore from '../../stores/UserStore';
+import AsyncStorageDAO from '../../utils/AsyncStorageDAO';
+import * as AppleAuthentication from 'expo-apple-authentication';
+import REGISTER_USER from '../../mutations/registerUser';
 
-export default function SignUpScreen({ invitationId, route }) {
-  const { uploadReminderId } = route.params;
-  const errorColors = {
-    error: COLORS.error[700],
-    success: COLORS.success[700],
-    neutral: COLORS.neutral[300],
-  };
+const asyncStorageDAO = new AsyncStorageDAO();
 
-  const [errorChecks, setErrorChecks] = useState(
-    {
-      firstName: {
-        error: i18n.t('missing'),
-        color: errorColors.neutral,
-        isValid: false,
-      },
-      lastName: {
-        error: i18n.t('missing'),
-        color: errorColors.neutral,
-        isValid: false,
-      },
-      email: {
-        error: i18n.t('missing'),
-        color: errorColors.neutral,
-        isValid: false,
-      },
-    },
-  );
-  const lastNameRef = useRef();
-  const emailRef = useRef();
+const {height, width} = Dimensions.get('window');
+
+GoogleSignin.configure({
+  webClientId:
+    '1011261400246-ora3gsn0hfhqhmethp3jt57tlma07ttf.apps.googleusercontent.com',
+});
+
+export default function SignUpScreen({route}) {
+  // PARAMS
+  const {uploadReminderId, inviteId} = route.params;
+
+  // MUTATIONS
+  const [loginUser] = useMutation(LOGIN_USER);
+  const [registerUser] = useMutation(REGISTER_USER);
+
+  // STORES
+  const updateUserData = userStore(state => state.updateUserData);
+
+  // STATE & MISC
   const [loginVisible, setLoginVisible] = useState(false);
-  const [registerVisible, setRegisterVisible] = useState(false);
-  const [allValid, setAllValid] = useState(false);
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [initIntro, setInitIntro] = useState(false);
-  const [webViewOption, setWebViewOption] = useState(null);
 
-  const animatedTranslateY = useRef(new Animated.Value(1000)).current;
-  const animatedImageY = useRef(new Animated.Value(0)).current;
-  const animatedBackButtonX = useRef(new Animated.Value(-100)).current;
-  const duration = 300;
+  const navigation = useNavigation();
 
-  useEffect(() => {
-    if (initIntro) {
-      Animated.spring(animatedTranslateY, {
-        toValue: 50,
-        duration,
-      }).start();
-      Animated.spring(animatedImageY, {
-        toValue: -500,
-        duration,
-      }).start();
-      Animated.spring(animatedBackButtonX, {
-        toValue: 0,
-        duration,
-      }).start();
-    } else {
-      Animated.spring(animatedTranslateY, {
-        toValue: 1000,
-        duration,
-      }).start();
-      Animated.spring(animatedImageY, {
-        toValue: 0,
-        duration,
-      }).start();
-      Animated.spring(animatedBackButtonX, {
-        toValue: -100,
-        duration,
-      }).start();
+  const handleAuthGoogle = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const {idToken: googleIdToken} = await GoogleSignin.signIn();
+      await loginUser({
+        variables: {
+          user: {
+            googleIdToken,
+          },
+        },
+      })
+        .catch(e => {
+          Toast.show({
+            type: 'error',
+            text1: i18n.t('Whoops!'),
+            text2: i18n.t('No user found'),
+          });
+          console.log(e);
+        })
+        .then(res => {
+          asyncStorageDAO.setAccessToken(res.data.loginUser);
+          updateUserData({authToken: res.data.loginUser});
+          navigation.push(ROUTES.initDataCrossroads, inviteId);
+        });
+    } catch (error) {
+      console.log(error);
     }
-  }, [initIntro]);
-
-  useEffect(() => {
-    checkForErrors();
-  }, [firstName, lastName, email]);
-
-  const checkForErrors = () => {
-    // First Name checks
-    if (firstName.length === 0) {
-      setErrorChecks((prev) => ({
-        ...prev,
-        firstName: {
-          error: i18n.t('missing'),
-          color: errorColors.neutral,
-        },
-      }));
-    } else if (REGEX.name.test(firstName.trim())) {
-      setErrorChecks((prev) => ({
-        ...prev,
-        firstName: {
-          error: i18n.t('contains invalid characters'),
-          color: errorColors.error,
-        },
-      }));
-    } else {
-      setErrorChecks((prev) => ({
-        ...prev,
-        firstName: {
-          error: i18n.t('is valid'),
-          color: errorColors.success,
-          isValid: true,
-        },
-      }));
-    }
-
-    // Last Name checks
-    if (lastName.length === 0) {
-      setErrorChecks((prev) => ({
-        ...prev,
-        lastName: {
-          error: i18n.t('missing'),
-          color: errorColors.neutral,
-        },
-      }));
-    } else if (REGEX.name.test(lastName.trim())) {
-      setErrorChecks((prev) => ({
-        ...prev,
-        lastName: {
-          error: i18n.t('contains invalid characters'),
-          color: errorColors.error,
-        },
-      }));
-    } else {
-      setErrorChecks((prev) => ({
-        ...prev,
-        lastName: {
-          error: i18n.t('is valid'),
-          color: errorColors.success,
-          isValid: true,
-        },
-      }));
-    }
-
-    // Email checks
-    if (email.length === 0) {
-      setErrorChecks((prev) => ({
-        ...prev,
-        email: {
-          error: i18n.t('missing'),
-          color: errorColors.neutral,
-        },
-      }));
-    } else if (!email.toLowerCase().match(REGEX.email)) {
-      setErrorChecks((prev) => ({
-        ...prev,
-        email: {
-          error: i18n.t('is not a valid email'),
-          color: errorColors.error,
-        },
-      }));
-    } else {
-      setErrorChecks((prev) => ({
-        ...prev,
-        email: {
-          error: i18n.t('is valid'),
-          color: errorColors.success,
-          isValid: true,
-        },
-      }));
-    }
-
-    setAllValid(errorChecks.firstName.isValid && errorChecks.lastName.isValid && errorChecks.email.isValid);
   };
 
-  const getCheckList = () => (
-    <View style={{ marginTop: 10 }}>
-      {!errorChecks.firstName.isValid && firstName?.length >= 1
-        && (
-        <Body
-          type={2}
-          color={errorChecks.firstName.color}
-          text={`• ${i18n.t('First name')} ${errorChecks.firstName.error}`}
-        />
-        )}
-      {!errorChecks.lastName.isValid && lastName?.length >= 1
-      && (
-      <Body
-        type={2}
-        color={errorChecks.lastName.color}
-        text={`• ${i18n.t('Last name')} ${errorChecks.lastName.error}`}
-      />
-      )}
-      {!errorChecks.email.isValid && email?.length >= 1
-      && (
-      <Body
-        type={2}
-        color={errorChecks.email.color}
-        text={`• ${i18n.t('Email')} ${errorChecks.email.error}`}
-      />
-      )}
-    </View>
-  );
+  const handleAuthApple = async () => {
+    try {
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
 
-  const AniamtedScrollView = Animated.createAnimatedComponent(ScrollView);
+      if (credential?.fullName?.givenName !== null) {
+        const {
+          fullName: {familyName, givenName},
+          email,
+        } = credential;
+        await registerUser({
+          variables: {
+            user: {
+              appleIdToken: credential.identityToken,
+              firstName: givenName,
+              lastName: familyName,
+              email,
+            },
+          },
+        })
+          .catch(e => {
+            Toast.show({
+              type: 'error',
+              text1: i18n.t('Whoops!'),
+              text2: e.message,
+            });
+          })
+          .then(res => {
+            if (!res) {
+              return;
+            }
+            asyncStorageDAO.setAccessToken(res.data.registerUser);
+            updateUserData({authToken: res.data.registerUser});
+            navigation.push(ROUTES.initDataCrossroads, inviteId);
+          });
+      }
 
-  const getAuthContainer = () => (
-    <AniamtedScrollView
-      scrollEnabled={false}
-      contentContainerStyle={{
-        justifyContent: 'space-between', flex: 1, paddingBottom: 50,
-      }}
-      style={[styles.mainContainer, { transform: [{ translateY: animatedTranslateY }] }]}
-    >
-      <>
-        <Headline
-          type={2}
-          text={i18n.t('Sign up 👋')}
-        />
-        <Body
-          style={{ marginTop: 4 }}
-          color={COLORS.neutral[300]}
-          type={1}
-          text={i18n.t('Are you ready to make some memories?')}
-        />
-        <View style={{ marginTop: 20 }}>
-          <View style={{ flexDirection: 'row' }}>
-            <View style={{ flex: 1, paddingRight: 8 }}>
-              <Body
-                color={COLORS.neutral[700]}
-                type={2}
-                style={{ marginBottom: 6, marginLeft: 5 }}
-                text={i18n.t('First name')}
-              />
-              <TextField
-                onDelete={() => setFirstName('')}
-                // autoFocus
-                returnKeyType="next"
-                label={i18n.t('First name')}
-                value={firstName || null}
-                onChangeText={(val) => setFirstName(val)}
-                style={firstName.length > 0 ? errorChecks.firstName.isValid ? styles.validField : styles.invalidField : null}
-                placeholder={i18n.t('John')}
-                autoComplete={false}
-                autoCorrect
-              />
-            </View>
+      await loginUser({
+        variables: {
+          user: {
+            appleIdToken: credential.identityToken,
+          },
+        },
+      })
+        .catch(e => {
+          Toast.show({
+            type: 'error',
+            text1: i18n.t('Whoops!'),
+            text2: e.message,
+          });
+        })
+        .then(res => {
+          if (!res) {
+            return;
+          }
+          asyncStorageDAO.setAccessToken(res.data.loginUser);
+          updateUserData({authToken: res.data.loginUser});
+          navigation.push(ROUTES.initDataCrossroads, inviteId);
+        });
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
-            <View style={{ flex: 1 }}>
-              <Body
-                color={COLORS.neutral[700]}
-                type={2}
-                style={{ marginBottom: 6, marginLeft: 5 }}
-                text={i18n.t('Last name')}
-              />
-              <TextField
-                ref={lastNameRef}
-                onDelete={() => setLastName('')}
-                returnKeyType="next"
-                label={i18n.t('Last name')}
-                style={lastName.length > 0 ? errorChecks.lastName.isValid ? styles.validField : styles.invalidField : null}
-                value={lastName || null}
-                onChangeText={(val) => setLastName(val)}
-                placeholder={i18n.t('Doe')}
-                autoComplete={false}
-                autoCorrect={false}
-              />
-            </View>
-          </View>
-          <View style={{ marginTop: 12 }}>
-            <Body
-              color={COLORS.neutral[700]}
+  const getContent = () => {
+    return (
+      <View
+        style={{
+          marginHorizontal: PADDING.m,
+          flex: 1,
+          paddingTop: Platform.OS === 'android' ? 10 : 0,
+          justifyContent: 'space-between',
+        }}>
+        <View>
+          <Image
+            style={{height: 40, width: 40}}
+            resizeMode="contain"
+            source={Logo}
+          />
+          <View style={{flexWrap: 'wrap', flexDirection: 'row'}}>
+            <Headline
               type={2}
-              style={{ marginBottom: 6, marginLeft: 5 }}
-              text={i18n.t('Email')}
+              color={COLORS.shades[0]}
+              style={{marginRight: 4}}
+              text={i18n.t('Create,')}
             />
-            <TextField
-              ref={emailRef}
-              onDelete={() => setEmail('')}
-              keyboardType="email-address"
-              autoCapitalize={false}
-              label={i18n.t('Email')}
-              value={email || null}
-              returnKeyType="done"
-              autoComplete={false}
-              style={email.length > 0 ? errorChecks.email.isValid ? styles.validField : styles.invalidField : null}
-              autoCorrect={false}
-              onChangeText={(val) => setEmail(val)}
-              placeholder={i18n.t('Your Email')}
+            <Headline
+              type={2}
+              color={COLORS.shades[0]}
+              style={{marginRight: 4}}
+              text={i18n.t('capture')}
+            />
+            <Headline
+              type={2}
+              style={{fontWeight: '400', marginRight: 4}}
+              color={COLORS.shades[0]}
+              text={i18n.t('and')}
+            />
+            <Headline
+              type={2}
+              color={COLORS.shades[0]}
+              style={{marginRight: 4}}
+              text={i18n.t('preserve')}
+            />
+            <Headline
+              type={2}
+              color={COLORS.shades[0]}
+              style={{marginRight: 4}}
+              text={i18n.t('moments')}
+            />
+            <Headline
+              type={2}
+              style={{fontWeight: '400', marginRight: 4}}
+              color={COLORS.shades[0]}
+              text={i18n.t('that')}
+            />
+            <Headline
+              type={2}
+              style={{fontWeight: '400', marginRight: 4}}
+              color={COLORS.shades[0]}
+              text={i18n.t('you')}
+            />
+            <Headline
+              type={2}
+              color={COLORS.shades[0]}
+              style={{fontWeight: '400', marginRight: 4}}
+              text={i18n.t('never')}
+            />
+            <Headline
+              type={2}
+              style={{fontWeight: '400', marginRight: 4}}
+              color={COLORS.shades[0]}
+              text={i18n.t('wanted')}
+            />
+            <Headline
+              type={2}
+              style={{fontWeight: '400', marginRight: 4}}
+              color={COLORS.shades[0]}
+              text={i18n.t('to')}
+            />
+            <Headline
+              type={2}
+              style={{fontWeight: '400', marginRight: 4}}
+              color={COLORS.shades[0]}
+              text={i18n.t('forget')}
+            />
+          </View>
+          <View style={{flexDirection: 'row', marginTop: 8}}>
+            <Body
+              type={1}
+              color={COLORS.shades[0]}
+              style={{
+                fontWeight: Platform.OS === 'android' ? '700' : '600',
+              }}
+              text={i18n.t('Log in')}
+            />
+            <Body
+              type={1}
+              color={COLORS.shades[0]}
+              text={i18n.t('to start!')}
+              style={{
+                marginHorizontal: 4,
+                marginTop: Platform.OS === 'android' ? 1 : 0,
+              }}
             />
           </View>
         </View>
-        {getCheckList()}
-      </>
-      <View style={{
-        width: '100%', height: 160, marginTop: 'auto',
-      }}
-      >
-        <Button
-          fullWidth
-          onPress={() => setRegisterVisible(true)}
-          text={i18n.t('Next')}
-          isDisabled={!allValid}
-        />
-        <Button
-          style={{ marginTop: 15 }}
-          fullWidth
-          icon={<GoogleIcon height={22} style={{ left: -20 }} />}
-          isSecondary
-          onPress={() => console.log('Google')}
-          text={i18n.t('Sign up with Google')}
-        />
-        <Pressable
-          onPress={() => setLoginVisible(true)}
-          style={{ flexDirection: 'row', marginTop: 20, justifyContent: 'center' }}
-        >
-          <Body
-            type={1}
-            color={COLORS.neutral[300]}
-            text={i18n.t('Already have an account?')}
-          />
-          <Body
-            type={1}
-            color={COLORS.primary[500]}
-            text={i18n.t('Log in instead')}
-            style={{ marginLeft: 4, fontWeight: '600' }}
-          />
-        </Pressable>
-      </View>
-    </AniamtedScrollView>
-  );
 
-  const getBackButton = () => (
-    <Animated.View style={[{ position: 'absolute', top: 50, left: PADDING.m }, { transform: [{ translateX: animatedBackButtonX }] }]}>
-      <BackButton
-        onPress={() => setInitIntro(false)}
-        isClear
-        iconColor={COLORS.shades[0]}
-      />
-    </Animated.View>
-  );
-
-  const AnimatedImage = Animated.createAnimatedComponent(Image);
-
-  return (
-    <View style={{ flex: 1, backgroundColor: COLORS.primary[700], justifyContent: 'space-between' }}>
-      <SensorView>
-        <AnimatedImage
-          style={[{ width: '100%', height: 320 }, { transform: [{ translateY: animatedImageY }] }]}
-          source={ImageCollage}
-          resizeMode="cover"
-        />
-      </SensorView>
-      <View style={{ marginHorizontal: PADDING.m }}>
-        <Image
-          source={Logo}
+        <View
           style={{
-            height: 50, width: 40, marginTop: 10,
-          }}
-        />
-        <View style={{ flexWrap: 'wrap', flexDirection: 'row' }}>
-          <Headline
-            type={2}
-            color={COLORS.shades[0]}
-            style={{ marginRight: 4 }}
-            text={i18n.t('Create,')}
+            width: '90%',
+            height: Platform.OS === 'ios' ? 220 : 160,
+            marginBottom: Platform.OS === 'android' ? 20 : 8,
+            alignSelf: 'center',
+          }}>
+          {Platform.OS === 'ios' && (
+            <Button
+              icon={<AppleIcon style={{marginLeft: -22}} />}
+              style={{marginBottom: 8}}
+              fullWidth
+              textColor={COLORS.shades[100]}
+              isSecondary
+              onPress={handleAuthApple}
+              alignIcon="left"
+              text={i18n.t('Continue with Apple')}
+            />
+          )}
+          <Button
+            icon={<GoogleIcon />}
+            style={{marginBottom: 8}}
+            fullWidth
+            textColor={COLORS.shades[100]}
+            isSecondary
+            onPress={handleAuthGoogle}
+            alignIcon="left"
+            text={i18n.t('Continue with Google')}
           />
-          <Headline
-            type={2}
-            color={COLORS.shades[0]}
-            style={{ marginRight: 4 }}
-            text={i18n.t('capture')}
-          />
-          <Headline
-            type={2}
-            style={{ fontWeight: '400', marginRight: 4 }}
-            color={COLORS.shades[0]}
-            text={i18n.t('and')}
-          />
-          <Headline
-            type={2}
-            color={COLORS.shades[0]}
-            style={{ marginRight: 4 }}
-            text={i18n.t('preserve')}
-          />
-          <Headline
-            type={2}
-            color={COLORS.shades[0]}
-            style={{ marginRight: 4 }}
-            text={i18n.t('moments')}
-          />
-          <Headline
-            type={2}
-            style={{ fontWeight: '400', marginRight: 4 }}
-            color={COLORS.shades[0]}
-            text={i18n.t('that')}
-          />
-          <Headline
-            type={2}
-            style={{ fontWeight: '400', marginRight: 4 }}
-            color={COLORS.shades[0]}
-            text={i18n.t('you')}
-          />
-          <Headline
-            type={2}
-            color={COLORS.shades[0]}
-            style={{ fontWeight: '400', marginRight: 4 }}
-            text={i18n.t('never')}
-          />
-          <Headline
-            type={2}
-            style={{ fontWeight: '400', marginRight: 4 }}
-            color={COLORS.shades[0]}
-            text={i18n.t('wanted')}
-          />
-          <Headline
-            type={2}
-            style={{ fontWeight: '400', marginRight: 4 }}
-            color={COLORS.shades[0]}
-            text={i18n.t('to')}
-          />
-          <Headline
-            type={2}
-            style={{ fontWeight: '400', marginRight: 4 }}
-            color={COLORS.shades[0]}
-            text={i18n.t('forget')}
-          />
-        </View>
-        <Body
-          type={2}
-          style={{ marginTop: 10 }}
-          color={COLORS.shades[0]}
-          text={i18n.t("(Yes, it's that easy)")}
-        />
-        <View style={{
-          width: '100%', height: 170, marginTop: '25%', marginBottom: 40,
-        }}
-        >
           <Button
             fullWidth
-            textColor={COLORS.primary[900]}
+            alignIcon="left"
+            icon={<Icon name="phone" color={COLORS.shades[100]} size={22} />}
+            textColor={COLORS.shades[100]}
             isSecondary
             onPress={() => setLoginVisible(true)}
-            text={i18n.t('Log in')}
+            text={i18n.t('Log in with phone')}
           />
-          <Button
-            fullWidth
-            onPress={() => setInitIntro(true)}
-            style={{ borderWidth: 1, borderColor: COLORS.shades[0], marginTop: 10 }}
-            text={i18n.t('Sign up')}
-          />
-          <View
-            style={{ marginTop: 20, justifyContent: 'center', alignItems: 'center' }}
-          >
+          <Pressable
+            onPress={() =>
+              navigation.push(ROUTES.registerScreen, {
+                inviteId,
+                uploadReminderId,
+              })
+            }
+            style={{
+              marginTop: 20,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
             <Body
               type={2}
               color={COLORS.shades[0]}
-              text={i18n.t('By signing up you are agreeing to our')}
+              text={i18n.t('No account?')}
             />
-            <View style={{ flexDirection: 'row' }}>
-              <Body
-                onPress={() => setWebViewOption('terms')}
-                type={2}
-                color={COLORS.shades[0]}
-                style={{ fontWeight: '600' }}
-                text={i18n.t('Terms')}
-              />
-              <Body
-                type={2}
-                color={COLORS.shades[0]}
-                style={{ marginHorizontal: 2 }}
-                text={i18n.t('and')}
-              />
-              <Body
-                type={2}
-                onPress={() => setWebViewOption('pp')}
-                color={COLORS.shades[0]}
-                style={{ fontWeight: '600' }}
-                text={i18n.t('Privacy Policy')}
-              />
-            </View>
-          </View>
+            <Body
+              type={2}
+              color={COLORS.shades[0]}
+              style={{
+                fontWeight: Platform.OS === 'android' ? '700' : '600',
+              }}
+              text={i18n.t('Create Account')}
+            />
+          </Pressable>
         </View>
       </View>
-      {getAuthContainer()}
-      {getBackButton()}
-      <AuthModal
-        isVisible={registerVisible}
-        onRequestClose={() => setRegisterVisible(false)}
-        registerData={{
-          firstName: firstName.trim(),
-          lastName: lastName.trim(),
-          email,
-        }}
-        joinTripId={invitationId}
-        uploadReminderId={uploadReminderId}
-      />
+    );
+  };
+
+  return (
+    <>
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="light-content" />
+        <Image
+          source={BackgroundImage}
+          blurRadius={3}
+          resizeMode="contain"
+          style={styles.imageBackground}
+        />
+        <View style={styles.overlay} />
+        {getContent()}
+      </SafeAreaView>
       <AuthModal
         isVisible={loginVisible}
         onRequestClose={() => setLoginVisible(false)}
-        joinTripId={invitationId}
+        joinTripId={inviteId}
         uploadReminderId={uploadReminderId}
+        onRegisterPress={() =>
+          navigation.push(ROUTES.registerScreen, {
+            inviteId,
+            uploadReminderId,
+          })
+        }
       />
-      <WebViewModal
-        isVisible={webViewOption !== null}
-        onRequestClose={() => setWebViewOption(null)}
-        url={webViewOption === 'pp' ? META_DATA.privacyPolicyUrl : META_DATA.termUrl}
-        title={webViewOption === 'pp' ? i18n.t('Privacy Policy') : i18n.t('Terms & Conditions')}
-      />
-    </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  header: {
-    position: 'absolute',
-    top: 0,
-    backgroundColor: COLORS.primary[500],
-    width: '100%',
-    height: 200,
-  },
-  loginContainer: {
-    backgroundColor: COLORS.primary[300],
-    paddingVertical: 6,
-    paddingHorizontal: 15,
-    borderRadius: 100,
-  },
-  innerHeaderContainer: {
-    marginTop: 8,
-    marginBottom: -20,
-    flexDirection: 'row',
-    alignItems: 'center',
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.shades[100],
     justifyContent: 'space-between',
-    marginHorizontal: PADDING.s,
   },
-  mainContainer: {
-    backgroundColor: COLORS.shades[0],
-    borderTopRightRadius: RADIUS.m,
-    borderTopLeftRadius: RADIUS.m,
-    paddingHorizontal: PADDING.l,
-    paddingTop: PADDING.l,
-    marginTop: 110,
-    paddingBottom: 50,
+  imageBackground: {
+    top: -25,
+    height: height + 50,
+    alignSelf: 'center',
     position: 'absolute',
-    width: '100%',
-    height: '95%',
-    bottom: 0,
   },
-  validField: {
-    borderWidth: 1,
-    borderColor: COLORS.success[500],
-    backgroundColor: Utils.addAlpha(COLORS.success[500], 0.1),
-  },
-  invalidField: {
-    borderWidth: 1,
-    borderColor: COLORS.error[500],
-    backgroundColor: Utils.addAlpha(COLORS.error[500], 0.1),
+  overlay: {
+    flex: 1,
+    position: 'absolute',
+    height,
+    width,
+    backgroundColor: Utils.addAlpha(COLORS.shades[100], 0.6),
   },
 });

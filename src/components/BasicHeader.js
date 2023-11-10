@@ -1,28 +1,33 @@
-import { View, StyleSheet } from 'react-native';
-import React, { useState } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {View, StyleSheet} from 'react-native';
+import React, {useState} from 'react';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Entypo';
 import Headline from './typography/Headline';
-import COLORS, { PADDING } from '../constants/Theme';
+import COLORS, {PADDING} from '../constants/Theme';
 import PopUpModal from './PopUpModal';
 import i18n from '../utils/i18n';
 import Body from './typography/Body';
 
 export default function BasicHeader({
-  style, title, subtitle, trailing, children, info,
+  style,
+  title,
+  subtitle,
+  trailing,
+  children,
+  info,
+  centerComponent,
 }) {
   const [infoVisible, setInfoVisible] = useState(false);
 
   return (
-    <View style={[styles.container, style, { paddingBottom: children ? 14 : 14 }]}>
+    <View
+      style={[styles.container, style, {paddingBottom: children ? 14 : 14}]}>
       <SafeAreaView />
       <View style={styles.heading}>
-        <View style={[styles.titleContainer, { marginBottom: children && 16 }]}>
-          <Headline
-            type={3}
-            text={title}
-          />
-          {info && (
+        <View style={[styles.titleContainer, {marginBottom: children && 16}]}>
+          <Headline type={3} text={title} />
+          {centerComponent && centerComponent}
+          {info && !trailing && (
             <Icon
               onPress={() => setInfoVisible(true)}
               suppressHighlighting
@@ -31,14 +36,10 @@ export default function BasicHeader({
               color={COLORS.neutral[100]}
             />
           )}
+          {trailing || null}
         </View>
-        {trailing || <View width={55} />}
         {subtitle && (
-          <Body
-            type={1}
-            text={subtitle}
-            color={COLORS.neutral[300]}
-          />
+          <Body type={1} text={subtitle} color={COLORS.neutral[300]} />
         )}
       </View>
       {children}
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-end',
   },
   heading: {
     paddingHorizontal: PADDING.l,

@@ -1,9 +1,9 @@
-import { ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
+import {ActivityIndicator, StyleSheet, TouchableOpacity} from 'react-native';
 import React from 'react';
-import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Icon from 'react-native-vector-icons/Entypo';
-import COLORS, { RADIUS } from '../constants/Theme';
-import Headline from './typography/Headline';
+import COLORS, {PADDING, RADIUS} from '../constants/Theme';
+import Body from './typography/Body';
+import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 export default function Button({
   style,
@@ -12,23 +12,45 @@ export default function Button({
   backgroundColor,
   onPress,
   isSecondary = false,
+  isOutlined = false,
   isDisabled,
   icon,
   color,
   fullWidth = true,
   disableHaptics = false,
+  alignIcon = 'default',
   isLoading,
 }) {
   const flex = fullWidth ? 1 : 0;
-  const bg = isDisabled ? COLORS.primary[50] : backgroundColor || COLORS.primary[700];
-  const borderColor = isSecondary && COLORS.neutral[100];
-  const borderWidth = isSecondary && 1;
+  const bg = isDisabled
+    ? COLORS.primary[50]
+    : isOutlined
+    ? 'transparent'
+    : backgroundColor || COLORS.primary[700];
+  const borderColor = isSecondary
+    ? COLORS.neutral[100]
+    : isOutlined
+    ? COLORS.shades[0]
+    : null;
+  const borderWidth = isSecondary || isOutlined ? 1 : 0;
 
-  const getIcon = () => (typeof icon.type === 'function' ? (
-    React.cloneElement(icon, { fill: color })
-  ) : (
-    <Icon name={icon} color={color} size={20} />
-  ));
+  const getIcon = () =>
+    typeof icon.type === 'function' ? (
+      React.cloneElement(icon, {
+        fill: color,
+        height: 22,
+        style: alignIcon === 'left' ? {position: 'absolute', left: 12} : {},
+      })
+    ) : (
+      <Icon
+        name={icon}
+        color={color}
+        style={
+          alignIcon === 'left' ? {position: 'absolute', left: PADDING.m} : {}
+        }
+        size={20}
+      />
+    );
 
   const getLoadingIndicator = () => (
     <ActivityIndicator color={COLORS.shades[0]} />
@@ -42,25 +64,32 @@ export default function Button({
   return (
     <TouchableOpacity
       activeOpacity={0.9}
-      style={[styles.container, {
-        flex, backgroundColor: isSecondary ? COLORS.shades[0] : bg, borderColor, borderWidth,
-      }, style]}
+      style={[
+        styles.container,
+        {
+          flex,
+          backgroundColor: isSecondary ? COLORS.shades[0] : bg,
+          borderColor,
+          borderWidth,
+        },
+        style,
+      ]}
       onPress={() => {
-        // eslint-disable-next-line no-unused-expressions
         !isLoading && onPress();
-        // eslint-disable-next-line no-unused-expressions
-        !disableHaptics && ReactNativeHapticFeedback.trigger('impactLight', options);
+        !disableHaptics &&
+          RNReactNativeHapticFeedback.trigger('impactLight', options);
       }}
-      disabled={isDisabled}
-    >
+      disabled={isDisabled}>
       {icon && !isLoading && getIcon()}
       {text && !isLoading && (
-      <Headline
-        type={4}
-        text={text}
-        color={textColor || (isSecondary ? COLORS.shades[100] : COLORS.shades[0])}
-        style={{ marginLeft: icon ? 6 : 0 }}
-      />
+        <Body
+          type={1}
+          text={text}
+          color={
+            textColor || (isSecondary ? COLORS.shades[100] : COLORS.shades[0])
+          }
+          style={{marginLeft: icon ? 6 : 0}}
+        />
       )}
       {isLoading && getLoadingIndicator()}
     </TouchableOpacity>
@@ -76,6 +105,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: RADIUS.l,
+    borderRadius: RADIUS.xl,
   },
 });

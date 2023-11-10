@@ -1,17 +1,10 @@
-/* eslint-disable no-mixed-operators */
-/* eslint-disable prefer-const */
-import {
-  Platform,
-  Pressable, StyleSheet, View,
-} from 'react-native';
+import {Platform, Pressable, StyleSheet, View} from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Feather';
-import { useMutation } from '@apollo/client';
+import {useMutation} from '@apollo/client';
 import Toast from 'react-native-toast-message';
-// eslint-disable-next-line import/no-named-as-default
-import { MenuView } from '@react-native-menu/menu';
+import {MenuView} from '@react-native-menu/menu';
 import PollTile from './PollTile';
-import Headline from '../typography/Headline';
 import Body from '../typography/Body';
 import COLORS from '../../constants/Theme';
 import i18n from '../../utils/i18n';
@@ -20,27 +13,38 @@ import userManagement from '../../utils/userManagement';
 import activeTripStore from '../../stores/ActiveTripStore';
 import VOTE_FOR_POLL from '../../mutations/voteForPoll';
 import userStore from '../../stores/UserStore';
+import Divider from '../Divider';
+
+const MAX_LENGTH = 2;
 
 export default function PollView({
-  style, data, title, subtitle, onPress, isMinimized = false, onNavigation,
+  style,
+  data,
+  title,
+  onPress,
+  isMinimized = false,
+  onNavigation,
 }) {
+  // MUTATIONS
   const [voteForPoll] = useMutation(VOTE_FOR_POLL);
-  const { id } = userStore((state) => state.user);
-  const { polls, activeMembers } = activeTripStore((state) => state.activeTrip);
-  const updateActiveTrip = activeTripStore((state) => state.updateActiveTrip);
 
-  const handleVote = async (item) => {
-    const { _id: pollId } = data;
-    const { id: optionId } = item;
+  // STORES
+  const {id} = userStore(state => state.user);
+  const {polls, activeMembers} = activeTripStore(state => state.activeTrip);
+  const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
+
+  const handleVote = async item => {
+    const {_id: pollId} = data;
+    const {id: optionId} = item;
 
     const oldPolls = polls;
-    const updatedPolls = polls.map((poll) => {
+    const updatedPolls = polls.map(poll => {
       if (poll._id === pollId) {
-        let nOptions = poll.options;
-        const oIndex = nOptions.findIndex((o) => o.id === optionId);
+        const nOptions = poll.options;
+        const oIndex = nOptions.findIndex(o => o.id === optionId);
 
-        let nVotes = [...nOptions[oIndex].votes];
-        const vIndex = nVotes.findIndex((v) => v === id);
+        const nVotes = [...nOptions[oIndex].votes];
+        const vIndex = nVotes.findIndex(v => v === id);
 
         if (vIndex === -1) {
           nVotes.push(id);
@@ -66,7 +70,7 @@ export default function PollView({
       return poll;
     });
 
-    updateActiveTrip({ polls: updatedPolls });
+    updateActiveTrip({polls: updatedPolls});
 
     await voteForPoll({
       variables: {
@@ -75,42 +79,43 @@ export default function PollView({
           pollId,
         },
       },
-    })
-      .catch((e) => {
-        Toast.show({
-          type: 'error',
-          text1: i18n.t('Whoops!'),
-          text2: e.message,
-        });
-        updateActiveTrip({ polls: oldPolls });
-        console.log(`ERROR: ${e.message}`);
+    }).catch(e => {
+      Toast.show({
+        type: 'error',
+        text1: i18n.t('Whoops!'),
+        text2: e.message,
       });
+      updateActiveTrip({polls: oldPolls});
+      console.log(`ERROR: ${e.message}`);
+    });
   };
 
   const header = data ? title : i18n.t('Be the first one to add one!');
+  const creator = userManagement.convertIdToUser(data?.creatorId);
 
   return (
-    <Pressable
-      onPress={onNavigation}
-      style={[styles.pollContainer, style]}
-    >
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 5 }}>
+    <Pressable onPress={onNavigation} style={[styles.pollContainer, style]}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          marginHorizontal: 5,
+        }}>
         <View>
-          <Headline
-            type={4}
-            text={header}
-          />
+          <Body type={1} style={{fontWeight: '500'}} text={header} />
           <Body
             type={2}
-            text={subtitle}
+            text={`${i18n.t('Created by')} ${
+              creator?.firstName || i18n.t('deleted user')
+            }`}
             color={COLORS.neutral[300]}
-            style={{ marginBottom: 16, marginTop: 2 }}
+            style={{marginBottom: 16}}
           />
         </View>
         {onPress ? (
           <MenuView
             style={styles.addIcon}
-            onPressAction={({ nativeEvent }) => onPress(nativeEvent)}
+            onPressAction={({nativeEvent}) => onPress(nativeEvent)}
             actions={[
               {
                 id: 'delete',
@@ -123,13 +128,8 @@ export default function PollView({
                   android: 'ic_menu_delete',
                 }),
               },
-            ]}
-          >
-            <Icon
-              name="more-vertical"
-              size={20}
-              color={COLORS.neutral[700]}
-            />
+            ]}>
+            <Icon name="more-vertical" size={20} color={COLORS.neutral[700]} />
           </MenuView>
         ) : (
           <Avatar
@@ -139,12 +139,12 @@ export default function PollView({
         )}
       </View>
       {data.options.map((option, index) => {
-        if (isMinimized && index < 2 || !isMinimized) {
+        if ((isMinimized && index < 2) || !isMinimized) {
           return (
             <PollTile
               activeMembers={activeMembers}
               key={option.id}
-              style={{ marginBottom: 16 }}
+              style={{marginBottom: 10}}
               item={option}
               data={data}
               index={index}
@@ -152,14 +152,25 @@ export default function PollView({
               isActive={option.votes.includes(id)}
             />
           );
-        } if (isMinimized && index === 2) {
+        }
+        if (isMinimized && index === 2) {
           return (
-            <Body
-              type={1}
-              color={COLORS.neutral[300]}
-              style={{ marginLeft: 8, textAlign: 'center' }}
-              text={i18n.t('see more options')}
-            />
+            <View style={{marginTop: -6}}>
+              <Divider
+                style={{
+                  marginHorizontal: -6,
+                }}
+                color={COLORS.neutral[100]}
+              />
+              <Body
+                type={2}
+                color={COLORS.neutral[300]}
+                style={{alignSelf: 'center'}}
+                text={`+ ${data.options.length - MAX_LENGTH} ${i18n.t(
+                  'more options',
+                )}`}
+              />
+            </View>
           );
         }
         return null;

@@ -1,90 +1,124 @@
-import {
-  View, StyleSheet, FlatList,
-} from 'react-native';
+import {View, StyleSheet, FlatList, Dimensions, Pressable} from 'react-native';
 import React from 'react';
-import Icon from 'react-native-vector-icons/AntDesign';
-import COLORS, { PADDING } from '../../constants/Theme';
+import COLORS, {PADDING, RADIUS} from '../../constants/Theme';
 import Headline from '../typography/Headline';
 import i18n from '../../utils/i18n';
-import Button from '../Button';
-// import CONTINENTS_DATA from '../../constants/Continents';
 import userStore from '../../stores/UserStore';
 import Body from '../typography/Body';
-import SearchResultTile from '../Search/SearchResultTile';
+import Utils from '../../utils';
+import RecapCardMini from '../RecapCardMini';
 
-export default function CountriesVisited({
-  showUpcoming, upcomingTrips, recentTrips, onSearchPress, onPress,
-}) {
-  const { firstName } = userStore((state) => state.user);
+export default function CountriesVisited({onPress, data, onTap}) {
+  // STORES
+  const {firstName, countriesVisited} = userStore(state => state.user);
 
-  const title = !showUpcoming ? `${i18n.t("You've completed")} ${recentTrips?.length} ${i18n.t('Trips')}` : `${i18n.t("You've planned")} ${upcomingTrips?.length} ${i18n.t('Trips')}`;
+  const recentTrips = data.filter(trip => trip.type === 'recent');
+  const activeTrips = data.filter(trip => trip.type === 'active');
+  const upcomingTrips = data.filter(
+    trip => trip.type === 'upcoming' || trip.type === 'soon',
+  );
+
+  const _trips = [...activeTrips, ...upcomingTrips, ...recentTrips];
+
+  const {width} = Dimensions.get('window');
 
   return (
-    <View style={{ flex: 1 }}>
+    <Pressable onPress={onTap} style={{flex: 1}}>
       <View style={styles.handler} />
       <View style={styles.container}>
         <View style={styles.header}>
-          <View style={{ flexDirection: 'column' }}>
-            <View style={{ flexDirection: 'row', marginBottom: 2 }}>
-              <Headline
-                type={3}
-                style={{ fontWeight: '400', marginRight: 4 }}
-                text={i18n.t('Hey')}
-              />
-              <Headline
-                type={3}
-                text={firstName}
-              />
-            </View>
+          <View>
+            <Headline type={4} text={`${i18n.t('Hey there')} ${firstName}!`} />
             <Body
               type={1}
-              text={title}
+              color={COLORS.neutral[300]}
+              style={{marginTop: 2, marginBottom: 8}}
+              text={`${i18n.t('You visitied')} ${
+                countriesVisited.length
+              } ${i18n.t('countries so far 🍹')}`}
             />
+            <View
+              style={{
+                flexDirection: 'row',
+                width,
+                marginHorizontal: -PADDING.s,
+                paddingLeft: PADDING.s,
+                paddingRight: PADDING.s + 2,
+              }}>
+              <View
+                style={[
+                  styles.titleContainer,
+                  {backgroundColor: Utils.addAlpha(COLORS.error[700], 0.2)},
+                ]}>
+                <Body
+                  type={2}
+                  color={COLORS.error[900]}
+                  style={{fontWeight: '500'}}
+                  text={`${activeTrips.length} ${i18n.t('Active')}`}
+                />
+              </View>
+              <View
+                style={[
+                  styles.titleContainer,
+                  {backgroundColor: Utils.addAlpha(COLORS.success[700], 0.2)},
+                ]}>
+                <Body
+                  type={2}
+                  color={COLORS.success[900]}
+                  style={{fontWeight: '500'}}
+                  text={`${upcomingTrips.length} ${i18n.t('Upcoming')}`}
+                />
+              </View>
+              <View
+                style={[
+                  styles.titleContainer,
+                  {backgroundColor: Utils.addAlpha(COLORS.primary[700], 0.2)},
+                ]}>
+                <Body
+                  type={2}
+                  color={COLORS.primary[700]}
+                  style={{fontWeight: '500'}}
+                  text={`${recentTrips.length} ${i18n.t('Recent')}`}
+                />
+              </View>
+            </View>
           </View>
-          <Button
-            style={[styles.searchButton, styles.buttonShadow]}
-            backgroundColor={COLORS.shades[0]}
-            onPress={onSearchPress}
-            icon={<Icon name="search1" size={20} />}
-            fullWidth={false}
-            color={COLORS.neutral[900]}
-          />
         </View>
         <FlatList
-          style={{ marginTop: 20, paddingHorizontal: PADDING.m }}
+          style={{paddingTop: 14, paddingHorizontal: PADDING.s}}
           ListEmptyComponent={() => (
             <Body
-              style={{ alignSelf: 'center', marginTop: 10 }}
-              type={1}
+              style={{alignSelf: 'center', marginTop: 10}}
+              type={2}
               text={i18n.t('No Trips to show 😢')}
               color={COLORS.neutral[300]}
             />
           )}
-          data={showUpcoming ? upcomingTrips : recentTrips}
-          ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-          renderItem={({ item }) => (
-            <SearchResultTile
+          data={_trips}
+          ItemSeparatorComponent={() => <View style={{height: 10}} />}
+          renderItem={({item}) => (
+            <RecapCardMini
+              key={item.id}
               onPress={() => onPress(item.id)}
               data={item}
             />
           )}
         />
       </View>
-
-    </View>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    overflow: 'hidden',
     backgroundColor: COLORS.neutral[50],
-    borderTopRightRadius: 20,
-    borderTopLeftRadius: 20,
+    borderTopRightRadius: RADIUS.s,
+    borderTopLeftRadius: RADIUS.s,
     shadowColor: COLORS.shades[100],
     shadowOpacity: 0.06,
     shadowRadius: 10,
-    paddingVertical: 15,
   },
   handler: {
     alignSelf: 'center',
@@ -92,16 +126,28 @@ const styles = StyleSheet.create({
     height: 7,
     borderRadius: 100,
     backgroundColor: COLORS.shades[0],
-    marginBottom: 10,
+    marginBottom: 5,
   },
   header: {
-    paddingHorizontal: 22,
+    borderTopRightRadius: RADIUS.s,
+    borderTopLeftRadius: RADIUS.s,
+    backgroundColor: COLORS.shades[0],
+    paddingVertical: 12,
+    paddingHorizontal: PADDING.m,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    shadowColor: COLORS.shades[100],
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
   },
-  searchButton: {
-    borderWidth: 1,
-    borderColor: COLORS.neutral[100],
+  titleContainer: {
+    paddingVertical: 4,
+    paddingHorizontal: 6,
+    flex: 1,
+    borderRadius: 6,
+    marginTop: 4,
+    marginRight: 8,
+    alignItems: 'center',
   },
 });

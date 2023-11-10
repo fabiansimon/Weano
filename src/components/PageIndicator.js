@@ -1,16 +1,16 @@
-import { View, StyleSheet } from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import React from 'react';
 import COLORS from '../constants/Theme';
 
-export default function PageIndicator({ data, pageIndex, style }) {
-  const getBubble = (index) => {
+export default function PageIndicator({data, pageIndex, style}) {
+  const getBubble = index => {
     const opacity = pageIndex !== index ? 0.3 : 1;
     const width = pageIndex === index ? 32 : 8;
     const marginRight = index === data.length - 1 ? 0 : 10;
 
     return (
       <View
-        style={[styles.bubble, { width, opacity, marginRight }]}
+        style={[styles.bubble, {width, opacity, marginRight}]}
         key={index}
       />
     );

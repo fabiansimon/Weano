@@ -1,9 +1,9 @@
-import { gql } from '@apollo/client';
+import {gql} from '@apollo/client';
 
 const ADD_TRIP = gql`
-    mutation CreateTrip($trip: TripInput) {
-        createTrip(trip: $trip)
-    }  
+  mutation CreateTrip($trip: TripInput) {
+    createTrip(trip: $trip)
+  }
 `;
 
 export default ADD_TRIP;
