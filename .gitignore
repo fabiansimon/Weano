@@ -82,3 +82,4 @@ amplifytools.xcconfig
 #amplify-do-not-edit-end
 
 .env
+android/build.gradle
