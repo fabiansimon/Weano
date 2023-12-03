@@ -12,3 +12,5 @@ I began this Fullstack project as a summer endeavor, and it eventually became th
 [70 Hours for Backend](https://wakatime.com/@fabiansimon/projects/vjezprerqn)
 </br></br>
 <img width="900" alt="weano_mockup" src="https://github.com/fabiansimon/Weano/assets/77444050/35fe9bc0-95ae-4974-b00e-c63c987c4f5a">
+
+test
