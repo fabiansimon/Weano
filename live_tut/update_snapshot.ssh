@@ -1,0 +1,35 @@
+#!/bash/bin
+
+echo "Hello World"
+
+if [ $# -eq 0 ]; then
+	echo "Usage $0 <unix timestamp>"
+	exit 1
+fi
+
+timestamp=$1
+
+# Get current branch
+curr_branch=$(git branch --show-current)
+
+if [ -z "$curr_branch" ]; then
+	echo "Not on any branch currently"	
+	exit 1
+fi	
+
+# (Create and) checkout to snapshots_updates
+git checkout -b "snapshots_update"
+
+# Add all changes
+git add . 
+
+# Commit with timestamp 
+git commit -m "$timestamp"
+
+# Push changes
+git push
+
+# Switch back to old branch
+git checkout -b "$curr_branch"
+
+echo "Succeessully updated"
