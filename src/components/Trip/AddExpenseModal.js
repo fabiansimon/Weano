@@ -24,6 +24,7 @@ import {useMutation} from '@apollo/client';
 import UPDATE_EXPENSE from '../../mutations/updateExpense';
 import activeTripStore from '../../stores/ActiveTripStore';
 import DELETE_EXPENSE from '../../mutations/deleteExpense';
+import {checkPluginState} from 'react-native-reanimated/lib/reanimated2/core';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
@@ -60,6 +61,8 @@ export default function AddExpenseModal({
     EXPENSES_CATEGORY.length - 1,
   );
 
+  const isSolo = activeMembers.length === 1;
+  console.log(isSolo);
   const allSpliteesSelected = splitBy?.length === activeMembers?.length;
   const splitPercentage = !splitBy?.length
     ? 0
@@ -180,7 +183,7 @@ export default function AddExpenseModal({
         title,
         amount: _amount,
         paidBy: paidBy.id,
-        splitBy,
+        splitBy: isSolo ? [activeMembers[0].id] : splitBy,
         currency: currency.symbol,
         category: EXPENSES_CATEGORY[categoryIndex].id,
         id: updateExpense._id,
@@ -191,7 +194,7 @@ export default function AddExpenseModal({
           expense: updatedExpense,
         },
       })
-        .then(res => {
+        .then(() => {
           updateActiveTrip({
             expenses: expenses.map(expense => {
               if (expense._id === updateExpense._id) {
@@ -480,7 +483,7 @@ export default function AddExpenseModal({
             />
           </>
         )}
-        {splitBy.length > 0 && (
+        {!isSolo && splitBy.length > 0 && (
           <>
             <Body
               type={1}
@@ -527,7 +530,7 @@ export default function AddExpenseModal({
             {getAmountContainer()}
             {getDescriptionContainer()}
             {getInfoContainer()}
-            {getSplitByContainer()}
+            {!isSolo && getSplitByContainer()}
             {getSummaryContainer()}
           </View>
         </View>

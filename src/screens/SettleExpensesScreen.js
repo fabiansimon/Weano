@@ -5,6 +5,7 @@ import {
   Alert,
   Dimensions,
   Pressable,
+  ScrollView,
   StatusBar,
   StyleSheet,
   View,
@@ -21,6 +22,7 @@ import activeTripStore from '../stores/ActiveTripStore';
 import AddExpenseModal from '../components/Trip/AddExpenseModal';
 import FAButton from '../components/FAButton';
 import SettleModal from '../components/Trip/SettleModal';
+import Subtitle from '../components/typography/Subtitle';
 
 const {width} = Dimensions.get('window');
 
@@ -37,6 +39,8 @@ export default function SettleExpensesScreen() {
   // STATE & MISC
   const [editExpense, setEditExpense] = useState(null);
   const [settleVisible, setSettleVisible] = useState(false);
+
+  const isSolo = activeMembers.length === 1;
 
   const scrollY = useRef(new Animated.Value(0)).current;
 
@@ -62,27 +66,68 @@ export default function SettleExpensesScreen() {
   };
 
   const getLinearBar = useCallback(() => {
+    let _categoryData = [];
+    for (const cat of EXPENSES_CATEGORY) {
+      const {width, amount} = getCategoryData(cat.id);
+      _categoryData.push({
+        ...cat,
+        width,
+        amount,
+      });
+    }
+
     return (
-      <View style={styles.bottomBar}>
-        <View style={{flexDirection: 'row', position: 'absolute'}}>
-          {EXPENSES_CATEGORY.map(e => {
-            const {color} = e;
-            const width = getLineWidth(e.id);
+      <View style={{marginTop: 8}}>
+        {/* <View style={styles.bottomBar}>
+          <View style={{flexDirection: 'row', position: 'absolute'}}>
+            {_categoryData.map(e => {
+              const {color, width} = e;
+              return (
+                <View style={[styles.bar, {width, backgroundColor: color}]} />
+              );
+            })}
+          </View>
+        </View> */}
+        <ScrollView
+          showsHorizontalScrollIndicator={false}
+          horizontal
+          contentContainerStyle={{paddingHorizontal: 20}}
+          style={{flexDirection: 'row', marginHorizontal: -20}}>
+          {_categoryData.map(({title, color, amount, id}) => {
             return (
-              <View style={[styles.bar, {width, backgroundColor: color}]} />
+              <View
+                style={[
+                  styles.catContainer,
+                  {
+                    borderColor: color,
+                    backgroundColor: Utils.addAlpha(color),
+                  },
+                ]}
+                key={id}>
+                <Subtitle type={1} color={COLORS.neutral[50]} text={title} />
+                <Subtitle
+                  type={1}
+                  color={COLORS.neutral[50]}
+                  style={{fontWeight: '600'}}
+                  text={`${currency.symbol}${amount.toFixed(2)}`}
+                />
+              </View>
             );
           })}
-        </View>
+        </ScrollView>
       </View>
     );
   }, [expenses]);
 
-  const getLineWidth = catId => {
+  const getCategoryData = catId => {
     const totalCatAmount = expenses
       .filter(exp => exp.category === catId)
       .reduce((acc, obj) => acc + obj.amount, 0);
 
-    return `${(totalCatAmount / totalAmount) * 100}%`;
+    return {
+      width: `${(totalCatAmount / totalAmount) * 100}%`,
+      amount: totalCatAmount,
+    };
   };
 
   const getDetailContainer = exp => {
@@ -113,17 +158,19 @@ export default function SettleExpensesScreen() {
             color={COLORS.neutral[300]}
             style={{marginTop: 2}}
           />
-          <SplitExpenseContainer
-            onPress={() => {
-              setEditExpense({
-                ...exp,
-                paidBy,
-              });
-            }}
-            expense={exp}
-            activeMembers={activeMembers}
-            currency={currency}
-          />
+          {!isSolo && (
+            <SplitExpenseContainer
+              onPress={() => {
+                setEditExpense({
+                  ...exp,
+                  paidBy,
+                });
+              }}
+              expense={exp}
+              activeMembers={activeMembers}
+              currency={currency}
+            />
+          )}
         </View>
       </View>
     );
@@ -132,7 +179,9 @@ export default function SettleExpensesScreen() {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      <HybridHeader title={i18n.t('Settle Expenses')} scrollY={scrollY}>
+      <HybridHeader
+        title={isSolo ? i18n.t('Analyze Expenses') : i18n.t('Settle Expenses')}
+        scrollY={scrollY}>
         <View style={styles.innerContainer}>
           <Headline type={1} text={`${currency.symbol}${totalAmount}`} />
           <Body
@@ -149,12 +198,14 @@ export default function SettleExpensesScreen() {
           </View>
         </View>
       </HybridHeader>
-      <FAButton
-        icon={'arrow-forward'}
-        iconStyle={{marginLeft: -2}}
-        iconSize={24}
-        onPress={handleSettle}
-      />
+      {!isSolo && (
+        <FAButton
+          icon={'arrow-forward'}
+          iconStyle={{marginLeft: -2}}
+          iconSize={24}
+          onPress={handleSettle}
+        />
+      )}
 
       <AddExpenseModal
         currency={currency}
@@ -224,5 +275,13 @@ const styles = StyleSheet.create({
     marginTop: 10,
     paddingHorizontal: PADDING.l,
     marginBottom: 50,
+  },
+  catContainer: {
+    backgroundColor: COLORS.shades[0],
+    borderRadius: 6,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    marginRight: 4,
+    marginTop: 6,
   },
 });

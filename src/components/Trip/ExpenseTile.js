@@ -16,6 +16,7 @@ export default function ExpenseTile({
   currency,
   isSelf,
   onDelete,
+  onIncreaseAmount,
 }) {
   const getFullName = () => {
     if (user?.firstName) {
@@ -25,7 +26,20 @@ export default function ExpenseTile({
     return i18n.t('Deleted user');
   };
   return (
-    <SwipeView enabled={onDelete !== null} onPress={onDelete}>
+    <SwipeView
+      multipleOptions={[
+        {
+          backgroundColor: COLORS.success[700],
+          string: i18n.t('Increase'),
+          onPress: () => onIncreaseAmount(),
+        },
+        {
+          backgroundColor: COLORS.error[900],
+          string: i18n.t('Delete'),
+          onPress: () => onDelete(),
+          isDisabled: onDelete == null,
+        },
+      ]}>
       <Pressable onPress={onPress} style={[styles.container, style]}>
         <View
           style={[

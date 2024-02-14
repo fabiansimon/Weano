@@ -266,7 +266,7 @@ export default function MainScreen() {
   const getFilteredTrips = useCallback(() => {
     if (!chipFilter.find(filter => !filter.isSelected)) {
       return trips.sort(
-        (a, b) => a?.dateRange?.startDate - b?.dateRange?.startDate,
+        (a, b) => b?.dateRange?.startDate - a?.dateRange?.startDate,
       );
     }
 
@@ -406,6 +406,7 @@ export default function MainScreen() {
         onPress={expandIndex === 0 ? toggleExpansion : null}
         style={styles.sheetContainer}>
         <Animated.ScrollView
+          contentContainerStyle={{paddingBottom: 120}}
           refreshControl={
             <RefreshControl
               progressViewOffset={50}

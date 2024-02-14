@@ -1,4 +1,4 @@
-import {View, StyleSheet, FlatList, StatusBar} from 'react-native';
+import {View, StyleSheet, FlatList, StatusBar, Alert} from 'react-native';
 import React, {useRef, useState, useEffect, useMemo} from 'react';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Entypo';
@@ -29,9 +29,11 @@ import ROUTES from '../../constants/Routes';
 import Utils from '../../utils';
 import userManagement from '../../utils/userManagement';
 import InfoController from '../../controllers/InfoController';
+import UPDATE_EXPENSE from '../../mutations/updateExpense';
 
 export default function ExpenseScreen() {
   // MUTATIONS
+  const [updateExisitingExpense] = useMutation(UPDATE_EXPENSE);
   const [addExpense, {loading, error}] = useMutation(ADD_EXPENSE);
   const [sendReminder] = useMutation(SEND_REMINDER);
   const [deleteExpense] = useMutation(DELETE_EXPENSE);
@@ -62,6 +64,7 @@ export default function ExpenseScreen() {
   const [myData, setMyData] = useState([]);
 
   const isHost = userManagement.isHost();
+  const isSolo = users.length === 1;
 
   const navigation = useNavigation();
 
@@ -161,6 +164,60 @@ export default function ExpenseScreen() {
       });
   };
 
+  const updateAmount = async (expense, amount) => {
+    const {
+      title,
+      amount: oldAmount,
+      paidBy,
+      splitBy,
+      currency,
+      category,
+      _id,
+    } = expense;
+
+    let _amount = oldAmount.replaceAll(',', '.');
+    _amount = parseFloat(oldAmount) + parseFloat(amount);
+
+    const updatedExpense = {
+      title,
+      amount: _amount,
+      paidBy,
+      splitBy,
+      currency,
+      category,
+      id: _id,
+    };
+
+    await updateExisitingExpense({
+      variables: {
+        expense: updatedExpense,
+      },
+    })
+      .then(() => {
+        updateActiveTrip({
+          expenses: expenses.map(expense => {
+            if (expense._id === updateExpense._id) {
+              return {
+                ...updatedExpense,
+                _id: updateExpense._id,
+                createdAt: Date.now(),
+              };
+            }
+
+            return expense;
+          }),
+        });
+      })
+      .catch(e => {
+        Toast.show({
+          type: 'error',
+          text1: i18n.t('Whoops!'),
+          text2: e.message,
+        });
+        console.log(`ERROR: ${e.message}`);
+      });
+  };
+
   const handleAddExpense = async data => {
     setIsLoading(true);
 
@@ -183,7 +240,7 @@ export default function ExpenseScreen() {
           paidBy,
           currency: currency.symbol,
           category: categoryId,
-          splitBy,
+          splitBy: isSolo ? [users[0].id] : splitBy,
         },
       },
     })
@@ -198,7 +255,7 @@ export default function ExpenseScreen() {
           title,
           _id: expenseId,
           category: categoryId,
-          splitBy,
+          splitBy: isSolo ? [users[0].id] : splitBy,
         };
         updateActiveTrip({expenses: [...expenses, newExpense]});
       })
@@ -318,6 +375,26 @@ export default function ExpenseScreen() {
     });
   };
 
+  const increaseAlert = item => {
+    Alert.prompt(
+      i18n.t('Increase Amount'),
+      i18n.t('How much would you like to add to this Expense?'),
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: amount => updateAmount(item, amount),
+        },
+      ],
+      'plain-text',
+      '',
+      'numeric',
+    );
+  };
+
   const getCurrencyChoser = () => (
     <MenuView
       style={{marginLeft: PADDING.l, marginTop: 6}}
@@ -411,13 +488,6 @@ export default function ExpenseScreen() {
                   );
                 }
 
-                if (users.length <= 1) {
-                  return InfoController.showModal(
-                    i18n.t('Sorry'),
-                    i18n.t("There are no expenses to settle if it's only you."),
-                  );
-                }
-
                 if (!isHost) {
                   return InfoController.showModal(
                     i18n.t('Sorry'),
@@ -440,7 +510,11 @@ export default function ExpenseScreen() {
                 type={2}
                 color={COLORS.shades[0]}
                 style={{fontWeight: '500'}}
-                text={i18n.t('settle expenses')}
+                text={
+                  isSolo
+                    ? i18n.t('analyze expenses')
+                    : i18n.t('settle expenses')
+                }
               />
             </Pressable>
           </View>
@@ -450,7 +524,7 @@ export default function ExpenseScreen() {
             data={expenses}
           />
           <View style={styles.summaryContainer}>
-            {getListHeader()}
+            {!isSolo && getListHeader()}
             <FlatList
               ListEmptyComponent={
                 <Body
@@ -481,6 +555,9 @@ export default function ExpenseScreen() {
                         isVisible: true,
                         data: item,
                       })
+                    }
+                    onIncreaseAmount={
+                      isSelf || !userData ? () => increaseAlert(item) : null
                     }
                     onDelete={
                       isSelf || !userData ? () => confirmDeletion(item) : null

@@ -69,6 +69,7 @@ export default function SignUpScreen({route}) {
         },
       })
         .catch(e => {
+          console.error('error', e);
           Toast.show({
             type: 'error',
             text1: i18n.t('Whoops!'),

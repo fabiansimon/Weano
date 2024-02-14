@@ -61,7 +61,7 @@ export default function SwipeView({
                 <Body
                   type={2}
                   style={{fontWeight: '500'}}
-                  color={COLORS.shades[0]}
+                  color={option?.fontColor || COLORS.shades[0]}
                   text={string}
                 />
               </Pressable>

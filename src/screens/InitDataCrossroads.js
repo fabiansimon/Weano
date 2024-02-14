@@ -79,10 +79,6 @@ export default function InitDataCrossroads({route}) {
     }, 100);
   };
 
-  // useEffect(() => {
-  //   clearToken();
-  // }, [error]);
-
   const registerPushNotificationToken = async () => {
     const {status: currentStatus} = await Notifications.getPermissionsAsync();
     let finalStatus = currentStatus;
@@ -126,6 +122,7 @@ export default function InitDataCrossroads({route}) {
   };
 
   const handleNavigation = () => {
+    console.log('CALLED');
     if (authToken && inviteId) {
       return navigation.push(ROUTES.invitationScreen, {tripId: inviteId});
     }
@@ -212,9 +209,9 @@ export default function InitDataCrossroads({route}) {
 
     let isProMember = false;
 
-    const customerInfo = await Purchases.getCustomerInfo();
+    const customerInfo = true ? {} : await Purchases.getCustomerInfo();
 
-    if (customerInfo.entitlements.active?.pro) {
+    if (customerInfo?.entitlements?.active?.pro) {
       isProMember = true;
     }
 
