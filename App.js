@@ -72,15 +72,15 @@ function App() {
     checkAuth();
   }, []);
 
-  useEffect(() => {
-    Purchases.setLogLevel(LOG_LEVEL.VERBOSE);
-    if (Platform.OS === 'android') {
-      Purchases.configure({apiKey: ANDROID_REV_CAT_KEY});
-    }
-    if (Platform.OS === 'ios') {
-      Purchases.configure({apiKey: IOS_REV_CAT_KEY});
-    }
-  }, []);
+  // useEffect(() => {
+  //   Purchases.setLogLevel(LOG_LEVEL.VERBOSE);
+  //   if (Platform.OS === 'android') {
+  //     Purchases.configure({apiKey: ANDROID_REV_CAT_KEY});
+  //   }
+  //   if (Platform.OS === 'ios') {
+  //     Purchases.configure({apiKey: IOS_REV_CAT_KEY});
+  //   }
+  // }, []);
 
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
