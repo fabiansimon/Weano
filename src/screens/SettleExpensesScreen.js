@@ -39,10 +39,18 @@ export default function SettleExpensesScreen() {
   // STATE & MISC
   const [editExpense, setEditExpense] = useState(null);
   const [settleVisible, setSettleVisible] = useState(false);
+  const [filterCat, setFilterCat] = useState(null);
 
   const isSolo = activeMembers.length === 1;
 
   const scrollY = useRef(new Animated.Value(0)).current;
+
+  const expensesData = useMemo(() => {
+    if (filterCat) {
+      return expenses.filter(e => e.category === filterCat);
+    }
+    return expenses;
+  }, [expenses, filterCat]);
 
   const totalAmount = useMemo(() => {
     let amount = 0;
@@ -78,29 +86,37 @@ export default function SettleExpensesScreen() {
 
     return (
       <View style={{marginTop: 8}}>
-        {/* <View style={styles.bottomBar}>
+        <View style={styles.bottomBar}>
           <View style={{flexDirection: 'row', position: 'absolute'}}>
             {_categoryData.map(e => {
               const {color, width} = e;
               return (
-                <View style={[styles.bar, {width, backgroundColor: color}]} />
+                <View
+                  style={[
+                    styles.bar,
+                    {width: `${width}%`, backgroundColor: color},
+                  ]}
+                />
               );
             })}
           </View>
-        </View> */}
-        <ScrollView
-          showsHorizontalScrollIndicator={false}
-          horizontal
-          contentContainerStyle={{paddingHorizontal: 20}}
-          style={{flexDirection: 'row', marginHorizontal: -20}}>
+        </View>
+        <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
           {_categoryData.map(({title, color, amount, id}) => {
             return (
-              <View
+              <Pressable
+                onPress={() =>
+                  setFilterCat(() => (filterCat === id ? null : id))
+                }
                 style={[
                   styles.catContainer,
                   {
+                    flexDirection: 'row',
                     borderColor: color,
-                    backgroundColor: Utils.addAlpha(color),
+                    backgroundColor: Utils.addAlpha(
+                      color,
+                      !filterCat || filterCat === id ? 1 : 0.4,
+                    ),
                   },
                 ]}
                 key={id}>
@@ -108,16 +124,16 @@ export default function SettleExpensesScreen() {
                 <Subtitle
                   type={1}
                   color={COLORS.neutral[50]}
-                  style={{fontWeight: '600'}}
+                  style={{fontWeight: '600', marginLeft: 4}}
                   text={`${currency.symbol}${amount.toFixed(2)}`}
                 />
-              </View>
+              </Pressable>
             );
           })}
-        </ScrollView>
+        </View>
       </View>
     );
-  }, [expenses]);
+  }, [expenses, filterCat]);
 
   const getCategoryData = catId => {
     const totalCatAmount = expenses
@@ -125,7 +141,7 @@ export default function SettleExpensesScreen() {
       .reduce((acc, obj) => acc + obj.amount, 0);
 
     return {
-      width: `${(totalCatAmount / totalAmount) * 100}%`,
+      width: (totalCatAmount / totalAmount) * 100,
       amount: totalCatAmount,
     };
   };
@@ -145,9 +161,12 @@ export default function SettleExpensesScreen() {
               justifyContent: 'space-between',
             }}>
             <View style={{alignItems: 'center', flexDirection: 'row'}}>
-              <Headline type={4} text={title} />
+              <Body type={4} text={title} />
             </View>
-            <Headline type={4} text={`${currency.symbol}${amount}`} />
+            <Headline
+              type={4}
+              text={`${currency.symbol}${amount.toFixed(2)}`}
+            />
           </View>
           <Body
             type={2}
@@ -192,7 +211,7 @@ export default function SettleExpensesScreen() {
           />
           {getLinearBar()}
           <View style={styles.summaryContainer}>
-            {expenses?.map(exp => {
+            {expensesData?.map(exp => {
               return getDetailContainer(exp);
             })}
           </View>

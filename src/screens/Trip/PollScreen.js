@@ -203,6 +203,7 @@ export default function PollScreen() {
                 !activeMembers.findIndex(
                   member => member.id === item.creatorId,
                 ) === -1;
+
               const onPress =
                 user.id === item?.creatorId || isDeletedUser
                   ? () => handleDelete(item)

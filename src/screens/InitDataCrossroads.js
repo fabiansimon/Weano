@@ -122,7 +122,6 @@ export default function InitDataCrossroads({route}) {
   };
 
   const handleNavigation = () => {
-    console.log('CALLED');
     if (authToken && inviteId) {
       return navigation.push(ROUTES.invitationScreen, {tripId: inviteId});
     }

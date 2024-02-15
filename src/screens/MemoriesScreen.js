@@ -39,6 +39,7 @@ import PremiumController from '../PremiumController';
 import userStore from '../stores/UserStore';
 import MemoriesSkeleton from '../components/MemoriesSkeleton';
 import tripsStore from '../stores/TripsStore';
+import moment from 'moment';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
@@ -310,7 +311,11 @@ export default function MemoriesScreen({route}) {
     const diff = Utils.getDaysDifference(startDate, null, false);
 
     if (type === 'active') {
-      const activeDiff = Utils.getDaysDifference(startDate, endDate, true);
+      const activeDiff = Utils.getDaysDifference(
+        Date.now() / 1000,
+        endDate,
+        true,
+      );
       subtitle = `${destination}, ${activeDiff} ${i18n.t('days left')}`;
     } else if (diff > 0) {
       subtitle = `${destination}, ${i18n.t('in')} ${diff} ${i18n.t('days')}`;

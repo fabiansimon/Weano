@@ -87,11 +87,9 @@ export default function CreateModal({isVisible, onRequestClose}) {
   const pageRef = useRef(null);
 
   const getDateValue = () => {
-    console.log(dates);
     if (!dates.start || !dates.end) {
       return;
     }
-    console.log('123123hello');
 
     const start =
       dates.start && Utils.getDateFromTimestamp(dates.start, 'Do MMM YYYY');
@@ -429,8 +427,6 @@ export default function CreateModal({isVisible, onRequestClose}) {
           setCalendarVisible(false);
           const {timestamp: endDate} = datesData.end;
           const {timestamp: startDate} = datesData.start;
-          console.log(endDate);
-          console.log(startDate);
           setDates({
             start: startDate / 1000,
             end: endDate / 1000,

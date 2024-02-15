@@ -62,7 +62,6 @@ export default function AddExpenseModal({
   );
 
   const isSolo = activeMembers.length === 1;
-  console.log(isSolo);
   const allSpliteesSelected = splitBy?.length === activeMembers?.length;
   const splitPercentage = !splitBy?.length
     ? 0

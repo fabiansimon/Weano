@@ -1,5 +1,12 @@
-import {View, StyleSheet, FlatList, StatusBar, Alert} from 'react-native';
-import React, {useRef, useState, useEffect, useMemo} from 'react';
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  StatusBar,
+  Alert,
+  Platform,
+} from 'react-native';
+import React, {useRef, useState, useEffect, useMemo, useCallback} from 'react';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Entypo';
 import {useMutation} from '@apollo/client';
@@ -30,6 +37,7 @@ import Utils from '../../utils';
 import userManagement from '../../utils/userManagement';
 import InfoController from '../../controllers/InfoController';
 import UPDATE_EXPENSE from '../../mutations/updateExpense';
+import Subtitle from '../../components/typography/Subtitle';
 
 export default function ExpenseScreen() {
   // MUTATIONS
@@ -46,7 +54,8 @@ export default function ExpenseScreen() {
     id: tripId,
     title,
     currency,
-    type,
+    dateRange,
+    budget,
   } = activeTripStore(state => state.activeTrip);
   const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
   const {id, firstName, isProMember} = userStore(state => state.user);
@@ -65,6 +74,26 @@ export default function ExpenseScreen() {
 
   const isHost = userManagement.isHost();
   const isSolo = users.length === 1;
+
+  const restDays = useMemo(() => {
+    const {endDate} = dateRange;
+    return Utils.getDaysDifference(Date.now() / 1000, endDate, true);
+  }, [dateRange]);
+
+  const spentToday = useMemo(() => {
+    return expenses.reduce((accumulator, expense) => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const expenseDate = new Date(expense.createdAt);
+      expenseDate.setHours(0, 0, 0, 0);
+
+      if (expenseDate.getTime() === today.getTime()) {
+        return accumulator + expense.amount;
+      }
+      return accumulator;
+    }, 0);
+  }, [expenses]);
 
   const navigation = useNavigation();
 
@@ -165,41 +194,39 @@ export default function ExpenseScreen() {
   };
 
   const updateAmount = async (expense, amount) => {
-    const {
-      title,
-      amount: oldAmount,
-      paidBy,
-      splitBy,
-      currency,
-      category,
-      _id,
-    } = expense;
+    amount = amount.replaceAll(',', '.');
+    amount = parseFloat(amount);
 
-    let _amount = oldAmount.replaceAll(',', '.');
-    _amount = parseFloat(oldAmount) + parseFloat(amount);
+    if (amount <= 0 || isNaN(amount)) {
+      Toast.show({
+        type: 'warning',
+        text1: i18n.t('Whoops'),
+        text2: i18n.t('This is not a valid amount'),
+      });
+      return;
+    }
 
-    const updatedExpense = {
-      title,
-      amount: _amount,
-      paidBy,
-      splitBy,
-      currency,
-      category,
-      id: _id,
-    };
+    const {amount: oldAmount, _id} = expense;
+
+    amount = parseFloat(oldAmount) + amount;
+
+    console.log(typeof amount, amount);
 
     await updateExisitingExpense({
       variables: {
-        expense: updatedExpense,
+        expense: {
+          amount,
+          id: _id,
+        },
       },
     })
       .then(() => {
         updateActiveTrip({
           expenses: expenses.map(expense => {
-            if (expense._id === updateExpense._id) {
+            if (expense._id === _id) {
               return {
-                ...updatedExpense,
-                _id: updateExpense._id,
+                ...expense,
+                amount: amount,
                 createdAt: Date.now(),
               };
             }
@@ -455,6 +482,38 @@ export default function ExpenseScreen() {
     </MenuView>
   );
 
+  const getBudgetContainer = useCallback(() => {
+    const restBudget = (budget - totalAmount) / restDays;
+
+    return (
+      <View style={styles.budgetContainer}>
+        <View>
+          <Subtitle color={COLORS.neutral[300]} text={'Spent'} />
+          <Headline
+            type={3}
+            style={{fontSize: 16}}
+            color={
+              spentToday > restBudget ? COLORS.error[900] : COLORS.neutral[700]
+            }
+            text={`${currency.symbol}${spentToday}`}
+          />
+        </View>
+        <View style={{marginHorizontal: 6}}>
+          <Subtitle color={COLORS.neutral[300]} text={'|'} />
+        </View>
+        <View>
+          <Subtitle color={COLORS.neutral[300]} text={'Daily Budget'} />
+          <Headline
+            style={{fontSize: 16}}
+            type={3}
+            color={COLORS.neutral[700]}
+            text={`${currency.symbol}${restBudget.toFixed(2)}`}
+          />
+        </View>
+      </View>
+    );
+  }, [budget, expenses]);
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
@@ -471,12 +530,22 @@ export default function ExpenseScreen() {
               justifyContent: 'space-between',
             }}>
             <View>
-              <Headline type={1} text={`${currency.symbol}${totalAmount}`} />
+              <View style={{flexDirection: 'row', alignItems: 'flex-end'}}>
+                <Headline type={1} text={`${currency.symbol}${totalAmount}`} />
+                {budget && (
+                  <Subtitle
+                    type={3}
+                    color={COLORS.neutral[500]}
+                    style={{marginBottom: 4, marginLeft: 2}}
+                    text={`/${currency.symbol}${budget}`}
+                  />
+                )}
+              </View>
               <Body
                 type={4}
                 style={{marginTop: -2}}
                 text={i18n.t('total expenses')}
-                color={COLORS.neutral[300]}
+                color={COLORS.neutral[500]}
               />
             </View>
             <Pressable
@@ -518,6 +587,7 @@ export default function ExpenseScreen() {
               />
             </Pressable>
           </View>
+
           <ExpensesContainer
             showIndividual
             style={{marginTop: 30}}
@@ -579,6 +649,7 @@ export default function ExpenseScreen() {
           </View>
         </View>
       </HybridHeader>
+      {budget && getBudgetContainer()}
       <FAButton icon="add" iconSize={28} onPress={() => setShowModal(true)} />
       <AddExpenseModal
         tripId={tripId}
@@ -649,5 +720,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 10,
     height: 35,
+  },
+  budgetContainer: {
+    position: 'absolute',
+    left: PADDING.l,
+    flexDirection: 'row',
+    bottom: Platform.OS === 'android' ? 30 : 40,
+    backgroundColor: COLORS.shades[0],
+    borderRadius: RADIUS.l,
+    borderWidth: 1,
+    borderColor: COLORS.neutral[100],
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    shadowColor: COLORS.neutral[900],
+    shadowRadius: 20,
+    shadowOffset: {
+      x: 0,
+      y: 20,
+    },
+    shadowOpacity: 0.05,
   },
 });

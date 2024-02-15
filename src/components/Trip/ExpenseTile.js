@@ -32,6 +32,7 @@ export default function ExpenseTile({
           backgroundColor: COLORS.success[700],
           string: i18n.t('Increase'),
           onPress: () => onIncreaseAmount(),
+          isDisabled: onIncreaseAmount == null,
         },
         {
           backgroundColor: COLORS.error[900],

@@ -28,6 +28,7 @@ const activeTripStore = create(set => ({
               string: 'USD',
             }
           : data.currency,
+        budget: data.budget || null,
       },
     })),
   updateActiveTrip: data =>
@@ -54,6 +55,7 @@ const activeTripStore = create(set => ({
         documents: data.documents || state.activeTrip.documents,
         packingItems: data.packingItems || state.activeTrip.packingItems,
         currency: data.currency || state.activeTrip.currency,
+        budget: data.budget || state.activeTrip.budget,
       },
     })),
 }));

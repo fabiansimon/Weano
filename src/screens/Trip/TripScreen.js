@@ -64,7 +64,6 @@ import REMOVE_USER_FROM_TRIP from '../../mutations/removeUserFromTrip';
 import userStore from '../../stores/UserStore';
 import {LinearGradient} from 'expo-linear-gradient';
 import InfoController from '../../controllers/InfoController';
-import Subtitle from '../../components/typography/Subtitle';
 
 const {StatusBarManager} = NativeModules;
 
