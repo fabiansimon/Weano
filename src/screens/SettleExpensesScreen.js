@@ -53,10 +53,7 @@ export default function SettleExpensesScreen() {
   }, [expenses, filterCat]);
 
   const totalAmount = useMemo(() => {
-    let amount = 0;
-    expenses.forEach(expense => {
-      amount += expense.amount;
-    });
+    const amount = expenses.reduce((sum, expense) => sum + expense.amount, 0);
     return amount.toFixed(2);
   }, [expenses]);
 
@@ -146,54 +143,57 @@ export default function SettleExpensesScreen() {
     };
   };
 
-  const getDetailContainer = exp => {
-    const {amount, category, createdAt, paidBy, title} = exp;
-    const {color} = EXPENSES_CATEGORY.find(cat => cat.id === category);
-    const paidByUser = activeMembers.find(m => m.id === exp.paidBy);
+  const getDetailContainer = useCallback(
+    exp => {
+      const {amount, category, createdAt, paidBy, title, _id} = exp;
+      const {color} = EXPENSES_CATEGORY.find(cat => cat.id === category);
+      const paidByUser = activeMembers.find(m => m.id === exp.paidBy);
 
-    return (
-      <View style={styles.expenseSummary}>
-        <View style={[styles.infoContainer, {backgroundColor: color}]} />
-        <View style={{flex: 1}}>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-            }}>
-            <View style={{alignItems: 'center', flexDirection: 'row'}}>
-              <Body type={4} text={title} />
+      return (
+        <View key={_id} style={styles.expenseSummary}>
+          <View style={[styles.infoContainer, {backgroundColor: color}]} />
+          <View style={{flex: 1}}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <View style={{alignItems: 'center', flexDirection: 'row'}}>
+                <Body type={4} text={title} />
+              </View>
+              <Headline
+                type={4}
+                text={`${currency.symbol}${amount.toFixed(2)}`}
+              />
             </View>
-            <Headline
-              type={4}
-              text={`${currency.symbol}${amount.toFixed(2)}`}
+            <Body
+              type={2}
+              text={`${paidByUser?.firstName}, ${Utils.getDateFromTimestamp(
+                createdAt / 1000,
+                'DD/MM/YY',
+              )}`}
+              color={COLORS.neutral[300]}
+              style={{marginTop: 2}}
             />
+            {isSolo && (
+              <SplitExpenseContainer
+                onPress={() => {
+                  setEditExpense({
+                    ...exp,
+                    paidBy,
+                  });
+                }}
+                expense={exp}
+                activeMembers={activeMembers}
+                currency={currency}
+              />
+            )}
           </View>
-          <Body
-            type={2}
-            text={`${paidByUser?.firstName}, ${Utils.getDateFromTimestamp(
-              createdAt / 1000,
-              'DD/MM/YY',
-            )}`}
-            color={COLORS.neutral[300]}
-            style={{marginTop: 2}}
-          />
-          {!isSolo && (
-            <SplitExpenseContainer
-              onPress={() => {
-                setEditExpense({
-                  ...exp,
-                  paidBy,
-                });
-              }}
-              expense={exp}
-              activeMembers={activeMembers}
-              currency={currency}
-            />
-          )}
         </View>
-      </View>
-    );
-  };
+      );
+    },
+    [expenses],
+  );
 
   return (
     <View style={styles.container}>

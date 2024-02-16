@@ -1,5 +1,5 @@
 import {View, StyleSheet, FlatList} from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import Animated from 'react-native-reanimated';
 import COLORS, {PADDING} from '../../constants/Theme';
 import i18n from '../../utils/i18n';
@@ -22,13 +22,17 @@ export default function IndividualExpenseScreen({route}) {
     data: null,
   });
 
-  const getExpenseTile = expense => (
-    <ExpenseTile
-      currency={currency}
-      onDelete={null}
-      data={expense}
-      user={data.user}
-    />
+  const getExpenseTile = useCallback(
+    expense => (
+      <ExpenseTile
+        key={expense._id}
+        currency={currency}
+        onDelete={null}
+        data={expense}
+        user={data.user}
+      />
+    ),
+    [data],
   );
 
   return (
@@ -56,14 +60,13 @@ export default function IndividualExpenseScreen({route}) {
             contentContainerStyle={{paddingBottom: 20}}
             data={data.expenses || null}
             renderItem={({item}) => getExpenseTile(item)}
-            // eslint-disable-next-line react/no-unstable-nested-components
-            ItemSeparatorComponent={() => (
+            ItemSeparatorComponent={
               <Divider
                 style={{marginLeft: 60}}
                 color={COLORS.neutral[50]}
                 vertical={14}
               />
-            )}
+            }
           />
         </View>
       </HybridHeader>

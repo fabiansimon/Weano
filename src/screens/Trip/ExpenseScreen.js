@@ -28,7 +28,6 @@ import userStore from '../../stores/UserStore';
 import activeTripStore from '../../stores/ActiveTripStore';
 import ExpenseDetailModal from '../../components/Trip/ExpenseDetailModal';
 import DELETE_EXPENSE from '../../mutations/deleteExpense';
-import SEND_REMINDER from '../../mutations/sendReminder';
 import UPDATE_TRIP from '../../mutations/updateTrip';
 import {Pressable} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
@@ -43,7 +42,6 @@ export default function ExpenseScreen() {
   // MUTATIONS
   const [updateExisitingExpense] = useMutation(UPDATE_EXPENSE);
   const [addExpense, {loading, error}] = useMutation(ADD_EXPENSE);
-  const [sendReminder] = useMutation(SEND_REMINDER);
   const [deleteExpense] = useMutation(DELETE_EXPENSE);
   const [updateTrip] = useMutation(UPDATE_TRIP);
 
@@ -70,7 +68,8 @@ export default function ExpenseScreen() {
   });
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [myData, setMyData] = useState([]);
+  const [selectedExpenses, setSelectedExpenses] = useState([]);
+  const [squashExpense, setSquashExpense] = useState(null);
 
   const isHost = userManagement.isHost();
   const isSolo = users.length === 1;
@@ -85,7 +84,7 @@ export default function ExpenseScreen() {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      const expenseDate = new Date(expense.createdAt);
+      const expenseDate = new Date(expense.updatedAt);
       expenseDate.setHours(0, 0, 0, 0);
 
       if (expenseDate.getTime() === today.getTime()) {
@@ -96,10 +95,6 @@ export default function ExpenseScreen() {
   }, [expenses]);
 
   const navigation = useNavigation();
-
-  useEffect(() => {
-    extractMyData(expenses);
-  }, [expenses]);
 
   useEffect(() => {
     if (error) {
@@ -113,15 +108,12 @@ export default function ExpenseScreen() {
     }
   }, [error]);
 
-  const extractMyData = data => {
-    setMyData(data.filter(expense => expense.paidBy === id));
-  };
+  const myData = useMemo(() => {
+    expenses.filter(expense => expense.paidBy === id);
+  }, [expenses]);
 
   const totalAmount = useMemo(() => {
-    let amount = 0;
-    expenses.forEach(expense => {
-      amount += expense.amount;
-    });
+    const amount = expenses.reduce((sum, expense) => sum + expense.amount, 0);
     return amount.toFixed(2);
   }, [expenses]);
 
@@ -136,61 +128,6 @@ export default function ExpenseScreen() {
     setTimeout(() => {
       setShowModal(true);
     }, 500);
-  };
-
-  const handleSendingReminder = async data => {
-    const {
-      splitees,
-      amount,
-      currency: currencySymbol,
-      title: expenseTitle,
-    } = data;
-
-    const receivers = [];
-    for (let i = 0; i < splitees.length; i += 1) {
-      const {id: receiverId} = splitees[i];
-      if (receiverId !== id) {
-        receivers.push(receiverId);
-      }
-    }
-
-    const description = `${i18n.t('You owe')} ${firstName} ${i18n.t(
-      'from the',
-    )} ${title} ${i18n.t('Trip')} ${currencySymbol}${amount} ${i18n.t(
-      'for',
-    )} '${expenseTitle}'`;
-
-    await sendReminder({
-      variables: {
-        data: {
-          receivers,
-          title: i18n.t('Hey, pay up! 💰'),
-          description,
-          tripId,
-          type: 'expense_reminder',
-        },
-      },
-    })
-      .then(() => {
-        Toast.show({
-          type: 'success',
-          text1: i18n.t('Success!'),
-          text2: i18n.t('Reminder was sent out'),
-        });
-        setSelectedExpense(prev => ({
-          ...prev,
-          isVisible: false,
-        }));
-      })
-      .catch(e => {
-        console.log('up');
-        Toast.show({
-          type: 'error',
-          text1: i18n.t('Whoops!'),
-          text2: e.message,
-        });
-        console.log(`ERROR: ${e.message}`);
-      });
   };
 
   const updateAmount = async (expense, amount) => {
@@ -210,8 +147,6 @@ export default function ExpenseScreen() {
 
     amount = parseFloat(oldAmount) + amount;
 
-    console.log(typeof amount, amount);
-
     await updateExisitingExpense({
       variables: {
         expense: {
@@ -227,7 +162,7 @@ export default function ExpenseScreen() {
               return {
                 ...expense,
                 amount: amount,
-                createdAt: Date.now(),
+                updatedAt: Date.now(),
               };
             }
 
@@ -247,6 +182,8 @@ export default function ExpenseScreen() {
 
   const handleAddExpense = async data => {
     setIsLoading(true);
+
+    const toRemove = data?.squashExpense?.selected;
 
     let {amount} = data;
     const {
@@ -268,6 +205,7 @@ export default function ExpenseScreen() {
           currency: currency.symbol,
           category: categoryId,
           splitBy: isSolo ? [users[0].id] : splitBy,
+          squashedExpenses: toRemove,
         },
       },
     })
@@ -275,7 +213,7 @@ export default function ExpenseScreen() {
         const expenseId = res.data.createExpense;
         const newExpense = {
           amount,
-          createdAt: Date.now(),
+          updatedAt: Date.now(),
           creatorId: id,
           currency: currency.symbol,
           paidBy,
@@ -284,7 +222,13 @@ export default function ExpenseScreen() {
           category: categoryId,
           splitBy: isSolo ? [users[0].id] : splitBy,
         };
-        updateActiveTrip({expenses: [...expenses, newExpense]});
+
+        updateActiveTrip({
+          expenses: [
+            ...expenses.filter(e => !toRemove?.includes(e._id)),
+            newExpense,
+          ],
+        });
       })
       .catch(e => {
         Toast.show({
@@ -346,37 +290,40 @@ export default function ExpenseScreen() {
       });
   };
 
-  const getListHeader = () => (
-    <View
-      style={{
-        flexDirection: 'row',
-        marginTop: 12,
-      }}>
-      <Pressable
-        onPress={() => setShowTotal(true)}
-        activeOpacity={0.9}
-        style={{flex: 1}}>
-        <Body
-          type={1}
-          style={{alignSelf: 'center', fontWeight: '500'}}
-          color={showTotal ? COLORS.primary[700] : COLORS.neutral[300]}
-          text={i18n.t('Total')}
-        />
-        <View style={showTotal ? styles.activeTab : styles.inactiveTab} />
-      </Pressable>
-      <Pressable
-        onPress={() => setShowTotal(false)}
-        activeOpacity={0.9}
-        style={{flex: 1}}>
-        <Body
-          type={1}
-          style={{alignSelf: 'center', fontWeight: '500'}}
-          color={!showTotal ? COLORS.primary[700] : COLORS.neutral[300]}
-          text={i18n.t('You')}
-        />
-        <View style={!showTotal ? styles.activeTab : styles.inactiveTab} />
-      </Pressable>
-    </View>
+  const getListHeader = useCallback(
+    () => (
+      <View
+        style={{
+          flexDirection: 'row',
+          marginTop: 12,
+        }}>
+        <Pressable
+          onPress={() => setShowTotal(true)}
+          activeOpacity={0.9}
+          style={{flex: 1}}>
+          <Body
+            type={1}
+            style={{alignSelf: 'center', fontWeight: '500'}}
+            color={showTotal ? COLORS.primary[700] : COLORS.neutral[300]}
+            text={i18n.t('Total')}
+          />
+          <View style={showTotal ? styles.activeTab : styles.inactiveTab} />
+        </Pressable>
+        <Pressable
+          onPress={() => setShowTotal(false)}
+          activeOpacity={0.9}
+          style={{flex: 1}}>
+          <Body
+            type={1}
+            style={{alignSelf: 'center', fontWeight: '500'}}
+            color={!showTotal ? COLORS.primary[700] : COLORS.neutral[300]}
+            text={i18n.t('You')}
+          />
+          <View style={!showTotal ? styles.activeTab : styles.inactiveTab} />
+        </Pressable>
+      </View>
+    ),
+    [users, showTotal],
   );
 
   const changeCurrency = async ({event}) => {
@@ -422,65 +369,27 @@ export default function ExpenseScreen() {
     );
   };
 
-  const getCurrencyChoser = () => (
-    <MenuView
-      style={{marginLeft: PADDING.l, marginTop: 6}}
-      onPressAction={({nativeEvent}) => changeCurrency(nativeEvent)}
-      actions={[
-        {
-          id: '€ EUR',
-          title: i18n.t('€ EUR'),
-        },
-        {
-          id: '£ GBP',
-          title: i18n.t('£ GBP'),
-        },
-        {
-          id: '₣ CHF',
-          title: i18n.t('₣ CHF'),
-        },
-        {
-          id: '¥ JPY',
-          title: i18n.t('¥ JPY'),
-        },
-        {
-          id: '¥ CNY',
-          title: i18n.t('¥ CNY'),
-        },
-        {
-          id: '$ USD',
-          title: i18n.t('$ USD'),
-        },
-        {
-          id: '$ CAD',
-          title: i18n.t('$ CAD'),
-        },
-        {
-          id: '$ AUD',
-          title: i18n.t('$ AUD'),
-        },
-        {
-          id: '$ NZD',
-          title: i18n.t('$ NZD'),
-        },
-        {
-          id: '$ HKD',
-          title: i18n.t('$ HKD'),
-        },
-      ]}>
-      <View style={styles.currencyContainer}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Body
-            type={1}
-            style={{fontWeight: '500'}}
-            text={`${currency?.symbol} ${currency?.string}`}
-            color={COLORS.primary[700]}
-          />
-          <Icon name="chevron-down" color={COLORS.primary[700]} size={18} />
-        </View>
-      </View>
-    </MenuView>
-  );
+  const handleExpenseSquash = () => {
+    const _expenses = expenses.filter(e => selectedExpenses.includes(e._id));
+    const _totalAmount = _expenses.reduce(
+      (sum, expense) => sum + expense.amount,
+      0,
+    );
+
+    setSquashExpense({
+      data: {
+        amount: _totalAmount,
+        title: _expenses[0].title,
+        paidBy: _expenses[0]._id,
+        splitBy: [],
+        category: _expenses[0].category,
+      },
+      selected: selectedExpenses,
+    });
+    setShowModal(true);
+
+    setSelectedExpenses([]);
+  };
 
   const getBudgetContainer = useCallback(() => {
     const restBudget = (budget - totalAmount) / restDays;
@@ -521,7 +430,12 @@ export default function ExpenseScreen() {
         title={i18n.t('Expenses')}
         scrollY={scrollY}
         info={INFORMATION.expensesScreen}
-        trailing={getCurrencyChoser()}>
+        trailing={
+          <CurrencyPicker
+            currency={currency}
+            onPressAction={e => changeCurrency(e)}
+          />
+        }>
         <View style={{marginHorizontal: PADDING.l}}>
           <View
             style={{
@@ -618,14 +532,35 @@ export default function ExpenseScreen() {
 
                 return (
                   <ExpenseTile
+                    isSolo={isSolo}
+                    key={item._id}
+                    onLongPress={() => setSelectedExpenses(() => [item._id])}
+                    isSelected={
+                      selectedExpenses?.length === 0
+                        ? -1
+                        : selectedExpenses.includes(item._id)
+                        ? 1
+                        : 0
+                    }
                     isSelf={isSelf}
                     currency={currency}
-                    onPress={() =>
+                    onPress={() => {
+                      if (selectedExpenses?.length > 0) {
+                        setSelectedExpenses(prev => {
+                          if (selectedExpenses.includes(item._id)) {
+                            return prev.filter(e => e !== item._id);
+                          }
+
+                          return [...prev, item._id];
+                        });
+                        return;
+                      }
+
                       setSelectedExpense({
                         isVisible: true,
                         data: item,
-                      })
-                    }
+                      });
+                    }}
                     onIncreaseAmount={
                       isSelf || !userData ? () => increaseAlert(item) : null
                     }
@@ -638,27 +573,42 @@ export default function ExpenseScreen() {
                   />
                 );
               }}
-              ItemSeparatorComponent={() => (
+              ItemSeparatorComponent={
                 <Divider
                   style={{marginLeft: 60}}
                   color={COLORS.neutral[50]}
                   vertical={14}
                 />
-              )}
+              }
             />
           </View>
         </View>
       </HybridHeader>
-      {budget && getBudgetContainer()}
-      <FAButton icon="add" iconSize={28} onPress={() => setShowModal(true)} />
+      {budget && selectedExpenses.length === 0 && getBudgetContainer()}
+      <FAButton
+        icon={selectedExpenses.length > 0 ? 'color-wand' : 'add'}
+        color={
+          selectedExpenses.length > 0
+            ? COLORS.success[700]
+            : COLORS.primary[700]
+        }
+        iconSize={selectedExpenses.length > 0 ? 24 : 28}
+        onPress={() =>
+          selectedExpenses.length > 0
+            ? handleExpenseSquash()
+            : setShowModal(true)
+        }
+      />
       <AddExpenseModal
         tripId={tripId}
         currency={currency}
         isVisible={showModal}
         updateExpense={updateExpense}
+        squashExpense={squashExpense}
         isProMember={isProMember}
         onRequestClose={() => {
           setShowModal(false);
+          setSquashExpense(null);
           setUpdateExpense(null);
         }}
         onPress={data => handleAddExpense(data)}
@@ -670,7 +620,6 @@ export default function ExpenseScreen() {
       <ExpenseDetailModal
         currency={currency}
         onEdit={data => handleEditExpense(data)}
-        // onEdit={data => handleSendingReminder(data)}
         isVisible={selectedExpense.isVisible}
         onRequestClose={() =>
           setSelectedExpense(prev => ({
@@ -683,6 +632,68 @@ export default function ExpenseScreen() {
         onDelete={expense => handleDeletion(expense)}
       />
     </View>
+  );
+}
+
+function CurrencyPicker({currency, onPressAction}) {
+  return (
+    <MenuView
+      style={{marginLeft: PADDING.l, marginTop: 6}}
+      onPressAction={({nativeEvent}) => onPressAction(nativeEvent)}
+      actions={[
+        {
+          id: '€ EUR',
+          title: i18n.t('€ EUR'),
+        },
+        {
+          id: '£ GBP',
+          title: i18n.t('£ GBP'),
+        },
+        {
+          id: '₣ CHF',
+          title: i18n.t('₣ CHF'),
+        },
+        {
+          id: '¥ JPY',
+          title: i18n.t('¥ JPY'),
+        },
+        {
+          id: '¥ CNY',
+          title: i18n.t('¥ CNY'),
+        },
+        {
+          id: '$ USD',
+          title: i18n.t('$ USD'),
+        },
+        {
+          id: '$ CAD',
+          title: i18n.t('$ CAD'),
+        },
+        {
+          id: '$ AUD',
+          title: i18n.t('$ AUD'),
+        },
+        {
+          id: '$ NZD',
+          title: i18n.t('$ NZD'),
+        },
+        {
+          id: '$ HKD',
+          title: i18n.t('$ HKD'),
+        },
+      ]}>
+      <View style={styles.currencyContainer}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Body
+            type={1}
+            style={{fontWeight: '500'}}
+            text={`${currency?.symbol} ${currency?.string}`}
+            color={COLORS.primary[700]}
+          />
+          <Icon name="chevron-down" color={COLORS.primary[700]} size={18} />
+        </View>
+      </View>
+    </MenuView>
   );
 }
 

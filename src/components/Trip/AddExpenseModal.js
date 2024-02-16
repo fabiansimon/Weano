@@ -24,7 +24,6 @@ import {useMutation} from '@apollo/client';
 import UPDATE_EXPENSE from '../../mutations/updateExpense';
 import activeTripStore from '../../stores/ActiveTripStore';
 import DELETE_EXPENSE from '../../mutations/deleteExpense';
-import {checkPluginState} from 'react-native-reanimated/lib/reanimated2/core';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
@@ -40,6 +39,7 @@ export default function AddExpenseModal({
   isProMember,
   currency,
   updateExpense,
+  squashExpense,
 }) {
   // MUTATIONS
   const [updateExisitingExpense, {loading}] = useMutation(UPDATE_EXPENSE);
@@ -73,8 +73,28 @@ export default function AddExpenseModal({
       : (parseFloat(amount) / splitBy?.length).toFixed(2);
 
   const isUpdate = updateExpense;
+  const isSquash = squashExpense;
 
   useEffect(() => {
+    if (isVisible && squashExpense) {
+      const {
+        amount: _amount,
+        title: _title,
+        category: _category,
+        splitBy: _splitBy,
+        paidBy: _paidBy,
+      } = squashExpense.data;
+      setAmount(`${_amount.toFixed(2)}`);
+      setTitle(_title);
+      setPaidBy(activeMembers.find(member => member.id === _paidBy));
+      setSplitBy(_splitBy);
+      setCategoryIndex(
+        EXPENSES_CATEGORY.findIndex(cat => cat.id === _category),
+      );
+      console.log('squashedExpense', squashExpense);
+      return;
+    }
+
     if (isVisible && updateExpense) {
       const {
         amount: _amount,
@@ -226,7 +246,7 @@ export default function AddExpenseModal({
         : await asyncStorageDAO.getFreeTierLimits(),
     ).expenses;
 
-    if (expenses?.length >= usageLimit) {
+    if (expenses?.length >= usageLimit && !isSquash) {
       onRequestClose();
       setTimeout(() => PremiumController.showModal(), 500);
       return;
@@ -238,6 +258,7 @@ export default function AddExpenseModal({
       paidBy,
       category: EXPENSES_CATEGORY[categoryIndex],
       splitBy,
+      squashExpense,
     });
   };
 
@@ -519,7 +540,13 @@ export default function AddExpenseModal({
         onRequestClose();
       }}
       title={i18n.t('Expense')}
-      actionLabel={isUpdate ? i18n.t('Update') : i18n.t('Create')}
+      actionLabel={
+        isUpdate
+          ? i18n.t('Update')
+          : isSquash
+          ? i18n.t('Squash')
+          : i18n.t('Create')
+      }
       onPress={handlePress}
       isLoading={isLoading || loading || deleteLoading}
       isDisabled={amount.length <= 0 || title.length <= 0}>
@@ -534,6 +561,29 @@ export default function AddExpenseModal({
           </View>
         </View>
       </KeyboardView>
+      {isSquash && (
+        <View
+          style={{
+            bottom: '5%',
+            paddingHorizontal: PADDING.xl,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <Subtitle
+            type={1}
+            text={i18n.t('Attention!')}
+            color={COLORS.error[900]}
+          />
+          <Body
+            type={2}
+            style={{textAlign: 'center'}}
+            text={i18n.t(
+              'if you squash expenses, we will delete your selected expenses, and instead create a new one.',
+            )}
+            color={COLORS.neutral[300]}
+          />
+        </View>
+      )}
       {isUpdate && (
         <Pressable onPress={handleDelete} style={styles.deleteContainer}>
           <IonIcon
@@ -637,7 +687,6 @@ const styles = StyleSheet.create({
   deleteContainer: {
     borderRadius: RADIUS.xl,
     padding: 10,
-    // backgroundColor: COLORS.neutral[50],
     flexDirection: 'row',
     borderWidth: 1,
     borderColor: COLORS.error[100],

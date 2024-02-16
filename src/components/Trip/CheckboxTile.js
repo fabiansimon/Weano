@@ -1,12 +1,12 @@
 import {Pressable, StyleSheet, View} from 'react-native';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
-import EntIcon from 'react-native-vector-icons/Entypo';
 import COLORS from '../../constants/Theme';
 import Body from '../typography/Body';
 import userManagement from '../../utils/userManagement';
 import i18n from '../../utils/i18n';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import Checkbox from '../Checkbox';
 
 export default function CheckboxTile({
   style,
@@ -20,9 +20,6 @@ export default function CheckboxTile({
 }) {
   const {isDone, assignee, title} = item;
   const user = userManagement.convertIdToUser(assignee, userList);
-
-  const backgroundColor = isDone ? COLORS.success[700] : 'transparent';
-  const borderWidth = isDone ? 0 : 1;
 
   const height = isDense ? 22 : 26;
   const width = isDense ? 22 : 26;
@@ -43,18 +40,7 @@ export default function CheckboxTile({
             ignoreAndroidSystemSettings: true,
           });
         }}>
-        <View
-          style={[
-            styles.checkbox,
-            {
-              backgroundColor,
-              borderWidth,
-              height,
-              width,
-            },
-          ]}>
-          <EntIcon name="check" color={COLORS.shades[0]} size={18} />
-        </View>
+        <Checkbox style={{height, width}} isChecked={isDone} />
         <View
           style={{
             marginLeft: 4,
@@ -99,13 +85,5 @@ const styles = StyleSheet.create({
     minHeight: 50,
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  checkbox: {
-    borderColor: COLORS.neutral[300],
-    borderRadius: 8,
-    borderWidth: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 4,
   },
 });

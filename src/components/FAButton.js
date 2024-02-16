@@ -32,6 +32,7 @@ export default function FAButton({
   isDisabled = false,
   description,
   iconStyle,
+  color = COLORS.primary[700],
 }) {
   // STATE && MISC
   const [isExpanded, setIsExpanded] = useState(false);
@@ -186,10 +187,10 @@ export default function FAButton({
               transform: [{rotate: iconRotation}],
               paddingHorizontal: string ? PADDING.l : 0,
               backgroundColor: isDisabled
-                ? Utils.addAlpha(COLORS.primary[700], 0.3)
+                ? Utils.addAlpha(color, 0.3)
                 : isExpanded
                 ? COLORS.neutral[900]
-                : COLORS.primary[700],
+                : color,
             },
             style,
           ]}>
@@ -220,7 +221,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: RADIUS.xl,
-    backgroundColor: COLORS.primary[700],
     shadowColor: COLORS.neutral[500],
     shadowOpacity: 0.2,
     shadowRadius: 20,

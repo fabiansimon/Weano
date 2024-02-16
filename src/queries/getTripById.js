@@ -39,6 +39,7 @@ const GET_TRIP_BY_ID = gql`
         amount
         currency
         createdAt
+        updatedAt
         category
         splitBy
       }
