@@ -84,7 +84,8 @@ export default function ExpenseScreen() {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      const expenseDate = new Date(expense.updatedAt);
+      const expenseDate = new Date(expense.createdAt * 1);
+
       expenseDate.setHours(0, 0, 0, 0);
 
       if (expenseDate.getTime() === today.getTime()) {
@@ -404,7 +405,7 @@ export default function ExpenseScreen() {
             color={
               spentToday > restBudget ? COLORS.error[900] : COLORS.neutral[700]
             }
-            text={`${currency.symbol}${spentToday}`}
+            text={`${currency.symbol}${spentToday.toFixed(2)}`}
           />
         </View>
         <View style={{marginHorizontal: 6}}>
@@ -449,7 +450,7 @@ export default function ExpenseScreen() {
                 {budget && (
                   <Subtitle
                     type={3}
-                    color={COLORS.neutral[500]}
+                    color={COLORS.neutral[300]}
                     style={{marginBottom: 4, marginLeft: 2}}
                     text={`/${currency.symbol}${budget}`}
                   />
@@ -459,7 +460,7 @@ export default function ExpenseScreen() {
                 type={4}
                 style={{marginTop: -2}}
                 text={i18n.t('total expenses')}
-                color={COLORS.neutral[500]}
+                color={COLORS.neutral[300]}
               />
             </View>
             <Pressable
@@ -534,7 +535,9 @@ export default function ExpenseScreen() {
                   <ExpenseTile
                     isSolo={isSolo}
                     key={item._id}
-                    onLongPress={() => setSelectedExpenses(() => [item._id])}
+                    onLongPress={() => {
+                      setSelectedExpenses(() => [item._id]);
+                    }}
                     isSelected={
                       selectedExpenses?.length === 0
                         ? -1
@@ -738,11 +741,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     bottom: Platform.OS === 'android' ? 30 : 40,
     backgroundColor: COLORS.shades[0],
-    borderRadius: RADIUS.l,
+    borderRadius: RADIUS.s,
     borderWidth: 1,
     borderColor: COLORS.neutral[100],
     paddingVertical: 6,
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
     shadowColor: COLORS.neutral[900],
     shadowRadius: 20,
     shadowOffset: {

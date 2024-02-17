@@ -136,8 +136,6 @@ export default function DestinationScreen({navigatePage, isHost}) {
       ];
     }
 
-    setInputVisible(false);
-
     updateActiveTrip({destinations: newArr});
     handleUpdateTrip(oldData, newArr);
     sheetRef.current.snapToIndex(0);

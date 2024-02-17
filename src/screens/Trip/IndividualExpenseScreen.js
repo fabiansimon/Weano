@@ -53,7 +53,6 @@ export default function IndividualExpenseScreen({route}) {
             text={i18n.t('total expenses')}
             color={COLORS.neutral[300]}
           />
-
           <FlatList
             inverted
             style={{paddingTop: 50}}

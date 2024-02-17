@@ -190,22 +190,30 @@ export default function DestinationsSheet({
           contentContainerStyle={{
             width: width * 2,
           }}>
-          <View style={{width}}>
-            <Headline
-              type={4}
-              color={COLORS.neutral[900]}
-              text={i18n.t('Trip start')}
-              style={{marginBottom: 10, marginTop: 18, marginLeft: PADDING.l}}
-            />
-            <DraggableFlatList
-              data={destinations}
-              scrollEnabled={false}
-              onDragEnd={({data}) => onDragEnded(data)}
-              keyExtractor={item => item.key}
-              renderItem={item => getDestinationTile(item)}
-            />
-            {destinations?.length < MAX_LENGTH && getAddTile()}
-          </View>
+          <DraggableFlatList
+            style={{width}}
+            ListHeaderComponent={
+              <Headline
+                type={4}
+                color={COLORS.neutral[900]}
+                text={i18n.t('Trip start')}
+                style={{
+                  marginBottom: 10,
+                  marginTop: 18,
+                  marginLeft: PADDING.l,
+                }}
+              />
+            }
+            contentContainerStyle={{paddingBottom: 140}}
+            ListFooterComponent={
+              destinations?.length < MAX_LENGTH && getAddTile()
+            }
+            scrollEnabled={sheetIndex === 1}
+            data={destinations}
+            onDragEnd={({data}) => onDragEnded(data)}
+            keyExtractor={item => item.key}
+            renderItem={item => getDestinationTile(item)}
+          />
           <AffiliateInfoView
             amountPeople={amountPeople}
             info={info}

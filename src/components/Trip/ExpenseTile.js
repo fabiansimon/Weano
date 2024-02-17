@@ -1,8 +1,8 @@
 import {Pressable, StyleSheet, View} from 'react-native';
 import React, {useMemo} from 'react';
 import COLORS, {RADIUS} from '../../constants/Theme';
+import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import Headline from '../typography/Headline';
-
 import Body from '../typography/Body';
 import Utils from '../../utils';
 import i18n from '../../utils/i18n';
@@ -19,7 +19,7 @@ export default function ExpenseTile({
   onDelete,
   onIncreaseAmount,
   onLongPress,
-  isSelected,
+  isSelected = -1,
   isSolo,
 }) {
   const fullName = useMemo(() => {
@@ -48,7 +48,13 @@ export default function ExpenseTile({
         },
       ]}>
       <Pressable
-        onLongPress={onLongPress}
+        onLongPress={() => {
+          onLongPress;
+          RNReactNativeHapticFeedback.trigger('impactLight', {
+            enableVibrateFallback: true,
+            ignoreAndroidSystemSettings: true,
+          });
+        }}
         onPress={onPress}
         style={[styles.container, style]}>
         {isSelected === -1 ? (
@@ -98,7 +104,7 @@ export default function ExpenseTile({
               style={{textAlign: 'right'}}
               color={COLORS.neutral[300]}
               text={Utils.getDateFromTimestamp(
-                data.updatedAt || data.createdAt / 1000,
+                data.createdAt / 1000,
                 'DD.MM.YYYY • HH:mm',
               )}
             />
