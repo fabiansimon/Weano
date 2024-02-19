@@ -1,5 +1,5 @@
 import React, {useRef} from 'react';
-import {Animated, Pressable, StyleSheet, View} from 'react-native';
+import {Animated, Pressable, StyleSheet} from 'react-native';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import COLORS from '../constants/Theme';
 import i18n from '../utils/i18n';
@@ -45,10 +45,11 @@ export default function SwipeView({
             />
           </Pressable>
         ) : (
-          options.map(option => {
+          options.map((option, index) => {
             const {backgroundColor: bg, string, onPress, isInactive} = option;
             return (
               <Pressable
+                key={index}
                 disabled={isInactive}
                 onPress={() => {
                   onPress();

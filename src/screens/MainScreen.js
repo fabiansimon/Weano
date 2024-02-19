@@ -52,8 +52,6 @@ import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 
 const asyncStorageDAO = new AsyncStorageDAO();
 
-const {width, height} = Dimensions.get('window');
-
 const {StatusBarManager} = NativeModules;
 
 MapboxGL.setAccessToken(MAPBOX_TOKEN);
@@ -105,6 +103,7 @@ export default function MainScreen() {
 
   const scrollY = useRef(new Animated.Value(0)).current;
 
+  const scrollRef = useRef();
   const mapCamera = useRef();
   const sheetRef = useRef();
 
@@ -143,6 +142,13 @@ export default function MainScreen() {
     };
   });
 
+  const animatedBottomStyle = useAnimatedStyle(() => {
+    const marginTop = sheetPosition.value - headerHeight + 70;
+    return {
+      marginTop,
+    };
+  });
+
   const headerShadowAnimated = scrollY.interpolate({
     inputRange: [0, 20],
     outputRange: [0, 0.1],
@@ -170,6 +176,9 @@ export default function MainScreen() {
   }, [data]);
 
   const handleSheetChanges = useCallback(i => {
+    if (i === 0) {
+      scrollRef.current?.scrollTo({y: 0});
+    }
     setExpandIndex(i);
   }, []);
 
@@ -406,6 +415,7 @@ export default function MainScreen() {
         onPress={expandIndex === 0 ? toggleExpansion : null}
         style={styles.sheetContainer}>
         <Animated.ScrollView
+          ref={scrollRef}
           contentContainerStyle={{paddingBottom: 120}}
           refreshControl={
             <RefreshControl
@@ -437,19 +447,19 @@ export default function MainScreen() {
             <StorySection
               contentContainerStyle={{
                 paddingLeft: 10,
-                marginBottom: 32,
-                height: 115,
               }}
               onLongPress={(e, id) => handleLongPress(e, {id})}
               style={{marginTop: 14}}
               data={trips}
             />
           </Pressable>
-          <Subtitle
-            type={1}
-            style={{marginLeft: 5}}
-            text={i18n.t('All trips')}
-          />
+          <Animated.View style={animatedBottomStyle}>
+            <Subtitle
+              type={1}
+              style={{marginLeft: 5}}
+              text={i18n.t('All trips')}
+            />
+          </Animated.View>
           <View style={{flexDirection: 'row', marginTop: 10}}>
             {getFilterRow(true)}
           </View>
@@ -548,7 +558,7 @@ export default function MainScreen() {
           }}
           ref={sheetRef}
           onChange={i => handleSheetChanges(i)}
-          index={1}
+          index={0}
           snapPoints={snapPoints}
           animatedPosition={sheetPosition}
           onClose={() => {}}>

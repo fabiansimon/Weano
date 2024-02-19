@@ -1,12 +1,10 @@
-import {Pressable, ScrollView, StyleSheet, View} from 'react-native';
-import React, {useState, useEffect} from 'react';
+import {ScrollView, StyleSheet, View} from 'react-native';
+import React, {useState, useEffect, useCallback} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import COLORS from '../constants/Theme';
 import Body from './typography/Body';
 import i18n from '../utils/i18n';
 import ROUTES from '../constants/Routes';
-import Label from './typography/Label';
-import Headline from './typography/Headline';
 import Icon from 'react-native-vector-icons/AntDesign';
 import TripContainer from './Trip/TripContainer';
 import Utils from '../utils';
@@ -20,7 +18,7 @@ export default function StorySection({
   const navigation = useNavigation();
   const [sortedData, setSortedData] = useState([]);
 
-  const getEmptyContainer = () => {
+  const getEmptyContainer = useCallback(() => {
     return (
       <View
         style={{
@@ -61,7 +59,7 @@ export default function StorySection({
         </View>
       </View>
     );
-  };
+  }, [data]);
 
   useEffect(() => {
     if (!data) {

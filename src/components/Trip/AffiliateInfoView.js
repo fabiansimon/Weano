@@ -257,11 +257,14 @@ export default function AffiliateInfoView({
 
     return (
       <View style={styles.buttonContainer}>
-        {data.map(d => {
+        {data.map((d, i) => {
           const {title, logo} = d;
 
           return (
-            <Pressable onPress={() => handleWeb(d)} style={styles.simpleButton}>
+            <Pressable
+              key={i}
+              onPress={() => handleWeb(d)}
+              style={styles.simpleButton}>
               <Image style={{height: 18, width: 18}} source={logo} />
               <Body
                 type={1}

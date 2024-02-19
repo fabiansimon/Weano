@@ -272,7 +272,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.shades[0],
     borderRadius: RADIUS.s,
     flex: 1,
-    paddingBottom: 20,
   },
   infoContainer: {
     marginLeft: 8,

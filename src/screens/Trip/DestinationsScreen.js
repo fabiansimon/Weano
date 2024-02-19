@@ -322,38 +322,38 @@ export default function DestinationScreen({navigatePage, isHost}) {
         <InputModal
           isVisible={inputData.inputVisible}
           geoMatching
-          trailingContent={
-            <Pressable
-              onPress={() => {
-                setInputData(prev => {
-                  return {
-                    ...prev,
-                    inputVisible: false,
-                  };
-                });
-                setTimeout(() => {
-                  setInputData(prev => {
-                    return {
-                      ...prev,
-                      calendarVisible: true,
-                    };
-                  });
-                }, 500);
-              }}
-              style={styles.dateContainer}>
-              <Body
-                type={2}
-                text={
-                  !inputData?.dateRange.startDate
-                    ? i18n.t('From - To')
-                    : `${Utils.getDateFromTimestamp(
-                        inputData.dateRange.startDate,
-                        'MMM Do',
-                      )}`
-                }
-              />
-            </Pressable>
-          }
+          // trailingContent={
+          //   <Pressable
+          //     onPress={() => {
+          //       setInputData(prev => {
+          //         return {
+          //           ...prev,
+          //           inputVisible: false,
+          //         };
+          //       });
+          //       setTimeout(() => {
+          //         setInputData(prev => {
+          //           return {
+          //             ...prev,
+          //             calendarVisible: true,
+          //           };
+          //         });
+          //       }, 500);
+          //     }}
+          //     style={styles.dateContainer}>
+          //     <Body
+          //       type={2}
+          //       text={
+          //         !inputData?.dateRange.startDate
+          //           ? i18n.t('From - To')
+          //           : `${Utils.getDateFromTimestamp(
+          //               inputData.dateRange.startDate,
+          //               'MMM Do',
+          //             )}`
+          //       }
+          //     />
+          //   </Pressable>
+          // }
           placeholder={i18n.t('Enter new destination')}
           onRequestClose={() => {
             setInputData(prev => {

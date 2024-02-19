@@ -95,6 +95,7 @@ export default function FAButton({
 
     return (
       <AnimatedPressable
+        key={index}
         onPress={() => {
           onTap();
           setIsExpanded(false);

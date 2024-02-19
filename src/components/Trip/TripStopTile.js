@@ -83,7 +83,7 @@ export default function TripStopTile({
                   <Body
                     type={2}
                     color={COLORS.neutral[300]}
-                    text={i18n.t('24.05 - 08.07')}
+                    text={i18n.t('Tap to expand')}
                   />
                 )}
               </View>

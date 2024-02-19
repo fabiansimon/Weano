@@ -905,6 +905,7 @@ export default function TripScreen({route}) {
         </View>
         <ScrollView
           horizontal
+          showsHorizontalScrollIndicator={false}
           contentContainerStyle={{paddingRight: 30}}
           style={{
             paddingHorizontal: PADDING.l,

@@ -20,6 +20,7 @@ import userStore from '../../stores/UserStore';
 import userManagement from '../../utils/userManagement';
 import CategoryChip from '../CategoryChip';
 import EXPENSES_CATEGORY from '../../constants/ExpensesCategories';
+import Subtitle from '../typography/Subtitle';
 
 export default function ExpenseDetailModal({
   isVisible,
@@ -135,8 +136,35 @@ export default function ExpenseDetailModal({
               color={categoryData.color}
             />
           </View>
+
           <View
             style={[styles.splitContainer, {marginBottom: isCreator ? 20 : 0}]}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                paddingHorizontal: 8,
+                marginTop: 8,
+              }}>
+              <Subtitle
+                type={2}
+                text={`Created ${Utils.getDateFromTimestamp(
+                  data?.createdAt / 1000,
+                  'HH:mm DD/MM',
+                )}`}
+                color={COLORS.neutral[300]}
+              />
+              {data?.updatedAt !== data?.createdAt && (
+                <Subtitle
+                  type={2}
+                  text={`Updated ${Utils.getDateFromTimestamp(
+                    data?.updatedAt / 1000,
+                    'HH:mm DD/MM',
+                  )}`}
+                  color={COLORS.neutral[300]}
+                />
+              )}
+            </View>
             <Pressable>
               <View
                 style={{
@@ -190,6 +218,7 @@ export default function ExpenseDetailModal({
                   );
                 })}
               </ScrollView>
+
               <View
                 style={{
                   marginTop: 6,
@@ -215,6 +244,7 @@ export default function ExpenseDetailModal({
               </View>
             </Pressable>
           </View>
+
           {isCreator && (
             <View style={styles.buttonContainer}>
               <Button onPress={() => onEdit(data)} text={i18n.t('Edit')} />
@@ -265,7 +295,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.neutral[50],
     borderRadius: RADIUS.s,
     borderWidth: 1,
-    marginTop: 14,
+    marginTop: 10,
   },
   buttonContainer: {
     marginTop: 10,

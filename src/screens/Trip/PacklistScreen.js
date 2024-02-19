@@ -209,57 +209,60 @@ export default function PacklistScreen() {
     });
   };
 
-  const getItem = item => {
-    const {isPacked, amount} = item;
-    return (
-      <SwipeView onPress={() => handleDeletion(item)}>
-        <CheckboxTile
-          style={{
-            paddingHorizontal: PADDING.xl,
-            backgroundColor: COLORS.shades[0],
-            marginVertical: -4,
-          }}
-          trailing={
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-              }}>
-              <Pressable
-                onPress={() =>
-                  amount <= 1
-                    ? handleDeletion(item)
-                    : handleUpdate(item, amount - 1)
-                }
-                style={styles.counterContainer}>
-                <Icon name="minus" size={16} color={COLORS.neutral[700]} />
-              </Pressable>
-              <Headline
+  const getItem = useCallback(
+    item => {
+      const {isPacked, amount} = item;
+      return (
+        <SwipeView onPress={() => handleDeletion(item)}>
+          <CheckboxTile
+            style={{
+              paddingHorizontal: PADDING.xl,
+              backgroundColor: COLORS.shades[0],
+              marginVertical: -4,
+            }}
+            trailing={
+              <View
                 style={{
-                  marginHorizontal: 6,
-                  minWidth: 20,
-                  textAlign: 'center',
-                }}
-                type={4}
-                text={amount}
-              />
-              <Pressable
-                onPress={() => handleUpdate(item, amount + 1)}
-                style={styles.counterContainer}>
-                <Icon name="plus" size={16} color={COLORS.neutral[700]} />
-              </Pressable>
-            </View>
-          }
-          item={{
-            ...item,
-            isDone: isPacked,
-          }}
-          disableLabel
-          onPress={() => handleUpdate(item)}
-        />
-      </SwipeView>
-    );
-  };
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}>
+                <Pressable
+                  onPress={() =>
+                    amount <= 1
+                      ? handleDeletion(item)
+                      : handleUpdate(item, amount - 1)
+                  }
+                  style={styles.counterContainer}>
+                  <Icon name="minus" size={16} color={COLORS.neutral[700]} />
+                </Pressable>
+                <Headline
+                  style={{
+                    marginHorizontal: 6,
+                    minWidth: 20,
+                    textAlign: 'center',
+                  }}
+                  type={4}
+                  text={amount}
+                />
+                <Pressable
+                  onPress={() => handleUpdate(item, amount + 1)}
+                  style={styles.counterContainer}>
+                  <Icon name="plus" size={16} color={COLORS.neutral[700]} />
+                </Pressable>
+              </View>
+            }
+            item={{
+              ...item,
+              isDone: isPacked,
+            }}
+            disableLabel
+            onPress={() => handleUpdate(item)}
+          />
+        </SwipeView>
+      );
+    },
+    [packingItems],
+  );
 
   const percentageLine = useCallback(() => {
     const status = packingItems?.length
@@ -291,11 +294,11 @@ export default function PacklistScreen() {
         title={i18n.t('Packing list')}
         scrollY={scrollY}
         info={INFORMATION.packlistScreen}
-        scrollEnabled={false}
+        scrollEnabled={true}
         content={percentageLine()}>
         <SectionList
-          style={{maxHeight: '70%'}}
           stickySectionHeadersEnabled
+          scrollEnabled={false}
           sections={packData}
           ListHeaderComponent={
             <View style={styles.stayContainer}>

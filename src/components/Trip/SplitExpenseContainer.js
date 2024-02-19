@@ -32,7 +32,7 @@ export default function SplitExpenseContainer({
   const getPersonTile = (user, isIncluded) => {
     const {avatarUri, firstName} = user;
     return (
-      <View style={styles.splitByContainer}>
+      <View key={user._id} style={styles.splitByContainer}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Avatar size={20} avatarUri={avatarUri} />
           <Body type={1} style={{marginLeft: 6}} text={firstName} />

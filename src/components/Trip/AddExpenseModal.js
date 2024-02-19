@@ -91,7 +91,6 @@ export default function AddExpenseModal({
       setCategoryIndex(
         EXPENSES_CATEGORY.findIndex(cat => cat.id === _category),
       );
-      console.log('squashedExpense', squashExpense);
       return;
     }
 
@@ -578,7 +577,7 @@ export default function AddExpenseModal({
             type={2}
             style={{textAlign: 'center'}}
             text={i18n.t(
-              'if you squash expenses, we will delete your selected expenses, and instead create a new one.',
+              'when squashing expenses, we will delete your selected expenses, and instead create a new one.',
             )}
             color={COLORS.neutral[300]}
           />

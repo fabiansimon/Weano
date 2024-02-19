@@ -11,6 +11,7 @@ import {S3} from 'aws-sdk';
 import {decode} from 'base64-arraybuffer';
 import {readFile} from 'react-native-fs';
 import META_DATA from '../constants/MetaData';
+import {checkPluginState} from 'react-native-reanimated/lib/reanimated2/core';
 
 async function sendInvitations(invitees, tripId) {
   return new Promise((resolve, reject) => {
@@ -127,13 +128,13 @@ async function getLocationFromQuery(input) {
     .trim()
     .replace(' ', '%20');
   input.trim();
-  const limit = 2;
+  const limit = 5;
 
   if (query.length < 1) {
     return;
   }
 
-  const queryUrl = `${baseUrl}${query}.json?limit=${limit}&types=place%2Cregion%2Cdistrict%2Cneighborhood%2Clocality%2Cpoi%2Ccountry&access_token=${MAPBOX_TOKEN}`;
+  const queryUrl = `${baseUrl}${query}.json?limit=${limit}&types=place%2Cregion%2Cdistrict%2Cneighborhood%2Ccountry&access_token=${MAPBOX_TOKEN}`;
   return new Promise((resolve, reject) => {
     fetch(queryUrl, {
       method: 'GET',

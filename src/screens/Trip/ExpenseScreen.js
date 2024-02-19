@@ -215,6 +215,7 @@ export default function ExpenseScreen() {
         const newExpense = {
           amount,
           updatedAt: Date.now(),
+          createdAt: Date.now(),
           creatorId: id,
           currency: currency.symbol,
           paidBy,
@@ -397,7 +398,7 @@ export default function ExpenseScreen() {
 
     return (
       <View style={styles.budgetContainer}>
-        <View>
+        {/* <View>
           <Subtitle color={COLORS.neutral[300]} text={'Spent'} />
           <Headline
             type={3}
@@ -410,7 +411,7 @@ export default function ExpenseScreen() {
         </View>
         <View style={{marginHorizontal: 6}}>
           <Subtitle color={COLORS.neutral[300]} text={'|'} />
-        </View>
+        </View> */}
         <View>
           <Subtitle color={COLORS.neutral[300]} text={'Daily Budget'} />
           <Headline
@@ -429,6 +430,13 @@ export default function ExpenseScreen() {
       <StatusBar barStyle="dark-content" />
       <HybridHeader
         title={i18n.t('Expenses')}
+        subtitle={
+          budget &&
+          `${i18n.t('Daily Budget:')} ${currency?.symbol}${(
+            (budget - totalAmount) /
+            restDays
+          ).toFixed(2)}`
+        }
         scrollY={scrollY}
         info={INFORMATION.expensesScreen}
         trailing={
@@ -511,10 +519,14 @@ export default function ExpenseScreen() {
           <View style={styles.summaryContainer}>
             {!isSolo && getListHeader()}
             <FlatList
+              style={{borderRadius: RADIUS.m, overflow: 'hidden'}}
               ListEmptyComponent={
                 <Body
                   type={2}
-                  style={{textAlign: 'center', paddingHorizontal: 6}}
+                  style={{
+                    textAlign: 'center',
+                    paddingHorizontal: 6,
+                  }}
                   text={
                     showTotal
                       ? i18n.t('No expenses added yet 😕')
@@ -524,8 +536,6 @@ export default function ExpenseScreen() {
                 />
               }
               inverted
-              style={{paddingTop: 20}}
-              contentContainerStyle={{paddingBottom: 20}}
               data={showTotal ? expenses : myData}
               renderItem={({item}) => {
                 const userData = users.find(u => u.id === item.paidBy);
@@ -570,7 +580,7 @@ export default function ExpenseScreen() {
                     onDelete={
                       isSelf || !userData ? () => confirmDeletion(item) : null
                     }
-                    style={{paddingHorizontal: 15}}
+                    style={{paddingHorizontal: 15, paddingVertical: 14}}
                     data={item}
                     user={userData}
                   />
@@ -578,18 +588,18 @@ export default function ExpenseScreen() {
               }}
               ItemSeparatorComponent={
                 <Divider
-                  style={{marginLeft: 60}}
+                  style={{marginLeft: 70}}
+                  omitPadding
                   color={COLORS.neutral[50]}
-                  vertical={14}
                 />
               }
             />
           </View>
         </View>
       </HybridHeader>
-      {budget && selectedExpenses.length === 0 && getBudgetContainer()}
+      {/* {budget && selectedExpenses.length === 0 && getBudgetContainer()} */}
       <FAButton
-        icon={selectedExpenses.length > 0 ? 'color-wand' : 'add'}
+        icon={selectedExpenses.length > 0 ? 'copy-outline' : 'add'}
         color={
           selectedExpenses.length > 0
             ? COLORS.success[700]
@@ -723,6 +733,7 @@ const styles = StyleSheet.create({
     marginTop: 25,
     borderRadius: RADIUS.m,
     borderWidth: 1,
+    overflow: 'hidden',
     borderColor: COLORS.neutral[100],
     marginBottom: 120,
   },

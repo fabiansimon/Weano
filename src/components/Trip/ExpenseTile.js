@@ -1,4 +1,4 @@
-import {Pressable, StyleSheet, View} from 'react-native';
+import {Platform, Pressable, StyleSheet, View} from 'react-native';
 import React, {useMemo} from 'react';
 import COLORS, {RADIUS} from '../../constants/Theme';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
@@ -38,7 +38,7 @@ export default function ExpenseTile({
           backgroundColor: COLORS.success[700],
           string: i18n.t('Increase'),
           onPress: () => onIncreaseAmount(),
-          isDisabled: onIncreaseAmount == null,
+          isDisabled: onIncreaseAmount == null || Platform.OS !== 'ios',
         },
         {
           backgroundColor: COLORS.error[900],
@@ -49,7 +49,7 @@ export default function ExpenseTile({
       ]}>
       <Pressable
         onLongPress={() => {
-          onLongPress;
+          onLongPress();
           RNReactNativeHapticFeedback.trigger('impactLight', {
             enableVibrateFallback: true,
             ignoreAndroidSystemSettings: true,
