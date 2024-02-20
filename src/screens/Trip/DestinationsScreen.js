@@ -179,6 +179,7 @@ export default function DestinationScreen({navigatePage, isHost}) {
     }
 
     if (expandedIndex !== 0) {
+      setExpandedIndex(0);
       return sheetRef.current.snapToIndex(0);
     }
 
@@ -252,6 +253,7 @@ export default function DestinationScreen({navigatePage, isHost}) {
         </MapboxGL.MapView>
         <SafeAreaView edges={['top']} style={styles.header}>
           <BackButton
+            icon={expandedIndex === 1 ? 'down' : 'arrowleft'}
             style={{marginBottom: Platform.OS === 'android' ? 10 : 0}}
             onPress={handleNavigation}
             isClear

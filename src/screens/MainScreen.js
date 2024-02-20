@@ -19,6 +19,7 @@ import EntIcon from 'react-native-vector-icons/Entypo';
 import {useLazyQuery} from '@apollo/client';
 import COLORS, {PADDING, RADIUS} from '../constants/Theme';
 import Animated, {
+  interpolate,
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
@@ -53,6 +54,7 @@ import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 const asyncStorageDAO = new AsyncStorageDAO();
 
 const {StatusBarManager} = NativeModules;
+const {height} = Dimensions.get('window');
 
 MapboxGL.setAccessToken(MAPBOX_TOKEN);
 
@@ -108,6 +110,8 @@ export default function MainScreen() {
   const sheetRef = useRef();
 
   const navigation = useNavigation();
+  const top = height - (parseInt(snapPoints[1], 10) / 100) * height;
+  const bottom = height - (parseInt(snapPoints[0], 10) / 100) * height;
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -128,6 +132,13 @@ export default function MainScreen() {
   const combinedTrips = [upcomingTrips, recentTrips, activeTrips];
 
   const highlightTrip = activeTrips[0] || soonTrip || null;
+
+  const animatedIcon = useAnimatedStyle(() => {
+    const opacity = ((sheetPosition.value - top) / (bottom - top)) * -40;
+    return {
+      transform: [{translateY: opacity}],
+    };
+  });
 
   const headerAnimatedStyle = useAnimatedStyle(() => {
     if (sheetPosition.value <= headerHeight) {
@@ -568,19 +579,20 @@ export default function MainScreen() {
 
         <View style={styles.header}>
           <Pressable style={styles.searchButton} onPress={toggleExpansion}>
-            {expandIndex === 0 ? (
+            <Animated.View style={[{opacity: 1, top: 40}, animatedIcon]}>
               <EntIcon
                 color={COLORS.shades[100]}
-                name={expandIndex === 0 ? 'chevron-up' : 'chevron-down'}
+                name={'chevron-up'}
                 size={20}
               />
-            ) : (
+            </Animated.View>
+            <Animated.View style={[{position: 'absolute'}, animatedIcon]}>
               <FontIcon
                 name="globe-americas"
                 color={COLORS.shades[100]}
                 size={20}
               />
-            )}
+            </Animated.View>
           </Pressable>
           <Pressable
             onPress={() => {
@@ -664,6 +676,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   searchButton: {
+    overflow: 'hidden',
     borderWidth: 1,
     height: 45,
     width: 45,

@@ -9,6 +9,7 @@ export default function BackButton({
   isClear = false,
   onPress,
   iconColor,
+  icon = 'arrowleft',
   closeIcon = false,
 }) {
   const navigation = useNavigation();
@@ -16,7 +17,7 @@ export default function BackButton({
   return isClear ? (
     <Icon
       suppressHighlighting
-      name={closeIcon ? 'close' : 'arrowleft'}
+      name={closeIcon ? 'close' : icon}
       size={22}
       color={iconColor || COLORS.shades[100]}
       style={[{zIndex: 9999, width: 40}, style]}
@@ -27,7 +28,7 @@ export default function BackButton({
       style={[styles.backButton, style]}
       icon={
         <Icon
-          name={closeIcon ? 'close' : 'arrowleft'}
+          name={closeIcon ? 'close' : icon}
           color={COLORS.shades[100]}
           size={22}
         />

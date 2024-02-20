@@ -190,7 +190,9 @@ export default function ChatScreen() {
   };
 
   const sendMessage = (type, content, data) => {
-    if (type === 'STRING' && message.trim().length === 0) return;
+    if (type === 'STRING' && message.trim().length === 0) {
+      return;
+    }
 
     const newMessage = {
       timestamp: Date.now() / 1000,

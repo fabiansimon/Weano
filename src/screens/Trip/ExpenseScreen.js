@@ -5,7 +5,9 @@ import {
   StatusBar,
   Alert,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
+import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import React, {useRef, useState, useEffect, useMemo, useCallback} from 'react';
 import Animated from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Entypo';
@@ -38,6 +40,8 @@ import InfoController from '../../controllers/InfoController';
 import UPDATE_EXPENSE from '../../mutations/updateExpense';
 import Subtitle from '../../components/typography/Subtitle';
 
+const DEFAULT_ITEMS_AMOUNT = 10;
+
 export default function ExpenseScreen() {
   // MUTATIONS
   const [updateExisitingExpense] = useMutation(UPDATE_EXPENSE);
@@ -50,16 +54,17 @@ export default function ExpenseScreen() {
     expenses,
     activeMembers: users,
     id: tripId,
-    title,
     currency,
     dateRange,
     budget,
   } = activeTripStore(state => state.activeTrip);
   const updateActiveTrip = activeTripStore(state => state.updateActiveTrip);
-  const {id, firstName, isProMember} = userStore(state => state.user);
+  const {id, isProMember} = userStore(state => state.user);
 
   // STATE & MISC
   const scrollY = useRef(new Animated.Value(0)).current;
+  const scrollRef = useRef();
+  const [itemsAmount, setItemsAmount] = useState(DEFAULT_ITEMS_AMOUNT);
   const [showTotal, setShowTotal] = useState(true);
   const [updateExpense, setUpdateExpense] = useState(null);
   const [selectedExpense, setSelectedExpense] = useState({
@@ -68,11 +73,28 @@ export default function ExpenseScreen() {
   });
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [amountLoading, setAmountLoading] = useState(false);
   const [selectedExpenses, setSelectedExpenses] = useState([]);
   const [squashExpense, setSquashExpense] = useState(null);
 
   const isHost = userManagement.isHost();
   const isSolo = users.length === 1;
+
+  const data = useMemo(() => {
+    if (showTotal) {
+      return expenses;
+    }
+
+    return expenses.filter(expense => expense.paidBy === id);
+  }, [showTotal, expenses]);
+
+  const renderData = useMemo(() => {
+    if (data.length <= itemsAmount) {
+      console.log('KSJÖKLDJ');
+      return data;
+    }
+    return data.slice(data.length - itemsAmount, data.length);
+  }, [data, itemsAmount]);
 
   const restDays = useMemo(() => {
     const {endDate} = dateRange;
@@ -108,10 +130,6 @@ export default function ExpenseScreen() {
       }, 500);
     }
   }, [error]);
-
-  const myData = useMemo(() => {
-    expenses.filter(expense => expense.paidBy === id);
-  }, [expenses]);
 
   const totalAmount = useMemo(() => {
     const amount = expenses.reduce((sum, expense) => sum + expense.amount, 0);
@@ -300,7 +318,10 @@ export default function ExpenseScreen() {
           marginTop: 12,
         }}>
         <Pressable
-          onPress={() => setShowTotal(true)}
+          onPress={() => {
+            setShowTotal(true);
+            updateItemsAmount(DEFAULT_ITEMS_AMOUNT);
+          }}
           activeOpacity={0.9}
           style={{flex: 1}}>
           <Body
@@ -312,7 +333,10 @@ export default function ExpenseScreen() {
           <View style={showTotal ? styles.activeTab : styles.inactiveTab} />
         </Pressable>
         <Pressable
-          onPress={() => setShowTotal(false)}
+          onPress={() => {
+            setShowTotal(false);
+            updateItemsAmount(DEFAULT_ITEMS_AMOUNT);
+          }}
           activeOpacity={0.9}
           style={{flex: 1}}>
           <Body
@@ -393,6 +417,21 @@ export default function ExpenseScreen() {
     setSelectedExpenses([]);
   };
 
+  const updateItemsAmount = count => {
+    setAmountLoading(true);
+    setTimeout(() => {
+      try {
+        RNReactNativeHapticFeedback.trigger('impactLight');
+        if (itemsAmount >= expenses.length) {
+          return setItemsAmount(DEFAULT_ITEMS_AMOUNT);
+        }
+        setItemsAmount(prev => count || (prev += 5));
+      } finally {
+        setAmountLoading(false);
+      }
+    }, 100);
+  };
+
   const getBudgetContainer = useCallback(() => {
     const restBudget = (budget - totalAmount) / restDays;
 
@@ -438,6 +477,7 @@ export default function ExpenseScreen() {
           ).toFixed(2)}`
         }
         scrollY={scrollY}
+        ref={scrollRef}
         info={INFORMATION.expensesScreen}
         trailing={
           <CurrencyPicker
@@ -517,9 +557,39 @@ export default function ExpenseScreen() {
             data={expenses}
           />
           <View style={styles.summaryContainer}>
-            {!isSolo && getListHeader()}
             <FlatList
+              ListFooterComponent={() => !isSolo && getListHeader()}
               style={{borderRadius: RADIUS.m, overflow: 'hidden'}}
+              ListHeaderComponent={
+                data.length > DEFAULT_ITEMS_AMOUNT && (
+                  <Pressable
+                    onLongPress={() => updateItemsAmount(expenses.length)}
+                    onPress={() => updateItemsAmount()}
+                    style={styles.loadMoreButton}>
+                    {amountLoading ? (
+                      <ActivityIndicator />
+                    ) : (
+                      <>
+                        <Subtitle
+                          style={{fontWeight: '500', fontSize: 15}}
+                          color={COLORS.neutral[700]}
+                          text={
+                            itemsAmount < expenses.length
+                              ? i18n.t('Show more')
+                              : i18n.t('Minimize')
+                          }
+                        />
+                        <Subtitle
+                          color={COLORS.neutral[300]}
+                          text={`${Math.min(itemsAmount, data.length)} / ${
+                            data.length
+                          } ${i18n.t('expenses')}`}
+                        />
+                      </>
+                    )}
+                  </Pressable>
+                )
+              }
               ListEmptyComponent={
                 <Body
                   type={2}
@@ -536,7 +606,8 @@ export default function ExpenseScreen() {
                 />
               }
               inverted
-              data={showTotal ? expenses : myData}
+              keyExtractor={item => item._id}
+              data={renderData}
               renderItem={({item}) => {
                 const userData = users.find(u => u.id === item.paidBy);
                 const isSelf = id === item.paidBy;
@@ -544,7 +615,6 @@ export default function ExpenseScreen() {
                 return (
                   <ExpenseTile
                     isSolo={isSolo}
-                    key={item._id}
                     onLongPress={() => {
                       setSelectedExpenses(() => [item._id]);
                     }}
@@ -764,5 +834,13 @@ const styles = StyleSheet.create({
       y: 20,
     },
     shadowOpacity: 0.05,
+  },
+  loadMoreButton: {
+    borderTopColor: COLORS.neutral[50],
+    borderTopWidth: 1,
+    flex: 1,
+    height: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
