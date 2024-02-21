@@ -45,7 +45,7 @@ export default function ExpenseDetailModal({
 
   const splitAmount =
     data?.splitBy?.length > 0
-      ? (data?.amount / data.splitBy.length).toFixed(2)
+      ? Utils.formatDigit(data?.amount / data.splitBy.length)
       : 0;
 
   useEffect(() => {
@@ -112,7 +112,7 @@ export default function ExpenseDetailModal({
           <Headline text={data?.title} color={COLORS.neutral[700]} type={4} />
 
           <Headline
-            text={`${currency?.symbol}${data?.amount}`}
+            text={`${currency?.symbol}${Utils.formatDigit(data?.amount)}`}
             color={COLORS.neutral[700]}
             type={1}
           />
@@ -176,7 +176,7 @@ export default function ExpenseDetailModal({
                 <Body
                   type={2}
                   text={i18n.t('Split between')}
-                  color={COLORS.neutral[500]}
+                  color={COLORS.neutral[700]}
                 />
                 <Body
                   type={2}
@@ -212,7 +212,7 @@ export default function ExpenseDetailModal({
                             ? 'line-through'
                             : 'none',
                         }}
-                        color={COLORS.neutral[500]}
+                        color={COLORS.neutral[700]}
                       />
                     </Pressable>
                   );

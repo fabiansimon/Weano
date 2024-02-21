@@ -325,4 +325,20 @@ export default class Utils {
 
     return type;
   }
+
+  /**
+   * Format Bigger Digits to readable numbers
+   * @param {Number} amount - the amount
+   * @return {String} - readable outcome
+   */
+  static formatDigit(amount) {
+    if (!amount) {
+      return;
+    }
+
+    return new Intl.NumberFormat('de-DE', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  }
 }

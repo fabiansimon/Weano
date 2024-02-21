@@ -279,16 +279,7 @@ export default function MemoriesScreen({route}) {
         return (
           <Pressable
             onPress={() => setDateIndex(index)}
-            style={{
-              flex: null,
-              borderRadius: 100,
-              backgroundColor,
-              borderColor,
-              borderWidth: 0.5,
-              paddingHorizontal: 13,
-              paddingVertical: 8,
-              marginRight: 4,
-            }}>
+            style={[styles.dateChip, {backgroundColor, borderColor}]}>
             <Body type={2} color={color} text={item.title} />
           </Pressable>
         );
@@ -569,7 +560,7 @@ export default function MemoriesScreen({route}) {
           ) : (
             <FlatList
               removeClippedSubviews
-              showsVertiacalScrollIndicator={false}
+              showsVerticalScrollIndicator={false}
               // eslint-disable-next-line react/no-unstable-nested-components
               ListEmptyComponent={() => (
                 <View
@@ -675,5 +666,13 @@ const styles = StyleSheet.create({
     bottom: 40,
     right: PADDING.xl,
     position: 'absolute',
+  },
+  dateChip: {
+    flex: null,
+    borderRadius: 100,
+    borderWidth: 0.5,
+    paddingHorizontal: 13,
+    paddingVertical: 8,
+    marginRight: 4,
   },
 });

@@ -33,13 +33,8 @@ export default function ExpenseTile({
   return (
     <SwipeView
       enabled={isSelected === -1}
+      onLeftAction={() => (Platform.OS === 'ios' ? onIncreaseAmount() : null)}
       multipleOptions={[
-        {
-          backgroundColor: COLORS.success[700],
-          string: i18n.t('Increase'),
-          onPress: () => onIncreaseAmount(),
-          isDisabled: onIncreaseAmount == null || Platform.OS !== 'ios',
-        },
         {
           backgroundColor: COLORS.error[900],
           string: i18n.t('Delete'),
@@ -97,7 +92,7 @@ export default function ExpenseTile({
             <Headline
               type={4}
               style={{textAlign: 'right'}}
-              text={`${currency?.symbol}${data.amount.toFixed(2)}`}
+              text={`${currency?.symbol}${Utils.formatDigit(data.amount)}`}
             />
             <Body
               type={2}

@@ -6,6 +6,7 @@ import Headline from '../typography/Headline';
 import COLORS, {RADIUS} from '../../constants/Theme';
 import i18n from '../../utils/i18n';
 import activeTripStore from '../../stores/ActiveTripStore';
+import Utils from '../../utils';
 
 export default function ExpenseIndividualCard({style, data, onPress, user}) {
   // STORES
@@ -24,7 +25,7 @@ export default function ExpenseIndividualCard({style, data, onPress, user}) {
         />
         <Headline
           type={3}
-          text={`${currency?.symbol}${data.amount.toFixed(2)}`}
+          text={`${currency?.symbol}${Utils.formatDigit(data.amount)}`}
           color={COLORS.neutral[900]}
         />
       </View>

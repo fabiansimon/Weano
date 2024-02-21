@@ -10,6 +10,7 @@ import ExpenseTile from '../../components/Trip/ExpenseTile';
 import Divider from '../../components/Divider';
 import ExpenseDetailModal from '../../components/Trip/ExpenseDetailModal';
 import Body from '../../components/typography/Body';
+import Utils from '../../utils';
 
 export default function IndividualExpenseScreen({route}) {
   // PARAMS
@@ -45,7 +46,7 @@ export default function IndividualExpenseScreen({route}) {
           <Headline
             style={{marginTop: 26}}
             type={1}
-            text={`${currency?.symbol}${data.amount.toFixed(2)}`}
+            text={`${currency?.symbol}${Utils.formatDigit(data.amount)}`}
           />
           <Body
             style={{marginBottom: 16}}

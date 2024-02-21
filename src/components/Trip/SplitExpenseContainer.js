@@ -13,6 +13,7 @@ import Body from '../typography/Body';
 import Avatar from '../Avatar';
 import i18n from '../../utils/i18n';
 import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
+import Utils from '../../utils';
 
 const AnimatedTouchableHighlight =
   Animated.createAnimatedComponent(TouchableHighlight);
@@ -113,7 +114,9 @@ export default function SplitExpenseContainer({
             <Body
               type={2}
               text={`${currency.symbol}${
-                splitBy.length <= 0 ? 0 : (amount / splitBy.length).toFixed(2)
+                splitBy.length <= 0
+                  ? 0
+                  : Utils.formatDigit(amount / splitBy.length)
               }`}
               color={COLORS.shades[100]}
               style={{marginTop: 2, fontWeight: '500'}}

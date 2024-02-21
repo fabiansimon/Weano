@@ -443,7 +443,9 @@ export default function AddExpenseModal({
                   <Body
                     type={2}
                     color={isSelected ? COLORS.shades[0] : COLORS.shades[100]}
-                    text={`${currency.symbol}${isSelected ? splitAmount : 0}`}
+                    text={`${currency.symbol}${
+                      isSelected ? Utils.formatDigit(splitAmount) : 0
+                    }`}
                   />
                   <Body
                     type={2}
@@ -484,7 +486,7 @@ export default function AddExpenseModal({
           type={1}
           style={{fontWeight: '500'}}
           color={COLORS.neutral[900]}
-          text={`${currency?.symbol}${amount || '0'}`}
+          text={`${currency?.symbol}${Utils.formatDigit(amount) || '0'}`}
         />
         {title.length > 0 && (
           <>

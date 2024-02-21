@@ -53,8 +53,7 @@ export default function SettleExpensesScreen() {
   }, [expenses, filterCat]);
 
   const totalAmount = useMemo(() => {
-    const amount = expenses.reduce((sum, expense) => sum + expense.amount, 0);
-    return amount.toFixed(2);
+    return expenses.reduce((sum, expense) => sum + expense.amount, 0);
   }, [expenses]);
 
   const handleSettle = () => {
@@ -122,7 +121,7 @@ export default function SettleExpensesScreen() {
                   type={1}
                   color={COLORS.neutral[50]}
                   style={{fontWeight: '600', marginLeft: 4}}
-                  text={`${currency.symbol}${amount.toFixed(2)}`}
+                  text={`${currency.symbol}${Utils.formatDigit(amount)}`}
                 />
               </Pressable>
             );
@@ -163,7 +162,7 @@ export default function SettleExpensesScreen() {
               </View>
               <Headline
                 type={4}
-                text={`${currency.symbol}${amount.toFixed(2)}`}
+                text={`${currency.symbol}${Utils.formatDigit(amount)}`}
               />
             </View>
             <Body
@@ -175,19 +174,17 @@ export default function SettleExpensesScreen() {
               color={COLORS.neutral[300]}
               style={{marginTop: 2}}
             />
-            {isSolo && (
-              <SplitExpenseContainer
-                onPress={() => {
-                  setEditExpense({
-                    ...exp,
-                    paidBy,
-                  });
-                }}
-                expense={exp}
-                activeMembers={activeMembers}
-                currency={currency}
-              />
-            )}
+            <SplitExpenseContainer
+              onPress={() => {
+                setEditExpense({
+                  ...exp,
+                  paidBy,
+                });
+              }}
+              expense={exp}
+              activeMembers={activeMembers}
+              currency={currency}
+            />
           </View>
         </View>
       );
@@ -202,7 +199,10 @@ export default function SettleExpensesScreen() {
         title={isSolo ? i18n.t('Analyze Expenses') : i18n.t('Settle Expenses')}
         scrollY={scrollY}>
         <View style={styles.innerContainer}>
-          <Headline type={1} text={`${currency.symbol}${totalAmount}`} />
+          <Headline
+            type={1}
+            text={`${currency.symbol}${Utils.formatDigit(totalAmount)}`}
+          />
           <Body
             type={4}
             style={{marginTop: -2}}

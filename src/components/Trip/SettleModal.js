@@ -17,6 +17,7 @@ import Divider from '../Divider';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Button from '../Button';
 import userStore from '../../stores/UserStore';
+import Utils from '../../utils';
 
 function SettleModal({
   isVisible,
@@ -155,7 +156,9 @@ function SettleModal({
     message += `(Created: ${now.toDateString()})\n\n`;
 
     for (const transaction of transactions) {
-      message += `${transaction.from.name} --> ${transaction.to.name}: ${currency}${transaction.amount}\n`;
+      message += `${transaction.from.name} --> ${
+        transaction.to.name
+      }: ${currency}${Utils.formatDigit(transaction.amount)}\n`;
     }
 
     Share.share({
@@ -233,7 +236,7 @@ function SettleModal({
             type={1}
             text={`${
               isReceiver ? '+' : isSender ? '-' : ''
-            }${currency}${amount}`}
+            }${currency}${Utils.formatDigit(amount)}`}
             color={COLORS.shades[0]}
             style={{fontWeight: '500'}}
           />

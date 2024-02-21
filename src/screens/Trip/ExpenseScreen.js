@@ -90,7 +90,6 @@ export default function ExpenseScreen() {
 
   const renderData = useMemo(() => {
     if (data.length <= itemsAmount) {
-      console.log('KSJÖKLDJ');
       return data;
     }
     return data.slice(data.length - itemsAmount, data.length);
@@ -100,6 +99,14 @@ export default function ExpenseScreen() {
     const {endDate} = dateRange;
     return Utils.getDaysDifference(Date.now() / 1000, endDate, true);
   }, [dateRange]);
+
+  const totalAmount = useMemo(() => {
+    return expenses.reduce((sum, expense) => sum + expense.amount, 0);
+  }, [expenses]);
+
+  const dailyBudget = useMemo(() => {
+    return (budget - totalAmount) / restDays;
+  }, [budget, totalAmount, restDays]);
 
   const spentToday = useMemo(() => {
     return expenses.reduce((accumulator, expense) => {
@@ -130,11 +137,6 @@ export default function ExpenseScreen() {
       }, 500);
     }
   }, [error]);
-
-  const totalAmount = useMemo(() => {
-    const amount = expenses.reduce((sum, expense) => sum + expense.amount, 0);
-    return amount.toFixed(2);
-  }, [expenses]);
 
   const handleEditExpense = data => {
     setUpdateExpense(data);
@@ -457,7 +459,7 @@ export default function ExpenseScreen() {
             style={{fontSize: 16}}
             type={3}
             color={COLORS.neutral[700]}
-            text={`${currency.symbol}${restBudget.toFixed(2)}`}
+            text={`${currency.symbol}${restBudget}`}
           />
         </View>
       </View>
@@ -471,10 +473,9 @@ export default function ExpenseScreen() {
         title={i18n.t('Expenses')}
         subtitle={
           budget &&
-          `${i18n.t('Daily Budget:')} ${currency?.symbol}${(
-            (budget - totalAmount) /
-            restDays
-          ).toFixed(2)}`
+          `${i18n.t('Daily Budget:')} ${currency?.symbol}${Utils.formatDigit(
+            dailyBudget,
+          )}`
         }
         scrollY={scrollY}
         ref={scrollRef}
@@ -494,13 +495,16 @@ export default function ExpenseScreen() {
             }}>
             <View>
               <View style={{flexDirection: 'row', alignItems: 'flex-end'}}>
-                <Headline type={1} text={`${currency.symbol}${totalAmount}`} />
+                <Headline
+                  type={1}
+                  text={`${currency.symbol}${Utils.formatDigit(totalAmount)}`}
+                />
                 {budget && (
                   <Subtitle
                     type={3}
                     color={COLORS.neutral[300]}
                     style={{marginBottom: 4, marginLeft: 2}}
-                    text={`/${currency.symbol}${budget}`}
+                    text={`/${currency.symbol}${Utils.formatDigit(budget)}`}
                   />
                 )}
               </View>

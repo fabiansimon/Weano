@@ -1,10 +1,12 @@
-import React, {useRef} from 'react';
-import {Animated, Pressable, StyleSheet} from 'react-native';
+import React, {useCallback, useRef} from 'react';
+import {Animated, Pressable, StyleSheet, View} from 'react-native';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
+import RNReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import COLORS from '../constants/Theme';
 import i18n from '../utils/i18n';
 import Body from './typography/Body';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const WIDTH = 100;
 
@@ -14,11 +16,55 @@ export default function SwipeView({
   children,
   enabled,
   backgroundColor = COLORS.error[900],
+  onLeftAction,
   multipleOptions,
 }) {
   const swipeRef = useRef();
 
   const options = multipleOptions?.filter(option => !option.isDisabled);
+
+  const renderLeftActions = useCallback(
+    (_, dragX) => {
+      const animatedScale = dragX.interpolate({
+        inputRange: [0, WIDTH],
+        outputRange: [0.7, 1.2],
+      });
+      const animatedOpacity = dragX.interpolate({
+        inputRange: [0, WIDTH / 2, WIDTH],
+        outputRange: [0.6, 0.5, 1],
+      });
+
+      if (dragX.__getValue() > WIDTH * 0.6) {
+        swipeRef.current?.close();
+        RNReactNativeHapticFeedback.trigger('impactLight');
+        onLeftAction();
+      }
+      return (
+        <View style={{flexDirection: 'row'}}>
+          <Animated.View
+            style={[
+              styles.leftAction,
+              {backgroundColor: COLORS.success[500], opacity: animatedOpacity},
+            ]}>
+            <Animated.View
+              style={{
+                transform: [{scale: animatedScale}],
+                alignItems: 'center',
+              }}>
+              <Icon name="add" color={COLORS.shades[0]} size={20} />
+              <Body
+                type={2}
+                style={{fontWeight: '500'}}
+                color={COLORS.shades[0]}
+                text={i18n.t('Add')}
+              />
+            </Animated.View>
+          </Animated.View>
+        </View>
+      );
+    },
+    [onLeftAction],
+  );
 
   const renderRightAction = (_, dragX) => {
     const maxInput = options ? WIDTH * options.length : WIDTH;
@@ -81,6 +127,8 @@ export default function SwipeView({
         friction={2}
         enableTrackpadTwoFingerGesture
         rightThreshold={20}
+        leftThreshold={10000}
+        renderLeftActions={onLeftAction && renderLeftActions}
         renderRightActions={renderRightAction}>
         {children}
       </Swipeable>
@@ -93,6 +141,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: WIDTH,
+    height: '100%',
+  },
+  leftAction: {
+    alignItems: 'flex-start',
+    paddingLeft: WIDTH / 2 - 10,
+    justifyContent: 'center',
+    width: WIDTH * 2,
     height: '100%',
   },
 });
