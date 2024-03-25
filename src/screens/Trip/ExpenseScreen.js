@@ -39,6 +39,7 @@ import userManagement from '../../utils/userManagement';
 import InfoController from '../../controllers/InfoController';
 import UPDATE_EXPENSE from '../../mutations/updateExpense';
 import Subtitle from '../../components/typography/Subtitle';
+import TextField from '../../components/TextField';
 
 const DEFAULT_ITEMS_AMOUNT = 10;
 
@@ -64,6 +65,7 @@ export default function ExpenseScreen() {
   // STATE & MISC
   const scrollY = useRef(new Animated.Value(0)).current;
   const scrollRef = useRef();
+  const [searchTerm, setSearchTerm] = useState('');
   const [itemsAmount, setItemsAmount] = useState(DEFAULT_ITEMS_AMOUNT);
   const [showTotal, setShowTotal] = useState(true);
   const [updateExpense, setUpdateExpense] = useState(null);
@@ -108,22 +110,6 @@ export default function ExpenseScreen() {
     return (budget - totalAmount) / restDays;
   }, [budget, totalAmount, restDays]);
 
-  const spentToday = useMemo(() => {
-    return expenses.reduce((accumulator, expense) => {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      const expenseDate = new Date(expense.createdAt * 1);
-
-      expenseDate.setHours(0, 0, 0, 0);
-
-      if (expenseDate.getTime() === today.getTime()) {
-        return accumulator + expense.amount;
-      }
-      return accumulator;
-    }, 0);
-  }, [expenses]);
-
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -137,6 +123,16 @@ export default function ExpenseScreen() {
       }, 500);
     }
   }, [error]);
+
+  const searchResults = useMemo(() => {
+    if (!searchTerm) {
+      return data;
+    }
+    const cleanTerm = searchTerm.toLowerCase().trim();
+    return data.filter(expense =>
+      expense?.toLowerCase()?.trim().includes(cleanTerm),
+    );
+  }, [searchTerm, data]);
 
   const handleEditExpense = data => {
     setUpdateExpense(data);
@@ -434,38 +430,6 @@ export default function ExpenseScreen() {
     }, 100);
   };
 
-  const getBudgetContainer = useCallback(() => {
-    const restBudget = (budget - totalAmount) / restDays;
-
-    return (
-      <View style={styles.budgetContainer}>
-        {/* <View>
-          <Subtitle color={COLORS.neutral[300]} text={'Spent'} />
-          <Headline
-            type={3}
-            style={{fontSize: 16}}
-            color={
-              spentToday > restBudget ? COLORS.error[900] : COLORS.neutral[700]
-            }
-            text={`${currency.symbol}${spentToday.toFixed(2)}`}
-          />
-        </View>
-        <View style={{marginHorizontal: 6}}>
-          <Subtitle color={COLORS.neutral[300]} text={'|'} />
-        </View> */}
-        <View>
-          <Subtitle color={COLORS.neutral[300]} text={'Daily Budget'} />
-          <Headline
-            style={{fontSize: 16}}
-            type={3}
-            color={COLORS.neutral[700]}
-            text={`${currency.symbol}${restBudget}`}
-          />
-        </View>
-      </View>
-    );
-  }, [budget, expenses]);
-
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
@@ -560,6 +524,16 @@ export default function ExpenseScreen() {
             style={{marginTop: 30}}
             data={expenses}
           />
+          <TextField
+            value={searchTerm}
+            onChangeText={val => setSearchTerm(val)}
+            placeholder={i18n.t('Filter Expenses')}
+            style={{
+              backgroundColor: COLORS.neutral[50],
+              height: 35,
+              marginTop: 18,
+            }}
+          />
           <View style={styles.summaryContainer}>
             <FlatList
               ListFooterComponent={() => !isSolo && getListHeader()}
@@ -611,7 +585,7 @@ export default function ExpenseScreen() {
               }
               inverted
               keyExtractor={item => item._id}
-              data={renderData}
+              data={searchResults || renderData}
               renderItem={({item}) => {
                 const userData = users.find(u => u.id === item.paidBy);
                 const isSelf = id === item.paidBy;
@@ -804,7 +778,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.shades[0],
   },
   summaryContainer: {
-    marginTop: 25,
+    marginTop: 10,
     borderRadius: RADIUS.m,
     borderWidth: 1,
     overflow: 'hidden',
